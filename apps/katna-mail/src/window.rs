@@ -76,6 +76,7 @@ mod notes;
 mod nudge;
 mod offline;
 mod onboarding;
+mod palette;
 mod popovers;
 mod print;
 mod print_preview;
@@ -220,6 +221,7 @@ actions!(
         ShowFiles,
         OpenSettings,
         ShowShortcuts,
+        ShowPalette,
         ShowWhatsNew,
         CheckForUpdates,
         ShowAbout,
@@ -768,6 +770,8 @@ pub struct MailWindow {
     whats_new: Option<whats_new::WhatsNew>,
     /// Help > Keyboard shortcuts, while open.
     shortcuts_dialog: Option<shortcuts_dialog::ShortcutsDialog>,
+    /// The command palette (Ctrl+Shift+P), while open.
+    palette: Option<palette::Palette>,
     /// "Help improve Katna", asked once after an update.
     share_ask: Option<share_ask::ShareAsk>,
     /// The print preview, before the desktop's print dialog.
@@ -1130,6 +1134,7 @@ impl MailWindow {
             onboarding: None,
             whats_new: None,
             shortcuts_dialog: None,
+            palette: None,
             share_ask: None,
             print_preview: None,
             share_ask_later: false,
@@ -4074,6 +4079,7 @@ impl Render for MailWindow {
         let contact_qr = self.render_contact_qr(&th, window, reduce, cx);
         let whats_new = self.render_whats_new(&th, window, reduce, cx);
         let shortcuts_dialog = self.render_shortcuts_dialog(&th, window, reduce, cx);
+        let palette = self.render_palette(&th, window, reduce, cx);
         let share_ask = if onboarding {
             None
         } else {
@@ -4172,6 +4178,7 @@ impl Render for MailWindow {
             .children(password_card)
             .children(whats_new)
             .children(shortcuts_dialog)
+            .children(palette)
             .children(share_ask)
             .children(about)
             .children(gallery)
@@ -4311,6 +4318,7 @@ impl Render for MailWindow {
             }))
             .on_action(cx.listener(Self::open_settings))
             .on_action(cx.listener(Self::show_shortcuts))
+            .on_action(cx.listener(Self::show_palette))
             .on_action(cx.listener(Self::show_whats_new_action))
             .on_action(cx.listener(Self::check_for_updates_action))
             .on_action(cx.listener(Self::show_about));
