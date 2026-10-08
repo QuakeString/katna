@@ -518,6 +518,17 @@ macro_rules! pim_interface {
                 Ok(self.daemon.reload_config()?)
             }
 
+            /// Sends feedback from Katna Mail's form; returns why it could
+            /// not be sent, or an empty string.
+            async fn send_feedback(&self, text: String, kind: String, reply_to: String) -> String {
+                match crate::crash_upload::send_feedback(&self.daemon, &text, &kind, &reply_to)
+                    .await
+                {
+                    Ok(()) => String::new(),
+                    Err(why) => why,
+                }
+            }
+
             /// Deletes the local copy of an app turned off.
             async fn forget_app(&self, app: String) -> fdo::Result<()> {
                 Ok(self.daemon.forget_app(&app)?)

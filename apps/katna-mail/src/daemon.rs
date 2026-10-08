@@ -1041,6 +1041,28 @@ pub async fn ai_key_saved(connection: &Connection) -> Result<bool, String> {
     pim.ai_key_saved().await.map_err(|err| describe(&err))
 }
 
+/// Has the daemon send feedback from the Send feedback form: `text`
+/// exactly as the form showed it. Returns why it could not be sent.
+pub async fn send_feedback(
+    connection: &Connection,
+    text: &str,
+    kind: &str,
+    reply_to: &str,
+) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    let problem = pim
+        .send_feedback(text, kind, reply_to)
+        .await
+        .map_err(|err| describe(&err))?;
+    if problem.is_empty() {
+        Ok(())
+    } else {
+        Err(problem)
+    }
+}
+
 /// The models the user's own AI service `provider` offers to the saved
 /// key, or a `katna_ai::wire::problem`.
 pub async fn ai_models(

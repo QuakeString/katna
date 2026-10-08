@@ -356,6 +356,7 @@ impl MailWindow {
             )
         }));
         window.focus(&from.focus_handle(cx), cx);
+        self.note_usage(katna_core::usage::Feature::SearchOptions);
         self.search_panel = Some(SearchPanel {
             from,
             to,
