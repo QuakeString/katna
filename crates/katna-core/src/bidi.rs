@@ -7,7 +7,9 @@
 use unicode_bidi::{BidiClass, bidi_class};
 
 /// Which way text reads.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, serde::Serialize, serde::Deserialize)]
+#[derive(
+    Debug, Clone, Copy, PartialEq, Eq, Hash, Default, serde::Serialize, serde::Deserialize,
+)]
 #[serde(rename_all = "lowercase")]
 pub enum Direction {
     #[default]

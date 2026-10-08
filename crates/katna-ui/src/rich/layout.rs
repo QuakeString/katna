@@ -5,7 +5,11 @@
 //! its selection, cursor and list marker.
 //!
 //! GPUI shapes a line in one font size, so each stretch of text in one
-//! style is shaped on its own and the stretches are placed side by side.
+//! style is shaped on its own and the stretches are placed side by side:
+//! from the left in a left-to-right paragraph, from the right in a
+//! right-to-left one. Inside a stretch the shaper orders the glyphs
+//! (bidirectional text), so where the cursor goes is read from the glyphs
+//! and the direction of the character at it, not from byte order.
 
 use std::cell::RefCell;
 use std::collections::HashMap;
@@ -19,6 +23,8 @@ use gpui::{
     Style, TextAlign, TextRun, UnderlineStyle, Window, fill, point, prelude::*, quad, relative,
     size,
 };
+use katna_core::bidi::Direction;
+use unicode_bidi::{BidiClass, bidi_class};
 use unicode_segmentation::UnicodeSegmentation;
 
 use super::RichEditor;
@@ -149,8 +155,12 @@ pub(crate) struct LineBox {
     pub top: Pixels,
     pub height: Pixels,
     pub baseline: Pixels,
-    /// Where the line starts (alignment).
+    /// Where the line starts (alignment): its left edge.
     pub x0: Pixels,
+    /// The width of all its pieces, hanging spaces too.
+    pub width: Pixels,
+    /// The paragraph reads right to left: pieces go from the right.
+    pub rtl: bool,
     pub pieces: Vec<Piece>,
     /// Starts or ends at a soft wrap rather than a line break.
     pub soft_start: bool,
@@ -160,7 +170,7 @@ pub(crate) struct LineBox {
 /// Text in one style on one line.
 pub(crate) struct Piece {
     pub range: Range<usize>,
-    /// From the line's start.
+    /// Its left edge, from the line's left edge (`LineBox::x0`).
     pub x: Pixels,
     pub shaped: ShapedLine,
     pub background: Option<Hsla>,
@@ -190,14 +200,13 @@ impl ParaLayout {
         for piece in &line.pieces {
             if offset <= piece.range.end {
                 let local = offset.saturating_sub(piece.range.start);
-                return line.x0 + piece.x + piece.shaped.x_for_index(local);
+                return line.x0 + piece.x + caret_x(&piece.shaped, local, line.rtl);
             }
         }
-        line.x0
-            + line
-                .pieces
-                .last()
-                .map_or(px(0.0), |p| p.x + p.shaped.width())
+        match line.pieces.last() {
+            Some(p) => line.x0 + p.x + caret_x(&p.shaped, p.shaped.text.len(), line.rtl),
+            None => line.x0,
+        }
     }
 
     /// The cursor's top-left and height, from the paragraph's origin.
@@ -215,17 +224,25 @@ impl ParaLayout {
             return (0, false);
         };
         let x = x - line.x0;
-        let mut offset = line.range.start;
-        for piece in &line.pieces {
-            if x < piece.x {
-                break;
+        // The piece under `x`, else the nearest.
+        let distance = |p: &Piece| {
+            if x < p.x {
+                p.x - x
+            } else {
+                (x - (p.x + p.shaped.width())).max(px(0.0))
             }
-            let local = piece.shaped.closest_index_for_x(x - piece.x);
-            offset = piece.range.start + local;
-            if x <= piece.x + piece.shaped.width() {
-                break;
-            }
-        }
+        };
+        let offset = line
+            .pieces
+            .iter()
+            .min_by(|a, b| {
+                distance(a)
+                    .partial_cmp(&distance(b))
+                    .unwrap_or(std::cmp::Ordering::Equal)
+            })
+            .map_or(line.range.start, |piece| {
+                piece.range.start + index_at(&piece.shaped, x - piece.x, line.rtl)
+            });
         // Past the text is a writing suggestion's line.
         let offset = floor_grapheme(
             text,
@@ -267,10 +284,15 @@ impl ParaLayout {
             if start > end || (start == end && !past_end) {
                 continue;
             }
-            let left = self.x_for(ix, start);
-            let mut right = self.x_for(ix, end);
+            let (a, b) = (self.x_for(ix, start), self.x_for(ix, end));
+            let (mut left, mut right) = (a.min(b), a.max(b));
             if past_end {
-                right += line.height * 0.3;
+                // A right-to-left line ends on the left.
+                if line.rtl {
+                    left -= line.height * 0.3;
+                } else {
+                    right += line.height * 0.3;
+                }
             }
             rects.push(Bounds::from_corners(
                 point(left, line.top),
@@ -281,14 +303,17 @@ impl ParaLayout {
     }
 }
 
-/// Lays out `para` in `width`. `decos` marks ranges (sorted, apart).
+/// Lays out `para` in `width`, reading `dir`. `decos` marks ranges
+/// (sorted, apart).
 pub(crate) fn layout(
     window: &Window,
     para: &Para,
     base: &TextBase,
     width: Pixels,
     decos: &[(Range<usize>, Deco)],
+    dir: Direction,
 ) -> Vec<LineBox> {
+    let rtl = dir.is_rtl();
     let text = para.text.as_str();
     let ratio = base.line_height / base.size;
     let text_system = window.text_system();
@@ -315,10 +340,11 @@ pub(crate) fn layout(
             x += line.width();
             shaped.push((range.clone(), start_x, line));
         }
+        // The width of the text before `offset`, whichever way it reads.
         let x_at = |offset: usize| -> Pixels {
             for (range, start_x, line) in &shaped {
                 if offset <= range.end {
-                    return *start_x + line.x_for_index(offset.saturating_sub(range.start));
+                    return *start_x + advance_to(line, offset.saturating_sub(range.start));
                 }
             }
             x
@@ -370,25 +396,40 @@ pub(crate) fn layout(
             }
             let height = height.max(ascent + descent);
             let baseline = (height - (ascent + descent)) / 2.0 + ascent;
-            // Spaces at the end of a wrapped line hang past the edge.
+            // Spaces at the end of a wrapped line hang past the edge (the
+            // left one in a right-to-left line).
             let visible = text[range.clone()].trim_end().len() + range.start;
             let visible_width = pieces
                 .iter()
                 .find(|p| visible <= p.range.end)
                 .map_or(px_x, |p| {
-                    p.x + p.shaped.x_for_index(visible.saturating_sub(p.range.start))
+                    p.x + advance_to(&p.shaped, visible.saturating_sub(p.range.start))
                 });
+            let hanging = px_x - visible_width;
+            let start_shift = if rtl { hanging } else { px(0.0) };
             let x0 = match para.style.align {
+                Align::Center => ((width - visible_width) / 2.0).max(px(0.0)) - start_shift,
+                // The cursor on an empty right-to-left line, at the right.
+                _ if rtl && pieces.is_empty() => (width - px(2.0)).max(px(0.0)),
+                // A right-to-left line starts at the right.
+                Align::Left | Align::Right if rtl => (width - visible_width).max(px(0.0)) - hanging,
                 Align::Left => px(0.0),
-                Align::Center => ((width - visible_width) / 2.0).max(px(0.0)),
                 Align::Right => (width - visible_width).max(px(0.0)),
             };
+            if rtl {
+                // Pieces from the right, in reading order.
+                for piece in &mut pieces {
+                    piece.x = px_x - piece.x - piece.shaped.width();
+                }
+            }
             lines.push(LineBox {
                 range: range.clone(),
                 top,
                 height,
                 baseline,
                 x0,
+                width: px_x,
+                rtl,
                 pieces,
                 soft_start: n > 0,
                 soft_end: n + 1 < count,
@@ -398,6 +439,119 @@ pub(crate) fn layout(
         }
     }
     lines
+}
+
+/// Whether the character at byte `index` of `text` reads right to left;
+/// digits and Latin letters do not, neutral characters as the paragraph.
+fn char_rtl(text: &str, index: usize, para_rtl: bool) -> bool {
+    match text
+        .get(index..)
+        .and_then(|t| t.chars().next())
+        .map(bidi_class)
+    {
+        Some(BidiClass::R | BidiClass::AL) => true,
+        Some(BidiClass::L | BidiClass::EN | BidiClass::AN) => false,
+        _ => para_rtl,
+    }
+}
+
+/// The glyphs of `shaped` left to right: their byte index, left and right
+/// edges.
+fn glyph_edges(shaped: &ShapedLine) -> Vec<(usize, Pixels, Pixels)> {
+    let glyphs: Vec<(usize, Pixels)> = shaped
+        .runs
+        .iter()
+        .flat_map(|run| run.glyphs.iter().map(|g| (g.index, g.position.x)))
+        .collect();
+    glyphs
+        .iter()
+        .enumerate()
+        .map(|(k, &(index, left))| {
+            let right = glyphs.get(k + 1).map_or(shaped.width(), |g| g.1);
+            (index, left, right.max(left))
+        })
+        .collect()
+}
+
+/// The width of the text of `shaped` before byte `index`, in reading
+/// order: what wrapping measures. Byte order and left to right are the
+/// same only in left-to-right text.
+fn advance_to(shaped: &ShapedLine, index: usize) -> Pixels {
+    if index >= shaped.text.len() {
+        return shaped.width();
+    }
+    glyph_edges(shaped)
+        .into_iter()
+        .filter(|(i, _, _)| *i < index)
+        .fold(px(0.0), |sum, (_, left, right)| sum + (right - left))
+}
+
+/// Where the cursor at byte `index` of `shaped` stands, from its left edge:
+/// before the character there as it reads, so on its right side when the
+/// character reads right to left.
+fn caret_x(shaped: &ShapedLine, index: usize, para_rtl: bool) -> Pixels {
+    let text = shaped.text.as_ref();
+    let glyphs = glyph_edges(shaped);
+    if glyphs.is_empty() {
+        return if para_rtl { shaped.width() } else { px(0.0) };
+    }
+    if index >= text.len() {
+        // After the last character as it reads.
+        let last = text.char_indices().last().map_or(0, |(i, _)| i);
+        let Some(&(_, left, right)) = glyphs.iter().max_by_key(|(i, _, _)| *i) else {
+            return px(0.0);
+        };
+        return if char_rtl(text, last, para_rtl) {
+            left
+        } else {
+            right
+        };
+    }
+    // The glyph drawing the character at `index`, or the cluster it is in.
+    let glyph = glyphs
+        .iter()
+        .filter(|(i, _, _)| *i <= index)
+        .max_by_key(|(i, _, _)| *i)
+        .unwrap_or(&glyphs[0]);
+    if char_rtl(text, glyph.0, para_rtl) {
+        glyph.2
+    } else {
+        glyph.1
+    }
+}
+
+/// The byte index of `shaped` the cursor goes to for `x` from its left
+/// edge: before or after the character under it, by which half of it `x`
+/// is in and which way it reads.
+fn index_at(shaped: &ShapedLine, x: Pixels, para_rtl: bool) -> usize {
+    let text = shaped.text.as_ref();
+    let glyphs = glyph_edges(shaped);
+    let Some(first) = glyphs.first() else {
+        return 0;
+    };
+    let last = glyphs[glyphs.len() - 1];
+    let &(index, left, right) = if x < first.1 {
+        first
+    } else if x >= last.2 {
+        &glyphs[glyphs.len() - 1]
+    } else {
+        glyphs
+            .iter()
+            .find(|(_, l, r)| *l <= x && x < *r)
+            .unwrap_or(first)
+    };
+    let after = glyphs
+        .iter()
+        .map(|(i, _, _)| *i)
+        .filter(|i| *i > index)
+        .min()
+        .unwrap_or(text.len());
+    let right_half = x >= (left + right) / 2.0;
+    if right_half == char_rtl(text, index, para_rtl) {
+        index
+    } else {
+        after
+    }
 }
 
 /// Where a line of `text[range]` breaks to fit `width`, given the x of each
@@ -498,6 +652,7 @@ pub(crate) struct ParaElement {
 pub(crate) struct Measured {
     para: Para,
     base: TextBase,
+    dir: Direction,
     decos: Vec<(Range<usize>, Deco)>,
     /// The layout made while measuring, by width.
     cache: LayoutCache,
@@ -538,6 +693,7 @@ impl Element for ParaElement {
         let base = editor.text_base(window);
         let mut para = editor.doc.para(self.path).cloned().unwrap_or_default();
         let mut decos = editor.decorations(self.path, &para);
+        let dir = para.direction(editor.base_direction);
         // A writing suggestion lays out as text after the cursor, so it
         // wraps like the text it would become.
         if editor.focus_handle.is_focused(window)
@@ -564,6 +720,7 @@ impl Element for ParaElement {
         let measure = Measured {
             para: para.clone(),
             base: base.clone(),
+            dir,
             decos: decos.clone(),
             cache: cache.clone(),
         };
@@ -582,12 +739,10 @@ impl Element for ParaElement {
                     &measure.base,
                     wrap_width,
                     &measure.decos,
+                    measure.dir,
                 );
                 let height = lines.last().map_or(base.line_height, |l| l.top + l.height);
-                let natural = lines
-                    .iter()
-                    .map(|l| l.pieces.last().map_or(px(0.0), |p| p.x + p.shaped.width()))
-                    .fold(px(0.0), Pixels::max);
+                let natural = lines.iter().map(|l| l.width).fold(px(0.0), Pixels::max);
                 *measure.cache.borrow_mut() = Some((wrap_width, lines));
                 let width = match (width, available.width) {
                     (Some(width), _) => width,
@@ -601,6 +756,7 @@ impl Element for ParaElement {
             Measured {
                 para,
                 base,
+                dir,
                 decos,
                 cache,
             },
@@ -625,6 +781,7 @@ impl Element for ParaElement {
                 &measured.base,
                 bounds.size.width,
                 &measured.decos,
+                measured.dir,
             ),
         };
         Prepainted { lines: Some(lines) }
@@ -740,7 +897,12 @@ impl Element for ParaElement {
             let shaped = window
                 .text_system()
                 .shape_line(marker.into(), font_size, &[run], None);
-            let x = origin.x + first.x0 - shaped.width() - px(6.0);
+            // Before the line's start: on its right in right to left.
+            let x = if first.rtl {
+                origin.x + first.x0 + first.width + px(6.0)
+            } else {
+                origin.x + first.x0 - shaped.width() - px(6.0)
+            };
             let at = point(x, origin.y + first.top + first.baseline - shaped.ascent);
             let _ = shaped.paint(
                 at,

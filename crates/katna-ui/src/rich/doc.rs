@@ -12,6 +12,7 @@
 use std::ops::Range;
 use std::sync::Arc;
 
+use katna_core::bidi::{Direction, first_strong};
 use unicode_segmentation::{GraphemeCursor, UnicodeSegmentation};
 
 /// The typefaces offered in the font menu. The HTML names them by family;
@@ -217,6 +218,11 @@ pub struct ParaStyle {
     pub signature: bool,
     /// The background of a table cell, `0xRRGGBB`.
     pub fill: Option<u32>,
+    /// Which way the paragraph reads, set with the direction buttons (or
+    /// read from a `dir` attribute). `None` follows its first strong
+    /// character, else the editor's base direction (the language of the
+    /// interface): see [`Para::direction`].
+    pub dir: Option<Direction>,
 }
 
 pub const MAX_INDENT: u8 = 8;
@@ -367,6 +373,21 @@ impl Para {
     pub fn with_style(mut self, style: ParaStyle) -> Self {
         self.style = style;
         self
+    }
+
+    /// Which way the paragraph reads: as set, else as its first strong
+    /// character, else `base`. `Align::Left` is its start.
+    pub fn direction(&self, base: Direction) -> Direction {
+        self.style
+            .dir
+            .or_else(|| first_strong(&self.text))
+            .unwrap_or(base)
+    }
+
+    /// The direction the text itself gives, if set or it has a strong
+    /// character: what HTML's `dir` is written from.
+    pub fn own_direction(&self) -> Option<Direction> {
+        self.style.dir.or_else(|| first_strong(&self.text))
     }
 
     pub fn len(&self) -> usize {

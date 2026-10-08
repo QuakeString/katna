@@ -24,7 +24,7 @@ use katna_render::html::{
     Align, Block, BoxBlock, BoxKind, Document, Image, ImageKind, ImageSource, Inline, Length,
     TextBlock,
 };
-use katna_ui::px;
+use katna_ui::{Direction, directed, px};
 
 use super::MailWindow;
 use super::dark::Dark;
@@ -175,6 +175,8 @@ pub(super) struct Painter<'a> {
     /// Drawn in place, without a page's edge around it (a designed
     /// signature in an editor).
     bare: bool,
+    /// The direction the box being drawn is laid out in.
+    dir: Direction,
 }
 
 impl<'a> Painter<'a> {
@@ -209,6 +211,7 @@ impl<'a> Painter<'a> {
             bg: th.surface,
             pieces,
             bare: false,
+            dir: Direction::Ltr,
         }
     }
 
@@ -259,8 +262,11 @@ impl<'a> Painter<'a> {
         if let Some(page) = page {
             self.enter(page);
         }
+        // Mail reads left to right unless it says otherwise, as in a
+        // browser, whatever the window's direction.
+        self.dir = doc.dir.unwrap_or_default();
         let children = self.blocks(&doc.blocks);
-        div()
+        directed(div(), Some(self.dir))
             .w_full()
             .flex()
             .flex_col()
@@ -300,7 +306,16 @@ impl<'a> Painter<'a> {
     /// A box; `cell` when it is a cell of a table row.
     fn boxed(&mut self, b: &BoxBlock, cell: bool) -> AnyElement {
         let s = &b.style;
-        let [top, right, bottom, left] = s.padding.map(|p| px(p.min(96.0)));
+        let outer_dir = self.dir;
+        self.dir = s.dir.unwrap_or(outer_dir);
+        let rtl = self.dir.is_rtl();
+        let [top, mut right, bottom, mut left] = s.padding.map(|p| px(p.min(96.0)));
+        // Mail's padding and borders are left and right as drawn; a
+        // right-to-left box takes GPUI's `pl` and `border_l` as its start,
+        // on the right.
+        if rtl {
+            std::mem::swap(&mut left, &mut right);
+        }
         let background = s.background.map(|bg| self.fill(bg));
         let outer = self.enter(background.unwrap_or(0));
         let children: Vec<AnyElement> = match &b.kind {
@@ -308,7 +323,8 @@ impl<'a> Painter<'a> {
             _ => self.blocks(&b.children),
         };
         self.bg = outer;
-        let mut d = div()
+        self.dir = outer_dir;
+        let mut d = directed(div(), s.dir)
             .min_w_0()
             .flex()
             .pt(top)
@@ -346,8 +362,13 @@ impl<'a> Painter<'a> {
             let edges = &mut d.style().border_widths;
             edges.top = edge(s.border_top);
             edges.bottom = edge(s.border_bottom);
-            edges.left = edge(s.border_left);
-            edges.right = edge(s.border_right);
+            let (start, end) = if rtl {
+                (s.border_right, s.border_left)
+            } else {
+                (s.border_left, s.border_right)
+            };
+            edges.left = edge(start);
+            edges.right = edge(end);
             d = d.border_color(rgba(self.fill(color)));
         }
         if s.radius > 0.0 {
@@ -396,7 +417,7 @@ impl<'a> Painter<'a> {
                 .text_color(rgba(self.ink.faint))
                 .children(children)
                 .into_any_element(),
-            BoxKind::ListItem(marker) => div()
+            BoxKind::ListItem(marker) => directed(div(), s.dir)
                 .flex()
                 .flex_row()
                 .min_w_0()
@@ -455,13 +476,21 @@ impl<'a> Painter<'a> {
         if run_start < t.inlines.len() {
             pieces.push(self.text(&t.inlines[run_start..], t));
         }
+        // Each paragraph reads its own way (`TextBlock::dir`), its
+        // alignment from that side.
+        let dir = t.dir.filter(|&d| d != self.dir);
         if !has_image && pieces.len() == 1 {
             let only = pieces.pop().expect("one piece");
-            return align(div().w_full(), t.align)
+            return align(directed(div(), dir).w_full(), t.align)
                 .child(only)
                 .into_any_element();
         }
-        let row = div().w_full().flex().flex_row().flex_wrap().items_end();
+        let row = directed(div(), dir)
+            .w_full()
+            .flex()
+            .flex_row()
+            .flex_wrap()
+            .items_end();
         match t.align {
             Align::Start => row,
             Align::Center => row.justify_center(),

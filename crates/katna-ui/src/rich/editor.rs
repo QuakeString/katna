@@ -35,6 +35,7 @@ use super::html;
 pub type HtmlView = Rc<dyn Fn(&doc::HtmlBlock, f32, &mut gpui::App) -> AnyElement>;
 use super::layout::{Deco, ParaElement, ParaLayout, TextBase};
 use crate::TEXT_AREA_CONTEXT;
+use katna_core::bidi::Direction;
 mod paste;
 use crate::text_area::{
     Backspace, Cancel, Copy, Cut, Delete, DeleteWordLeft, DeleteWordRight, DocEnd, DocStart, Down,
@@ -60,6 +61,12 @@ actions!(
         AlignLeft,
         AlignCenter,
         AlignRight,
+        /// Makes the paragraph read left to right.
+        DirectionLtr,
+        /// Makes the paragraph read right to left.
+        DirectionRtl,
+        /// Turns the paragraph the other way (Ctrl+Shift+X).
+        ToggleDirection,
         ClearFormatting,
         Undo,
         Redo,
@@ -107,6 +114,7 @@ pub fn bind_keys(cx: &mut App) {
         KeyBinding::new("ctrl-shift-l", AlignLeft, context),
         KeyBinding::new("ctrl-shift-e", AlignCenter, context),
         KeyBinding::new("ctrl-shift-r", AlignRight, context),
+        KeyBinding::new("ctrl-shift-x", ToggleDirection, context),
         KeyBinding::new("ctrl-\\", ClearFormatting, context),
         KeyBinding::new("ctrl-z", Undo, context),
         KeyBinding::new("ctrl-y", Redo, context),
@@ -403,6 +411,9 @@ pub struct RichEditor {
     picking: bool,
     /// Tab indents any paragraph, not only list items.
     tab_indents: bool,
+    /// The direction of a paragraph that has no strong character and none
+    /// set: the interface language's ([`Self::set_base_direction`]).
+    pub(crate) base_direction: Direction,
 }
 
 impl EventEmitter<RichEvent> for RichEditor {}
@@ -463,7 +474,41 @@ impl RichEditor {
             clicked_link: None,
             picking: false,
             tab_indents: false,
+            base_direction: Direction::Ltr,
         }
+    }
+
+    /// The direction new and empty paragraphs read in: the interface
+    /// language's. A paragraph whose first strong character reads the
+    /// other way follows that instead (as typing Arabic into an empty
+    /// line of an English window does), unless a direction button set it.
+    pub fn set_base_direction(&mut self, dir: Direction, cx: &mut Context<Self>) {
+        if self.base_direction != dir {
+            self.base_direction = dir;
+            cx.notify();
+        }
+    }
+
+    /// Which way the paragraph with the cursor reads.
+    pub fn direction(&self) -> Direction {
+        self.doc
+            .para(self.head.path)
+            .map_or(self.base_direction, |p| p.direction(self.base_direction))
+    }
+
+    /// Makes the selected paragraphs read `dir`.
+    pub fn set_direction(&mut self, dir: Direction, cx: &mut Context<Self>) {
+        if self.plain {
+            return;
+        }
+        self.format(cx, |doc, (start, end)| {
+            doc.restyle_paras(start, end, &|p| p.dir = Some(dir))
+        });
+    }
+
+    /// Turns the selected paragraphs the other way from the cursor's.
+    pub fn toggle_direction(&mut self, cx: &mut Context<Self>) {
+        self.set_direction(self.direction().flipped(), cx);
     }
 
     /// Whether a click on a link sends [`RichEvent::OpenLink`] (the cursor
@@ -1592,7 +1637,27 @@ impl RichEditor {
 
     // Movement.
 
-    fn left(&mut self, _: &Left, _: &mut Window, cx: &mut Context<Self>) {
+    /// Left and Right go the way the cursor's paragraph reads on screen:
+    /// Left moves on through right-to-left text.
+    fn reads_rtl(&self) -> bool {
+        self.direction().is_rtl()
+    }
+
+    fn left(&mut self, _: &Left, w: &mut Window, cx: &mut Context<Self>) {
+        if self.reads_rtl() {
+            return self.forward(w, cx);
+        }
+        self.back(w, cx);
+    }
+
+    fn right(&mut self, _: &Right, w: &mut Window, cx: &mut Context<Self>) {
+        if self.reads_rtl() {
+            return self.back(w, cx);
+        }
+        self.forward(w, cx);
+    }
+
+    fn back(&mut self, _: &mut Window, cx: &mut Context<Self>) {
         if self.has_selection() {
             let (start, _) = self.ordered();
             self.move_to(start, cx);
@@ -1601,7 +1666,7 @@ impl RichEditor {
         }
     }
 
-    fn right(&mut self, _: &Right, _: &mut Window, cx: &mut Context<Self>) {
+    fn forward(&mut self, _: &mut Window, cx: &mut Context<Self>) {
         if self.has_selection() {
             let (_, end) = self.ordered();
             self.move_to(end, cx);
@@ -1611,11 +1676,21 @@ impl RichEditor {
     }
 
     fn select_left(&mut self, _: &SelectLeft, _: &mut Window, cx: &mut Context<Self>) {
-        self.select_to(self.doc.prev_pos(self.head), cx);
+        let to = if self.reads_rtl() {
+            self.doc.next_pos(self.head)
+        } else {
+            self.doc.prev_pos(self.head)
+        };
+        self.select_to(to, cx);
     }
 
     fn select_right(&mut self, _: &SelectRight, _: &mut Window, cx: &mut Context<Self>) {
-        self.select_to(self.doc.next_pos(self.head), cx);
+        let to = if self.reads_rtl() {
+            self.doc.prev_pos(self.head)
+        } else {
+            self.doc.next_pos(self.head)
+        };
+        self.select_to(to, cx);
     }
 
     fn word_target(&self, right: bool) -> Pos {
@@ -1639,19 +1714,19 @@ impl RichEditor {
     }
 
     fn word_left(&mut self, _: &WordLeft, _: &mut Window, cx: &mut Context<Self>) {
-        self.move_to(self.word_target(false), cx);
+        self.move_to(self.word_target(self.reads_rtl()), cx);
     }
 
     fn word_right(&mut self, _: &WordRight, _: &mut Window, cx: &mut Context<Self>) {
-        self.move_to(self.word_target(true), cx);
+        self.move_to(self.word_target(!self.reads_rtl()), cx);
     }
 
     fn select_word_left(&mut self, _: &SelectWordLeft, _: &mut Window, cx: &mut Context<Self>) {
-        self.select_to(self.word_target(false), cx);
+        self.select_to(self.word_target(self.reads_rtl()), cx);
     }
 
     fn select_word_right(&mut self, _: &SelectWordRight, _: &mut Window, cx: &mut Context<Self>) {
-        self.select_to(self.word_target(true), cx);
+        self.select_to(self.word_target(!self.reads_rtl()), cx);
     }
 
     /// Start (or end) of the visual line the cursor is on.
@@ -2628,11 +2703,18 @@ impl RichEditor {
                 } else {
                     24.0 + 24.0 * f32::from(style.indent)
                 };
+                // Indents and quote bars on the paragraph's start side: the
+                // right in right to left.
+                let dir = Some(para.direction(self.base_direction));
                 if indent > 0.0 {
-                    el = div().w_full().pl(px(indent)).child(el).into_any_element();
+                    el = crate::directed(div(), dir)
+                        .w_full()
+                        .pl(px(indent))
+                        .child(el)
+                        .into_any_element();
                 }
                 for _ in 0..style.quote {
-                    el = div()
+                    el = crate::directed(div(), dir)
                         .w_full()
                         .pl(px(10.0))
                         .border_l_1()
@@ -3397,6 +3479,13 @@ impl Render for RichEditor {
                 cx.listener(|this, _: &AlignCenter, _, cx| this.set_align(Align::Center, cx)),
             )
             .on_action(cx.listener(|this, _: &AlignRight, _, cx| this.set_align(Align::Right, cx)))
+            .on_action(
+                cx.listener(|this, _: &DirectionLtr, _, cx| this.set_direction(Direction::Ltr, cx)),
+            )
+            .on_action(
+                cx.listener(|this, _: &DirectionRtl, _, cx| this.set_direction(Direction::Rtl, cx)),
+            )
+            .on_action(cx.listener(|this, _: &ToggleDirection, _, cx| this.toggle_direction(cx)))
             .on_action(cx.listener(|this, _: &ClearFormatting, _, cx| this.clear_formatting(cx)))
             .on_action(cx.listener(|this, _: &Undo, _, cx| this.undo(cx)))
             .on_action(cx.listener(|this, _: &Redo, _, cx| this.redo(cx)))

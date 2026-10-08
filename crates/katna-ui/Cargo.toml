@@ -11,6 +11,7 @@ publish.workspace = true
 [dependencies]
 katna-core.workspace = true
 gpui.workspace = true
+unicode-bidi.workspace = true
 unicode-segmentation.workspace = true
 
 # Katna's patched Linux backend and renderer, and its patched Windows

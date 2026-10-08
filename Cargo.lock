@@ -6378,6 +6378,7 @@ dependencies = [
  "gpui-pre-wgpu",
  "gpui-pre-windows",
  "katna-core",
+ "unicode-bidi",
  "unicode-segmentation",
 ]
 
