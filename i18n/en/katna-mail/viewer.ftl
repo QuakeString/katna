@@ -48,6 +48,7 @@ viewer-rotate-clockwise = Rotate clockwise
 ## Marking up a PDF
 
 viewer-markup-tip = Mark up
+viewer-markup-move-tip = Drag to move. Double-click to put back.
 viewer-tool-select = Select text
 viewer-tool-highlight = Highlight
 viewer-tool-underline = Underline

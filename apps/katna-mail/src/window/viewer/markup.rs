@@ -15,17 +15,22 @@
 //! and browsers show too. The attachment itself never changes. Closing
 //! the viewer or moving to another attachment with unsaved marks asks
 //! first. Encrypted and certified PDFs are not marked up.
+//!
+//! The pill can be moved by the dots at its end, anywhere over the pages
+//! (never over the top bar), so it never hides what is being marked; a
+//! double click on the dots puts it back under the top bar.
 
 use crate::widgets::Tip as _;
-use std::cell::RefCell;
+use std::cell::{Cell, RefCell};
 use std::collections::HashMap;
 use std::rc::Rc;
 use std::sync::Arc;
 
 use gpui::{
-    AnyElement, Bounds, Context, CursorStyle, DispatchPhase, Entity, Focusable, FontWeight,
-    MouseButton, MouseDownEvent, MouseMoveEvent, MouseUpEvent, PathBuilder, Pixels, Point, Rgba,
-    SharedString, Stateful, Subscription, Task, Window, canvas, div, prelude::*, rgba,
+    AnyElement, Bounds, ClickEvent, Context, CursorStyle, DispatchPhase, DragMoveEvent, Entity,
+    Focusable, FontWeight, MouseButton, MouseDownEvent, MouseMoveEvent, MouseUpEvent, PathBuilder,
+    Pixels, Point, Rgba, SharedString, Stateful, Subscription, Task, Window, canvas, div,
+    prelude::*, rgba,
 };
 use katna_i18n::tr;
 use katna_preview::markup::{
@@ -138,6 +143,19 @@ const TOOLS: [(Tool, &str, &str, &str); 9] = [
 ];
 
 /// Where a marked copy of the PDF goes.
+/// The pill of tools on screen, and how far it was moved then.
+type Placed = (Bounds<Pixels>, Point<Pixels>);
+
+/// Dragging the pill of tools by its dots.
+#[derive(Clone, Copy)]
+struct PillDrag;
+
+impl gpui::Render for PillDrag {
+    fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
+        div()
+    }
+}
+
 #[derive(Clone, Copy)]
 enum Marked {
     Save,
@@ -197,6 +215,15 @@ pub(super) struct Markup {
     typing: Option<Typing>,
     /// Typing ended: the viewer takes the keys back at the next frame.
     refocus: bool,
+    /// How far the pill was dragged from its place under the top bar.
+    moved: Point<Pixels>,
+    /// A drag of the pill under way: the pointer and `moved` when it
+    /// started.
+    grab: Option<(Point<Pixels>, Point<Pixels>)>,
+    /// The viewer, and the pill with how far it was moved, on screen at
+    /// the last frame, to keep the pill inside.
+    room: Rc<Cell<Option<Bounds<Pixels>>>>,
+    pill: Rc<Cell<Option<Placed>>>,
 }
 
 impl Markup {
@@ -223,6 +250,10 @@ impl Markup {
             spots: Rc::default(),
             typing: None,
             refocus: false,
+            moved: Point::default(),
+            grab: None,
+            room: Rc::default(),
+            pill: Rc::default(),
         }
     }
 
@@ -1153,19 +1184,83 @@ impl Viewer {
                                 this.redo_mark(cx);
                             })),
                         )
+                        .child(separator())
+                        .child(grip(th, cx))
                 }
             };
+        let moved = self.moved_within(m.moved);
+        let (room, seen) = (m.room.clone(), m.pill.clone());
         Some(
             div()
                 .absolute()
-                .top(px(BAR_HEIGHT + 8.0))
+                .top_0()
                 .left_0()
-                .right_0()
+                .size_full()
+                .pt(px(BAR_HEIGHT + 8.0))
                 .px(px(16.0))
                 .flex()
-                .justify_center()
-                .child(body)
+                .flex_col()
+                .items_center()
+                .child(
+                    canvas(move |bounds, _, _| room.set(Some(bounds)), |_, _, _, _| {})
+                        .absolute()
+                        .top_0()
+                        .left_0()
+                        .size_full(),
+                )
+                .child(
+                    body.left(moved.x)
+                        .top(moved.y)
+                        .on_drag_move(cx.listener(
+                            |this, event: &DragMoveEvent<PillDrag>, _, cx| {
+                                if let Some((from, start)) = this.markup.grab {
+                                    let to = start + (event.event.position - from);
+                                    this.markup.moved = this.moved_within(to);
+                                    cx.notify();
+                                }
+                            },
+                        ))
+                        .on_drop(cx.listener(|this, _: &PillDrag, _, cx| {
+                            this.markup.grab = None;
+                            cx.notify();
+                        }))
+                        .child(
+                            canvas(
+                                move |bounds, _, _| seen.set(Some((bounds, moved))),
+                                |_, _, _, _| {},
+                            )
+                            .absolute()
+                            .top_0()
+                            .left_0()
+                            .size_full(),
+                        ),
+                )
                 .into_any_element(),
+        )
+    }
+
+    /// `moved`, held so the pill stays inside the viewer, below the top
+    /// bar.
+    fn moved_within(&self, moved: Point<Pixels>) -> Point<Pixels> {
+        let m = &self.markup;
+        let (Some(room), Some((pill, then))) = (m.room.get(), m.pill.get()) else {
+            return moved;
+        };
+        // Where the pill sits when not moved.
+        let home = pill.origin - then;
+        let gap = px(4.0);
+        let clamp = |v: Pixels, lo: Pixels, hi: Pixels| if hi < lo { lo } else { v.clamp(lo, hi) };
+        gpui::point(
+            clamp(
+                moved.x,
+                room.left() + gap - home.x,
+                room.right() - gap - pill.size.width - home.x,
+            ),
+            clamp(
+                moved.y,
+                room.top() + px(BAR_HEIGHT) + gap - home.y,
+                room.bottom() - gap - pill.size.height - home.y,
+            ),
         )
     }
 
@@ -1307,6 +1402,39 @@ fn pill_button(
             size * 0.55,
         ))
         .tip(label.into(), th)
+}
+
+/// The dots at the end of the pill of tools: dragging them moves the
+/// pill, a double click puts it back.
+fn grip(th: &Theme, cx: &mut Context<Viewer>) -> Stateful<gpui::Div> {
+    div()
+        .id("viewer-markup-grip")
+        .w(px(26.0))
+        .h(px(36.0))
+        .flex_none()
+        .flex()
+        .items_center()
+        .justify_center()
+        .rounded_full()
+        .cursor_grab()
+        .hover(|s| s.bg(rgba(HOVER)))
+        .child(icon("drag-handle", INK_DIM, 18.0))
+        .tip(tr!("viewer-markup-move-tip"), th)
+        .on_mouse_down(
+            MouseButton::Left,
+            cx.listener(|this, event: &MouseDownEvent, _, cx| {
+                this.markup.grab = Some((event.position, this.markup.moved));
+                cx.stop_propagation();
+            }),
+        )
+        .on_drag(PillDrag, |drag, _, _, cx| cx.new(|_| *drag))
+        .on_click(cx.listener(|this, event: &ClickEvent, _, cx| {
+            if event.click_count() >= 2 {
+                this.markup.moved = Point::default();
+                this.markup.grab = None;
+                cx.notify();
+            }
+        }))
 }
 
 /// The name of the marked copy of `name`: "Report (marked).pdf".
