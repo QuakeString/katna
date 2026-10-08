@@ -1698,7 +1698,7 @@ impl MailWindow {
                 .filter(|a| seen.insert(a.email.to_lowercase()))
                 .map(|a| (self.is_me(&a.email), a))
                 .collect();
-            recipient_names(&people, full_names).join(", ")
+            recipient_names(&people, full_names).join(&tr!("row-names-separator"))
         };
         let recipients = view.map(|v| {
             let mut all = v.to.clone();

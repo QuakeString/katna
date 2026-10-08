@@ -261,7 +261,7 @@ impl Row {
                 vec![(tr!("row-no-recipients"), None)]
             } else {
                 std::iter::once((to_prefix(), None))
-                    .chain(between(to, ", "))
+                    .chain(between(to, &tr!("row-names-separator")))
                     .collect()
             }
         } else {
@@ -381,14 +381,14 @@ fn senders(list: &[ThreadSender], me: &[String]) -> Vec<(String, Option<String>)
     let email = |s: &ThreadSender| Some(s.email.clone());
     if let [only] = list {
         return vec![if is_me(only) {
-            ("me".to_owned(), None)
+            (tr!("row-me"), None)
         } else {
             (full(only), email(only))
         }];
     }
     let short = |s: &ThreadSender| {
         if is_me(s) {
-            return "me".to_owned();
+            return tr!("row-me");
         }
         match s.name.as_deref().map(str::trim).filter(|n| !n.is_empty()) {
             Some(name) => name.split_whitespace().next().unwrap_or(name).to_owned(),
@@ -403,10 +403,10 @@ fn senders(list: &[ThreadSender], me: &[String]) -> Vec<(String, Option<String>)
         let last = names.split_off(names.len() - 2);
         names.truncate(1);
         names.push((" .. ".to_owned(), None));
-        names.extend(between(last, ", "));
+        names.extend(between(last, &tr!("row-names-separator")));
         names
     } else {
-        between(names, ", ").collect()
+        between(names, &tr!("row-names-separator")).collect()
     }
 }
 
