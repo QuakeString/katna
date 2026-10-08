@@ -54,6 +54,11 @@ list-results = Results for “{ $query }”
 list-results-corrected = Showing results for “{ $query }”
 # A link that runs the search as typed. $query: what the user typed.
 list-search-instead = Search instead for “{ $query }”
+# In place of the results while the search index cannot be read: before
+# Katna's service has built it, or (with $error, what went wrong) when it
+# fails to open.
+list-search-no-index = Search is not ready: the index has not been built yet.
+list-search-not-ready = Search is not ready: { $error }
 # The "+3" button after a line's attachment chips: $count more files.
 list-files-more = +{ $count }
 # Tooltip of the reply arrow on a line the user has answered.
@@ -373,9 +378,19 @@ list-empty-reminders = No reminders. Press H on a mail to add one.
 # While the first sync of a new account downloads its mail.
 list-first-sync = Getting your mail…
 list-first-sync-detail = It shows up here as it arrives.
+# In place of the list when Katna Mail cannot read its mail store; what
+# went wrong shows under it.
+list-store-unreadable = The mail store could not be opened
 
 ## Mail list: lines
 
+# A line's sender, or its subject, when the mail has none.
+row-no-subject = (no subject)
+row-unknown-sender = (unknown sender)
+# In sent and draft folders a line shows the recipients instead: "To:" goes
+# before their names (a space follows it), or this when there are none.
+row-to = To:
+row-no-recipients = (no recipients)
 # A line whose message was deleted elsewhere while the list showed it.
 row-removed = This message was removed.
 # Tooltips of a line's star.

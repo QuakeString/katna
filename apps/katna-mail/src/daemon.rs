@@ -293,19 +293,21 @@ impl Command {
 }
 
 /// What [`describe`] says when the daemon is not running.
-pub const NOT_RUNNING: &str = "The Katna background service is not running.";
+pub fn not_running() -> String {
+    katna_i18n::tr!("service-not-running")
+}
 
 /// Why a change could not be sent.
 pub fn describe(err: &katna_dbus::zbus::Error) -> String {
     match err {
         katna_dbus::zbus::Error::MethodError(name, detail, _) => {
             if name.as_str() == "org.freedesktop.DBus.Error.ServiceUnknown" {
-                NOT_RUNNING.to_owned()
+                not_running()
             } else {
                 detail.clone().unwrap_or_else(|| name.to_string())
             }
         }
-        err => format!("The Katna background service did not answer: {err}"),
+        err => katna_i18n::tr!("service-no-answer", error = err.to_string()),
     }
 }
 
@@ -355,7 +357,7 @@ impl AccountState {
 pub async fn connect() -> Result<Connection, String> {
     let connection = katna_dbus::session()
         .await
-        .map_err(|err| format!("No D-Bus session: {err}"))?;
+        .map_err(|err| katna_i18n::tr!("service-no-session", error = err.to_string()))?;
     katna_dbus::ensure_daemon(&connection).await;
     Ok(connection)
 }
@@ -1039,6 +1041,28 @@ pub async fn ai_key_saved(connection: &Connection) -> Result<bool, String> {
         .await
         .map_err(|err| describe(&err))?;
     pim.ai_key_saved().await.map_err(|err| describe(&err))
+}
+
+/// Has the daemon send feedback from the Send feedback form: `text`
+/// exactly as the form showed it. Returns why it could not be sent.
+pub async fn send_feedback(
+    connection: &Connection,
+    text: &str,
+    kind: &str,
+    reply_to: &str,
+) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    let problem = pim
+        .send_feedback(text, kind, reply_to)
+        .await
+        .map_err(|err| describe(&err))?;
+    if problem.is_empty() {
+        Ok(())
+    } else {
+        Err(problem)
+    }
 }
 
 /// The models the user's own AI service `provider` offers to the saved

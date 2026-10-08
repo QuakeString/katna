@@ -10,6 +10,7 @@ publish.workspace = true
 
 [dependencies]
 katna-core.workspace = true
+katna-i18n.workspace = true
 gpui.workspace = true
 unicode-segmentation.workspace = true
 
