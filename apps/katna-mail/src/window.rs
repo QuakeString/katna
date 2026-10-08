@@ -4333,7 +4333,7 @@ fn page_card(th: &Theme) -> gpui::Div {
         .items_center()
         .justify_center()
         .gap(px(12.0))
-        .map(|d| crate::widgets::card(d, th, th.pane(), PANEL_RADIUS, 0.0))
+        .map(|d| crate::widgets::card(d, th, th.pane(), PANEL_RADIUS, SHADOW_REST))
 }
 
 /// The undo-send countdown: a ring `size` wide in `color` on `track`,
