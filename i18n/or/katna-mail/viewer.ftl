@@ -23,12 +23,20 @@ viewer-page-count = { $count } ମଧ୍ୟରୁ
 viewer-go-to-page-tip = ପୃଷ୍ଠା ନମ୍ବର ଟାଇପ୍ କରି Enter ଦବାନ୍ତୁ (Ctrl+G)
 viewer-rotate-clockwise-tip = ଘଣ୍ଟା କଣ୍ଟା ଦିଗରେ ଘୁରାନ୍ତୁ (Ctrl+R)
 viewer-rotate-anticlockwise-tip = ଘଣ୍ଟା କଣ୍ଟାର ବିପରୀତ ଦିଗରେ ଘୁରାନ୍ତୁ (Ctrl+Shift+R)
+viewer-dark-pages-tip = ଗାଢ଼ ପୃଷ୍ଠା
+viewer-light-pages-tip = ପୃଷ୍ଠାଗୁଡ଼ିକୁ ଯେପରି ଅଛି ସେପରି ଦେଖାନ୍ତୁ
 viewer-fit-page-tip = ପୃଷ୍ଠା ଫିଟ କରନ୍ତୁ
 viewer-fit-picture-tip = ୱିଣ୍ଡୋରେ ଫିଟ କରନ୍ତୁ
 viewer-fit-width-tip = ଓସାର ଫିଟ କରନ୍ତୁ
 viewer-real-size-tip = ପ୍ରକୃତ ଆକାର (1:1)
 viewer-page-back-tip = ପୂର୍ବ ପୃଷ୍ଠା
 viewer-page-on-tip = ପରବର୍ତ୍ତୀ ପୃଷ୍ଠା
+viewer-more-tip = ଅଧିକ
+viewer-zoom-in = ଜୁମ ଇନ କରନ୍ତୁ
+viewer-zoom-out = ଜୁମ ଆଉଟ କରନ୍ତୁ
+viewer-real-size = ପ୍ରକୃତ ଆକାର
+viewer-rotate-anticlockwise = ଘଣ୍ଟାର ବିପରୀତ ଦିଗରେ ଘୁରାନ୍ତୁ
+viewer-rotate-clockwise = ଘଣ୍ଟା ଦିଗରେ ଘୁରାନ୍ତୁ
 
 ## Marking up a PDF
 

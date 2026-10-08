@@ -2658,3 +2658,897 @@ title = "'n Rolstaaf in Instellings"
 text = """
 Elke oortjie van Instellings het dieselfde dun rolstaaf as 'n oop e-pos en Lêers: dit wys terwyl jy rol of na die bladsy wys, en jy kan dit sleep.
 """
+
+["2026-10-02-1248-account-colors"]
+title = "'n Kleur vir elke rekening"
+text = """
+Kies 'n kleur vir elke rekening in Instellings > Rekeninge, of regsklik op die rekening in die vouerpaneel: een van sewe, of enige kleur uit die reënboogwiel daarna. Die kolletjie langs elke sender in die verenigde inkassie en die ring om die rekening se prent kry daardie kleur, en as jy na die kolletjie wys, noem dit die rekening. Elke rekening begin met sy eie kleur, nooit een van die inkassie-oortjies s'n nie.
+"""
+
+["2026-10-02-1340-colors-button-mail-only"]
+title = "Knoppie vir oorspronklike kleure net waar dit help"
+text = """
+In 'n donker tema gly die knoppie wat 'n e-pos in sy eie kleure wys nou weg terwyl 'n gesprek as 'n klets wys, en gly terug in E-pos.
+"""
+
+["2026-10-02-1340-logo-and-custom-accent"]
+title = "Die logo kry jou kleure, en enige aksent wat jy wil"
+text = """
+Die Katna-logo in die venster dra nou jou aksentkleur, in lig en in donker. En Instellings > Voorkoms > Aksent eindig nou in 'n kleurwiel: klik daarop om enige aksent te kies wat jy wil.
+"""
+
+["2026-10-02-1358-empty-reply-no-draft"]
+title = "Leë antwoorde laat geen konsep nie"
+text = """
+'n Antwoord waarin jy geklik het maar nooit geskryf het nie, in die kletsblokkie of onder 'n e-pos, maak nou eenvoudig toe wanneer jy dit verlaat. Dit hou geen konsep nie en kom nie terug wanneer jy tussen Klets en E-pos wissel nie.
+"""
+
+["2026-10-02-1400-folder-right-click-selects"]
+title = "Regsklik maak die vouer oop"
+text = """
+As jy op 'n vouer in die vouerpaneel regsklik, word dit nou gekies en oopgemaak voordat sy kieslys wys, sodat die kieslys duidelik op die vouer werk wat jy sien.
+"""
+
+["2026-10-02-1405-viewer-arrows-hover"]
+title = "Kyker se pyltjies bly sigbaar"
+text = """
+Die pyltjies aan die kante van die aanhegselkyker vervaag nie meer tot amper wit wanneer jy na hulle wys nie. Hulle word eerder 'n skakering ligter grys, sodat hulle maklik oor 'n wit bladsy te sien bly.
+"""
+
+["2026-10-02-1432-account-colour-button"]
+title = "Een kleurknoppie per rekening"
+text = """
+Elke rekening wys nou net sy eie kleur, op 'n Kleur-knoppie in Instellings > Rekeninge en op die rekening se regsklikkieslys. Klik daarop om een van agt kleure of enige eie kleur te kies, net daar waar jy geklik het.
+"""
+
+["2026-10-02-1443-reply-at-the-end"]
+title = "Jou antwoord bly aan die einde"
+text = """
+'n Antwoord sit nou altyd aan die einde van die gesprek, selfs as die nuutste e-pos eerste gewys word. As jy van Klets na E-pos wissel, rol dit af daarheen, met die wyser waar jy dit gelos het.
+"""
+
+["2026-10-02-1451-card-shows-signer"]
+title = "Die kaart wys wie die oop e-pos onderteken het"
+text = """
+Die persoonkaart lees nou die handtekening van die e-pos wat jy oop het, nie net die nuutste een nie. Wanneer 'n kollega e-pos van 'n gedeelde adres soos accounts@ onderteken, wys die kaart hul naam, rol, foon en die maatskappy se adres uit daardie e-pos.
+"""
+
+["2026-10-02-1510-search-click-away"]
+title = "Klik enige plek om die soekkassie te verlaat"
+text = """
+As jy op die leë spasie in die boonste balk langs die soekkassie klik, neem dit jou nou uit die kassie, net soos 'n klik op die e-poslys. Jou soektog bly soos dit is.
+"""
+
+["2026-10-02-1513-dark-pages"]
+title = "Donker bladsye in die kyker"
+text = """
+In donker modus het die aanhegselkyker 'n halfmaanknoppie wat helder PDF's, dokumente, skyfies, sigblaaie en tekslêers donker wys. Kleure behou hul tint, foto's binne 'n bladsy word gedemp eerder as om negatiewe te word, en geskandeerde papier word donker soos teks. Katna onthou jou keuse vir die volgende lêer.
+"""
+
+["2026-10-02-1515-empty-message-no-draft"]
+title = "Geen leë konsepte nie"
+text = """
+'n Nuwe boodskap wat jy weer leeggemaak het voordat jy dit toegemaak het, bly nie meer in Konsepte nie, net soos 'n leë antwoord in 'n gesprek.
+"""
+
+["2026-10-02-1522-window-corners"]
+title = "Kies jou venster se hoeke en rand"
+text = """
+Met Katna se eie titelbalk het Instellings > Eksperimenteel nou 'n Hoekrondheid-skuifbalk, van vierkantig tot rond, en 'n Rand-skakelaar met sy eie ondeursigtigheid. Met Eie vervagingsterkte aan, stel die Ondeursigtigheid-skuifbalk nou ook hoeveel 'n vervaagde vensteragtergrond deurlaat.
+"""
+
+["2026-10-02-1535-ctrl-shift-click-select"]
+title = "Kies e-pos met Ctrl en Shift"
+text = """
+Ctrl+klik op 'n e-pos in die lys om dit te kies, en Ctrl+klik op nog om hulle by te voeg. Shift+klik kies elke e-pos vanaf die laaste een waarop jy geklik het. Om 'n e-pos in sy eie venster oop te maak, regsklik daarop en kies Maak oop in nuwe venster.
+"""
+
+["2026-10-02-1610-frosted-panes"]
+title = "Matglaspanele, klets en soek"
+text = """
+Met Vervaag die vensteragtergrond aan, laat die e-poslys, die oop e-pos en die persoonkaart nou ook die vervaging deur, met 'n Paneelondeursigtigheid-skuifbalk. Die ruimte agter 'n klets se borrels wys 'n bietjie meer daarvan, en die soekblokkie bly matglas terwyl jy tik. Elkeen het sy eie skakelaar in Instellings > Eksperimenteel.
+"""
+
+["2026-10-02-1618-fainter-hints"]
+title = "Flouer wenke in leë blokkies"
+text = """
+Die grys wenk in 'n leë blokkie, soos "Antwoord aan…" onder 'n klets of "Soek e-pos", is nou flouer, sodat dit nooit lyk soos teks wat jy getik het nie.
+"""
+
+["2026-10-02-1642-drag-from-empty-space"]
+title = "Skuif die venster vanaf leë spasie"
+text = """
+Op Linux kan jy nou die venster skuif deur enige leë spasie in die linkerbalk, die vouers of die balk bo jou e-pos te sleep, nie net die boonste balk nie.
+"""
+
+["2026-10-02-1643-space-folds-folders"]
+title = "Spasie vou vouers"
+text = """
+Klik op 'n vouer wat vouers binne-in het, en druk dan Spasie om dit oop of toe te vou, net soos 'n klik op sy pyltjie. Ná 'n klik beweeg die pyltjiesleutels ook deur die vouerpaneel, en Tab gaan aan na die e-poslys.
+"""
+
+["2026-10-02-1646-viewer-more-menu"]
+title = "Kykerkontroles pas in smal vensters"
+text = """
+In 'n smal venster bly die kontroles onderaan die aanhegselkyker nou daarbinne. Knoppies wat nie pas nie, skuif na 'n ⋮ Meer-kieslys: eers draai, dan Pas, dan Donker bladsye. Die bladsynommer en zoem bly die langste in sig.
+"""
+
+["2026-10-02-1743-activity-report-fits"]
+title = "Aktiwiteitsverslag pas in die venster"
+text = """
+Die Aktiwiteitsverslag bly nou binne die venster met gelyke kantlyne, en rol wanneer die venster kort is, sodat sy laaste rye nooit afgesny word nie.
+"""
+
+["2026-10-02-1846-folders-and-labels"]
+title = "Hernoem, vee uit en sleep na vouers"
+text = """
+Regsklik op 'n vouer wat jy gemaak het om dit te hernoem of uit te vee; uitvee skuif eers sy e-pos na Asblik. Sleep e-pos uit die lys op 'n vouer om dit daarheen te skuif. Skuif na het 'n soekblokkie: tik om 'n vouer te vind, of om 'n nuwe een te skep en die e-pos daarin te skuif. Op Gmail sit Etiketteer as etikette op e-pos en haal hulle af, en e-pos wat jy op 'n etiket laat val, kry daardie etiket.
+"""
+
+["2026-10-02-1928-mail-rules"]
+title = "E-posreëls"
+text = """
+Reëls sorteer nuwe e-pos vanself: volgens sender, onderwerp of woorde skuif, etiketteer, ster, stuur aan of demp hulle dit. Maak een in Instellings > Vouers en reëls, of regsklik op 'n e-pos en kies Maak 'n reël…, en sien met hoeveel onlangse e-posse dit ooreenstem voordat jy stoor. Merk in Skuif na "Skuif altyd e-pos van … hierheen" om 'n sender se e-pos en hul toekomstige e-pos met een klik te skuif.
+"""
+
+["2026-10-02-2017-rules-on-the-server"]
+title = "Reëls wat werk terwyl jou rekenaar af is"
+text = """
+E-posreëls werk nou op Gmail, of op jou e-posbediener wanneer dit Sieve-reëls aanvaar, sodat hulle e-pos ook op jou foon sorteer en terwyl hierdie rekenaar af is. Instellings > Vouers en reëls wys waar elke reël werk, en hoekom een in Katna bly.
+"""
+
+["2026-10-03-0046-smooth-folded-tabs"]
+title = "Ingevoude oortjies wissel glad"
+text = """
+Wanneer 'n smal venster die inkassie-oortjies tot ikone invou, spring dit nie meer wanneer jy oortjies wissel nie: die oortjie wat jy verlaat, krimp terug na sy ikoon terwyl sy naam wegvervaag, en die een wat jy oopmaak, groei terwyl sy naam invervaag.
+"""
+
+["2026-10-03-0051-read-rows-frosted"]
+title = "Gelese e-pos is ook matglas"
+text = """
+Met matglaspanele aan, wys e-pos wat jy gelees het nou die matglas agter die lys soos ongelese e-pos, net 'n skakering anders, in plaas van 'n soliede band.
+"""
+
+["2026-10-03-0101-rounder-corners"]
+title = "Ronder vensterhoeke"
+text = """
+Hoekrondheid in Instellings > Eksperimenteel gaan nou tot 32 pixels, twee keer so rond as voorheen, en jy kan die getal in die blokkie langs die skuifbalk tik.
+"""
+
+["2026-10-03-0113-viewer-round-corners"]
+title = "Kyker volg geronde vensterhoeke"
+text = """
+Met Katna se eie titelbalk en geronde hoeke rond die aanhegselkyker nou sy onderste hoeke af om by die venster te pas, in plaas van vierkantige grys hoeke verby die venster se rand te wys.
+"""
+
+["2026-10-03-0147-chat-go-down"]
+title = "Terug na die nuutste e-pos"
+text = """
+As jy ver op in 'n klets gerol het, vervaag 'n ronde knoppie regs onder in. Dit gly jou terug na die nuutste e-pos en tel enige wat intussen gekom het.
+"""
+
+["2026-10-03-0147-chat-long-mails"]
+title = "Lang e-posse in kletse"
+text = """
+Op 'n lang borrel bly die sender se prent onderaan wat jy sien, en die antwoord-, vasspeld- en meer-knoppies bly in die deel wat in sig is. Regsklik op die teks om almal te bereik.
+"""
+
+["2026-10-03-0147-chat-scroll-bar"]
+title = "'n Rolbalk in kletse"
+text = """
+Kletse het dieselfde stil rolbalk as 'n oop e-pos, wat wys terwyl die wyser oor hulle is.
+"""
+
+["2026-10-03-0147-chat-translate"]
+title = "Vertaal in kletse"
+text = """
+'n E-pos in 'n ander taal bied ook in die klets sy vertaling aan, soos in E-pos. Regsklik op enige borrel en kies Vertaal om dit self te vertaal, en weer om die oorspronklike te wys.
+"""
+
+["2026-10-03-0150-search-pill-hovers"]
+title = "Egalige sweefeffekte in die foon se soekbalk"
+text = """
+Op 'n foon sit die vouersknoppie en jou rekeningprent nou gesentreer in die soekbalk se geronde punte, en elke knoppie in die balk het dieselfde ronde sweefeffek, eweredig van die balk se rand gespasieer.
+"""
+
+["2026-10-03-0159-starter-rules"]
+title = "Beginreëls"
+text = """
+Instellings > Vouers en reëls bied nou klaargemaakte reëls, afgeskakel: demp promosies, nuusbriewe na Lees, kwitansies, aflewerings, trein- en vliegkaartjies (IRCTC, Air India, IndiGo en meer), eenmalige kodes, sekuriteitswaarskuwings, sosiale e-pos en kalenderuitnodigings. Skakel een aan en dit werk vir al jou rekeninge, en maak vouers soos Reis wanneer nodig. Reëls kan ook die inkassie-oortjie nagaan en of e-pos van 'n poslys gekom het.
+"""
+
+["2026-10-03-0200-chat-file-hover"]
+title = "Sagter lêerkaarte in kletse"
+text = """
+'n Lêer in 'n kletsborrel word nie meer donker onder die wyser nie. Dit lig 'n bietjie met 'n flou tint, en sy naam bly maklik om te lees.
+"""
+
+["2026-10-03-0210-opened-mail-stays-in-view"]
+title = "Die e-pos wat jy oopmaak, bly in sig"
+text = """
+Met die leespaneel langs die lys bly die e-pos waarop jy klik waar dit in die lys was terwyl die paneel oopgaan, of die lys rol net genoeg om dit heeltemal te wys. Dit glip nie meer uit sig nie, of jy dit uit die lys of uit soekresultate oopgemaak het.
+"""
+
+["2026-10-03-0212-about-header-stays"]
+title = "Meer oor hou sy opskrif in sig"
+text = """
+As jy in Meer oor rol, krimp die groot logo nou tot 'n kleintjie links bo, met Katna, sy leuse en die weergawe langsaan, en daardie opskrif bly op sy plek terwyl die res daaronder rol.
+"""
+
+["2026-10-03-0221-folded-tab-icon-settles"]
+title = "Ingevoude oortjies kom tot rus sonder 'n stampie"
+text = """
+Wanneer jy tussen ingevoude inkassie-oortjies wissel, kom die oortjie wat jy verlaat nou presies tot rus waar dit heen gekrimp het, sonder dat sy ikoon 'n pixel of twee skuif wanneer die beweging eindig.
+"""
+
+["2026-10-03-0228-right-click-another-mail"]
+title = "Een regsklik is genoeg"
+text = """
+Met 'n e-pos of vouer se kieslys oop, maak 'n regsklik op 'n ander e-pos of vouer nou die oop kieslys toe en die nuwe een dadelik oop, in plaas daarvan dat 'n tweede regsklik nodig is.
+"""
+
+["2026-10-03-0235-rule-editor-fits"]
+title = "Reëlredigeerder pas"
+text = """
+In die reëlredigeerder loop lang woorde of adreslyste oor na meer reëls in plaas daarvan om afgesny te word, "pas by die patroon" wys volledig, en die redigeerder bly binne die venster en rol wanneer dit baie voorwaardes het.
+"""
+
+["2026-10-03-0235-soft-button-hover"]
+title = "Sagter sweefeffek op knoppies"
+text = """
+As jy na 'n ronde knoppie wys, groei sy sirkel nou saggies van twee derdes van sy grootte en vervaag dit in, en pilknoppies soos Antwoord vervaag 'n bietjie stadiger in. As jy wegbeweeg, krimp die sirkel 'n bietjie terug terwyl dit vervaag.
+"""
+
+["2026-10-03-0249-account-ring"]
+title = "'n Duideliker rekeningring"
+text = """
+Die gekleurde ring om elke rekening se prent is dikker, met 'n bietjie meer spasie tussen dit en die prent, in die boonste balk, die rekeningkieslys en Instellings.
+"""
+
+["2026-10-03-0335-chat-picture-steady"]
+title = "Stil prente in kletse"
+text = """
+As jy verby die einde van 'n klets rol, of in 'n klets met niks om te rol nie, spring die sender se prent en die borrel se knoppies nie meer nie.
+"""
+
+["2026-10-03-0355-no-hover-while-scrolling"]
+title = "Kalmer rol in die e-poslys"
+text = """
+Terwyl jy die e-poslys rol, lig e-posse wat onder die wyser verbygaan nie meer op en wys hul knoppies nie. Soos in Gmail lig die e-pos onder die wyser op sodra die rol stop.
+"""
+
+["2026-10-03-0541-rule-rows-drag"]
+title = "Reëls sleep soos rekeninge"
+text = """
+In Instellings > Vouers en reëls lig 'n reël se hele ry nou op wanneer jy dit sleep, die ander reëls skuif uit sy pad, en dit kom tot rus waar jy los, net soos wanneer jy rekeninge herrangskik.
+"""
+
+["2026-10-03-0545-chat-go-down-aligned"]
+title = "Afknoppie in lyn"
+text = """
+In kletse sit die ronde knoppie wat jou na die nuutste e-pos neem nou reg bo die stuurknoppie, op dieselfde lyn.
+"""
+
+["2026-10-03-0555-bottom-corners-round"]
+title = "Geronde onderste hoeke bly rond"
+text = """
+Met Katna se eie titelbalk en geronde hoeke wys die venster se onderste hoeke nie meer 'n vierkant van sy agtergrond verby die geronde rand nie.
+"""
+
+["2026-10-03-0606-account-dot-only"]
+title = "'n Stiller e-poslys"
+text = """
+Reëls in die verenigde inkassie wys net die rekening se gekleurde kolletjie langs die sender. Wys na die kolletjie om te sien aan watter rekening die e-pos behoort.
+"""
+
+["2026-10-03-0623-windows-updates"]
+title = "Opdaterings op Windows"
+text = """
+Katna op Windows dateer homself nou op. Dit kyk elke uur vir nuwe weergawes, laai hulle in die agtergrond af en installeer hulle wanneer jy Opdateer druk, en maak dan weer oop.
+"""
+
+["2026-10-03-0643-files-wildcard-search"]
+title = "Plekhouers in Lêers-soektog"
+text = """
+In Lêers vind 'n soektog na *.pdf nou elke PDF, en * en ? werk enige plek in 'n naam: faktuur*2026* vind elke faktuur van 2026. Dit werk vir jou e-pos se lêers en in Google Drive en OneDrive.
+"""
+
+["2026-10-03-0643-linux-package-updates"]
+title = "Opdaterings vir elke Linux-pakket"
+text = """
+Die AppImage en die Linux-tarball dateer hulself nou op soos die Arch-pakket. Met die Fedora-pakket, Snap, Flatpak of Nix sê Katna vir jou wanneer 'n nuwe weergawe uit is en wys die een opdrag wat dit installeer, gereed om te kopieer.
+"""
+
+["2026-10-03-0708-copy-codes"]
+title = "Kopieer kodes uit kennisgewings"
+text = """
+'n Nuwe-e-pos-kennisgewing met 'n aanmeld- of verifikasiekode het nou 'n Kopieer-knoppie daarvoor, en een met 'n skakel om jou adres te verifieer of te bevestig het 'n knoppie wat die webwerf noem wat dit oopmaak. Knoppies op kennisgewings laat nie meer 'n springende Katna-ikoon die muiswyser volg nie.
+"""
+
+["2026-10-03-0730-contact-card-popover"]
+title = "Kontakkaart in smal vensters"
+text = """
+Wanneer die venster nie plek vir die kontakpaneel het nie, maak 'n klik op 'n persoon se naam of prent 'n kort kaart oor die e-pos oop, wat wys na waar jy geklik het. Maak die venster wyer en die volle paneel neem sy plek in.
+"""
+
+["2026-10-03-0733-compose-icon-turns"]
+title = "Die groot knoppie se ikoon draai as jy bladsye wissel"
+text = """
+As jy tussen E-pos, Kalender, Kontakte, Take en Notas wissel, ruil die ikoon op die groot knoppie bo-aan die linkerbalk nie meer in een sprong om nie. Die ou ikoon draai weg en krimp terwyl die nuwe een indraai, ook op 'n foon se knoppie.
+"""
+
+["2026-10-03-0746-sound-sets"]
+title = "Stelle kennisgewingklanke"
+text = """
+Instellings > Kennisgewings het nou stelle klanke: Voëls, Natuur, Diere, Insekte, Elektronies, Oggend, Katna se klokkies, of jou werkskerm s'n. Nuwe e-pos sing soos 'n roodborsie tensy jy 'n ander stel kies. Enige gebeurtenis kan ook sy eie klank hê, of 'n klanklêer wat jy kies.
+"""
+
+["2026-10-03-0750-chat-seen-ticks"]
+title = "Wie jou e-pos gesien het, in kletse"
+text = """
+In die kletsaansig word die regmerkies op e-pos wat jy met nasporing gestuur het, gekleur sodra iemand dit oopmaak. Langsaan tel 'n klein oog die keer dat dit oopgemaak is en 'n skakel die skakels wat gevolg is. Laat die wyser daarop rus om te sien wie dit oopgemaak of 'n skakel gevolg het, soos die oog in die e-posaansig wys.
+"""
+
+["2026-10-03-0834-drawer-edge-clean"]
+title = "Geen lyn langs die inskuifvouers nie"
+text = """
+Op 'n foon of tablet kom die vouers wat uit die kieslys inskuif nou teen die rand tot rus sonder dat 'n dun lyn langs hulle flits terwyl hulle tot rus kom.
+"""
+
+["2026-10-03-0845-chat-summary-button-hides"]
+title = "Die opsommingknoppie versteek dit weer"
+text = """
+In die kletsaansig versteek die vonkel bo-aan nou die opsomming wanneer dit wys, en wys dit weer met die volgende klik, soos in die e-posaansig.
+"""
+
+["2026-10-03-0915-big-button-glides"]
+title = "Die groot knoppie gly tussen bladsye"
+text = """
+Wanneer die vouers oop is, spring die groot knoppie bo-aan nie meer na sy nuwe breedte wanneer jy bladsye wissel nie, en ruil dit nie sy woord in een sprong om nie. Die knoppie skuif saggies na sy nuwe breedte terwyl die ou woord opwaarts wegvervaag en die nuwe een inrys, saam met die draaiende ikoon.
+"""
+
+["2026-10-03-0945-flat-row-hover"]
+title = "'n Skerper sweefeffek in die e-poslys"
+text = """
+Die reël onder die wyser lig nie meer op met 'n sagte skaduwee nie. Dit kry eerder 'n plat, effens sterker tint, sodat sy rande skerp bly in lig en donker.
+"""
+
+["2026-10-03-0959-drawer-bounce-back"]
+title = "Vouers skuif in met hul wip, met 'n skoon rand"
+text = """
+Op 'n foon of tablet het die vouers wat uit die kieslys inskuif hul klein wip terug, en geen skaduwee lê langs hul rand by die balk nie.
+"""
+
+["2026-10-03-1030-crisp-card-edges"]
+title = "Skerper kaartrande in ligte kleure"
+text = """
+In ligte kleure het die e-poslys, die oop e-pos en die ander kaarte nou 'n fyn, skerp rand en 'n baie kort skaduwee in plaas van 'n sagte vervaging, sodat hulle so skerp van die bladsy uitstaan soos in donker kleure.
+"""
+
+["2026-10-03-1206-matching-choice-chips"]
+title = "Keuseskyfies wat pas"
+text = """
+Die keuses in Soekopsies, Aktiwiteit, KI-skryfwerk en 'n kontak se adresboeke is nou een soort skyfie: oral dieselfde grootte, met 'n regmerkie op die gekose een.
+"""
+
+["2026-10-03-1453-summary-folds-smoothly"]
+title = "'n Opsomming wat glad vou"
+text = """
+As jy 'n gesprek se opsomming in- of oopvou, gly dit nou na sy nuwe hoogte, en sy pyltjie draai saam in plaas daarvan om te spring.
+"""
+
+["2026-10-03-1523-animation-speed"]
+title = "Kies hoe vinnig dinge beweeg"
+text = """
+Instellings > Voorkoms het 'n Animasiespoed: volg die werkskerm se spoed, of kies Katna s'n, van Vinniger tot Stadiger. Verminder beweging volg ook die werkskerm, of kan altyd of nooit aan wees.
+"""
+
+["2026-10-03-1536-paste-signature-html"]
+title = "Plak 'n handtekening se HTML"
+text = """
+Instellings > Skryf > Handtekeninge het Plak HTML, vir 'n handtekening wat op 'n handtekeningwebwerf of in 'n ander e-posprogram ontwerp is. Dit word skoongemaak, sy prente word afgelaai en binne die e-pos saamgedra, en die skryfvenster wys dit presies soos dit gestuur sal word.
+"""
+
+["2026-10-03-1546-whats-new-header-stays"]
+title = "Wat's nuut hou sy opskrif"
+text = """
+As jy in Wat's nuut rol, beweeg nou net die hoogtepunte: die opskrif bly bo-aan en Reg so bly onderaan.
+"""
+
+["2026-10-03-1611-menus-fade-out"]
+title = "Kieslyste vervaag weg"
+text = """
+'n Regsklikkieslys vervaag nou wanneer dit toemaak, in plaas daarvan om te verdwyn.
+"""
+
+["2026-10-03-1625-list-stays-put"]
+title = "Die e-poslys bly stil wanneer jy 'n e-pos oopmaak"
+text = """
+As jy 'n e-pos oopmaak, stoot dit nie meer die lys een reël af in vouers waar sommige e-posse aanhegsels wys nie. Die lys bly presies waar jy dit gerol het.
+"""
+
+["2026-10-03-1628-drawer-top-clean"]
+title = "Geen skaduweelyn bo die inskuifvouers nie"
+text = """
+Op 'n foon of tablet het die vouers wat uit die kieslys inskuif nie meer 'n dun skaduweelyn langs hul bokant, onder die soekbalk, nie.
+"""
+
+["2026-10-03-1631-toolbar-menus-fade-out"]
+title = "Nutsbalkkieslyste vervaag ook weg"
+text = """
+Die kieslyste onder die nutsbalkknoppies, soos Meer en die kiesblokkie, vervaag wanneer hulle toemaak in plaas daarvan om te verdwyn.
+"""
+
+["2026-10-03-1632-settings-by-app"]
+title = "Instellings volgens program gesorteer"
+text = """
+Instellings het nou 'n lys bladsye aan sy kant: Alle programme vir wat elke program deel, dan E-pos, Kalender en Lêers vir hul eie instellings, met E-pos se bladsye wat daaronder oopvou. Instellings maak oop by die program waarin jy is, en Kalender het sy eerste instellings daar.
+"""
+
+["2026-10-03-1650-popovers-fade-out"]
+title = "Opspringers vervaag weg"
+text = """
+Die klein kaarte wat wys na dit waarby hulle hoort, soos die kontakkaart, wie 'n e-pos gesien het, 'n dag in Jaar-aansig, eie soekdatums en die kleurkieser, vervaag wanneer hulle toemaak in plaas daarvan om te verdwyn.
+"""
+
+["2026-10-03-1711-ring-centred"]
+title = "Rekeningringe sit eweredig"
+text = """
+Die gekleurde ring om jou rekeningprent het nou aan elke kant dieselfde gaping, by enige skalering, in plaas daarvan dat een kant 'n pixel dikker lyk.
+"""
+
+["2026-10-03-1717-signature-pictures"]
+title = "Prente in handtekeninge laai weer"
+text = """
+Prente van die web, soos die logo's in Gmail-handtekeninge, laai nou op netwerke wat Google se verbinding vroeg laat val, in plaas daarvan om 'n leë blokkie te bly.
+"""
+
+["2026-10-03-1723-import-signatures"]
+title = "Bring jou handtekeninge in"
+text = """
+Instellings > Skryf > Handtekeninge > Voer in vind die handtekeninge in Gmail, en in Thunderbird, Evolution en KMail op hierdie rekenaar, met hul logo's. Merk die wat jy wil hê; dié wat reeds in Katna is, bly ongemerk.
+"""
+
+["2026-10-03-1750-hover-folders-clean"]
+title = "Skoon rande op vouers wat uit Skryf oopgaan"
+text = """
+In 'n tabletgrootte-venster wys die vouers wat oopgaan wanneer jy die wyser op Skryf laat rus nie meer dun lyne langs hul bo- en linkerrand nie.
+"""
+
+["2026-10-03-1757-chat-links"]
+title = "Skakels maak uit kletse oop"
+text = """
+In die kletsaansig maak 'n e-pos se skakels met 'n klik oop, soos in die e-posaansig: sy eie skakels, en web- en e-posadresse wat in die teks uitgeskryf is. Laat die wyser op een rus om te sien waarheen dit gaan. Gewone-teks-e-pos in die e-posaansig maak uitgeskryfde adresse ook oop.
+"""
+
+["2026-10-03-1811-folds-glide"]
+title = "Kalendergroepe vou glad"
+text = """
+'n Rekening se kalenders in Kalender se sykolom gly nou oop en toe, en die klein pyltjies op dinge wat vou (die kontakkaart se Meer, die klets se mense, Aktiwiteit se rekeninge, 'n KI-antwoord se kern) draai in plaas daarvan om om te klap.
+"""
+
+["2026-10-03-1844-signature-layouts"]
+title = "Handtekeninge uit twaalf uitlegte"
+text = """
+Instellings > Skryf > Handtekeninge het nou twaalf klaargemaakte uitlegte. Vul jou naam, nommers, logo, foto en bladsye een keer in, kies 'n uitleg en 'n kleur, en sien dit soos die leser sal: lig, donker of as gewone teks. Prente reis binne die e-pos, sodat hulle oral wys.
+"""
+
+["2026-10-03-1850-copy-about-whats-new"]
+title = "Kopieer uit Meer oor en Wat's nuut"
+text = """
+Die woorde in Meer oor Katna en Wat's nuut kan nou gekies en gekopieer word, soos in 'n blaaier: sleep daaroor, dubbelklik op 'n woord of trippelklik op 'n paragraaf, dan Ctrl+C of regsklik > Kopieer. Die weergawe is handig om in 'n foutverslag te plak.
+"""
+
+["2026-10-03-1904-copy-version"]
+title = "Kopieer die weergawe met een klik"
+text = """
+Laat die wyser op die weergawe in Meer oor, Wat's nuut of Instellings rus en 'n klein kopieerknoppie verskyn langsaan. Dit kopieer die weergawe, wanneer dit gebou is en jou stelsel, gereed om in 'n foutverslag te plak.
+"""
+
+["2026-10-03-1924-settings-in-window"]
+title = "Instellings weer langs jou e-pos"
+text = """
+Instellings maak weer binne die hoofvenster oop, in die plek van die bladsy waarop jy was, met sy lys bladsye gegroepeer in Alle programme en elke program.
+"""
+
+["2026-10-03-1934-copy-any-text"]
+title = "Kopieer teks oral"
+text = """
+Teks wat jou iets vertel, kan nou oral in Katna gekies en gekopieer word: instellingname en -beskrywings, kontak- en geleentheidbesonderhede, rekeningstatus, foutboodskappe, notas op leë bladsye en dialoë. Sleep daaroor of dubbelklik op 'n woord, dan Ctrl+C of regsklik > Kopieer. Knoppies en rye waarop jy klik, bly soos hulle was.
+"""
+
+["2026-10-03-2011-calendar-tasks-switch-month-drag"]
+title = "Take in Kalender: wys of versteek, sleep in Maand"
+text = """
+Kalender se sylys het 'n Take-blokkie onder jou kalenders: ontmerk dit en take verlaat Dag, Week, Maand en Skedule totdat jy dit weer merk. In Maand-aansig kan jy nou 'n taak na 'n ander dag sleep; dit behou sy tyd, en Ontdoen sit dit terug.
+"""
+
+["2026-10-03-2023-tasks-upcoming-completed-sort-select"]
+title = "Komende, Voltooi, sorteer en kies in Take"
+text = """
+Take het twee nuwe aansigte. Komende wys die volgende twee weke dag vir dag, met agterstallige take bo-aan; sleep 'n taak na 'n ander dag om dit te skuif. Voltooi wys alles wat jy afgemerk het, per dag, en as jy 'n taak ontmerk, kom dit terug. Elke lys se ⋮-kieslys kan dit volgens datum, ster of titel sorteer. Ctrl+klik of Shift+klik op verskeie take om hulle almal tegelyk te voltooi, te skuif, 'n datum te gee, te ster of uit te vee.
+"""
+
+["2026-10-03-2040-task-labels-and-files"]
+title = "Etikette en lêers op take"
+text = """
+Take kry dieselfde etikette as jou notas: voeg hulle by in 'n taak se besonderhede of tik #huis in 'n nuwe taak, en kies links 'n etiket om elke taak daarmee te sien. Laat 'n lêer op 'n taak val om dit aan te heg, en Voeg by Take behou die e-pos se aanhegsels. Die ster, etikette en lêers gaan na Microsoft To Do en jou CalDAV-bediener, en die ster na Zoho.
+"""
+
+["2026-10-03-2102-notes-pictures-reminders-history"]
+title = "Notas: prente, herinneringe en geskiedenis"
+text = """
+Notas neem prente, herinner jou op 'n tyd wat jy kies, en hou 30 dae se geskiedenis wat jy kan herstel. Ctrl+klik op verskeie notas om hulle saam vas te speld, te kleur, te etiketteer of te argiveer, tik [[ om een nota aan 'n ander te koppel, en voeg aanhalings, kode en skeidslyne by. Stuur 'n nota as e-pos of stoor dit as Markdown of PDF, en met KI aan, maak die vonkel dit netjies, maak 'n lys daarvan of som dit op.
+"""
+
+["2026-10-03-2102-quick-capture"]
+title = "Vang 'n gedagte van enige plek af"
+text = """
+Meta+Alt+T maak 'n klein kaart oor wat jy ook al doen oop om 'n taak by te voeg, en Meta+Alt+N om 'n nota te neem. Tik "Bel die loodgieter fri 6pm #huis" en skyfies wys die dag, etiket, lys en herinnering wat dit verstaan het; klik op een om dit te verander. Tab wissel tussen Taak en Nota, Enter stoor. Dit is ook in die stelselbalkkieslys, en in KRunner as task: en note:.
+"""
+
+["2026-10-04-0102-soft-hovers"]
+title = "Sagter sweefeffekte"
+text = """
+As jy die wyser op die programbalk, die kiesblokkie, 'n oortjie en baie ander knoppies laat rus, vervaag hul uitlig nou in en uit in plaas daarvan om net aan te skakel.
+"""
+
+["2026-10-04-0119-cards-lift"]
+title = "Kaarte wat oplig"
+text = """
+Lêers, aanhegsels, Drive-vouers, uitnodigings, opsommings, die antwoordblokkie en die e-posdienste in Voeg rekening by is nou kaarte met dieselfde sagte rand en skaduwee as die res van Katna, in plaas van 'n plat buitelyn.
+"""
+
+["2026-10-04-0119-notes-select-bar-matches"]
+title = "Notas: sagter kaarte wat beweeg"
+text = """
+Notas gebruik nou dieselfde kaarte, skyfies en balke as die res van Katna. Kaarte sit op 'n sagte skaduwee en lig saggies onder die wyser, nuwe notas vervaag in, verwyderde notas vervaag uit, en 'n nota maak oop en toe met 'n kort zoem. Die balk waarmee jy notas kies, het dieselfde geronde vorm as "Neem ’n nota", sodat net sy inhoud verander. Alles volg Verminder beweging en Animasiespoed.
+"""
+
+["2026-10-04-0128-header-labels"]
+title = "Elke etiket op 'n oop e-pos"
+text = """
+'n Oop e-pos wys nou al sy skyfies onder die onderwerp, soos Gmail: Inkassie, Belangrik, sy inkassie-oortjie, Gester, en elke vouer of etiket waarin dit is. Wys na een om dit met sy × af te haal, met Ontdoen.
+"""
+
+["2026-10-04-0150-settings-own-list"]
+title = "Instellings het die venster vir homself"
+text = """
+Terwyl Instellings oop is, vou die vouers weg, sodat jy net Instellings se eie lys bladsye sien langs die bladsy wat jy gekies het. Hulle kom terug wanneer jy dit verlaat.
+"""
+
+["2026-10-04-0154-summary-pill"]
+title = "'n Kalmer opsommingknoppie, en 'n opskrif wat bly staan"
+text = """
+In kletsaansig sit die opsomming se vonkel nou in sy eie klein grys pil langs die Klets- en E-pos-skakelaar, en word wit terwyl die opsomming wys. Die opsomming gly oop en toe in plaas daarvan om skielik te verskyn. In sowel die e-pos- as die kletsaansig bly die opskrif nou bo-aan terwyl die e-posse daaronder rol, en die e-poslys se rye gly op dieselfde manier onder sy boonste balk in, matglas wanneer Vervaag aan is. Instellings > Eksperimenteel het 'n Matglas-opskrifte-skakelaar om hulle solied te hou.
+"""
+
+["2026-10-04-0204-tasks-motion"]
+title = "Take wat beweeg"
+text = """
+As jy 'n taak afmerk, vul sy sirkel, word die titel deurgehaal en vou die ry weg. Nuwe en uitgeveede take skuif in en uit, herrangskikte take gly na hul plek, en die lyskaarte lig 'n bietjie wanneer jy na hulle wys.
+"""
+
+["2026-10-04-0225-shortcuts-dialog"]
+title = "Kortpadsleutels in een oogopslag"
+text = """
+Hulp > Kortpadsleutels, of die ?-sleutel, wys nou elke kortpad in 'n klein venster oor jou e-pos, met 'n blokkie om een te vind. Sleutels word steeds in Instellings > Kortpaaie verander.
+"""
+
+["2026-10-04-0305-unified-leave-out"]
+title = "Laat 'n inkassie uit Alle rekeninge weg"
+text = """
+Regsklik op 'n rekening se inkassie onder Alle rekeninge en kies Laat uit die verenigde inkassie: sy e-pos vul nie meer die verenigde inkassie nie, maar die ry bly en maak daardie inkassie oop. Klik op sy oog om dit terug te bring. In Instellings > Inkassie kan jy ook 'n hele rekening uit Alle rekeninge haal.
+"""
+
+["2026-10-04-0310-leave-account-out"]
+title = "Laat 'n rekening uit 'n program weg"
+text = """
+Instellings het nou 'n bladsy vir Kontakte, Take en Notas, en elkeen hiervan en Lêers lys jou rekeninge met 'n skakelaar. Skakel een af om daardie rekening uit die program weg te laat, en sy herinneringe bly stil. Sy items hou aan sinkroniseer, sodat hulle terugkom sodra jy dit weer aanskakel.
+"""
+
+["2026-10-04-0320-calendar-leave-account-out"]
+title = "Laat 'n rekening uit Kalender weg"
+text = """
+Instellings > Kalender lys ook jou rekeninge met 'n skakelaar. Skakel een af en sy kalenders, geleenthede en take verlaat Kalender, en sy geleenthede herinner jou nie meer nie. Dit hou aan sinkroniseer, sodat dit terug is sodra jy dit aanskakel.
+"""
+
+["2026-10-04-0327-contact-card-points-right"]
+title = "Kontakkaarte maak oop waar jy geklik het"
+text = """
+In 'n smal venster wys die kontakkaart wat uit 'n persoon se naam of prent oopgaan nou reg daarna, in die kletsaansig en die e-posaansig, en dit maak ook die eerste keer glad oop: Katna begin die persoon se besonderhede lees sodra die wyser daarop rus. 'n Tweede klik op dieselfde naam of prent maak die kaart toe.
+"""
+
+["2026-10-04-0336-files-card-corners"]
+title = "Kalmer lêerkaarte"
+text = """
+Lêerkaarte in Lêers en onder 'n e-pos rus nou op 'n sagte skaduwee en lig 'n bietjie wanneer jy na een wys. Die voorskou bly soos dit is: die lêer se grootte vervaag links bo in en sy knoppies regs bo, op matglas, sodat niks spring nie.
+"""
+
+["2026-10-04-0345-pane-tops-whole"]
+title = "Paneelbokante nie meer afgesny nie"
+text = """
+Met Katna se eie titelbalk wys die boonste rand en sagte skaduwee van die e-poslys, die oop e-pos en die sypanele nou volledig wanneer die venster nie gemaksimeer is nie, in plaas daarvan om plat afgesny onder die boonste balk te lyk.
+"""
+
+["2026-10-04-0354-account-offline"]
+title = "Neem 'n rekening vanlyn"
+text = """
+Regsklik op 'n rekening en kies Gaan vanlyn, vir 'n uur of tot môre as jy wil. Katna hou op om daaraan te koppel, en 'n deurgestreepte wolk wys langs sy telling en op jou prent. Sy e-pos bly hier om te lees, en wat jy intussen argiveer, uitvee of stuur, gaan uit wanneer jy op die wolk klik om aanlyn te gaan. Instellings > Rekeninge het 'n Gekoppel-skakelaar vir elke rekening, en die rekeningkaart kan al die rekeninge tegelyk vanlyn neem.
+"""
+
+["2026-10-04-0420-resize-steady"]
+title = "Stil terwyl jy die grootte verander"
+text = """
+Met Katna se eie titelbalk op Wayland bly die venster se inhoud stil terwyl jy 'n rand sleep om die grootte te verander, in plaas daarvan om te bewe.
+"""
+
+["2026-10-04-0531-turn-apps-off"]
+title = "Skakel die programme af wat jy nie gebruik nie"
+text = """
+Instellings › Programme het 'n skakelaar vir Kalender, Kontakte, Take, Notas en Lêers, en as jy op een in die programbalk regsklik, bied dit Skakel af aan. 'n Afgeskakelde program verlaat die programbalk en sy sleutels, en niks verander op jou rekeninge nie. Met net E-pos aan verdwyn die programbalk en is Katna net 'n e-posprogram.
+"""
+
+["2026-10-04-0635-remove-app-copy"]
+title = "Maak die spasie vry van 'n program wat jy afgeskakel het"
+text = """
+As jy 'n program in Instellings › Programme afskakel, bied dit nou aan om sy kopie op hierdie rekenaar te verwyder. Niks verander op jou rekeninge nie, en as jy dit weer aanskakel, word dit weer afgelaai. Nuwe rekeninge word net gevra vir wat die programme wat jy gebruik, nodig het.
+"""
+
+["2026-10-04-1100-account-problems"]
+title = "Sien en herstel rekeningprobleme op een plek"
+text = """
+Wanneer 'n rekening jou nodig het, sê 'n reël bo-aan die e-poslys in gewone woorde wat gebeur het, met die oplossing langsaan. 'n Veranderde wagwoord maak 'n klein kaart oop waar jy die nuwe een tik, en Katna toets dit voordat dit dit hou. 'n Amber teken merk ook die rekening in die vouerpaneel en op jou prent. Wanneer jy jou verbinding verloor, sê een stil reël dat jy vanlyn is en dat e-pos wat jy stuur wag totdat jy terug is.
+"""
+
+["2026-10-04-1110-contact-card-placeholder"]
+title = "Kontakkaarte maak in een stuk oop"
+text = """
+Wanneer 'n persoon se besonderhede 'n oomblik neem om te laai, maak die kontakkaart wat oor 'n naam of prent opspring nou op sy gewone grootte oop met flou lyne waar die besonderhede kom, vul hulle dan in en pas saggies aan, in plaas daarvan om klein oop te maak en hoër te spring.
+"""
+
+["2026-10-04-1144-account-problems-settings"]
+title = "Rekeningprobleme ook in Instellings"
+text = """
+Instellings › Rekeninge sê nou onder 'n rekening se naam wat daarmee fout is, soos 'n geweierde wagwoord, met die oplossing net daar.
+"""
+
+["2026-10-04-1147-subject-scrolls-again"]
+title = "Die onderwerp rol weer saam met die e-pos"
+text = """
+In die e-posaansig rol die onderwerp weer saam met die e-posse weg, onder 'n gewone nutsbalk. In die kletsaansig sluit die nutsbalk by die vasgespelde opskrif aan, sodat die borrels onder albei ingly, matglas wanneer Vervaag aan is. Die e-poslys se boonste balk behou nou die kaart se geronde hoeke, en met Matglas-opskrifte af wys die rye nie meer daardeur nie. In 'n foongrootte-venster is die onderste hoeke ook rond.
+"""
+
+["2026-10-04-1223-outbox"]
+title = "'n Uitkassie vir e-pos wat nie uitgegaan het nie"
+text = """
+E-pos wat nie gestuur kon word nie, wag nou in 'n Uitkassie onder Gestuur, wat net wys terwyl daar iets in is. Elke boodskap sê in gewone woorde hoekom, met Probeer weer, Wysig en Vee uit. E-pos wat jy stuur terwyl 'n rekening se wagwoord verander het of sy aanmelding verval het, wag daar en gaan uit sodra jy dit herstel, in plaas daarvan om te misluk.
+"""
+
+["2026-10-04-1246-refused-changes"]
+title = "Veranderinge wat die bediener geweier het, word nie meer stil ongedaan gemaak nie"
+text = """
+Wanneer 'n e-posbediener aanhou om 'n verandering te weier, soos om 'n boodskap na 'n vouer te skuif wat elders uitgevee is, sit Katna dit terug soos voorheen en sê dit nou in gewone woorde, met Besonderhede vir die bediener se eie antwoord.
+"""
+
+["2026-10-04-1250-phone-scroll-steady"]
+title = "Stil lys in 'n foongrootte-venster"
+text = """
+As jy die e-poslys vinnig in 'n foongrootte-venster rol, bewe dit nie meer op en af terwyl die oortjies wegskuif nie.
+"""
+
+["2026-10-04-1309-needs-you-notifications"]
+title = "Een keer gesê wanneer 'n rekening of boodskap jou nodig het"
+text = """
+Wanneer 'n e-posbediener jou wagwoord weier, 'n aanmelding verval of 'n boodskap nie gestuur kan word nie, sê 'n werkskermkennisgewing dit een keer, selfs met Katna Mail toe. Sy knoppie maak die oplossing oop: Nuwe wagwoord, Meld aan of die Uitkassie. Die stelselbalkikoon se wenk lys wat op jou wag.
+"""
+
+["2026-10-04-1510-dialogs-fit-phone"]
+title = "Dialoë pas in 'n foongrootte-venster"
+text = """
+Wat's nuut, Meer oor, Opdaterings, Kortpadsleutels en die ander dialoë pas nou binne 'n smal venster met Katna se eie raam, in plaas daarvan om verby sy rande te loop.
+"""
+
+["2026-10-04-1511-solid-mail-list-bar"]
+title = "Niks gly onder die balke in nie"
+text = """
+Die e-poslys se e-posse, die oop e-pos en 'n klets se borrels begin nou onder hul balke in plaas daarvan om daaronder in te gly, en die balke bly solied. Die Matglas-opskrifte-skakelaar is weg, en so ook die vreemde hoeke wat dit gebring het.
+"""
+
+["2026-10-04-1525-menus-inside-window"]
+title = "Kieslyste en wenke bly binne die venster"
+text = """
+Met Katna se eie vensterraam loop regsklikkieslyste, opspringers en wenke naby 'n rand nie meer oor die venster se skaduwee nie; hulle bly daarbinne.
+"""
+
+["2026-10-04-1525-unified-stacked-picture"]
+title = "Alle rekeninge wys elke prent"
+text = """
+Met Alle rekeninge oop is die prent regs bo nou 'n klein stapel van jou rekeninge se prente, met +N vir die res, sodat jy dit met een oogopslag van 'n enkele rekening kan onderskei. Wys daarna en die prente skuif saggies uitmekaar.
+"""
+
+["2026-10-04-2338-all-accounts-row"]
+title = "Terug na Alle rekeninge uit die rekeningkieslys"
+text = """
+Die rekeningkieslys begin nou met Alle rekeninge, met sy ongeleesde telling, sodat een klik jou terugneem nadat jy 'n enkele rekening gekies het. Die kieslys merk wat oop is met 'n regmerkie, en as jy oor die prent rol, stop dit ook by Alle rekeninge.
+"""
+
+["2026-10-05-1257-service-starts-again"]
+title = "Katna begin sy agtergronddiens vanself"
+text = """
+As die diens wat jou e-pos sinkroniseer en die stelselbalkikoon wys nie loop nie, begin Katna Mail dit vanself weer. Geen terminaal nodig nie. As dit steeds nie wil begin nie, sê 'n reël bo jou e-pos so, met Begin weer en die besonderhede om vir 'n verslag te kopieer.
+"""
+
+["2026-10-05-1430-stuck-window-replaced"]
+title = "Katna Mail maak oop selfs as 'n kopie vasgehaak het"
+text = """
+As Katna Mail in die agtergrond opgehou het om te reageer, maak dit nou die vasgehaakte kopie toe en 'n nuwe venster oop wanneer jy dit weer oopmaak, in plaas daarvan om niks te doen nie.
+"""
+
+["2026-10-05-1605-read-receipts-as-ticks"]
+title = "Leesbewyse wys nie meer as e-pos nie"
+text = """
+Wanneer iemand se e-posprogram 'n leesbewys stuur vir e-pos wat jy gestuur het, wys dit nie meer as 'n nuwe boodskap in die gesprek nie. Jou boodskap kry blou regmerkies en 'n reël wat sê wie dit gelees het en wanneer, en die bewys word as gelees gemerk, sodat dit jou nie in kennis stel nie. Dit bly in jou posbus en in soektogte.
+"""
+
+["2026-10-05-1620-reply-tools-fold"]
+title = "Antwoordgereedskap pas in 'n smal venster"
+text = """
+Wanneer die leespaneel of die venster smal is, loop die formateringsbalk en die ry langs Stuur nie meer verby die antwoord nie. Gereedskap wat nie pas nie, skuif na ⋮ Meer, die minste gebruikte eerste, en op 'n foon wys Stuur net sy ikoon.
+"""
+
+["2026-10-05-1637-read-receipts-out-of-the-list"]
+title = "Leesbewyse bly uit die e-poslys"
+text = """
+'n Leesbewys vir e-pos wat jy gestuur het, wys nie meer in die e-poslys as 'n "Read: …"-reël nie. Die gesprek behou sy eie onderwerp en voorskou, en jou gestuurde e-pos wys die regmerkies.
+"""
+
+["2026-10-05-1640-windows-frost"]
+title = "Matglas op Windows"
+text = """
+Kieslyste, opspringers, dialoë, kykerbalke en matglaspanele vervaag nou ook op Windows wat onder hulle is, met dieselfde Vervagingsterkte- en Ondeursigtigheid-instellings as op Linux. Skakel dit aan of af in Instellings, Eksperimenteel, Matglas-kieslyste en -dialoë.
+"""
+
+["2026-10-06-0156-phone-activity"]
+title = "Aktiwiteit op 'n foon"
+text = """
+In 'n foongrootte-venster sit Aktiwiteit nou in die soekbalk langs jou rekeningprent, met sy telling van nuwe oopmaak en klikke. Sy lys pas binne die venster.
+"""
+
+["2026-10-06-0215-pin-bar-no-jump"]
+title = "Vasspeld hou die klets stil"
+text = """
+In die kletsaansig laat die vasspeld of losmaak van 'n e-pos die gesprek nie meer spring nie, selfs heel aan die einde: die vasgespelde balk vervaag bo dit in en die boodskappe bly waar hulle was.
+"""
+
+["2026-10-06-0942-fainter-row-marks"]
+title = "Stiller merkblokkies en sterre"
+text = """
+In die e-poslys rus 'n reël se merkblokkie, ster en Belangrik-merker flouer totdat jy na die reël wys. Sterre en merkers wat aan is, wys soos voorheen.
+"""
+
+["2026-10-06-1448-activity-beside-calendar"]
+title = "Aktiwiteit by die ander knoppies"
+text = """
+In 'n wyer venster sit die Aktiwiteit-knoppie nou regs by Kalender en Instellings. Met Alle rekeninge oop skuif die rekeningprente uitmekaar wanneer jy daaroor beweeg sonder om die knoppies langsaan te skuif.
+"""
+
+["2026-10-06-1524-search-fills-bar"]
+title = "'n Langer soekblokkie"
+text = """
+In 'n wye venster strek die soekblokkie nou tot by die knoppies regs in plaas daarvan om halfpad te stop. Soekopsies maak gesentreer daaronder oop en bly 'n gemaklike breedte.
+"""
+
+["2026-10-07-0110-follow-up-for-you"]
+title = "Opvolge wat hulself stuur"
+text = """
+In die kieslys langs Stuur kan Volg op as niemand antwoord nie nou 'n kort opvolg vir jou stuur wanneer niemand antwoord nie: skryf dit een keer, kies wanneer, en kies of dit nog een keer moet probeer. Dit gaan uit op weeksdae in werksure, stop sodra iemand antwoord (outomatiese antwoorde tel nie), en wag vir jou eerder as om laat uit te gaan as jou rekenaar af was. 'n Skyfie langs Stuur wys wat gestel is. Of hou dit by 'n herinnering, nou met enige datum wat jy kies.
+"""
+
+["2026-10-07-0117-drawer-logo"]
+title = "Katna-logo in die laai"
+text = """
+Op 'n foon wys die laai met jou vouers nou die Katna-logo langs sy naam, in jou aksentkleur, in plaas van 'n gewone koevert. Op 'n tablet, waar die boonste balk hulle reeds wys, begin die laai met jou vouers.
+"""
+
+["2026-10-07-0118-clock-popup"]
+title = "'n Netjieser werkskermhorlosie"
+text = """
+In Katna Digital Clock sit jou tydsones nou langs die datum bo-aan, en die Take-lys vou weg met 'n klik op sy opskrif. As jy 'n geleentheid byvoeg, maak 'n klein Nuwe geleentheid-venster oop in plaas van die hele program. Nuwe take wys nie meer twee keer ná 'n sinkroniseerhaakplek nie.
+"""
+
+["2026-10-07-0232-mcp-server"]
+title = "Laat KI-assistente jou e-pos gebruik"
+text = """
+Instellings › MCP-bediener laat KI-assistente op hierdie rekenaar, soos Claude Desktop, Claude Code en LM Studio, jou e-pos deursoek en lees en konsepte stoor wat jy kan nagaan. Dit is af totdat jy dit aanskakel. Kies watter rekeninge hulle sien, kopieer wat om in jou assistent te plak, en sien wat hulle onlangs gedoen het. Assistente stuur, vee uit of skuif nooit e-pos nie.
+"""
+
+["2026-10-07-0359-waiting-for-reply"]
+title = "Sien wat op 'n antwoord wag"
+text = """
+E-pos wat jy met 'n opvolg of 'n herinnering gestuur het, word onder Wag gelys, onder Gestuur. Hul reëls wys 'n skyfie met wat volgende gebeur en wanneer, in Wag en ook in jou Inkassie. Maak een oop om die opvolg na 'n ander tyd te skuif, dit nou te stuur, of dit te stop.
+"""
+
+["2026-10-07-0505-follow-ups-in-chats"]
+title = "Opvolge in Kletsaansig"
+text = """
+In Kletsaansig wys 'n opvolg wat wag om uit te gaan as 'n flou borrel aan die einde van die klets, met Wysig, Stuur nou en Stop. Om een te stel, regsklik op Stuur of hou dit in en kies Volg op as niemand antwoord nie.
+"""
+
+["2026-10-07-0603-remind-me"]
+title = "Herinner my oor enige e-pos"
+text = """
+Druk H op 'n e-pos, of gebruik Herinner my langs Sluimer, om op 'n tyd herinner te word terwyl die e-pos bly waar dit is. As die e-pos sê iets is teen 'n dag verskuldig, bied Katna die oggend daarvoor aan. Herinneringe is take in Take, gelys onder Herinneringe en gewys op die e-pos se reël. B sluimer.
+"""
+
+["2026-10-07-0718-snooze-extras"]
+title = "Sluimer weet wanneer iemand antwoord"
+text = """
+'n Gesluimerde gesprek kom dadelik terug wanneer iemand daarin skryf. In Kies datum en tyd kan jy "tue 3pm" of "in 2 hours" tik. 'n Nuwe e-pos se kennisgewing kan dit vir 'n uur of tot môre sluimer.
+"""
+
+["2026-10-07-0802-your-snooze-times"]
+title = "Sluimer op jou manier"
+text = """
+Stel wat Later vandag, Môre, Hierdie naweek en Volgende week beteken, en voeg 'n tyd van jou eie by, in Instellings > Inkassie. Gesluimer lys e-pos volgens wanneer dit terugkom. Op 'n foon, swiep 'n reël links om dit te sluimer.
+"""
+
+["2026-10-07-0913-pick-date-in-place"]
+title = "Kies 'n datum waar jy geklik het"
+text = """
+Kies datum en tyd skuif nou in die sluimer- en Herinner my-kieslys self in, in plaas van 'n blokkie in die middel van die venster. Die terugpyltjie keer terug na die tye.
+"""
+
+["2026-10-07-0953-nudges"]
+title = "Vrae wat niemand beantwoord het nie, kom terug"
+text = """
+E-pos wat jy gestuur het wat iets gevra het en in drie dae geen antwoord gekry het nie, kom terug na die bokant van die Inkassie met "3 dae gelede gestuur. Volg op?". Klik daarop om op te volg, of op die x om dit weg te sit. Instellings > Inkassie skakel dit af.
+"""
+
+["2026-10-08-0128-settings-menu-tint"]
+title = "Instellings het sy eie kieslys"
+text = """
+Die lys bladsye aan die linkerkant van Instellings het 'n dowwe tint van bo na onder, sodat dit uitstaan van die bladsy wat jy lees.
+"""
+
+["2026-10-08-0136-schedule-pick-in-place"]
+title = "Skeduleer stuur kies 'n datum waar jy is"
+text = """
+Kies datum en tyd in Skeduleer stuur en Volg op as niemand antwoord nie skuif nou in die kieslys in waaruit jy dit oopgemaak het, soos by Sluimer, in plaas van 'n blokkie oor die boodskap. Die terugpyltjie of Esc keer terug na die tye.
+"""
+
+["2026-10-08-0141-tray-icon-follows-colors-after-login"]
+title = "Stelselbalkikoon pas by jou paneel vanaf aanmelding"
+text = """
+Op KDE Plasma neem die eenkleurige stelselbalkikoon nou jou paneel se kleur reg ná aanmelding en volg elke wisseling tussen lig en donker, sonder om Katna te herbegin.
+"""
+
+["2026-10-08-0153-search-attachment-types"]
+title = "Soek na tekeninge en prente"
+text = """
+Soekopsies het twee nuwe aanhegseltipes: DWG vir AutoCAD-tekeninge (en DXF), en Prent vir foto's en prente. XLSX vind nou ook ou XLS-lêers, en PPTX vind PPT, sodat elkeen een knoppie het.
+"""
+
+["2026-10-08-0157-menus-one-of-each-pair"]
+title = "Kieslyste wys net wat van toepassing is"
+text = """
+Die Meer-kieslys lys nie meer albei helftes van 'n paar nie. 'n Gelese e-pos wys Merk as ongelees, 'n gesterde een Verwyder ster, 'n belangrike een Merk as nie belangrik nie, 'n vasgespelde een Ontspeld. Met verskeie gekose e-posse wat verskil, kry jy die aksie wat hulle almal dieselfde maak, hier en in die regsklikkieslys.
+"""
+
+["2026-10-08-0210-settings-card-edge"]
+title = "Instellings sit op 'n kaart"
+text = """
+In ligte kleure het die Instellings-bladsy nou dieselfde dun rand en sagte skaduwee as die e-poslys, sodat dit uitstaan van die venster daaragter.
+"""
+
+["2026-10-08-0212-steady-app-buttons"]
+title = "Gladder programknoppies"
+text = """
+'n Klik op 'n program in die programbalk links, of in die balk onderaan op 'n foon, skud nie meer nie: die druk-rimpeling speel klaar en die gekose pil groei uit die middel terwyl die knoppie sy grootte behou.
+"""
+
+["2026-10-08-0232-account-card-pages"]
+title = "Kieslyste gly in die rekeningkaart"
+text = """
+Die ☰-kieslys en die lys tale gly nou binne-in die rekeningkaart in in plaas daarvan om in te spring, met 'n terugknoppie aan die regterkant om terug te keer.
+"""

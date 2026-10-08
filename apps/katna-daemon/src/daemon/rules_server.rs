@@ -37,7 +37,7 @@ use katna_sync::{
     },
 };
 
-use super::{Daemon, Notice, endpoint, unix_now};
+use super::{CommandError, Daemon, Notice, endpoint, unix_now};
 
 /// How long after a change a round starts, so a burst of changes (a drag,
 /// a save and its "also apply") goes out once.
@@ -113,10 +113,26 @@ impl Daemon {
             .collect();
         let rules = self.store().rules()?;
         for &account in &mail {
-            if !all && !accounts.contains(&account) {
+            // Placed again when it is back online.
+            if (!all && !accounts.contains(&account)) || self.is_offline(account) {
                 continue;
             }
-            let placed = self.place_account(account, &rules).await?;
+            // Without the folders a rule names in its other accounts.
+            let mine = {
+                let store = self.store();
+                rules
+                    .iter()
+                    .map(|rule| {
+                        let here = katna_sync::rules::for_account(&store, rule, account)?;
+                        Ok(if here.actions.is_empty() {
+                            rule.clone()
+                        } else {
+                            here
+                        })
+                    })
+                    .collect::<Result<Vec<_>, katna_store::Error>>()?
+            };
+            let placed = self.place_account(account, &mine).await?;
             self.rules_placed.lock().unwrap().insert(account, placed);
         }
 
@@ -194,6 +210,37 @@ impl Daemon {
         }
         self.place_sieve(account, rules, &imap, &settings, &folders)
             .await
+    }
+
+    /// The signatures Gmail adds for `account`: (address, name, HTML).
+    pub async fn gmail_signatures(
+        &self,
+        account: AccountId,
+    ) -> Result<Vec<(String, String, String)>, CommandError> {
+        let settings = self
+            .store()
+            .account_settings(account)?
+            .ok_or(CommandError::UnknownAccount(account.0))?;
+        if settings.oauth != Some(OAuthProvider::Google) {
+            return Err(CommandError::InvalidArgs(
+                "not a Gmail account signed in with Google".into(),
+            ));
+        }
+        let tokens = self
+            .oauth_tokens(account, OAuthProvider::Google)
+            .await
+            .map_err(CommandError::AuthFailed)?;
+        let tls = Tls::system().map_err(|err| CommandError::Failed(err.to_string()))?;
+        let client = GmailSettings::new(tokens, tls);
+        let all = client.send_as().await.map_err(|err| match err {
+            Error::Auth(why) => CommandError::AuthFailed(why),
+            err => CommandError::Failed(err.to_string()),
+        })?;
+        Ok(all
+            .into_iter()
+            .filter(|s| !s.signature.trim().is_empty())
+            .map(|s| (s.send_as_email, s.display_name, s.signature))
+            .collect())
     }
 
     async fn place_gmail(

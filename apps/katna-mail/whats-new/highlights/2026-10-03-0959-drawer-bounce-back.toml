@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Folders slide in with their bounce, edge clean"
+text = """
+On a phone or tablet, the folders that slide in from the menu have their
+small bounce back, and no shadow sits along their edge beside the rail.
+"""

@@ -7,6 +7,7 @@
 search-category-mail = அஞ்சல்
 search-category-people = மக்கள்
 search-category-tasks = பணிகள்
+search-category-notes = குறிப்புகள்
 search-category-events = நிகழ்வுகள்
 search-mail-from = அனுப்புநர்: { $sender }
 search-no-subject = (பொருள் இல்லை)
@@ -22,8 +23,20 @@ search-event-in-days =
        *[other] { $count } நாட்களில்
     }
 
+## Quick capture: "task: …" or "note: …" typed in KRunner
+
+search-add-task = “{ $title }” பணியைச் சேர்
+search-add-task-to = { $list } க்கு
+search-add-task-when = { $when } · { $list }
+search-add-note = “{ $title }” குறிப்பைச் சேர்
+search-add-note-to = { $place } இல் உள்ள குறிப்புகளுக்கு
+search-add-note-here = இந்தக் கணினியில் உள்ள குறிப்புகளுக்கு
+search-new-task = புதிய பணி
+search-new-note = புதிய குறிப்பு
+
 ## Buttons on a result in KRunner
 
 search-reply-all = அனைவருக்கும் பதிலளி
 search-copy-address = முகவரியை நகலெடு
 search-find-mail = அஞ்சலைக் கண்டறி
+search-edit-capture = சேர்ப்பதற்கு முன் மாற்று

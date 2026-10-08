@@ -8,6 +8,10 @@ shortcut-group-moving = Переміщення
 shortcut-group-actions = Дії
 shortcut-group-go-to = Перехід
 shortcut-group-app = Програма
+shortcuts-dialog-title = Комбінації клавіш
+shortcuts-dialog-search = Знайти комбінацію
+shortcuts-dialog-none = Жодна комбінація не відповідає
+shortcuts-dialog-close = Закрити
 
 ## Settings > Keyboard shortcuts: what each shortcut does
 
@@ -37,6 +41,8 @@ shortcut-mark-read = Позначити як прочитане
 shortcut-mark-unread = Позначити як непрочитане
 shortcut-star = Додати або зняти зірочку
 shortcut-add-to-tasks = Додати до Завдань
+shortcut-snooze = Відкласти
+shortcut-remind = Нагадати мені
 shortcut-important = Позначити як важливе
 shortcut-not-important = Позначити як неважливе
 shortcut-mute = Вимкнути або ввімкнути сповіщення для ланцюжка

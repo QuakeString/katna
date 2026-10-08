@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Choice chips that match"
+text = """
+The choices in Search options, Activity, AI writing and a contact's address
+books are now one chip: the same size everywhere, with a check on the one
+picked.
+"""

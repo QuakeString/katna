@@ -2,15 +2,18 @@
 
 //! A task's details in a dialog, as Google Tasks' task editor: the title,
 //! details (notes), a due day on a month grid, a time, how it repeats and
-//! when it reminds.
+//! when it reminds, its labels and its files.
 //! Save sends only what changed; Ctrl+Z puts the task back as it was.
 
 use gpui::{
-    AnyElement, Context, Entity, FocusHandle, Focusable, FontWeight, Pixels, Size, Subscription,
-    Window, anchored, deferred, div, point, prelude::*, rgba,
+    Animation, AnimationExt, AnyElement, Context, Entity, FocusHandle, Focusable, FontWeight,
+    Pixels, Size, Subscription, Window, deferred, div, ease_out_quint, point, prelude::*, rgba,
 };
 use jiff::civil::{Date, Time};
 use katna_i18n::{format, tr};
+use katna_ui::anchored;
+use katna_ui::motion::lerp;
+use katna_ui::tokens::{duration, radius, space, text};
 use katna_ui::{InputEvent, TextArea, TextInput, px, unpx};
 
 use super::super::compose::schedule;
@@ -18,8 +21,11 @@ use super::super::{MailWindow, UndoStep};
 use super::today;
 use crate::daemon::Command;
 use crate::tasks::{TaskCommand, TaskEdit};
-use crate::theme::{Theme, fade};
-use crate::widgets::{FocusRing, elevation, filled_button, icon, icon_button, tip};
+use crate::theme::Theme;
+use crate::widgets::{
+    ButtonStyle, FIELD_HEIGHT, FocusRing, button, choice_chip, dialog, field, filled_button, icon,
+    icon_button, tip,
+};
 
 /// The widest the dialog gets.
 const WIDTH: f32 = 600.0;
@@ -145,6 +151,10 @@ pub(super) struct Details {
     day: Option<Date>,
     repeat: Repeat,
     remind: Remind,
+    /// Its labels, as ticked here.
+    labels: Vec<String>,
+    /// The label picker, while open.
+    pub(super) picker: Option<super::labels::Picker>,
     focus: FocusHandle,
     /// The window's size when opened, to center the dialog in.
     viewport: Size<Pixels>,
@@ -160,6 +170,16 @@ fn time_of(minutes: u32) -> Time {
         0,
     )
     .unwrap_or_default()
+}
+
+impl Details {
+    pub(super) fn labels(&self) -> &[String] {
+        &self.labels
+    }
+
+    pub(super) fn labels_mut(&mut self) -> &mut Vec<String> {
+        &mut self.labels
+    }
 }
 
 fn minutes_of(time: Time) -> u32 {
@@ -234,6 +254,8 @@ impl MailWindow {
             day,
             repeat: Repeat::from_rule(&task.repeat),
             remind: Remind::of(&task),
+            labels: task.labels.clone(),
+            picker: None,
             focus: cx.focus_handle(),
             viewport: window.viewport_size(),
             _subscriptions: subscriptions,
@@ -242,7 +264,12 @@ impl MailWindow {
     }
 
     fn task_close_details(&mut self, window: &mut Window, cx: &mut Context<Self>) {
-        self.tasks.details = None;
+        // It fades out where it was (`notched::fade_out`).
+        self.tasks.details_out = self
+            .tasks
+            .details
+            .take()
+            .and_then(|d| Some((d, super::super::notched::fade_out(cx)?)));
         // Back to the page it was opened on: Tasks, or the Calendar.
         if self.app == super::super::apps::App::Calendar {
             window.focus(&self.calendar.focus, cx);
@@ -302,6 +329,7 @@ impl MailWindow {
             due_time: (due_time != task.due_time).then_some(due_time),
             repeat: (repeat != task.repeat).then_some(repeat),
             remind_at: (remind_at != task.remind_at).then_some(remind_at),
+            labels: (details.labels != task.labels).then(|| details.labels.clone()),
             ..TaskEdit::default()
         };
         self.task_close_details(window, cx);
@@ -333,6 +361,9 @@ impl MailWindow {
             }
             if let Some(remind_at) = edit.remind_at {
                 shown.remind_at = remind_at;
+            }
+            if let Some(labels) = &edit.labels {
+                shown.labels = labels.clone();
             }
         }
         self.send_task(TaskCommand::Edit(id, edit), None, None, cx);
@@ -391,50 +422,70 @@ impl MailWindow {
 
     // --- Drawing -------------------------------------------------------------
 
+    /// The details dialog while it is open, or fading out once closed.
     pub(in crate::window) fn render_task_details(
         &self,
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
-        let details = self.tasks.details.as_ref()?;
+        if let Some(details) = self.tasks.details.as_ref() {
+            return Some(self.details_dialog(details, false, th, cx));
+        }
+        let (details, since) = self.tasks.details_out.as_ref()?;
+        if super::super::notched::faded(*since, cx) {
+            return None;
+        }
+        Some(self.details_dialog(details, true, th, cx))
+    }
+
+    /// The dialog for `details`; `closing`, it fades out where it was, out
+    /// of reach.
+    fn details_dialog(
+        &self,
+        details: &Details,
+        closing: bool,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
         let vw = unpx(details.viewport.width);
         let vh = unpx(details.viewport.height);
-        let width = WIDTH.min(vw - 32.0);
-        let field = |id: &'static str| {
-            div()
-                .id(id)
-                .px(px(12.0))
-                .flex()
-                .flex_row()
-                .items_center()
-                .rounded(px(8.0))
-                .border_1()
-                .border_color(rgba(th.outline))
-                .text_size(px(14.0))
+        let width = WIDTH.min(vw - 2.0 * space::S5);
+        // Boxes to type in are `widgets::field`s; the day shown is not
+        // typed in, so it only looks like one.
+        let field_of = |id: &'static str, focus: &FocusHandle| {
+            field(id, focus, th).flex().flex_row().items_center()
         };
-        let label = |text: String| {
+        let label = |text_: String| {
             div()
-                .pb(px(6.0))
-                .text_size(px(12.0))
+                .pb(px(space::S2))
+                .text_size(px(text::CAPTION))
                 .font_weight(FontWeight::MEDIUM)
                 .text_color(rgba(th.text_dim))
-                .child(text)
+                .child(text_)
         };
 
-        let title = field("task-details-title")
+        let title = field_of("task-details-title", &details.title.focus_handle(cx))
             .h(px(48.0))
-            .text_size(px(18.0))
+            .text_size(px(text::TITLE))
             .child(div().flex_1().min_w_0().child(details.title.clone()));
-        let notes = field("task-details-notes")
+        // The notes scroll inside the field, so its ring stays put.
+        let notes = field_of("task-details-notes", &details.notes.focus_handle(cx))
             .items_start()
-            .py(px(10.0))
+            .py(px(space::S3))
             .min_h(px(84.0))
-            .max_h(px(180.0))
-            .overflow_y_scroll()
-            .gap(px(12.0))
-            .line_height(px(20.0))
+            .gap(px(space::S4))
+            .line_height(px(text::line_height(text::BODY)))
+            // 1 px: the icon's middle on the first line's.
             .child(div().pt(px(1.0)).child(icon("notes", th.text_dim, 18.0)))
-            .child(div().flex_1().min_w_0().child(details.notes.clone()));
+            .child(
+                div()
+                    .id("task-details-notes-text")
+                    .flex_1()
+                    .min_w_0()
+                    .max_h(px(180.0 - 2.0 * space::S3))
+                    .overflow_y_scroll()
+                    .child(details.notes.clone()),
+            );
 
         // The month grid.
         let now = today();
@@ -453,7 +504,7 @@ impl MailWindow {
                     .items_center()
                     .justify_center()
                     .rounded_full()
-                    .text_size(px(13.0))
+                    .text_size(px(text::SMALL))
                     .cursor_pointer()
                     .when(other, |d| d.text_color(rgba(th.text_faint)))
                     .when(date == now && !selected, |d| {
@@ -464,7 +515,13 @@ impl MailWindow {
                     .when(selected, |d| {
                         d.bg(rgba(th.accent)).text_color(rgba(th.on_accent))
                     })
-                    .when(!selected, |d| d.hover(|s| s.bg(rgba(th.hover))))
+                    .relative()
+                    .when(!selected, |d| {
+                        d.child(katna_ui::Glow::new(
+                            ("task-details-day-glow", ix),
+                            rgba(th.hover),
+                        ))
+                    })
                     .on_click(cx.listener(move |this, _, _, cx| {
                         // A second click on the picked day takes it away.
                         let day = (!selected).then_some(date);
@@ -492,7 +549,7 @@ impl MailWindow {
                 .flex()
                 .items_center()
                 .justify_center()
-                .text_size(px(12.0))
+                .text_size(px(text::CAPTION))
                 .text_color(rgba(th.text_dim))
                 .child(d)
         });
@@ -510,8 +567,8 @@ impl MailWindow {
                     .child(
                         div()
                             .flex_1()
-                            .pl(px(8.0))
-                            .text_size(px(14.0))
+                            .pl(px(space::S3))
+                            .text_size(px(text::BODY))
                             .font_weight(FontWeight::MEDIUM)
                             .child(format::month_year(month)),
                     )
@@ -528,7 +585,7 @@ impl MailWindow {
             )
             .child(
                 div()
-                    .mt(px(4.0))
+                    .mt(px(space::S2))
                     .flex()
                     .flex_row()
                     .flex_wrap()
@@ -541,9 +598,18 @@ impl MailWindow {
             Some(day) => format::day_month_year(day.to_datetime(Time::midnight())),
             None => tr!("tasks-no-date"),
         };
-        let day_row = field("task-details-day-shown")
-            .h(px(40.0))
-            .gap(px(10.0))
+        let day_row = div()
+            .id("task-details-day-shown")
+            .px(px(space::S4))
+            .flex()
+            .flex_row()
+            .items_center()
+            .rounded(px(radius::SM))
+            .border_1()
+            .border_color(rgba(th.outline))
+            .text_size(px(text::BODY))
+            .h(px(FIELD_HEIGHT))
+            .gap(px(space::S3))
             .child(icon(
                 "calendar",
                 if picked.is_some() {
@@ -562,16 +628,16 @@ impl MailWindow {
                     .child(day_text),
             )
             .when(picked.is_some(), |d| {
-                d.pr(px(4.0)).child(
+                d.pr(px(space::S2)).child(
                     icon_button("task-details-no-day", "close", 18.0, th)
                         .size(px(28.0))
                         .tooltip(tip(tr!("tasks-no-date"), th))
                         .on_click(cx.listener(|this, _, _, cx| this.task_details_pick(None, cx))),
                 )
             });
-        let time_row = field("task-details-time")
-            .h(px(40.0))
-            .gap(px(10.0))
+        let time_row = field_of("task-details-time", &details.time.focus_handle(cx))
+            .h(px(FIELD_HEIGHT))
+            .gap(px(space::S3))
             .child(icon("schedule", th.text_dim, 18.0))
             .child(div().flex_1().min_w_0().child(details.time.clone()));
         let mut choices = vec![
@@ -584,31 +650,8 @@ impl MailWindow {
         if let Repeat::Other(_) = details.repeat {
             choices.push(details.repeat.clone());
         }
-        let chip = |id: &'static str, ix: usize, on: bool, text: String| {
-            div()
-                .id((id, ix))
-                .focus_ring(th)
-                .h(px(32.0))
-                .px(px(12.0))
-                .flex()
-                .items_center()
-                .rounded(px(8.0))
-                .border_1()
-                .text_size(px(13.0))
-                .cursor_pointer()
-                .map(|d| {
-                    if on {
-                        d.border_color(rgba(fade(th.accent, 0.5)))
-                            .bg(rgba(fade(th.accent, 0.12)))
-                            .text_color(rgba(th.accent))
-                            .font_weight(FontWeight::MEDIUM)
-                    } else {
-                        d.border_color(rgba(th.divider))
-                            .text_color(rgba(th.text_dim))
-                            .hover(|s| s.bg(rgba(th.hover)))
-                    }
-                })
-                .child(text)
+        let chip = |id: &'static str, ix: usize, on: bool, text_: String| {
+            choice_chip((id, ix), text_, on, th).focus_ring(th)
         };
         let repeats = choices.into_iter().enumerate().map(|(ix, repeat)| {
             chip(
@@ -647,31 +690,31 @@ impl MailWindow {
             .flex_col()
             .child(label(tr!("tasks-date")))
             .child(day_row)
-            .child(div().mt(px(12.0)).child(time_row))
-            .child(div().mt(px(20.0)).child(label(tr!("tasks-repeat"))))
+            .child(div().mt(px(space::S4)).child(time_row))
+            .child(div().mt(px(space::S5)).child(label(tr!("tasks-repeat"))))
             .child(
                 div()
                     .flex()
                     .flex_row()
                     .flex_wrap()
-                    .gap(px(8.0))
+                    .gap(px(space::S3))
                     .children(repeats),
             )
-            .child(div().mt(px(20.0)).child(label(tr!("tasks-remind"))))
+            .child(div().mt(px(space::S5)).child(label(tr!("tasks-remind"))))
             .child(
                 div()
                     .flex()
                     .flex_row()
                     .flex_wrap()
-                    .gap(px(8.0))
+                    .gap(px(space::S3))
                     .children(reminds),
             );
         // Side by side when there is room, else one above the other.
-        let side_by_side = width >= 7.0 * DAY + 48.0 + 24.0 + 200.0;
+        let side_by_side = width >= 7.0 * DAY + 2.0 * space::S6 + space::S6 + 200.0;
         let date_part = div()
-            .mt(px(20.0))
+            .mt(px(space::S5))
             .flex()
-            .gap(px(24.0))
+            .gap(px(space::S6))
             .map(|d| {
                 if side_by_side {
                     d.flex_row()
@@ -682,19 +725,8 @@ impl MailWindow {
             .child(calendar)
             .child(when);
 
-        let cancel = div()
-            .id("task-details-cancel")
+        let cancel = button("task-details-cancel", ButtonStyle::Text, th)
             .focus_ring(th)
-            .h(px(36.0))
-            .px(px(16.0))
-            .flex()
-            .items_center()
-            .rounded_full()
-            .text_size(px(14.0))
-            .font_weight(FontWeight::MEDIUM)
-            .text_color(rgba(th.accent))
-            .cursor_pointer()
-            .hover(|s| s.bg(rgba(fade(th.accent, 0.08))))
             .on_click(cx.listener(|this, _, window, cx| this.task_close_details(window, cx)))
             .child(tr!("tasks-cancel"));
         let save = filled_button("task-details-save", tr!("tasks-save"), th)
@@ -704,6 +736,18 @@ impl MailWindow {
             .tooltip(tip(tr!("tasks-delete"), th))
             .on_click(cx.listener(|this, _, window, cx| this.task_details_delete(window, cx)));
         // A task made from a mail opens it, as its line on the board does.
+        let attach = icon_button("task-details-attach", "attachment", 20.0, th)
+            .size(px(36.0))
+            .tooltip(tip(tr!("tasks-files-attach"), th))
+            .on_click(cx.listener(|this, _, _, cx| {
+                if let Some(id) = this.tasks.details.as_ref().map(|d| d.id) {
+                    this.task_pick_files(id, cx);
+                }
+            }));
+        let has_files = self
+            .tasks
+            .board()
+            .is_some_and(|b| !b.files_of(details.id).is_empty());
         let mail = self
             .tasks
             .task(details.id)
@@ -720,8 +764,10 @@ impl MailWindow {
             });
 
         let focus = details.focus.clone();
-        let card = div()
-            .id("task-details")
+        let card = super::files::takes_files(div().id("task-details"), details.id, th, cx);
+        // The shared dialog surface (level 3, `LG`, frosted); what is in
+        // it scrolls inside, under the glass.
+        let card = card
             .track_focus(&focus)
             .map(|d| super::super::popovers::keep_tab_inside(d, &focus))
             .on_key_down(cx.listener(|this, event: &gpui::KeyDownEvent, window, cx| {
@@ -736,60 +782,85 @@ impl MailWindow {
             }))
             .occlude()
             .w(px(width))
-            .max_h(px(vh * 0.9))
-            .overflow_y_scroll()
-            .px(px(24.0))
-            .pt(px(24.0))
-            .pb(px(20.0))
             .flex()
             .flex_col()
-            .rounded(px(15.0))
-            .bg(rgba(th.raised))
-            .text_color(rgba(th.text))
-            .shadow(elevation(th, 3.0))
+            .map(|d| dialog(d, th, th.raised))
+            .text_color(rgba(th.text));
+        let body = div()
+            .id("task-details-body")
+            .max_h(px(vh * 0.9))
+            .overflow_y_scroll()
+            .p(px(space::S6))
+            .flex()
+            .flex_col()
             .child(title)
-            .child(div().mt(px(12.0)).child(notes))
+            .child(div().mt(px(space::S4)).child(notes))
+            .child(
+                div()
+                    .mt(px(space::S4))
+                    .child(self.render_details_labels(details, th, cx)),
+            )
+            .when(has_files, |d| {
+                d.child(
+                    div()
+                        .mt(px(space::S4))
+                        .child(self.render_details_files(details.id, th, cx)),
+                )
+            })
             .child(date_part)
             .child(
                 div()
-                    .mt(px(24.0))
+                    .mt(px(space::S6))
                     .flex()
                     .flex_row()
                     .items_center()
-                    .gap(px(8.0))
+                    .gap(px(space::S3))
                     .child(delete)
+                    .child(attach)
                     .children(mail)
                     .child(div().flex_1())
                     .child(cancel)
                     .child(save),
             );
-        Some(
-            deferred(
-                anchored().position(point(px(0.0), px(0.0))).child(
-                    div()
-                        .id("task-details-scrim")
-                        .w(px(vw))
-                        .h(px(vh))
-                        .flex()
-                        .items_center()
-                        .justify_center()
-                        .bg(rgba(0x0000_0066))
-                        .occlude()
-                        .on_click(
-                            cx.listener(|this, _, window, cx| this.task_close_details(window, cx)),
-                        )
-                        .child(
-                            // Clicks inside the card stay there.
-                            div()
-                                .id("task-details-card")
-                                .on_click(|_, _, cx| cx.stop_propagation())
-                                .child(card),
-                        ),
-                ),
-            )
+        let card = card.child(body);
+        let scrim = div()
+            .id(if closing {
+                "task-details-scrim-out"
+            } else {
+                "task-details-scrim"
+            })
+            .w(px(vw))
+            .h(px(vh))
+            .flex()
+            .items_center()
+            .justify_center()
+            .bg(rgba(0x0000_0066))
+            .occlude()
+            .when(!closing, |d| {
+                d.on_click(cx.listener(|this, _, window, cx| this.task_close_details(window, cx)))
+            })
+            .child(
+                // Clicks inside the card stay there. It opens as the shared
+                // dialogs do: fading in as it rises into place.
+                div()
+                    .id("task-details-card")
+                    .on_click(|_, _, cx| cx.stop_propagation())
+                    .child(card)
+                    .with_animation(
+                        ("task-details-in", details.id as usize),
+                        Animation::new(katna_ui::motion::time(duration::BASE))
+                            .with_easing(ease_out_quint()),
+                        |el, t| el.opacity(t).mt(px(lerp(space::S6, 0.0, t))),
+                    ),
+            );
+        let scrim = if closing {
+            super::super::notched::fading(scrim, ("task-details-out", details.id as usize))
+        } else {
+            scrim.into_any_element()
+        };
+        deferred(anchored().position(point(px(0.0), px(0.0))).child(scrim))
             .with_priority(5)
-            .into_any_element(),
-        )
+            .into_any_element()
     }
 }
 

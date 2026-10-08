@@ -55,7 +55,9 @@ for file in $files; do
       # Start the programs installed here even when PREFIX/bin is not on
       # PATH, as with ~/.local/bin on many desktops.
       sed "s|^Exec=katna-mail|Exec=$prefix/bin/katna-mail|" "$here/$file" > "$prefix/$file" ;;
-    *) cp "$here/$file" "$prefix/$file" ;;
+    # Beside the old file, then in its place: a running Katna keeps its
+    # program, and Katna can install its own update.
+    *) cp "$here/$file" "$prefix/$file.new" && mv -f "$prefix/$file.new" "$prefix/$file" ;;
   esac
   case $file in bin/*) chmod 755 "$prefix/$file" ;; *) chmod 644 "$prefix/$file" ;; esac
 done

@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Activity with the other buttons"
+text = """
+On a wider window, the Activity button now sits at the right with Calendar
+and Settings. With All Accounts open, the account pictures spread apart on
+hover without moving the buttons beside them.
+"""

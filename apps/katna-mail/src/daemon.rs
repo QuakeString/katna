@@ -33,6 +33,17 @@ pub enum Command {
     Snooze(Vec<MessageId>, i64),
     /// Brings snoozed messages back now.
     Unsnooze(Vec<MessageId>),
+    /// The follow-up of a sent message, by its outbox ID: sends it now,
+    /// moves it (Unix seconds) or stops it.
+    SendFollowUpNow(i64),
+    MoveFollowUp(i64, i64),
+    StopFollowUp(i64),
+    /// Dismisses the nudge on a sent message.
+    DismissNudge(MessageId),
+    /// Sets a follow-up as it was: seconds after sending, seconds to a
+    /// second one and the mail Katna sends (none to remind). The Undo of
+    /// Stop.
+    SetFollowUp(i64, i64, i64, Option<String>),
     /// Takes back the queued message with this outbox ID.
     UndoSend(i64),
     /// Opens the message just discarded, or not saved, again. The app does
@@ -54,6 +65,16 @@ pub enum Command {
     /// contents and whether it was in use. The app does this itself; the
     /// daemon never sees it.
     RestoreScheme(String, String, bool),
+    /// Turns an app on again in Settings > Apps: the Undo after turning it
+    /// off, or "Turn on" where it was asked for. The app does this itself;
+    /// the daemon hears of it through `ReloadConfig`.
+    TurnAppOn(katna_core::config::AppKind),
+    /// Opens the outbox: the button of "… wasn't sent". The app does this
+    /// itself.
+    OpenOutbox,
+    /// Shows a server's own words in the note: the button of a note that
+    /// said what went wrong in plain ones. The app does this itself.
+    ShowDetails(String),
     /// Gives saved cards these labels, by name: an undo on the Contacts
     /// page.
     ContactLabels(Vec<(i64, Vec<String>)>),
@@ -66,6 +87,9 @@ pub enum Command {
     WriteCards(Vec<WriteCard>),
     /// Has the daemon read the settings file again.
     ReloadConfig,
+    /// Has the daemon delete the local copy of an app just turned off
+    /// ("Remove the copy").
+    ForgetApp(katna_core::config::AppKind),
     /// These, one after the other: an undo that moves mail back to
     /// several folders.
     Several(Vec<Command>),
@@ -222,6 +246,11 @@ impl Command {
             // The window says until when.
             Self::Snooze(..) => return None,
             Self::MarkRead(..)
+            | Self::SendFollowUpNow(_)
+            | Self::MoveFollowUp(..)
+            | Self::StopFollowUp(_)
+            | Self::DismissNudge(_)
+            | Self::SetFollowUp(..)
             | Self::UndoSend(_)
             | Self::ReopenDraft
             | Self::RestoreQuote
@@ -229,11 +258,15 @@ impl Command {
             | Self::RestoreSubject(_)
             | Self::RestoreContacts(_)
             | Self::RestoreScheme(..)
+            | Self::TurnAppOn(_)
+            | Self::OpenOutbox
+            | Self::ShowDetails(_)
             | Self::ContactLabels(_)
             | Self::RenameContactLabel(..)
             | Self::DeleteContacts(_)
             | Self::WriteCards(_)
             | Self::ReloadConfig
+            | Self::ForgetApp(_)
             | Self::SaveNote(_)
             | Self::TrashNotes(..)
             | Self::DeleteNotes(_)
@@ -377,7 +410,19 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
         }
         Command::Snooze(messages, until) => pim.snooze(&ids(messages), *until).await,
         Command::Unsnooze(messages) => pim.unsnooze(&ids(messages)).await,
+        Command::SendFollowUpNow(id) => pim.send_follow_up_now(*id).await,
+        Command::MoveFollowUp(id, at) => pim.move_follow_up(*id, *at).await,
+        Command::DismissNudge(id) => pim.dismiss_nudge(id.0).await,
+        Command::StopFollowUp(id) => pim.set_follow_up(*id, 0).await,
+        Command::SetFollowUp(id, after, again, mail) => match mail {
+            Some(mail) => {
+                pim.set_follow_up_mail(*id, *after, *again, mail.as_bytes())
+                    .await
+            }
+            None => pim.set_follow_up(*id, *after).await,
+        },
         Command::ReloadConfig => pim.reload_config().await,
+        Command::ForgetApp(app) => pim.forget_app(app.key()).await,
         Command::UndoSend(id) => match pim.undo_send(*id).await {
             // The app opens the message again, so the outbox can forget it.
             Ok(true) => pim.discard_send(*id).await.map(|_| ()),
@@ -433,7 +478,10 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
         | Command::UndoRephrase
         | Command::RestoreSubject(_)
         | Command::RestoreContacts(_)
-        | Command::RestoreScheme(..) => {
+        | Command::RestoreScheme(..)
+        | Command::TurnAppOn(_)
+        | Command::OpenOutbox
+        | Command::ShowDetails(_) => {
             return Ok(());
         }
         Command::Event(change) => return edit_event(connection, change).await.map(|_| ()),
@@ -719,6 +767,24 @@ pub async fn set_follow_up(connection: &Connection, id: i64, after: i64) -> Resu
         .await
         .map_err(|err| describe(&err))?;
     pim.set_follow_up(id, after)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Has the daemon send `mail` for the user `after` seconds after outbox
+/// entry `id` goes out if nobody replied by then, and again `again`
+/// seconds later (0 for once).
+pub async fn set_follow_up_mail(
+    connection: &Connection,
+    id: i64,
+    after: i64,
+    again: i64,
+    mail: &[u8],
+) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.set_follow_up_mail(id, after, again, mail)
         .await
         .map_err(|err| describe(&err))
 }
@@ -1054,20 +1120,30 @@ pub async fn cancel_sign_in(connection: &Connection) {
     }
 }
 
-/// The accounts that signed in with a provider which now asks to sign in
-/// again: (ID, address, provider).
-pub async fn signed_out(
+/// Checks `password` with account `id`'s server, keeps it in the keyring
+/// and has the account sync again. `AddError::Password` when the server
+/// refuses it.
+pub async fn set_password(
     connection: &Connection,
-) -> Result<Vec<(i64, String, OAuthProvider)>, String> {
+    id: i64,
+    password: &str,
+) -> Result<(), AddError> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| AddError::Other(describe(&err)))?;
+    pim.set_password(id, password)
+        .await
+        .map_err(|err| add_error(&err))
+}
+
+/// Where every account's mail sync stands.
+pub async fn accounts_status(
+    connection: &Connection,
+) -> Result<Vec<katna_dbus::AccountStatus>, String> {
     let pim = PimProxy::new(connection)
         .await
         .map_err(|err| describe(&err))?;
-    let accounts = pim.accounts().await.map_err(|err| describe(&err))?;
-    Ok(accounts
-        .into_iter()
-        .filter(|a| a.state == state::AUTH_FAILED)
-        .filter_map(|a| Some((a.id, a.address, a.sign_in.parse().ok()?)))
-        .collect())
+    pim.accounts().await.map_err(|err| describe(&err))
 }
 
 /// Where account `id`'s mail sync stands, or `None` if there is no such
@@ -1180,6 +1256,27 @@ pub async fn company_of(
     pim.company_of(address, website)
         .await
         .map_err(|err| describe(&err))
+}
+
+/// The signatures Gmail adds for `account`: (address, name, HTML).
+/// `Err(None)` when its sign-in does not allow reading them.
+pub async fn gmail_signatures(
+    connection: &Connection,
+    account: i64,
+) -> Result<Vec<(String, String, String)>, Option<String>> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| Some(describe(&err)))?;
+    pim.gmail_signatures(account)
+        .await
+        .map_err(|err| match &err {
+            katna_dbus::zbus::Error::MethodError(name, _, _)
+                if name.as_str() == "org.freedesktop.DBus.Error.AuthFailed" =>
+            {
+                None
+            }
+            err => Some(describe(err)),
+        })
 }
 
 /// Renames `account`; an empty name goes back to the name its own mail
@@ -1398,12 +1495,61 @@ pub async fn send_outcomes(
         .filter_map(|outcome| outcome))
 }
 
+/// Changes a mail server refused for good, which the daemon undid.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Refused {
+    pub account: i64,
+    /// `flags`, `move`, `label`, `delete` or `other`.
+    pub change: String,
+    pub count: u32,
+    /// The server's answer.
+    pub reason: String,
+}
+
+/// Yields each time a mail server refuses changes for good.
+pub async fn changes_refused(
+    connection: &Connection,
+) -> Result<impl Stream<Item = Refused>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    let signals = pim
+        .receive_changes_refused()
+        .await
+        .map_err(|err| describe(&err))?;
+    Ok(signals.filter_map(|signal| {
+        let args = signal.args().ok()?;
+        Some(Refused {
+            account: args.account,
+            change: args.change.to_owned(),
+            count: args.count,
+            reason: args.reason.to_owned(),
+        })
+    }))
+}
+
 /// Every message in the outbox: waiting, being sent, sent or failed.
 pub async fn outbox(connection: &Connection) -> Result<Vec<OutboxItem>, String> {
     let pim = PimProxy::new(connection)
         .await
         .map_err(|err| describe(&err))?;
     pim.outbox().await.map_err(|err| describe(&err))
+}
+
+/// Sends a failed message again now; `false` when it was not one.
+pub async fn retry_send(connection: &Connection, id: i64) -> Result<bool, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.retry_send(id).await.map_err(|err| describe(&err))
+}
+
+/// Forgets a failed or cancelled message; `false` when it was not one.
+pub async fn discard_send(connection: &Connection, id: i64) -> Result<bool, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.discard_send(id).await.map_err(|err| describe(&err))
 }
 
 /// Yields whenever an outbox entry changes.
@@ -1724,9 +1870,10 @@ pub async fn first_sync_pending(connection: &Connection) -> Result<bool, String>
         .await
         .map_err(|err| describe(&err))?;
     let accounts = pim.accounts().await.map_err(|err| describe(&err))?;
-    Ok(accounts
-        .iter()
-        .any(|a| a.last_sync == 0 && a.state != state::NOT_SYNCED && a.state != state::AUTH_FAILED))
+    Ok(accounts.iter().any(|a| {
+        a.last_sync == 0
+            && ![state::NOT_SYNCED, state::AUTH_FAILED, state::PAUSED].contains(&a.state.as_str())
+    }))
 }
 
 /// Has the daemon check `account` for new mail now, every folder of it, or
@@ -1772,7 +1919,7 @@ async fn check(
                 folders.iter().any(|(id, _)| id.0 == a.id)
             }
         })
-        .filter(|a| a.state != state::NOT_SYNCED)
+        .filter(|a| a.state != state::NOT_SYNCED && a.state != state::PAUSED)
         .map(|a| a.id)
         .collect();
     if folders.is_empty() {

@@ -6,6 +6,10 @@
 
 about-tooltip = Katna గురించి
 about-tagline = Linux డెస్క్‌టాప్ కోసం మెయిల్, క్యాలెండర్
+about-copy-version = వెర్షన్ వివరాలను కాపీ చేయండి
+about-version-copied = కాపీ అయింది
+about-version-built = బిల్డ్ తేదీ: { $date }
+about-version-system = సిస్టమ్: { $system }
 about-whats-new = కొత్తగా ఏమి ఉన్నాయి
 
 ## update themselves). $version is a version such as 0.0.0.r236.g1a2b3c4.
@@ -21,11 +25,13 @@ about-update-ready = వెర్షన్ { $version } ఇన్‌స్టా
 about-update-ready-detail = అప్‌డేట్‌ను పూర్తి చేయడానికి Katna Mail రీస్టార్ట్ అవుతుంది.
 about-update-confirm = వెర్షన్ { $version }ని ఇన్‌స్టాల్ చేయాలా?
 about-update-confirm-detail = Katna Mail మూసుకుపోయి, అప్‌డేట్‌ను ఇన్‌స్టాల్ చేసి, మీరు వదిలిన చోటనే మళ్లీ తెరుచుకుంటుంది. మీ కంప్యూటర్ మీ పాస్‌వర్డ్‌ను అడుగుతుంది.
+about-update-confirm-detail-windows = Katna Mail మూసివేయబడి, అప్‌డేట్‌ను ఇన్‌స్టాల్ చేసి, కాసేపట్లో మళ్లీ తెరుచుకుంటుంది.
 about-update-installing = వెర్షన్ { $version } ఇన్‌స్టాల్ అవుతోంది…
 about-update-installing-detail = తెరుచుకున్న విండోలో మీ పాస్‌వర్డ్‌ను ఎంటర్ చేయండి.
+about-update-installing-detail-windows = Katna Mail ఇప్పుడు మూసివేయబడుతుంది, అప్‌డేట్ ఇన్‌స్టాల్ అయ్యాక మళ్లీ తెరుచుకుంటుంది.
 about-update-cancelled = పాస్‌వర్డ్ ఇవ్వనందున అప్‌డేట్ ఇన్‌స్టాల్ చేయలేదు.
 about-update-failed = అప్‌డేట్‌ను ఇన్‌స్టాల్ చేయలేకపోయాము: { $error }
-about-update-unsupported = Katna Mail-లోని ఈ కాపీని మీ ప్యాకేజీ మేనేజర్ అప్‌డేట్ చేస్తుంది.
+about-update-not-self-updating = ఈ Katna Mail కాపీ తనంతట తానుగా అప్‌డేట్ కాదు. మీరు ఇన్‌స్టాల్ చేసిన పద్ధతిలోనే అప్‌డేట్ చేయండి.
 about-update-restart-failed = అప్‌డేట్ ఇన్‌స్టాల్ అయింది, కానీ Katna Mail మళ్లీ తెరుచుకోలేకపోయింది ({ $error }). దాన్ని మీరే తెరవండి.
 about-update-check = అప్‌డేట్‌ల కోసం చెక్ చేయండి
 about-update-download = డౌన్‌లోడ్
@@ -146,6 +152,7 @@ onboarding-katna-private = దీనికి సొంత పాస్‌వర
 onboarding-ready-title = అంతా సిద్ధం
 onboarding-ready-lead = Katna మీ మెయిల్‌ను తెస్తోంది. అది వచ్చిన వెంటనే కనిపిస్తుంది, కొత్త మెయిల్ దానంతట అదే కనిపిస్తుంది.
 onboarding-ready-lead-address = Katna { $address } మెయిల్‌ను తెస్తోంది. అది వచ్చిన వెంటనే కనిపిస్తుంది, కొత్త మెయిల్ దానంతట అదే కనిపిస్తుంది.
+onboarding-apps = మీరు ఉపయోగించే యాప్‌లు
 onboarding-ready-tour = అన్నీ ఎక్కడ ఉన్నాయో చూడటానికి ఒక నిమిషం టూర్ చేస్తారా?
 onboarding-skip = ప్రస్తుతానికి దాటవేయండి
 onboarding-take-tour = టూర్ చేయండి
@@ -213,11 +220,9 @@ crash-close = మూసివేయండి
 
 ## letting an account in; $provider: Google or Microsoft)
 
-sign-in-again-text = { $address }కు మళ్లీ సైన్ ఇన్ చేయమని { $provider } అడుగుతోంది.
 sign-in-again-button = సైన్ ఇన్ చేయండి
 sign-in-again-tooltip = మీ బ్రౌజర్‌లో { $provider } సైన్ ఇన్ పేజీని తెరవండి
 sign-in-again-waiting = మీ బ్రౌజర్ కోసం వేచి ఉంది…
-sign-in-again-close = మూసివేయండి
 google-api-off = Katna Google Cloud ప్రాజెక్ట్‌లో { $api } ఆఫ్ చేయబడింది.
 google-api-turn-on = ఆన్ చేయండి
 google-api-turn-on-tooltip = { $api }ను ఆన్ చేయడానికి Google Cloudను తెరిచి, ఆపై మళ్లీ ప్రయత్నించండి నొక్కండి

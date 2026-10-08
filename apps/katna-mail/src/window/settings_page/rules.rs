@@ -6,22 +6,28 @@
 //! name and a line saying what it does, a dot in the color of each of its
 //! accounts, where it runs, and a pencil that opens the rule editor
 //! (`window/rule_editor.rs`). A rule the daemon switched off says why, in
-//! red. Under the rules, the Folders row: an unread count on every folder,
-//! or on the inbox only.
+//! red. Under them, the starter rules not used yet, switched off
+//! (`starter_rules.rs`). Under the rules, the Folders row: an unread count
+//! on every folder, or on the inbox only.
 
 use gpui::{
-    AnimationExt, AnyElement, ClickEvent, Context, FontWeight, MouseButton, Pixels, Point, Render,
-    SpringAnimation, Task, Window, anchored, deferred, div, prelude::*, rgba,
+    AnimationExt, AnyElement, ClickEvent, Context, DragMoveEvent, FontWeight, MouseButton,
+    MouseDownEvent, Pixels, Point, Render, SpringAnimation, Task, Window, deferred, div,
+    prelude::*, rgba,
 };
 use katna_core::AccountId;
 use katna_i18n::tr;
 use katna_store::rules::Rule;
+use katna_ui::anchored;
 use katna_ui::motion;
 use katna_ui::px;
+use katna_ui::unpx;
 
+use super::super::row_reorder::Reorder;
 use super::super::rule_editor::{self, dot};
 use super::super::settings::Change;
 use super::MailWindow;
+use super::starter_rules::{self, Starter};
 use crate::theme::{Theme, fade};
 use crate::widgets::{filled_button, icon, icon_button, menu, menu_item, switch, tip};
 use crate::{daemon, data};
@@ -37,7 +43,14 @@ pub(in crate::window) struct RulesList {
     menu: Option<Point<Pixels>>,
     load: Option<Task<()>>,
     watch: Option<Task<()>>,
+    /// Starter rules being turned on, by key.
+    starting: Vec<&'static str>,
+    /// Dragging a rule's row to reorder, by rule ID.
+    reorder: Reorder<i64>,
 }
+
+/// The space between two rule rows.
+const ROW_GAP: f32 = 4.0;
 
 /// A change to the rules the daemon makes.
 enum RuleOp {
@@ -50,22 +63,13 @@ enum RuleOp {
 #[derive(Clone)]
 struct RuleDrag {
     ix: usize,
-    name: String,
-    fill: u32,
-    text: u32,
 }
 
+/// The row itself follows the pointer ([`Reorder`]), so the drag draws
+/// nothing of its own.
 impl Render for RuleDrag {
     fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
         div()
-            .px(px(12.0))
-            .py(px(6.0))
-            .rounded(px(8.0))
-            .bg(rgba(self.fill))
-            .text_color(rgba(self.text))
-            .text_size(px(14.0))
-            .font_weight(FontWeight::BOLD)
-            .child(self.name.clone())
     }
 }
 
@@ -203,7 +207,11 @@ impl MailWindow {
     /// rules keep theirs.
     fn move_rule(&mut self, from: usize, to: usize, cx: &mut Context<Self>) {
         let mut shown: Vec<i64> = self.shown_rules().iter().map(|r| r.id).collect();
+        if let Some(page) = &mut self.settings_page {
+            page.rules.reorder.moved(&shown, from, to, ROW_GAP);
+        }
         if from == to || from >= shown.len() || to >= shown.len() {
+            cx.notify();
             return;
         }
         let moved = shown.remove(from);
@@ -219,6 +227,49 @@ impl MailWindow {
         self.change_rules(RuleOp::Reorder(order), cx);
     }
 
+    /// The pointer moved while dragging the rule at `from` to `y`.
+    fn rule_dragged(&mut self, from: usize, y: f32, cx: &mut Context<Self>) {
+        let ids: Vec<i64> = self.shown_rules().iter().map(|r| r.id).collect();
+        if let Some(page) = &mut self.settings_page {
+            page.rules.reorder.dragged(&ids, from, y, ROW_GAP);
+        }
+        cx.notify();
+    }
+
+    /// The dragged rule was let go: it goes where the rows made room.
+    fn drop_rule(&mut self, cx: &mut Context<Self>) {
+        let Some((from, to)) = self
+            .settings_page
+            .as_ref()
+            .and_then(|p| p.rules.reorder.drop_move())
+        else {
+            return;
+        };
+        self.move_rule(from, to, cx);
+    }
+
+    /// Advances the rule rows sliding in Settings > Folders & rules.
+    pub(in crate::window) fn tick_rule_reorder(
+        &mut self,
+        window: &Window,
+        reduce: bool,
+        cx: &mut Context<Self>,
+    ) {
+        let dropped = self
+            .settings_page
+            .as_ref()
+            .is_some_and(|p| p.rules.reorder.dragging())
+            && !cx.has_active_drag();
+        if dropped {
+            // Let go somewhere with nowhere to drop it.
+            self.drop_rule(cx);
+        }
+        let count = self.shown_rules().len();
+        if let Some(page) = &mut self.settings_page {
+            page.rules.reorder.tick(count, window, reduce);
+        }
+    }
+
     /// New rule: for the account picked over the list, else the one open.
     fn new_rule_here(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         let mail: Vec<AccountId> = self.rule_accounts().into_iter().map(|(id, _)| id).collect();
@@ -229,6 +280,130 @@ impl MailWindow {
             .or_else(|| self.account().filter(|a| mail.contains(a)))
             .or_else(|| mail.first().copied());
         self.new_rule(account.map(|a| vec![a.0]).unwrap_or_default(), window, cx);
+    }
+
+    /// The ID of the folder called `name` among the user's own folders
+    /// of `account`, if there is one.
+    fn folder_named(&self, account: AccountId, name: &str) -> Option<i64> {
+        self.tree
+            .folders_of(account)
+            .into_iter()
+            .find(|(_, label, role)| {
+                *role == crate::sidebar::Role::Other && label.eq_ignore_ascii_case(name)
+            })
+            .map(|(id, _, _)| id.0)
+    }
+
+    /// The editor on starter rule `key`, for every mail account, with
+    /// the folders that exist and, where an account lacks one, the folder
+    /// saving will make.
+    fn edit_starter(&mut self, key: &str, window: &mut Window, cx: &mut Context<Self>) {
+        let Some(starter) = starter_rules::starters().into_iter().find(|s| s.key == key) else {
+            return;
+        };
+        let accounts: Vec<i64> = self.rule_accounts().iter().map(|(id, _)| id.0).collect();
+        // Folders to make stand in with IDs below 0.
+        let mut new_folders: Vec<(i64, i64, String)> = Vec::new();
+        for &account in &accounts {
+            for folder in starter.folders() {
+                let name = folder.name();
+                if self.folder_named(AccountId(account), &name).is_none() {
+                    new_folders.push((-(new_folders.len() as i64) - 1, account, name));
+                }
+            }
+        }
+        let rule = starter.rule(&accounts, |account, folder| {
+            let name = folder.name();
+            self.folder_named(AccountId(account), &name).or_else(|| {
+                new_folders
+                    .iter()
+                    .find(|(_, a, n)| *a == account && *n == name)
+                    .map(|(id, _, _)| *id)
+            })
+        });
+        self.open_rule_editor(new_folders, rule, window, cx);
+    }
+
+    /// Turns on starter rule `key`: makes its folders in every mail
+    /// account that lacks them, then saves it for all of them.
+    fn turn_on_starter(&mut self, key: &'static str, cx: &mut Context<Self>) {
+        let Some(starter) = starter_rules::starters().into_iter().find(|s| s.key == key) else {
+            return;
+        };
+        let accounts: Vec<i64> = self.rule_accounts().iter().map(|(id, _)| id.0).collect();
+        if accounts.is_empty() {
+            return;
+        }
+        let Some(page) = &mut self.settings_page else {
+            return;
+        };
+        if page.rules.starting.contains(&key) {
+            return;
+        }
+        page.rules.starting.push(key);
+        // The folders there are, and those to make.
+        let mut have: Vec<(i64, String, i64)> = Vec::new();
+        let mut make: Vec<(i64, String)> = Vec::new();
+        for &account in &accounts {
+            for folder in starter.folders() {
+                let name = folder.name();
+                match self.folder_named(AccountId(account), &name) {
+                    Some(id) => have.push((account, name, id)),
+                    None => make.push((account, name)),
+                }
+            }
+        }
+        let name = starter.name();
+        if !make.is_empty() {
+            self.show_snackbar(
+                tr!("settings-rules-starter-turning-on", name = name.as_str()),
+                None,
+                cx,
+            );
+        }
+        cx.notify();
+        let connection = self.daemon.clone();
+        cx.spawn(async move |this, cx| {
+            let result = cx
+                .background_executor()
+                .spawn(async move {
+                    let connection = match connection {
+                        Some(connection) => connection,
+                        None => daemon::connect().await?,
+                    };
+                    for (account, folder) in make {
+                        let id = daemon::create_folder(&connection, account, &folder, None).await?;
+                        have.push((account, folder, id));
+                    }
+                    let rule = starter.rule(&accounts, |account, folder| {
+                        let name = folder.name();
+                        have.iter()
+                            .find(|(a, n, _)| *a == account && *n == name)
+                            .map(|(_, _, id)| *id)
+                    });
+                    daemon::rules::save(&connection, &rule).await
+                })
+                .await;
+            this.update(cx, |this, cx| {
+                if let Some(page) = &mut this.settings_page {
+                    page.rules.starting.retain(|k| *k != key);
+                }
+                if let Err(err) = result {
+                    this.show_snackbar(
+                        tr!(
+                            "settings-rules-starter-failed",
+                            name = name.as_str(),
+                            error = err
+                        ),
+                        None,
+                        cx,
+                    );
+                }
+                this.load_rules(cx);
+            })
+            .ok();
+        })
+        .detach();
     }
 
     /// The Rules and Folders rows.
@@ -337,14 +512,63 @@ impl MailWindow {
             .enumerate()
             .map(|(ix, rule)| self.rule_row(ix, rule, th, cx))
             .collect::<Vec<_>>();
+        let starters = if page.rules.loaded {
+            starter_rules::offered(&page.rules.rules)
+        } else {
+            Vec::new()
+        };
+        let starting = page.rules.starting.clone();
+        let starter_rows = starters
+            .iter()
+            .enumerate()
+            .map(|(ix, s)| self.starter_row(ix, s, starting.contains(&s.key), th, cx))
+            .collect::<Vec<_>>();
         div()
             .flex()
             .flex_col()
             .gap(px(4.0))
             .child(header)
             .child(div().h(px(8.0)))
-            .children(rows)
-            .when(empty, |d| {
+            .child(
+                div()
+                    .flex()
+                    .flex_col()
+                    .gap(px(ROW_GAP))
+                    .on_drag_move(cx.listener(|this, event: &DragMoveEvent<RuleDrag>, _, cx| {
+                        let from = event.drag(cx).ix;
+                        this.rule_dragged(from, unpx(event.event.position.y), cx)
+                    }))
+                    .on_drop(cx.listener(|this, _: &RuleDrag, _, cx| this.drop_rule(cx)))
+                    .children(rows),
+            )
+            .when(!starter_rows.is_empty(), |d| {
+                d.child(
+                    div()
+                        .mt(px(if empty { 4.0 } else { 14.0 }))
+                        .mb(px(2.0))
+                        .flex()
+                        .flex_row()
+                        .flex_wrap()
+                        .items_baseline()
+                        .gap_x(px(10.0))
+                        .child(
+                            div()
+                                .text_size(px(14.0))
+                                .font_weight(FontWeight::BOLD)
+                                .text_color(rgba(th.text))
+                                .child(tr!("settings-rules-starters")),
+                        )
+                        .child(
+                            div()
+                                .text_size(px(13.0))
+                                .line_height(px(18.0))
+                                .text_color(rgba(th.text_faint))
+                                .child(tr!("settings-rules-starters-intro")),
+                        ),
+                )
+                .children(starter_rows)
+            })
+            .when(empty && starters.is_empty(), |d| {
                 d.child(
                     div()
                         .py(px(12.0))
@@ -367,12 +591,6 @@ impl MailWindow {
         let on = rule.enabled;
         let failed = !on && rule.last_error.is_some();
         let summary = rule_editor::summary(rule, |f| self.rule_folder_name(f));
-        let drag = RuleDrag {
-            ix,
-            name: rule.name.clone(),
-            fill: th.menu,
-            text: th.text,
-        };
         let handle = div()
             .id(("rule-drag", ix))
             .flex_none()
@@ -383,9 +601,18 @@ impl MailWindow {
             .justify_center()
             .rounded(px(6.0))
             .cursor_grab()
-            .hover(|s| s.bg(rgba(th.hover)))
+            .relative()
+            .child(crate::widgets::hover_fade("hover-glow", Some(6.0), th))
             .tooltip(tip(tr!("settings-rules-drag"), th))
-            .on_drag(drag, |drag, _, _, cx| cx.new(|_| drag.clone()))
+            .on_mouse_down(
+                MouseButton::Left,
+                cx.listener(move |this, event: &MouseDownEvent, _, _| {
+                    if let Some(page) = this.settings_page.as_mut() {
+                        page.rules.reorder.grab(ix, unpx(event.position.y));
+                    }
+                }),
+            )
+            .on_drag(RuleDrag { ix }, |drag, _, _, cx| cx.new(|_| drag.clone()))
             .child(icon("drag-handle", th.text_faint, 16.0));
         let toggle = div()
             .id(("rule-switch", ix))
@@ -405,7 +632,11 @@ impl MailWindow {
             .on_click(cx.listener(move |this, _, _, cx| this.set_rule_on(id, !on, cx)))
             .child(div().with_spring(
                 ("rule-switch-spring", ix),
-                SpringAnimation::new(motion::SLIDE).to(if on { 1.0 } else { 0.0 }),
+                SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE)).to(if on {
+                    1.0
+                } else {
+                    0.0
+                }),
                 {
                     let th = *th;
                     move |el, s: f32| el.child(switch(s.clamp(0.0, 1.0), &th))
@@ -511,12 +742,13 @@ impl MailWindow {
                             .and_then(|p| p.rules.rules.iter().find(|r| r.id == id))
                             .cloned();
                         if let Some(rule) = rule {
-                            this.open_rule_editor(rule, window, cx);
+                            this.open_rule_editor(Vec::new(), rule, window, cx);
                         }
                     })),
             );
-        let target = fade(th.accent, 0.10);
-        div()
+        let reorder = self.settings_page.as_ref().map(|p| &p.rules.reorder);
+        let raised = reorder.is_some_and(|r| r.raised(ix, id));
+        let row = div()
             .id(("rule-row", ix))
             .mx(px(-8.0))
             .px(px(8.0))
@@ -526,14 +758,7 @@ impl MailWindow {
             .flex_row()
             .items_start()
             .gap(px(8.0))
-            .drag_over::<RuleDrag>(
-                move |s, drag, _, _| {
-                    if drag.ix == ix { s } else { s.bg(rgba(target)) }
-                },
-            )
-            .on_drop(
-                cx.listener(move |this, drag: &RuleDrag, _, cx| this.move_rule(drag.ix, ix, cx)),
-            )
+            .when_some(reorder, |d, r| r.row(d, ix, id, th))
             .child(handle)
             .child(toggle)
             .child(
@@ -548,6 +773,100 @@ impl MailWindow {
                     .gap_y(px(6.0))
                     .child(about)
                     .child(side),
+            );
+        // Drawn over the rows after it while lifted or landing.
+        if raised {
+            deferred(row).with_priority(1).into_any_element()
+        } else {
+            row.into_any_element()
+        }
+    }
+
+    /// A starter rule's row: as a rule's, switched off, without a handle
+    /// or a tag. `starting` while it is being turned on.
+    fn starter_row(
+        &self,
+        ix: usize,
+        starter: &Starter,
+        starting: bool,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        let key = starter.key;
+        let summary = rule_editor::summary(&starter.preview(), starter_rules::preview_folder);
+        let toggle = div()
+            .id(("starter-switch", ix))
+            .map(|d| self.page_control(d, th, cx))
+            .flex_none()
+            .p(px(4.0))
+            .rounded_full()
+            .cursor_pointer()
+            .tooltip(tip(tr!("settings-rules-turn-on"), th))
+            .on_click(cx.listener(move |this, _, _, cx| this.turn_on_starter(key, cx)))
+            .child(div().with_spring(
+                ("starter-switch-spring", ix),
+                SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE)).to(if starting {
+                    1.0
+                } else {
+                    0.0
+                }),
+                {
+                    let th = *th;
+                    move |el, s: f32| el.child(switch(s.clamp(0.0, 1.0), &th))
+                },
+            ));
+        let about = div()
+            .flex_1()
+            .min_w(px(200.0))
+            .flex()
+            .flex_col()
+            .gap(px(1.0))
+            .child(
+                div()
+                    .text_size(px(15.0))
+                    .font_weight(FontWeight::BOLD)
+                    .text_color(rgba(th.text_faint))
+                    .truncate()
+                    .child(starter.name()),
+            )
+            .child(
+                div()
+                    .text_size(px(13.0))
+                    .line_height(px(18.0))
+                    .text_color(rgba(th.text_faint))
+                    .child(summary),
+            );
+        let edit = icon_button(("starter-edit", ix), "pen", 18.0, th)
+            .map(|d| self.page_control(d, th, cx))
+            .flex_none()
+            .size(px(32.0))
+            .tooltip(tip(tr!("settings-rules-edit"), th))
+            .on_click(cx.listener(move |this, _, window, cx| this.edit_starter(key, window, cx)));
+        div()
+            .id(("starter-row", ix))
+            .mx(px(-8.0))
+            .px(px(8.0))
+            .py(px(6.0))
+            .rounded(px(10.0))
+            .flex()
+            .flex_row()
+            .items_start()
+            .gap(px(8.0))
+            // Where a rule's drag handle is.
+            .child(div().flex_none().w(px(20.0)).h(px(32.0)))
+            .child(toggle)
+            .child(
+                div()
+                    .flex_1()
+                    .min_w_0()
+                    .flex()
+                    .flex_row()
+                    .flex_wrap()
+                    .items_center()
+                    .gap_x(px(12.0))
+                    .gap_y(px(6.0))
+                    .child(about)
+                    .child(edit),
             )
             .into_any_element()
     }

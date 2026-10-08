@@ -110,6 +110,11 @@ pub struct Theme {
     /// A faint light edge around raised things in dark colors
     /// (`widgets::elevation`); transparent in light colors.
     pub rim: u32,
+    /// A crisp hairline ring around cards in light colors, where a white
+    /// card on a near-white page has no edge of its own
+    /// (`widgets::card_shadow`); transparent in dark colors, whose cards
+    /// stand off the darker page by their fill.
+    pub card_edge: u32,
     /// Floating panels (menus, popovers) are frosted glass: `menu`,
     /// translucent, over a blur of this many device pixels of what is
     /// behind. 0 keeps them opaque ([`Theme::frosted`]).
@@ -134,6 +139,10 @@ pub struct Theme {
     pub snackbar_text: u32,
     /// Error text and the frame of a field in error.
     pub error: u32,
+    /// What needs the user before it gets better: an account signed out
+    /// or refusing its password, a mail not sent. Amber, readable as
+    /// text. Errors stay [`Theme::error`].
+    pub warning: u32,
     /// Shadow color; its alpha is the strongest shadow.
     pub shadow: u32,
 }
@@ -290,6 +299,13 @@ impl Theme {
         } else {
             tint_over(self.surface | 0xff, fill)
         }
+    }
+
+    /// The Settings page's list of pages beside the open page: a faint grey
+    /// on the card, so it reads as its own menu. The selected row and the
+    /// hover lay their own grey on top.
+    pub fn side_menu(&self) -> u32 {
+        self.on_pane(fade(self.text, 0.03))
     }
 
     /// For what is drawn on a raised surface (a dialog, the Compose
@@ -467,6 +483,7 @@ impl Theme {
             menu: if dark { ink(MENU_LIFT) } else { surface },
             raised: if dark { ink(RAISED_LIFT) } else { surface },
             rim: if dark { fade(text, RIM) } else { 0x00000000 },
+            card_edge: if dark { 0x00000000 } else { base.card_edge },
             frost: 0,
             frost_tint: 100,
             pane_tint: 100,
@@ -479,6 +496,9 @@ impl Theme {
             snackbar: base.snackbar,
             snackbar_text: base.snackbar_text,
             error: readable(s.negative, surface, 3.0),
+            warning: s
+                .neutral
+                .map_or(base.warning, |c| readable(c, surface, 4.5)),
             shadow: base.shadow,
         }
     }
@@ -598,6 +618,8 @@ const LIGHT: Theme = Theme {
     menu: 0xffffffff,
     raised: 0xffffffff,
     rim: 0x00000000,
+    // The shadow's ink at 10%.
+    card_edge: 0x3c40431a,
     frost: 0,
     frost_tint: 100,
     pane_tint: 100,
@@ -619,6 +641,7 @@ const LIGHT: Theme = Theme {
     snackbar: 0x313033ff,
     snackbar_text: 0xf4eff4ff,
     error: 0xb3261eff,
+    warning: 0xa05a00ff,
     shadow: 0x3c40434d,
 };
 
@@ -655,6 +678,7 @@ const DARK: Theme = Theme {
     menu: 0x383a3dff,
     raised: 0x333537ff,
     rim: 0xe3e3e321,
+    card_edge: 0x00000000,
     frost: 0,
     frost_tint: 100,
     pane_tint: 100,
@@ -676,6 +700,7 @@ const DARK: Theme = Theme {
     snackbar: 0xe3e3e3ff,
     snackbar_text: 0x1f1f1fff,
     error: 0xf2b8b5ff,
+    warning: 0xfdd663ff,
     shadow: 0x00000099,
 };
 
@@ -1020,6 +1045,7 @@ mod tests {
             accent: 0x3daee9ff,
             accent_fg: 0xffffffff,
             negative: 0xda4453ff,
+            neutral: None,
         };
         let desktop = SystemColors::default().with_schemes(vec![DesktopScheme {
             id: "kde:BreezeClassic".to_owned(),
@@ -1081,6 +1107,8 @@ mod tests {
             assert!(luminance(th.raised) > luminance(th.page));
             assert!(luminance(th.menu) > luminance(th.raised));
             assert_ne!(th.rim & 0xff, 0);
+            // Dark cards stand off the page by their fill, with no ring.
+            assert_eq!(th.card_edge, 0);
             let lifted = th.lifted();
             assert_eq!(lifted.surface, th.raised);
             assert!(luminance(lifted.search_focused) > luminance(lifted.surface));
@@ -1093,6 +1121,8 @@ mod tests {
         // Light colors are left as they were: shadows show there.
         assert_eq!(LIGHT.raised, LIGHT.surface);
         assert_eq!(LIGHT.rim, 0);
+        // A white card on the near-white page gets a hairline ring.
+        assert_ne!(LIGHT.card_edge & 0xff, 0);
         assert_eq!(LIGHT.lifted(), LIGHT);
     }
 

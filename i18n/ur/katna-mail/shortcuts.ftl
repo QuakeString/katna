@@ -8,6 +8,10 @@ shortcut-group-moving = نیویگیشن
 shortcut-group-actions = کارروائیاں
 shortcut-group-go-to = یہاں جائیں
 shortcut-group-app = ایپلیکیشن
+shortcuts-dialog-title = کی بورڈ شارٹ کٹس
+shortcuts-dialog-search = شارٹ کٹ تلاش کریں
+shortcuts-dialog-none = کوئی شارٹ کٹ مطابقت نہیں رکھتا
+shortcuts-dialog-close = بند کریں
 
 ## Settings > Keyboard shortcuts: what each shortcut does
 
@@ -37,6 +41,8 @@ shortcut-mark-read = بطور پڑھا ہوا نشان زد کریں
 shortcut-mark-unread = بطور ناخواندہ نشان زد کریں
 shortcut-star = ستارہ لگائیں یا ہٹائیں
 shortcut-add-to-tasks = کاموں میں شامل کریں
+shortcut-snooze = اسنوز کریں
+shortcut-remind = مجھے یاد دلائیں
 shortcut-important = بطور اہم نشان زد کریں
 shortcut-not-important = بطور غیر اہم نشان زد کریں
 shortcut-mute = گفتگو خاموش کریں یا خاموشی ختم کریں

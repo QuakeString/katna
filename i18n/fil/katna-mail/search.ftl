@@ -14,6 +14,7 @@ search-without = Walang mga salitang
 search-date-within = Petsa sa loob ng
 search-has-attachment = May attachment
 search-attachment-custom = Custom
+search-attachment-image = Larawan
 search-attachment-custom-hint = Mag-type ng extension, gaya ng png, tapos Space
 search-attachment-remove = Alisin
 search-clear-filter = I-clear ang filter

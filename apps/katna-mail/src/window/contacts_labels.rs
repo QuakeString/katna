@@ -10,13 +10,14 @@ use std::collections::BTreeSet;
 
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, Entity, Focusable, FontWeight, MouseButton,
-    Pixels, Point, SharedString, Subscription, Window, anchored, deferred, div, ease_out_quint,
-    prelude::*, rgba,
+    Pixels, Point, SharedString, Subscription, Window, deferred, div, ease_out_quint, prelude::*,
+    rgba,
 };
 use katna_i18n::tr;
 use katna_store::StoredCard;
+use katna_ui::anchored;
 use katna_ui::motion::{self, Spring, lerp};
-use katna_ui::{InputEvent, TextInput, px, unpx};
+use katna_ui::{InputEvent, TextInput, px};
 
 use super::MailWindow;
 use super::apps::App;
@@ -24,7 +25,7 @@ use super::contacts_page::View;
 use crate::daemon::{self, Command};
 use crate::format;
 use crate::theme::{Theme, fade};
-use crate::widgets::{FocusRing, ScaledEdge, elevation, filled_button, icon, raised};
+use crate::widgets::{FocusRing, ScaledEdge, filled_button, icon, raised};
 
 const MENU_WIDTH: f32 = 260.0;
 const DIALOG_WIDTH: f32 = 400.0;
@@ -505,7 +506,10 @@ impl MailWindow {
             .children(items)
             .with_animation(
                 "contact-label-menu",
-                Animation::new(std::time::Duration::from_millis(140)).with_easing(ease_out_quint()),
+                Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+                    140,
+                )))
+                .with_easing(ease_out_quint()),
                 |el, t| el.opacity(t).mt(px(-4.0 * (1.0 - t))),
             );
         let close = || {
@@ -593,7 +597,7 @@ impl MailWindow {
                 .mt(px(12.0))
                 .text_size(px(13.0))
                 .text_color(rgba(th.error))
-                .child(err)
+                .child(self.copyable(err, th))
         });
         let busy = dialog.busy;
         let body = div()
@@ -653,8 +657,7 @@ impl MailWindow {
                         .on_click(cx.listener(|this, _, _, cx| this.submit_label_dialog(cx))),
                     ),
             );
-        let viewport = window.viewport_size();
-        let vw = unpx(viewport.width);
+        let vw = self.room_width();
         let card = div()
             .id("contact-label-dialog")
             .track_focus(&self.dialog_focus)
@@ -663,11 +666,8 @@ impl MailWindow {
             .w(px(DIALOG_WIDTH.min(vw - 32.0)))
             .flex()
             .flex_col()
-            .overflow_hidden()
-            .rounded(px(super::PANEL_RADIUS))
-            .map(|d| crate::widgets::frosted(d, th, th.surface, super::PANEL_RADIUS))
+            .map(|d| crate::widgets::dialog(d, th, th.surface))
             .text_color(rgba(th.text))
-            .shadow(elevation(th, 3.0))
             .child(body);
         Some(
             div()

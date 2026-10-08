@@ -21,12 +21,20 @@ viewer-page-count = kati ya { $count }
 viewer-go-to-page-tip = Andika nambari ya ukurasa kisha bonyeza Enter (Ctrl+G)
 viewer-rotate-clockwise-tip = Zungusha kisaa (Ctrl+R)
 viewer-rotate-anticlockwise-tip = Zungusha kinyume cha saa (Ctrl+Shift+R)
+viewer-dark-pages-tip = Kurasa nyeusi
+viewer-light-pages-tip = Onyesha kurasa jinsi zilivyo
 viewer-fit-page-tip = Toshea ukurasa
 viewer-fit-picture-tip = Toshea dirisha
 viewer-fit-width-tip = Toshea upana
 viewer-real-size-tip = Ukubwa halisi (1:1)
 viewer-page-back-tip = Ukurasa uliotangulia
 viewer-page-on-tip = Ukurasa unaofuata
+viewer-more-tip = Zaidi
+viewer-zoom-in = Kuza
+viewer-zoom-out = Fifiza
+viewer-real-size = Ukubwa halisi
+viewer-rotate-anticlockwise = Zungusha kinyume cha saa
+viewer-rotate-clockwise = Zungusha kisaa
 
 ## Marking up a PDF
 

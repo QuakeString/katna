@@ -14,6 +14,7 @@ search-without = इनके बिना
 search-date-within = इतने समय के भीतर
 search-has-attachment = अटैचमेंट वाले
 search-attachment-custom = कस्टम
+search-attachment-image = तस्वीर
 search-attachment-custom-hint = कोई एक्सटेंशन टाइप करें, जैसे png, फिर Space दबाएं
 search-attachment-remove = हटाएं
 search-clear-filter = फ़िल्टर साफ़ करें

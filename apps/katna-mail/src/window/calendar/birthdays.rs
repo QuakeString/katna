@@ -103,16 +103,20 @@ fn birthdays_shown(
 }
 
 /// Adds the Birthdays calendar and, when it is shown, its events in
-/// `from..to` to what was read; nothing when no one saved has a birthday.
+/// `from..to` to what was read; nothing when no one saved has a birthday,
+/// or when Contacts is off (`shown` is `None`).
 pub(in crate::window) fn add_birthdays(
     store: &Store,
-    shown: bool,
+    shown: Option<bool>,
     from: i64,
     to: i64,
     tz: &jiff::tz::TimeZone,
     calendars: &mut Vec<Calendar>,
     occurrences: &mut Vec<Occurrence>,
 ) {
+    let Some(shown) = shown else {
+        return;
+    };
     // An older store without contacts has no birthdays.
     let cards = store.contact_birthdays().unwrap_or_default();
     if cards.is_empty() {
@@ -143,7 +147,7 @@ pub(in crate::window) fn add_birthdays(
 
 impl MailWindow {
     /// Shows or hides the Birthdays calendar, remembered in the settings.
-    pub(super) fn toggle_birthdays(&mut self, cx: &mut Context<Self>) {
+    pub(in crate::window) fn toggle_birthdays(&mut self, cx: &mut Context<Self>) {
         let contacts = &mut self.config.contacts;
         contacts.hide_birthdays = !contacts.hide_birthdays;
         self.save_config();

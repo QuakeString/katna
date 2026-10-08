@@ -693,3 +693,55 @@ fn a_taken_registered_port_says_so() {
         assert!(err.to_string().contains("is taken"), "{err}");
     });
 }
+
+#[test]
+fn sign_in_asks_only_for_the_apps_turned_on() {
+    let mail_only = AppsOn {
+        calendar: false,
+        contacts: false,
+        tasks: false,
+        notes: false,
+        files: false,
+    };
+    let google = Provider {
+        scope: format!(
+            "{GOOGLE_MAIL} {GOOGLE_DRIVE_FILE} {GOOGLE_DRIVE} {GOOGLE_CALENDAR} \
+             {GOOGLE_CONTACTS} {GOOGLE_OTHER_CONTACTS} {GOOGLE_CARDDAV} {GOOGLE_TASKS} \
+             openid email"
+        ),
+        ..provider(OAuthProvider::Google, "https://token.test")
+    };
+    assert_eq!(
+        google.clone().only_for(&AppsOn::default()).scope,
+        google.scope,
+        "every app on: everything"
+    );
+    assert_eq!(
+        google.clone().only_for(&mail_only).scope,
+        format!("{GOOGLE_MAIL} {GOOGLE_DRIVE_FILE} openid email")
+    );
+    let tasks = AppsOn {
+        tasks: true,
+        ..mail_only.clone()
+    };
+    let microsoft = Provider {
+        consent: format!(
+            "{MICROSOFT_FILES} {MICROSOFT_CALENDARS} {MICROSOFT_CONTACTS} {MICROSOFT_TASKS}"
+        ),
+        ..provider(OAuthProvider::Microsoft, "https://token.test")
+    };
+    let microsoft = microsoft.only_for(&tasks);
+    assert_eq!(
+        microsoft.consent,
+        format!("{MICROSOFT_FILES} {MICROSOFT_TASKS}")
+    );
+    assert_eq!(microsoft.scope, "https://mail.test/ openid email");
+    let zoho = Provider {
+        scope: format!("{ZOHO_TASKS},{ZOHO_MAIL_ACCOUNTS},{ZOHO_CALENDAR},{ZOHO_PROFILE}"),
+        ..provider(OAuthProvider::Zoho, "https://token.test")
+    };
+    assert_eq!(
+        zoho.only_for(&mail_only).scope,
+        format!("{ZOHO_MAIL_ACCOUNTS},{ZOHO_PROFILE}")
+    );
+}

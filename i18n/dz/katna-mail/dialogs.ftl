@@ -6,6 +6,10 @@
 
 about-tooltip = Katna གི་སྐོར་ལས
 about-tagline = Linux ཌེཀསི་ཊོཔ་གི་དོན་ལུ་ གློག་འཕྲིན་དང་ཟླ་ཐོ
+about-copy-version = ཐོན་རིམ་གྱི་ཁ་གསལ་འདྲ་བཤུས་རྐྱབས།
+about-version-copied = འདྲ་བཤུས་རྐྱབ་ཡི
+about-version-built = བཟོ་ཡོདཔ: { $date }
+about-version-system = རིམ་ལུགས: { $system }
 about-whats-new = གསརཔ་ག་ཅི་ཡོདཔ
 
 ## Updates, in a box under the version in About (only in packages that
@@ -22,11 +26,13 @@ about-update-ready = ཐོན་རིམ་ { $version } གཞི་བཙུ
 about-update-ready-detail = དུས་མཐུན་བཟོ་ནི་མཇུག་བསྡུ་ནི་ལུ་ Katna Mail ལོག་འགོ་བཙུགསཔ་ཨིན།
 about-update-confirm = ཐོན་རིམ་ { $version } གཞི་བཙུགས་འབད་ནི་ཨིན་ན?
 about-update-confirm-detail = Katna Mail ཁ་བསྡམས་དེ་ དུས་མཐུན་བཟོ་ནི་གཞི་བཙུགས་འབད་ཞིནམ་ལས་ ཁྱོད་ཀྱིས་བར་སྟོང་བཞག་སའི་ས་གནས་ལས་ལོག་འགོ་བཙུགསཔ་ཨིན། ཁྱོད་ཀྱི་གློག་རིག་གིས་ཁྱོད་ཀྱི་ཆོག་ཡིག་འདྲི་འོང་།
+about-update-confirm-detail-windows = Katna Mail ཁ་བསྡམས་ཏེ་ དུས་མཐུན་བཟོ་ནི་གཞི་བཙུགས་འབད་ཞིནམ་ལས་ ཕྲོ་མ་ཅིག་ནང་ ལོག་ཁ་ཕྱེཝ་ཨིན།
 about-update-installing = ཐོན་རིམ་ { $version } གཞི་བཙུགས་འབད་དོ…
 about-update-installing-detail = ཁ་ཕྱེ་ཡོད་པའི་སྒོ་སྒྲིག་ནང་ ཁྱོད་ཀྱི་ཆོག་ཡིག་བཙུགས།
+about-update-installing-detail-windows = Katna Mail ད་ལྟོ་ཁ་བསྡམསཔ་ཨིན་ དུས་མཐུན་བཟོ་ནི་གཞི་བཙུགས་འབད་ཚར་བའི་ཤུལ་ལས་ ལོག་ཁ་ཕྱེཝ་ཨིན།
 about-update-cancelled = ཆོག་ཡིག་མ་བྱིན་པའི་དོན་ལུ་ དུས་མཐུན་བཟོ་ནི་གཞི་བཙུགས་མ་འབད།
 about-update-failed = དུས་མཐུན་བཟོ་ནི་གཞི་བཙུགས་འབད་མ་ཚུགས: { $error }
-about-update-unsupported = Katna Mail་གི་འདྲ་བཤུས་འདི་ ཁྱོད་ཀྱི་ཐུམ་སྒྲིལ་འཛིན་སྐྱོང་པ་གིས་དུས་མཐུན་བཟོཝ་ཨིན།
+about-update-not-self-updating = Katna Mail གི་འདྲ་བཤུས་འདི་གིས་ རང་གིས་རང་དུས་མཐུན་མི་བཟོ། ཁྱོད་ཀྱིས་གཞི་བཙུགས་འབད་མི་ཐབས་ལམ་དེ་ལུ་ དུས་མཐུན་བཟོ།
 about-update-restart-failed = དུས་མཐུན་བཟོ་ནི་གཞི་བཙུགས་འབད་ཡི, འདི་འབདཝ་ད་ Katna Mail ལོག་ཁ་ཕྱེ་མ་ཚུགས ({ $error })། རང་གིས་ཁ་ཕྱེ།
 about-update-check = དུས་མཐུན་བཟོ་ནི་ཚུ་ཞིབ་དཔྱད་འབད།
 about-update-download = ཕབ་ལེན་འབད།
@@ -145,6 +151,7 @@ onboarding-katna-private = འདི་ལུ་ རང་སོའི་ཆོ�
 onboarding-ready-title = ཆ་མཉམ་གྲ་སྒྲིག་འབད་ཡི
 onboarding-ready-lead = Katna གིས་ ཁྱོད་ཀྱི་གློག་འཕྲིན་ལེན་དོ། འབྱོར་དོ་བཟུམ་སྦེ་ མངོན་གསལ་འབདཝ་ཨིན། གློག་འཕྲིན་གསརཔ་ཚུ་ རང་བཞིན་གྱིས་འཐོནམ་ཨིན།
 onboarding-ready-lead-address = Katna གིས་ { $address } གི་གློག་འཕྲིན་ལེན་དོ། འབྱོར་དོ་བཟུམ་སྦེ་ མངོན་གསལ་འབདཝ་ཨིན། གློག་འཕྲིན་གསརཔ་ཚུ་ རང་བཞིན་གྱིས་འཐོནམ་ཨིན།
+onboarding-apps = ཁྱོད་ཀྱིས་ལག་ལེན་འཐབ་མི་གློག་རིམ་ཚུ
 onboarding-ready-tour = ག་ཅི་ག་ཏེ་ཡོདཔ་ཨིན་ན་བལྟ་ནི་ལུ་ སྐར་མ་གཅིག་གི་འགྲུལ་བསྐྱོད་འབད་ནི་ཨིན་ན?
 onboarding-skip = ད་རེས་ཀྱི་དོན་ལུ་ གོམ་འཕྱོངས།
 onboarding-take-tour = འགྲུལ་བསྐྱོད་འབད།
@@ -207,11 +214,9 @@ crash-view = སྙན་ཞུ་བལྟ།
 crash-view-tooltip = གློག་རིག་འདི་གུ་སྲུང་ཡོད་པའི་ སྙན་ཞུ་ཁ་ཕྱེ།
 crash-copy = སྙན་ཞུ་འདྲ་བཤུས་རྐྱབ།
 crash-close = ཁ་བསྡམས།
-sign-in-again-text = { $provider } གིས་ ཁྱོད་ལུ་ { $address } ནང་ ལོག་ནང་བསྐྱོད་འབད་ཟེར་ཞུཝ་ཨིན།
 sign-in-again-button = ནང་བསྐྱོད་འབད།
 sign-in-again-tooltip = ཁྱོད་ཀྱི་ བརྡ་འཚོལ་ཆས་ནང་ { $provider } གི་ ནང་བསྐྱོད་ཤོག་ངོས་ ཁ་ཕྱེ།
 sign-in-again-waiting = ཁྱོད་ཀྱི་ བརྡ་འཚོལ་ཆས་ལུ་ བསྒུག་དོ…
-sign-in-again-close = ཁ་བསྡམས།
 google-api-off = Katna གི་ Google Cloud ལས་འགུལ་ནང་ { $api } ཤུགས་མེད་བཏང་ཡོདཔ་ཨིན།
 google-api-turn-on = ཤུགས་ལྡན་བཏང་།
 google-api-turn-on-tooltip = { $api } ཤུགས་ལྡན་བཏང་ནི་ལུ་ Google Cloud ཁ་ཕྱེ་ཞིནམ་ལས་ ལོག་འབད་རྩོལ་བསྐྱེད་ ཨེབ།

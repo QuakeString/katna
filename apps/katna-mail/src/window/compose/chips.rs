@@ -15,10 +15,11 @@
 use std::cell::RefCell;
 
 use gpui::{
-    AnyElement, ClickEvent, Context, Focusable, FontWeight, SharedString, Window, anchored, canvas,
-    deferred, div, point, prelude::*, rgba,
+    AnyElement, ClickEvent, Context, Focusable, FontWeight, SharedString, Window, canvas, deferred,
+    div, point, prelude::*, rgba,
 };
 use katna_i18n::tr;
+use katna_ui::anchored;
 use katna_ui::{TextInput, px, unpx};
 
 use super::MailWindow;
@@ -1184,7 +1185,8 @@ impl MailWindow {
                         .items_center()
                         .justify_center()
                         .rounded_full()
-                        .hover(|s| s.bg(rgba(th.hover)))
+                        .relative()
+                        .child(crate::widgets::hover_fade("hover-glow", None, th))
                         .when(!open, |d| d.tooltip(tip(tr!("recipient-show-address"), th)))
                         .on_click(cx.listener(move |this, _, _, cx| {
                             cx.stop_propagation();
@@ -1203,7 +1205,8 @@ impl MailWindow {
                     .items_center()
                     .justify_center()
                     .rounded_full()
-                    .hover(|s| s.bg(rgba(th.hover)))
+                    .relative()
+                    .child(crate::widgets::hover_fade("hover-glow", None, th))
                     .tooltip(tip(tr!("recipient-remove"), th))
                     .on_click(cx.listener(move |this, _, _, cx| {
                         cx.stop_propagation();

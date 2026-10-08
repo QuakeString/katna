@@ -9,6 +9,13 @@ shortcut-group-actions = Mga aksyon
 shortcut-group-go-to = Pumunta sa
 shortcut-group-app = Application
 
+## Help > Keyboard shortcuts: every shortcut in a dialog over the window
+
+shortcuts-dialog-title = Mga keyboard shortcut
+shortcuts-dialog-search = Maghanap ng shortcut
+shortcuts-dialog-none = Walang tumutugmang shortcut
+shortcuts-dialog-close = Isara
+
 ## Settings > Keyboard shortcuts: what each shortcut does
 
 shortcut-next = Susunod na pag-uusap
@@ -37,6 +44,8 @@ shortcut-mark-read = Markahan bilang nabasa na
 shortcut-mark-unread = Markahan bilang hindi pa nabasa
 shortcut-star = Lagyan o alisan ng star
 shortcut-add-to-tasks = Idagdag sa Mga Gawain
+shortcut-snooze = I-snooze
+shortcut-remind = Paalalahanan ako
 shortcut-important = Markahan bilang mahalaga
 shortcut-not-important = Markahan bilang hindi mahalaga
 shortcut-mute = I-mute o i-unmute ang pag-uusap

@@ -6,6 +6,10 @@
 
 about-tooltip = Katna பற்றி
 about-tagline = Linux டெஸ்க்டாப்புக்கான அஞ்சலும் கேலெண்டரும்
+about-copy-version = பதிப்பு விவரங்களை நகலெடு
+about-version-copied = நகலெடுக்கப்பட்டது
+about-version-built = உருவாக்கியது: { $date }
+about-version-system = சிஸ்டம்: { $system }
 about-whats-new = புதிதாக என்ன உள்ளது
 
 ## update themselves). $version is a version such as 0.0.0.r236.g1a2b3c4.
@@ -21,11 +25,13 @@ about-update-ready = பதிப்பு { $version } நிறுவத் �
 about-update-ready-detail = புதுப்பிப்பை முடிக்க Katna Mail மறுதொடக்கம் செய்யும்.
 about-update-confirm = பதிப்பு { $version }-ஐ நிறுவவா?
 about-update-confirm-detail = Katna Mail மூடிவிட்டு, புதுப்பிப்பை நிறுவி, நீங்கள் விட்ட இடத்திலிருந்து மீண்டும் திறக்கும். உங்கள் கணினி உங்கள் கடவுச்சொல்லைக் கேட்கும்.
+about-update-confirm-detail-windows = Katna Mail மூடி, அப்டேட்டை நிறுவி, சிறிது நேரத்தில் மீண்டும் திறக்கும்.
 about-update-installing = பதிப்பு { $version } நிறுவப்படுகிறது…
 about-update-installing-detail = திறந்த சாளரத்தில் உங்கள் கடவுச்சொல்லை உள்ளிடுங்கள்.
+about-update-installing-detail-windows = Katna Mail இப்போது மூடும்; அப்டேட் நிறுவப்பட்டதும் மீண்டும் திறக்கும்.
 about-update-cancelled = கடவுச்சொல் கொடுக்கப்படாததால் புதுப்பிப்பு நிறுவப்படவில்லை.
 about-update-failed = புதுப்பிப்பை நிறுவ முடியவில்லை: { $error }
-about-update-unsupported = Katna Mail-இன் இந்தப் பிரதியை உங்கள் தொகுப்பு மேலாளர் புதுப்பிக்கிறது.
+about-update-not-self-updating = Katna Mail-இன் இந்த நகல் தானாக அப்டேட் ஆகாது. நீங்கள் நிறுவிய வழியிலேயே அதை அப்டேட் செய்யுங்கள்.
 about-update-restart-failed = புதுப்பிப்பு நிறுவப்பட்டது, ஆனால் Katna Mail மீண்டும் திறக்க முடியவில்லை ({ $error }). நீங்களே திறக்கவும்.
 about-update-check = புதுப்பிப்புகளைச் சரிபார்
 about-update-download = பதிவிறக்கு
@@ -146,6 +152,7 @@ onboarding-katna-private = இதற்கு அதன் சொந்தக்
 onboarding-ready-title = எல்லாம் தயார்
 onboarding-ready-lead = Katna உங்கள் அஞ்சலைப் பெறுகிறது. அவை வந்து சேரும்போதே தோன்றும், புதிய அஞ்சல் தானாகவே தோன்றும்.
 onboarding-ready-lead-address = Katna { $address } இன் அஞ்சலைப் பெறுகிறது. அவை வந்து சேரும்போதே தோன்றும், புதிய அஞ்சல் தானாகவே தோன்றும்.
+onboarding-apps = நீங்கள் பயன்படுத்தும் ஆப்ஸ்
 onboarding-ready-tour = எல்லாம் எங்கே உள்ளது என்று பார்க்க ஒரு நிமிட அறிமுகச் சுற்று வேண்டுமா?
 onboarding-skip = இப்போதைக்குத் தவிர்
 onboarding-take-tour = அறிமுகச் சுற்றைத் தொடங்கு
@@ -213,11 +220,9 @@ crash-close = மூடு
 
 ## letting an account in; $provider: Google or Microsoft)
 
-sign-in-again-text = { $address } இல் மீண்டும் உள்நுழையுமாறு { $provider } கேட்கிறது.
 sign-in-again-button = உள்நுழை
 sign-in-again-tooltip = உங்கள் உலாவியில் { $provider } உள்நுழைவுப் பக்கத்தைத் திற
 sign-in-again-waiting = உங்கள் உலாவிக்காகக் காத்திருக்கிறது…
-sign-in-again-close = மூடு
 google-api-off = Katna-வின் Google Cloud ப்ராஜெக்ட்டில் { $api } முடக்கப்பட்டுள்ளது.
 google-api-turn-on = இயக்கு
 google-api-turn-on-tooltip = { $api } ஐ இயக்க Google Cloud ஐத் திறந்து, பின்னர் மீண்டும் முயல் என்பதை அழுத்துங்கள்

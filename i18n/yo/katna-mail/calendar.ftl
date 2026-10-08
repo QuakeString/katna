@@ -52,7 +52,7 @@ calendar-account-signed-in = O ti wọlé sí { $address } lẹ́ẹ̀kan sí i.
 calendar-account-sign-in-refused = { $provider } kò jẹ́ kí Katna wọlé. Gbìyànjú lẹ́ẹ̀kan sí i, kí o sì gba ààyè sí àwọn kàlẹ́ńdà rẹ láàyè.
 calendar-account-refused = Sáfà kò gba ọ̀rọ̀ aṣínà náà. Yahoo, iCloud, Zoho àti àwọn mìíràn nílò ọ̀rọ̀ aṣínà áàpù.
 calendar-account-change-password = Yí ọ̀rọ̀ aṣínà padà
-calendar-account-change-password-tooltip = Ṣí Ètò > Àwọn àkáǹtì
+calendar-account-change-password-tooltip = Tẹ ọ̀rọ̀ aṣínà tuntun; Katna yóò ṣàyẹ̀wò rẹ̀ pẹ̀lú sáfà
 calendar-account-not-enabled = A kò tíì tan ààyè kàlẹ́ńdà fún Katna.
 calendar-account-failed = A kò lè ka àwọn kàlẹ́ńdà.
 calendar-account-error = A kò lè ka àwọn kàlẹ́ńdà: { $reason }
@@ -68,6 +68,7 @@ calendar-account-try-again = Gbìyànjú lẹ́ẹ̀kan sí i
 calendar-account-try-again-tooltip = Ṣàyẹ̀wò àwọn kàlẹ́ńdà àkọọ́lẹ̀ yìí lẹ́ẹ̀kan sí i báyìí
 calendar-account-fixing = À ń ṣiṣẹ́ lé e lórí…
 calendar-birthdays = Àwọn ọjọ́ ìbí
+calendar-tasks = Iṣẹ́
 calendar-birthday-of = Ọjọ́ ìbí { $name }
 calendar-empty-title = Kò tíì sí kàlẹ́ńdà kankan
 calendar-empty-text = Katna ń fi àwọn kàlẹ́ńdà àkọọ́lẹ̀ Google àti Microsoft rẹ hàn níbí nígbà tí a bá ti mú wọn bá ara wọn mu, pẹ̀lú ti àwọn olupín mìíràn tó ń ṣe atìlẹ́yìn CalDAV.
@@ -125,6 +126,7 @@ calendar-event-details = Àlàyé ìṣẹ̀lẹ̀
 # Right-click menus on the calendar: on a free time or day, an event and
 # a task.
 calendar-menu-new-event = Ìṣẹ̀lẹ̀ tuntun
+calendar-event-window-title = Ìṣẹ̀lẹ̀ tuntun
 # Shows the day right-clicked on its own, in the Day view.
 calendar-menu-open-day = Ṣí ọjọ́
 calendar-menu-duplicate = Ṣe ẹ̀dà

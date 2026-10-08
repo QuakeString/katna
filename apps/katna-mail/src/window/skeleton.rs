@@ -17,7 +17,7 @@ use katna_ui::px;
 use super::apps::{APP_RAIL_WIDTH, App as RailApp};
 use super::{COMPOSE_HEIGHT, COMPOSE_RADIUS, MailWindow, NAV_ROW_INSET, NAV_WIDTH, SPLIT_GAP};
 use crate::theme::{Theme, fade};
-use crate::widgets::{card_outline, card_shadow, icon};
+use crate::widgets::{card_outline, icon};
 
 /// One breath of the placeholders, dim to bright and back.
 const PULSE: Duration = Duration::from_millis(1800);
@@ -40,6 +40,9 @@ impl MailWindow {
         let margin = shape.card_margin();
         let radius = shape.card_radius();
         let outline = shape.card_outline();
+        // Only the apps turned on; with Mail alone there is no rail.
+        let apps: Vec<RailApp> = self.apps().collect();
+        let solo = apps.len() < 2;
 
         let list = card(th, radius, outline)
             .child(list_toolbar(th, phone))
@@ -81,7 +84,7 @@ impl MailWindow {
                     .min_h_0()
                     .flex()
                     .flex_row()
-                    .when(!phone, |d| d.child(rail(th)))
+                    .when(!phone && !solo, |d| d.child(rail(th, &apps)))
                     .when(desktop, |d| {
                         d.child(breathing("skeleton-folders", folders(th), reduce))
                     })
@@ -90,7 +93,7 @@ impl MailWindow {
                     .when(!desktop && !phone, |d| d.child(div().w(px(margin))))
                     .child(cards),
             )
-            .when(phone, |d| d.child(bottom_bar(th)))
+            .when(phone && !solo, |d| d.child(bottom_bar(th, &apps)))
             .into_any_element()
     }
 
@@ -157,7 +160,7 @@ pub(super) fn search_pill(th: &Theme, width: f32, phone: f32) -> AnyElement {
 }
 
 /// A shape that stands in for text or a picture.
-fn bone(th: &Theme) -> Div {
+pub(super) fn bone(th: &Theme) -> Div {
     div()
         .flex_none()
         .rounded_full()
@@ -165,15 +168,19 @@ fn bone(th: &Theme) -> Div {
 }
 
 /// Placeholders breathe gently, as content that is on its way.
-fn breathing(id: &'static str, el: Div, reduce: bool) -> AnyElement {
+pub(super) fn breathing(id: &'static str, el: Div, reduce: bool) -> AnyElement {
     if reduce {
         return el.into_any_element();
     }
-    el.with_animation(id, Animation::new(PULSE).repeat(), |el, t| {
-        // Dim to bright and back, softly at both ends.
-        let wave = 0.5 - 0.5 * (t * std::f32::consts::TAU).cos();
-        el.opacity(0.55 + 0.45 * wave)
-    })
+    el.with_animation(
+        id,
+        Animation::new(katna_ui::motion::time(PULSE)).repeat(),
+        |el, t| {
+            // Dim to bright and back, softly at both ends.
+            let wave = 0.5 - 0.5 * (t * std::f32::consts::TAU).cos();
+            el.opacity(0.55 + 0.45 * wave)
+        },
+    )
     .into_any_element()
 }
 
@@ -184,14 +191,12 @@ fn card(th: &Theme, radius: f32, outline: f32) -> Div {
         .flex()
         .flex_col()
         .overflow_hidden()
-        .rounded(px(radius))
-        .map(|d| crate::widgets::pane(d, th.pane(), th.surface, radius))
-        .shadow(card_shadow(th, super::SHADOW_REST))
+        .map(|d| crate::widgets::card(d, th, th.pane(), radius, super::SHADOW_REST))
         .children(card_outline(th, radius, outline))
 }
 
 /// The apps: they are there with or without an account.
-fn rail(th: &Theme) -> AnyElement {
+fn rail(th: &Theme, apps: &[RailApp]) -> AnyElement {
     div()
         .flex_none()
         .w(px(APP_RAIL_WIDTH))
@@ -203,7 +208,7 @@ fn rail(th: &Theme) -> AnyElement {
             // Compose, where it sits while the folders show.
             div().h(px(super::COMPOSE_NAV_ROOM - COMPOSE_HEIGHT - 8.0)),
         )
-        .children(RailApp::ALL.into_iter().map(|app| {
+        .children(apps.iter().copied().map(|app| {
             let on = app == RailApp::Mail;
             div()
                 .w(px(APP_RAIL_WIDTH))
@@ -421,13 +426,13 @@ fn reader(th: &Theme) -> Div {
 }
 
 /// The apps along the bottom of a phone.
-fn bottom_bar(th: &Theme) -> AnyElement {
+fn bottom_bar(th: &Theme, apps: &[RailApp]) -> AnyElement {
     div()
         .flex_none()
         .h(px(super::layout::BOTTOM_BAR_HEIGHT))
         .flex()
         .flex_row()
-        .children(RailApp::ALL.into_iter().map(|app| {
+        .children(apps.iter().copied().map(|app| {
             let on = app == RailApp::Mail;
             div()
                 .flex_1()

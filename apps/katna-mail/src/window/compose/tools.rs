@@ -12,18 +12,19 @@ use std::rc::Rc;
 use gpui::{
     Anchor, AnyElement, Bounds, Context, DispatchPhase, Div, Entity, FocusHandle, Focusable,
     FontWeight, Hsla, MouseButton, MouseMoveEvent, Pixels, Point, SharedString, Stateful,
-    Subscription, Window, anchored, canvas, deferred, div, point, prelude::*, rgba,
+    Subscription, Window, canvas, deferred, div, point, prelude::*, rgba,
 };
-use jiff::civil::Date;
-use katna_i18n::{format, tr};
+use katna_i18n::tr;
+use katna_ui::anchored;
+use katna_ui::px;
 use katna_ui::rich::{Align, Font, GrammarIssue, List, Pos, RichEditor, Size, TableEdit, html};
 use katna_ui::{InputEvent, TextInput};
-use katna_ui::{px, unpx};
 
 use super::super::MailWindow;
+use super::super::date_pick::{DatePick, PickHooks, slide_back};
 use super::checks::{Passed, SendCheck};
 use super::recipients::Field;
-use super::{Mode, schedule};
+use super::{Mode, follow_up, schedule};
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{filled_button, icon, icon_button, icon_button_colored, menu, menu_item, tip};
 
@@ -38,8 +39,8 @@ pub(in crate::window) enum Popup {
     Kind,
     /// Schedule send's suggested times.
     Schedule,
-    /// Schedule send's date and time picker.
-    PickTime,
+    /// Follow up if no reply: when, and remind or send.
+    FollowUp,
     Font,
     Size,
     Colors,
@@ -132,14 +133,20 @@ pub(in crate::window) struct Dialog {
     editing_link: bool,
     pub(super) emoji_search: Entity<TextInput>,
     emoji_group: usize,
-    time: Entity<TextInput>,
-    /// The month the date picker shows.
-    month: Date,
-    day: Date,
+    /// Pick date & time, open in the Schedule send menu or the follow-up
+    /// popover (by `for_follow_up`), in their place.
+    pub(super) pick: Option<DatePick>,
+    /// The menu's times slid back in from the picker.
+    pub(super) back: bool,
     /// The table size under the pointer in the grid.
     grid: (usize, usize),
     /// The name to save the message under as a template.
     pub(super) template_name: Entity<TextInput>,
+    /// The date and time picker chooses when to follow up, not when to
+    /// send.
+    pub(super) for_follow_up: bool,
+    /// The follow-up popover's list of templates is open.
+    pub(super) follow_up_templates: bool,
     /// Holds the keys while a dialog without a field is open, so Enter
     /// and Esc answer it rather than type into the message.
     focus: FocusHandle,
@@ -154,22 +161,18 @@ impl Dialog {
                 input
             })
         };
-        let today = jiff::Zoned::now().date();
         Dialog {
             link_text: input(String::new(), cx),
             link_url: input("https://".to_owned(), cx),
             editing_link: false,
             emoji_search: input(tr!("compose-tool-emoji-search"), cx),
             emoji_group: 0,
-            time: {
-                let time = input(schedule::clock(jiff::civil::Time::constant(8, 0, 0, 0)), cx);
-                time.update(cx, |t, _| t.set_stepper(Some(schedule::time_stepper())));
-                time
-            },
-            month: today,
-            day: today,
+            pick: None,
+            back: false,
             grid: (0, 0),
             template_name: input(tr!("compose-tool-template-name"), cx),
+            for_follow_up: false,
+            follow_up_templates: false,
             focus: cx.focus_handle(),
         }
     }
@@ -184,7 +187,6 @@ impl Dialog {
         for (field, submit) in [
             (&self.link_text, Submit::Link),
             (&self.link_url, Submit::Link),
-            (&self.time, Submit::Time),
             (&self.emoji_search, Submit::Emoji),
             (&self.template_name, Submit::Template),
         ] {
@@ -194,7 +196,6 @@ impl Dialog {
                 move |this, _, event: &InputEvent, window, cx| match event {
                     InputEvent::Submit => match submit {
                         Submit::Link => this.apply_link(window, cx),
-                        Submit::Time => this.schedule_picked(window, cx),
                         Submit::Emoji => this.insert_first_emoji(window, cx),
                         Submit::Template => this.save_template(window, cx),
                     },
@@ -214,13 +215,12 @@ const DIALOG_RADIUS: f32 = 16.0;
 
 /// Whether `popup` is a dialog with a text field, which has the keys.
 fn has_field(popup: &Popup) -> bool {
-    matches!(popup, Popup::Link | Popup::PickTime | Popup::SaveTemplate)
+    matches!(popup, Popup::Link | Popup::SaveTemplate)
 }
 
 #[derive(Clone, Copy)]
 enum Submit {
     Link,
-    Time,
     Emoji,
     Template,
 }
@@ -394,7 +394,8 @@ pub(super) fn format_dropdown(id: &'static str, th: &Theme) -> Stateful<gpui::Di
         .cursor_pointer()
         .text_size(px(13.0))
         .text_color(rgba(th.text_dim))
-        .hover(|s| s.bg(rgba(th.hover)))
+        .relative()
+        .child(crate::widgets::hover_fade("hover-glow", Some(4.0), th))
 }
 
 /// [`format_dropdown`], as tall and round as the chat bar's buttons when
@@ -449,6 +450,19 @@ pub(super) fn separator(th: &Theme) -> gpui::Div {
 const ACTIONS_FIXED: f32 = 200.0;
 /// The width of each of its other buttons, on their tray.
 const TOOL_WIDTH: f32 = TRAY_TOOL;
+/// What Send showing only its icon saves.
+const SEND_COMPACT_SAVES: f32 = 24.0;
+/// The bin at the end of the Send row, with its gap.
+const BIN_WIDTH: f32 = 36.0;
+
+/// The Send row's tools folded into its More menu on a narrow row.
+#[derive(Clone, Copy)]
+struct Folded {
+    attach: bool,
+    signature: bool,
+    templates: bool,
+    discard: bool,
+}
 /// A writing tool on the tray beside Send: a little smaller than a
 /// free-standing icon button, so the tray stays slim.
 pub(super) const TRAY_TOOL: f32 = 34.0;
@@ -459,6 +473,80 @@ pub(super) const TRAY_ICON: f32 = 18.0;
 const FORMAT_BAR_GAP: f32 = 4.0;
 /// How much of the text the open formatting bar covers.
 pub(super) const FORMAT_BAR_COVER: f32 = 40.0 + FORMAT_BAR_GAP + 8.0;
+
+/// The formatting bar's buttons, as [`format_button`] draws them.
+const FORMAT_TOOL: f32 = 28.0;
+/// Its font dropdown.
+const FONT_WIDTH: f32 = 100.0;
+/// Its size and alignment dropdowns: an icon and an arrow.
+const DROPDOWN_WIDTH: f32 = 46.0;
+/// Its colour dropdown: the swatch and an arrow.
+const COLORS_WIDTH: f32 = 48.0;
+/// Its padding and edge.
+const FORMAT_BAR_PAD: f32 = 26.0;
+/// A [`separator`] with its margins.
+const SEPARATOR_WIDTH: f32 = 7.0;
+/// When each tool folds into ⋮ More on a narrow bar: the least used
+/// first. Bold, italic, underline and colours stay.
+const FOLD_TABLE: u8 = 1;
+const FOLD_ALIGN: u8 = 7;
+const FOLD_UNDO: u8 = 10;
+const FOLD_FONT: u8 = 11;
+const FOLD_SIZE: u8 = 12;
+
+/// How many of the formatting bar's tools fold into ⋮ More so the rest
+/// fit `room`: every tool whose fold (`widths`, in bar order, `None` for
+/// a line between groups) is at most the answer, 0 when all fit.
+fn folded_tools(widths: &[Option<(f32, u8)>], room: f32) -> u8 {
+    let last = widths.iter().flatten().map(|(_, f)| *f).max().unwrap_or(0);
+    (0..=last)
+        .find(|&folds| {
+            let shown = |fold: u8| fold == 0 || fold > folds;
+            let mut need = if folds > 0 { FORMAT_TOOL } else { 0.0 };
+            let (mut items, mut line) = (usize::from(folds > 0), false);
+            for w in widths {
+                match w {
+                    None => line = items > usize::from(folds > 0),
+                    Some((width, fold)) if shown(*fold) => {
+                        if line {
+                            need += SEPARATOR_WIDTH;
+                            items += 1;
+                        }
+                        need += width;
+                        items += 1;
+                        line = false;
+                    }
+                    Some(_) => {}
+                }
+            }
+            need + items.saturating_sub(1) as f32 <= room
+        })
+        .unwrap_or(last)
+}
+
+/// The formatting bar's tools split into those shown on it, with a line
+/// between groups, and those in ⋮ More, which wraps them without lines.
+fn split_tools(
+    tools: Vec<Option<(AnyElement, f32, u8)>>,
+    folds: u8,
+    th: &Theme,
+) -> (Vec<AnyElement>, Vec<AnyElement>) {
+    let (mut bar, mut rest) = (Vec::new(), Vec::new());
+    let mut line = false;
+    for tool in tools {
+        match tool {
+            None => line = !bar.is_empty(),
+            Some((el, _, fold)) if fold == 0 || fold > folds => {
+                if std::mem::take(&mut line) {
+                    bar.push(separator(th).into_any_element());
+                }
+                bar.push(el);
+            }
+            Some((el, _, _)) => rest.push(el),
+        }
+    }
+    (bar, rest)
+}
 
 /// `popup` just under its parent's bottom left corner.
 pub(super) fn below(popup: impl IntoElement) -> AnyElement {
@@ -492,6 +580,22 @@ pub(in crate::window) fn below_end_over(popup: impl IntoElement, priority: usize
         ),
     )
     .with_priority(priority)
+    .into_any_element()
+}
+
+/// As [`above`], lined up with the parent's right edge: for a button at
+/// the right of its bar, like the chat's Send.
+pub(super) fn above_end(popup: impl IntoElement) -> AnyElement {
+    deferred(
+        div().absolute().top_0().right_0().child(
+            anchored()
+                .anchor(Anchor::BottomRight)
+                .offset(point(px(0.0), px(-6.0)))
+                .snap_to_window_with_margin(px(8.0))
+                .child(div().occlude().child(popup)),
+        ),
+    )
+    .with_priority(2)
     .into_any_element()
 }
 
@@ -547,6 +651,8 @@ fn shortcut(text: &'static str, th: &Theme) -> gpui::Div {
 impl MailWindow {
     pub(super) fn toggle_popup(&mut self, popup: Popup, cx: &mut Context<Self>) {
         if let Some(c) = &mut self.compose {
+            c.dialog.pick = None;
+            c.dialog.back = false;
             c.popup = if c.popup.as_ref() == Some(&popup) {
                 None
             } else {
@@ -560,6 +666,8 @@ impl MailWindow {
         if let Some(c) = &mut self.compose
             && c.popup.take().is_some()
         {
+            c.dialog.pick = None;
+            c.dialog.back = false;
             window.focus(&c.body.focus_handle(cx), cx);
         }
         cx.notify();
@@ -613,6 +721,42 @@ impl MailWindow {
         // A reply or forward archives its conversation too when that is
         // the default; the Send menu offers the other way.
         let archives = compose.answering.is_some() && self.config.sending.send_and_archive;
+        // A narrow row keeps the tools that fit beside Send and the bin,
+        // dropping the calendar, photo, emoji and link buttons in turn
+        // (links still come with Ctrl+K), then folding templates, the
+        // signature and attaching into More. Narrower still, Send keeps
+        // only its icon and the bin goes into More too. Formatting,
+        // writing help and More always stay.
+        let pill = if archives { 24.0 } else { 0.0 };
+        let core = if self.ai_allowed() { 3 } else { 2 };
+        let room = width - ACTIONS_FIXED - pill;
+        let slots = |room: f32| (room / TOOL_WIDTH).floor() as i32;
+        // The follow-up's chip shows what is set; the tools beside it fold
+        // into More to make room, while formatting and writing help fit.
+        let on = compose.follow_up.on();
+        let chip = on && slots(room - follow_up::CHIP_WIDTH) >= core;
+        let chip_icon = on && !chip;
+        let room = room
+            - if chip {
+                follow_up::CHIP_WIDTH
+            } else if chip_icon {
+                follow_up::CHIP_ICON_WIDTH
+            } else {
+                0.0
+            };
+        let compact = slots(room) < core;
+        let bin_folds = slots(room + SEND_COMPACT_SAVES) < core;
+        let fit = slots(
+            room + if compact { SEND_COMPACT_SAVES } else { 0.0 }
+                + if bin_folds { BIN_WIDTH } else { 0.0 },
+        ) - core;
+        let folded = Folded {
+            attach: fit < 1,
+            signature: fit < 2,
+            templates: fit < 3,
+            discard: bin_folds,
+        };
+        let (link, emoji_fits, image, event) = (fit >= 4, fit >= 5, fit >= 6, fit >= 7);
         let send = div()
             .relative()
             .flex_none()
@@ -648,8 +792,17 @@ impl MailWindow {
                     .on_click(
                         cx.listener(|this, _, window, cx| this.send_compose_default(window, cx)),
                     )
-                    .when(archives, |d| d.child(icon("archive", th.on_accent, 18.0)))
-                    .child(tr!("compose-tool-send")),
+                    .when(compact, |d| {
+                        d.px(px(katna_ui::tokens::space::S4)).child(icon(
+                            if archives { "archive" } else { "send" },
+                            th.on_accent,
+                            18.0,
+                        ))
+                    })
+                    .when(!compact, |d| {
+                        d.when(archives, |d| d.child(icon("archive", th.on_accent, 18.0)))
+                            .child(tr!("compose-tool-send"))
+                    }),
             )
             .child(div().w(px(1.0)).h(px(20.0)).bg(rgba(0xffffff66)))
             .child(
@@ -668,10 +821,13 @@ impl MailWindow {
                     .child(icon("drop-down", th.on_accent, 20.0)),
             )
             .when(open(Popup::Send), |d| {
-                d.child(above(self.render_send_menu(th, cx)))
+                d.child(above(self.render_send_menu(false, th, cx)))
             })
             .when(open(Popup::Schedule), |d| {
                 d.child(above(self.render_schedule_menu(th, cx)))
+            })
+            .when(open(Popup::FollowUp), |d| {
+                d.child(above(self.render_follow_up(th, cx)))
             });
         let tool = |id: &'static str, name: &'static str, label: String| {
             icon_button(id, name, TRAY_ICON, th)
@@ -750,16 +906,15 @@ impl MailWindow {
                     .on_click(cx.listener(|this, _, _, cx| this.toggle_popup(Popup::More, cx))),
             )
             .when(open(Popup::More) || open(Popup::Label), |d| {
-                d.child(above(self.render_more_menu(th, cx)))
+                d.child(above(self.render_more_menu(folded, th, cx)))
+            })
+            // A folded tool's own menu opens where More is.
+            .when(folded.signature && open(Popup::Signature), |d| {
+                d.child(above(self.compose_signature_menu(th, cx)))
+            })
+            .when(folded.templates && open(Popup::Templates), |d| {
+                d.child(above(self.templates_menu(th, cx)))
             });
-        // A narrow row keeps the tools that fit beside Send and the bin,
-        // dropping the calendar, photo, emoji and link buttons in turn;
-        // links still come with Ctrl+K. Formatting, attaching, the
-        // signature, templates, More and writing help always stay.
-        let pill = if archives { 24.0 } else { 0.0 };
-        let always = if sparkle.is_some() { 6 } else { 5 };
-        let fit = ((width - ACTIONS_FIXED - pill) / TOOL_WIDTH).floor() as i32 - always;
-        let (link, emoji_fits, image, event) = (fit >= 1, fit >= 2, fit >= 3, fit >= 4);
         // The tools sit on one soft tray, grouped: writing (formatting,
         // writing help), adding (files, link, emoji, photo, event), then
         // signature, templates and More, with faint lines between groups.
@@ -782,11 +937,13 @@ impl MailWindow {
             .child(format)
             .children(sparkle)
             .child(gap())
-            .child(
-                tool("compose-attach", "attachment", tr!("compose-tool-attach")).on_click(
-                    cx.listener(|this, _, window, cx| this.open_compose_picker(window, cx)),
-                ),
-            )
+            .when(!folded.attach, |d| {
+                d.child(
+                    tool("compose-attach", "attachment", tr!("compose-tool-attach")).on_click(
+                        cx.listener(|this, _, window, cx| this.open_compose_picker(window, cx)),
+                    ),
+                )
+            })
             .when(link, |d| {
                 d.child(
                     tool("compose-link", "link", tr!("compose-tool-link")).on_click(
@@ -810,9 +967,13 @@ impl MailWindow {
                     ),
                 )
             })
-            .child(gap())
-            .child(self.render_signature_button(th, cx))
-            .child(self.render_templates_button(th, cx))
+            .when(!folded.attach, |d| d.child(gap()))
+            .when(!folded.signature, |d| {
+                d.child(self.render_signature_button(th, cx))
+            })
+            .when(!folded.templates, |d| {
+                d.child(self.render_templates_button(th, cx))
+            })
             .child(more);
         div()
             .flex_none()
@@ -824,6 +985,9 @@ impl MailWindow {
             .items_center()
             .gap(px(2.0))
             .child(send)
+            .when(chip || chip_icon, |d| {
+                d.child(self.render_follow_up_chip(chip_icon, th, cx))
+            })
             .child(div().w(px(8.0)))
             .child(tray)
             .child(div().flex_1())
@@ -837,11 +1001,13 @@ impl MailWindow {
                     )
                 },
             )
-            .child(
-                icon_button_colored("compose-discard", "trash", 20.0, th.text_dim, th)
-                    .tooltip(tip(tr!("compose-tool-discard"), th))
-                    .on_click(cx.listener(|this, _, _, cx| this.discard_compose(cx))),
-            )
+            .when(!bin_folds, |d| {
+                d.child(
+                    icon_button_colored("compose-discard", "trash", 20.0, th.text_dim, th)
+                        .tooltip(tip(tr!("compose-tool-discard"), th))
+                        .on_click(cx.listener(|this, _, _, cx| this.discard_compose(cx))),
+                )
+            })
             .children(self.render_popup_scrim(cx))
             .children(self.render_context_popup(th, cx))
             .children(self.render_hint(th, cx))
@@ -861,7 +1027,6 @@ impl MailWindow {
             || matches!(
                 popup,
                 Popup::Link
-                    | Popup::PickTime
                     | Popup::PlainText
                     | Popup::SendCheck { .. }
                     | Popup::DriveShare { .. }
@@ -894,12 +1059,31 @@ impl MailWindow {
         )
     }
 
-    fn render_send_menu(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+    /// Send's menu. In a chat (`chat`), it starts with Send now, for the
+    /// Send button it opens from, and leaves archiving to the mail window.
+    pub(super) fn render_send_menu(
+        &self,
+        chat: bool,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
         let count = self.writing.scheduled.len();
-        let answering = self.compose.as_ref().is_some_and(|c| c.answering.is_some());
+        let answering = !chat && self.compose.as_ref().is_some_and(|c| c.answering.is_some());
         let archives = self.config.sending.send_and_archive;
         menu(th)
             .w(px(240.0))
+            .when(chat, |d| {
+                d.child(
+                    tool_item("chat-send-now", "send", &tr!("chat-send-now"), th).on_click(
+                        cx.listener(|this, _, window, cx| {
+                            if let Some(c) = &mut this.compose {
+                                c.popup = None;
+                            }
+                            this.send_compose_default(window, cx)
+                        }),
+                    ),
+                )
+            })
             .when(answering, |d| {
                 let (name, label) = if archives {
                     ("send", tr!("compose-tool-send-without-archiving"))
@@ -942,60 +1126,18 @@ impl MailWindow {
                 )
             })
             .child(menu_divider(th))
-            .child(self.render_follow_up_choice(th, cx))
+            .child(
+                tool_item("compose-follow-up", "history", &tr!("follow-up-menu"), th)
+                    .on_click(cx.listener(|this, _, window, cx| this.open_follow_up(window, cx))),
+            )
             .into_any_element()
     }
 
-    /// "Remind me if no reply" in the send menu: when to bring the
-    /// conversation back if nobody answers (`docs/ARCHITECTURE.md` §10.1).
-    fn render_follow_up_choice(&self, th: &Theme, cx: &mut Context<Self>) -> gpui::Div {
-        const DAY: u32 = 24 * 60 * 60;
-        let chosen = self.compose.as_ref().map_or(0, |c| c.follow_up);
-        let choices = [
-            (0, tr!("follow-up-off")),
-            (DAY, tr!("follow-up-days", days = 1)),
-            (3 * DAY, tr!("follow-up-days", days = 3)),
-            (7 * DAY, tr!("follow-up-days", days = 7)),
-        ];
-        div()
-            .child(
-                div()
-                    .px(px(16.0))
-                    .py(px(6.0))
-                    .flex()
-                    .flex_row()
-                    .items_center()
-                    .gap(px(14.0))
-                    .text_color(rgba(th.text_dim))
-                    .child(icon("reply", th.text_dim, 20.0))
-                    .child(tr!("follow-up-title")),
-            )
-            .children(choices.into_iter().map(|(after, label)| {
-                div()
-                    .id(("compose-follow-up", after))
-                    .h(px(32.0))
-                    .pl(px(50.0))
-                    .pr(px(16.0))
-                    .flex()
-                    .flex_row()
-                    .items_center()
-                    .cursor_pointer()
-                    .hover(|s| s.bg(rgba(th.hover)))
-                    .child(div().flex_1().child(label))
-                    .when(after == chosen, |d| {
-                        d.child(icon("check", th.text_dim, 18.0))
-                    })
-                    .on_click(cx.listener(move |this, _, _, cx| {
-                        if let Some(c) = &mut this.compose {
-                            c.follow_up = after;
-                            c.popup = None;
-                        }
-                        cx.notify();
-                    }))
-            }))
-    }
-
-    fn render_schedule_menu(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+    pub(super) fn render_schedule_menu(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        if let Some(picker) = self.render_time_picker(th, cx) {
+            return picker;
+        }
+        let back = self.compose.as_ref().is_some_and(|c| c.dialog.back);
         let now = jiff::Timestamp::now().to_zoned(self.tz.clone());
         let presets = schedule::presets(&now);
         let items = presets.into_iter().enumerate().map(|(ix, preset)| {
@@ -1022,58 +1164,106 @@ impl MailWindow {
         });
         menu(th)
             .w(px(340.0))
-            .child(
+            .when(back, |d| d.overflow_hidden())
+            .child(slide_back(
+                "schedule-menu-back",
+                back,
                 div()
-                    .px(px(24.0))
-                    .pt(px(8.0))
-                    .pb(px(8.0))
-                    .text_size(px(16.0))
-                    .child(tr!("schedule-title")),
-            )
-            .child(
-                div()
-                    .px(px(24.0))
-                    .pb(px(8.0))
-                    .text_size(px(12.0))
-                    .text_color(rgba(th.text_dim))
-                    .child({
-                        let zone = self
-                            .tz
-                            .iana_name()
-                            .map(str::to_owned)
-                            .unwrap_or_else(|| tr!("schedule-local-time"));
-                        // Who sends it: the mail server, or Katna here.
-                        match self.server_holds_mail() {
-                            Some(true) => tr!("schedule-zone-note-server", zone = zone),
-                            Some(false) => tr!("schedule-zone-note-local", zone = zone),
-                            None => tr!("schedule-zone-note", zone = zone),
-                        }
-                    }),
-            )
-            .children(items)
-            .child(menu_divider(th))
-            .child(
-                tool_item("schedule-pick", "calendar", &tr!("schedule-pick"), th)
-                    .on_click(cx.listener(|this, _, window, cx| this.open_time_picker(window, cx))),
-            )
+                    .flex()
+                    .flex_col()
+                    .child(
+                        div()
+                            .px(px(24.0))
+                            .pt(px(8.0))
+                            .pb(px(8.0))
+                            .text_size(px(16.0))
+                            .child(tr!("schedule-title")),
+                    )
+                    .child(
+                        div()
+                            .px(px(24.0))
+                            .pb(px(8.0))
+                            .text_size(px(12.0))
+                            .text_color(rgba(th.text_dim))
+                            .child({
+                                let zone = self
+                                    .tz
+                                    .iana_name()
+                                    .map(str::to_owned)
+                                    .unwrap_or_else(|| tr!("schedule-local-time"));
+                                // Who sends it: the mail server, or Katna here.
+                                match self.server_holds_mail() {
+                                    Some(true) => tr!("schedule-zone-note-server", zone = zone),
+                                    Some(false) => tr!("schedule-zone-note-local", zone = zone),
+                                    None => tr!("schedule-zone-note", zone = zone),
+                                }
+                            }),
+                    )
+                    .children(items)
+                    .child(menu_divider(th))
+                    .child(
+                        tool_item("schedule-pick", "calendar", &tr!("schedule-pick"), th).on_click(
+                            cx.listener(|this, _, window, cx| {
+                                if let Some(c) = &mut this.compose {
+                                    c.dialog.for_follow_up = false;
+                                }
+                                this.open_time_picker(window, cx)
+                            }),
+                        ),
+                    ),
+            ))
             .into_any_element()
     }
 
-    fn open_time_picker(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+    /// Opens Pick date & time in place of the Schedule send menu, or of
+    /// the follow-up popover when `for_follow_up`.
+    pub(super) fn open_time_picker(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         let now = jiff::Timestamp::now().to_zoned(self.tz.clone());
-        let Some(c) = &mut self.compose else {
+        let accent: Hsla = rgba(self.theme(window).accent).into();
+        let Some(c) = &self.compose else {
             return;
         };
-        let tomorrow = now.date().tomorrow().unwrap_or(now.date());
-        c.dialog.day = tomorrow;
-        c.dialog.month = tomorrow;
-        c.popup = Some(Popup::PickTime);
-        let time = c.dialog.time.clone();
-        time.update(cx, |t, cx| {
-            t.set_text(schedule::clock(jiff::civil::Time::constant(8, 0, 0, 0)), cx);
-            t.select_all_text(cx);
-        });
-        window.focus(&time.focus_handle(cx), cx);
+        // A follow-up starts three days on, when working hours begin, or
+        // at the time picked before.
+        let (days, hour) = if c.dialog.for_follow_up {
+            (3, 9)
+        } else {
+            (1, 8)
+        };
+        let (day, time) = match c.follow_up.picked.filter(|_| c.dialog.for_follow_up) {
+            Some(at) => {
+                let at = at.to_zoned(self.tz.clone());
+                (at.date(), at.time())
+            }
+            None => (
+                now.date()
+                    .checked_add(jiff::Span::new().days(days))
+                    .unwrap_or(now.date()),
+                jiff::civil::Time::constant(hour, 0, 0, 0),
+            ),
+        };
+        let hooks = PickHooks {
+            find: |this| this.compose.as_mut().and_then(|c| c.dialog.pick.as_mut()),
+            done: |this, window, cx| this.schedule_picked(window, cx),
+            back: |this, window, cx| this.close_time_picker(window, cx),
+            cancel: |this, window, cx| this.close_popup(window, cx),
+        };
+        let pick = DatePick::new(day, time, accent, hooks, window, cx);
+        if let Some(c) = &mut self.compose {
+            c.dialog.pick = Some(pick);
+            c.dialog.back = false;
+        }
+        cx.notify();
+    }
+
+    /// Slides back from the picker to the menu it opened from.
+    pub(super) fn close_time_picker(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        if let Some(c) = &mut self.compose
+            && c.dialog.pick.take().is_some()
+        {
+            c.dialog.back = true;
+            window.focus(&c.body.focus_handle(cx), cx);
+        }
         cx.notify();
     }
 
@@ -1082,20 +1272,20 @@ impl MailWindow {
         let Some(c) = &self.compose else {
             return;
         };
-        let text = c.dialog.time.read(cx).text().to_owned();
-        let Some(time) = schedule::parse_time(&text) else {
-            let example = schedule::clock(jiff::civil::Time::constant(8, 0, 0, 0));
-            self.show_snackbar(
-                tr!("schedule-not-a-time", text = text, example = example),
-                None,
-                cx,
-            );
+        let Some(pick) = &c.dialog.pick else {
             return;
         };
-        let Some(at) = schedule::moment(c.dialog.day, time, &self.tz) else {
-            self.show_snackbar(tr!("schedule-no-such-time"), None, cx);
-            return;
+        let at = match pick.moment(&self.tz, cx) {
+            Ok(at) => at,
+            Err(problem) => {
+                self.show_snackbar(problem, None, cx);
+                return;
+            }
         };
+        if c.dialog.for_follow_up {
+            self.follow_up_picked(at, cx);
+            return;
+        }
         self.send_compose(Some(at), false, Passed::default(), window, cx);
     }
 
@@ -1172,13 +1362,10 @@ impl MailWindow {
             (editor.can_undo(), editor.can_redo(), editor.in_table());
         let popup = compose.popup.clone();
         let open = |p: Popup| popup.as_ref() == Some(&p);
-        let wide = width >= 660.0;
-
         let font = self.format_font(style.font, false, th, cx);
         let size = self.format_size(style.size, false, th, cx);
         let colors = self.format_colors(style.color, style.background, false, th, cx);
         let align = self.format_align(para.align, false, th, cx);
-        // What does not fit a narrow bar goes in its "more" menu.
         let table_click = cx.listener(move |this, _, _, cx| {
             let p = if in_table {
                 Popup::TableEdit
@@ -1190,39 +1377,6 @@ impl MailWindow {
             }
             this.toggle_popup(p, cx)
         });
-        let rest: Vec<AnyElement> = vec![
-            format_button("format-indent-less", "indent-less", false, th)
-                .tooltip(tip(tr!("compose-tool-indent-less"), th))
-                .on_click(self.on_body(cx, |e, cx| e.indent(false, cx)))
-                .into_any_element(),
-            format_button("format-indent-more", "indent-more", false, th)
-                .tooltip(tip(tr!("compose-tool-indent-more"), th))
-                .on_click(self.on_body(cx, |e, cx| e.indent(true, cx)))
-                .into_any_element(),
-            format_button("format-quote", "quote", para.quote > 0, th)
-                .tooltip(tip(tr!("compose-tool-quote"), th))
-                .on_click(self.on_body(cx, |e, cx| e.toggle_quote(cx)))
-                .into_any_element(),
-            format_button("format-strike", "format-strike", style.strike, th)
-                .tooltip(tip(tr!("compose-tool-strikethrough"), th))
-                .on_click(self.on_body(cx, |e, cx| e.toggle_strike(cx)))
-                .into_any_element(),
-            format_button("format-clear", "clear-format", false, th)
-                .tooltip(tip(tr!("compose-tool-remove-formatting"), th))
-                .on_click(self.on_body(cx, |e, cx| e.clear_formatting(cx)))
-                .into_any_element(),
-            format_button("format-table", "table", in_table, th)
-                .tooltip(tip(
-                    if in_table {
-                        tr!("compose-tool-table")
-                    } else {
-                        tr!("compose-tool-insert-table")
-                    },
-                    th,
-                ))
-                .on_click(table_click)
-                .into_any_element(),
-        ];
         let table_popup = if open(Popup::Table) {
             Some(above(self.render_table_grid(th, cx)))
         } else if open(Popup::TableEdit) {
@@ -1230,81 +1384,77 @@ impl MailWindow {
         } else {
             None
         };
-        let tail = if wide {
-            div()
-                .relative()
-                .flex()
-                .flex_row()
-                .items_center()
-                .gap(px(1.0))
-                .children(rest)
-                .children(table_popup)
-        } else {
-            div()
-                .relative()
-                .child(
-                    format_button("format-more", "drop-down", open(Popup::MoreFormat), th)
-                        .tooltip(tip(tr!("compose-tool-more-formatting"), th))
-                        .on_click(
-                            cx.listener(|this, _, _, cx| this.toggle_popup(Popup::MoreFormat, cx)),
-                        ),
-                )
-                .when(open(Popup::MoreFormat), |d| {
-                    d.child(above(
-                        menu(th)
-                            .min_w(px(0.0))
-                            .px(px(6.0))
-                            .py(px(6.0))
-                            .flex_row()
-                            .gap(px(2.0))
-                            .children(rest),
-                    ))
-                })
-                .children(table_popup)
-        };
-        div()
-            .h(px(40.0))
-            .px(px(12.0))
-            .flex()
-            .flex_row()
-            .items_center()
-            .gap(px(1.0))
+        let table = div()
+            .relative()
             .child(
+                format_button("format-table", "table", in_table, th)
+                    .tooltip(tip(
+                        if in_table {
+                            tr!("compose-tool-table")
+                        } else {
+                            tr!("compose-tool-insert-table")
+                        },
+                        th,
+                    ))
+                    .on_click(table_click),
+            )
+            .children(table_popup);
+        // The bar's tools in order, each with its width and when it folds
+        // into ⋮ More on a bar too narrow for all of them: the least used
+        // first (0 never folds). `None` is a line between groups.
+        let tool = |el: AnyElement, width: f32, fold: u8| Some((el, width, fold));
+        let tools: Vec<Option<(AnyElement, f32, u8)>> = vec![
+            tool(
                 format_button("format-undo", "undo", false, th)
                     .when(!can_undo, |d| d.opacity(0.4))
                     .tooltip(tip(tr!("compose-tool-undo"), th))
-                    .on_click(self.on_body(cx, |e, cx| e.undo(cx))),
-            )
-            .child(
+                    .on_click(self.on_body(cx, |e, cx| e.undo(cx)))
+                    .into_any_element(),
+                FORMAT_TOOL,
+                FOLD_UNDO,
+            ),
+            tool(
                 format_button("format-redo", "redo", false, th)
                     .when(!can_redo, |d| d.opacity(0.4))
                     .tooltip(tip(tr!("compose-tool-redo"), th))
-                    .on_click(self.on_body(cx, |e, cx| e.redo(cx))),
-            )
-            .child(separator(th))
-            .child(font)
-            .child(separator(th))
-            .child(size)
-            .child(separator(th))
-            .child(
+                    .on_click(self.on_body(cx, |e, cx| e.redo(cx)))
+                    .into_any_element(),
+                FORMAT_TOOL,
+                FOLD_UNDO,
+            ),
+            None,
+            tool(font.into_any_element(), FONT_WIDTH, FOLD_FONT),
+            None,
+            tool(size.into_any_element(), DROPDOWN_WIDTH, FOLD_SIZE),
+            None,
+            tool(
                 format_button("format-bold", "format-bold", style.bold, th)
                     .tooltip(tip(tr!("compose-tool-bold"), th))
-                    .on_click(self.on_body(cx, |e, cx| e.toggle_bold(cx))),
-            )
-            .child(
+                    .on_click(self.on_body(cx, |e, cx| e.toggle_bold(cx)))
+                    .into_any_element(),
+                FORMAT_TOOL,
+                0,
+            ),
+            tool(
                 format_button("format-italic", "format-italic", style.italic, th)
                     .tooltip(tip(tr!("compose-tool-italic"), th))
-                    .on_click(self.on_body(cx, |e, cx| e.toggle_italic(cx))),
-            )
-            .child(
+                    .on_click(self.on_body(cx, |e, cx| e.toggle_italic(cx)))
+                    .into_any_element(),
+                FORMAT_TOOL,
+                0,
+            ),
+            tool(
                 format_button("format-underline", "format-underline", style.underline, th)
                     .tooltip(tip(tr!("compose-tool-underline"), th))
-                    .on_click(self.on_body(cx, |e, cx| e.toggle_underline(cx))),
-            )
-            .child(colors)
-            .child(separator(th))
-            .child(align)
-            .child(
+                    .on_click(self.on_body(cx, |e, cx| e.toggle_underline(cx)))
+                    .into_any_element(),
+                FORMAT_TOOL,
+                0,
+            ),
+            tool(colors.into_any_element(), COLORS_WIDTH, 0),
+            None,
+            tool(align.into_any_element(), DROPDOWN_WIDTH, FOLD_ALIGN),
+            tool(
                 format_button(
                     "format-numbered",
                     "list-numbered",
@@ -1312,9 +1462,12 @@ impl MailWindow {
                     th,
                 )
                 .tooltip(tip(tr!("compose-tool-numbered-list"), th))
-                .on_click(self.on_body(cx, |e, cx| e.toggle_list(List::Numbered, cx))),
-            )
-            .child(
+                .on_click(self.on_body(cx, |e, cx| e.toggle_list(List::Numbered, cx)))
+                .into_any_element(),
+                FORMAT_TOOL,
+                9,
+            ),
+            tool(
                 format_button(
                     "format-bulleted",
                     "list-bulleted",
@@ -1322,9 +1475,101 @@ impl MailWindow {
                     th,
                 )
                 .tooltip(tip(tr!("compose-tool-bulleted-list"), th))
-                .on_click(self.on_body(cx, |e, cx| e.toggle_list(List::Bullet, cx))),
-            )
-            .child(tail)
+                .on_click(self.on_body(cx, |e, cx| e.toggle_list(List::Bullet, cx)))
+                .into_any_element(),
+                FORMAT_TOOL,
+                8,
+            ),
+            tool(
+                format_button("format-indent-less", "indent-less", false, th)
+                    .tooltip(tip(tr!("compose-tool-indent-less"), th))
+                    .on_click(self.on_body(cx, |e, cx| e.indent(false, cx)))
+                    .into_any_element(),
+                FORMAT_TOOL,
+                5,
+            ),
+            tool(
+                format_button("format-indent-more", "indent-more", false, th)
+                    .tooltip(tip(tr!("compose-tool-indent-more"), th))
+                    .on_click(self.on_body(cx, |e, cx| e.indent(true, cx)))
+                    .into_any_element(),
+                FORMAT_TOOL,
+                6,
+            ),
+            tool(
+                format_button("format-quote", "quote", para.quote > 0, th)
+                    .tooltip(tip(tr!("compose-tool-quote"), th))
+                    .on_click(self.on_body(cx, |e, cx| e.toggle_quote(cx)))
+                    .into_any_element(),
+                FORMAT_TOOL,
+                4,
+            ),
+            tool(
+                format_button("format-strike", "format-strike", style.strike, th)
+                    .tooltip(tip(tr!("compose-tool-strikethrough"), th))
+                    .on_click(self.on_body(cx, |e, cx| e.toggle_strike(cx)))
+                    .into_any_element(),
+                FORMAT_TOOL,
+                3,
+            ),
+            tool(
+                format_button("format-clear", "clear-format", false, th)
+                    .tooltip(tip(tr!("compose-tool-remove-formatting"), th))
+                    .on_click(self.on_body(cx, |e, cx| e.clear_formatting(cx)))
+                    .into_any_element(),
+                FORMAT_TOOL,
+                2,
+            ),
+            tool(table.into_any_element(), FORMAT_TOOL, FOLD_TABLE),
+        ];
+        let widths: Vec<Option<(f32, u8)>> = tools
+            .iter()
+            .map(|t| t.as_ref().map(|(_, width, fold)| (*width, *fold)))
+            .collect();
+        let folds = folded_tools(&widths, width - FORMAT_BAR_PAD);
+        // A folded tool's own menu keeps ⋮ More open under it.
+        let folded = |p: Popup, fold: u8| open(p) && fold <= folds;
+        let more_open = open(Popup::MoreFormat)
+            || folded(Popup::Font, FOLD_FONT)
+            || folded(Popup::Size, FOLD_SIZE)
+            || folded(Popup::Align, FOLD_ALIGN)
+            || folded(Popup::Table, FOLD_TABLE)
+            || folded(Popup::TableEdit, FOLD_TABLE);
+        let (bar, rest) = split_tools(tools, folds, th);
+        let more = (folds > 0).then(|| {
+            div()
+                .relative()
+                .child(
+                    format_button("format-more", "more", more_open, th)
+                        .tooltip(tip(tr!("compose-tool-more-formatting"), th))
+                        .on_click(
+                            cx.listener(|this, _, _, cx| this.toggle_popup(Popup::MoreFormat, cx)),
+                        ),
+                )
+                .when(more_open, |d| {
+                    d.child(above(
+                        menu(th)
+                            .min_w(px(0.0))
+                            .max_w(px(width.max(FORMAT_TOOL * 4.0)))
+                            .px(px(6.0))
+                            .py(px(6.0))
+                            .flex_row()
+                            .flex_wrap()
+                            .items_center()
+                            .gap(px(2.0))
+                            .children(rest),
+                    ))
+                })
+        });
+        div()
+            .h(px(40.0))
+            .px(px(12.0))
+            .flex()
+            .flex_row()
+            .items_center()
+            .gap(px(1.0))
+            .children(bar)
+            .children(more)
             .into_any_element()
     }
 
@@ -1775,7 +2020,8 @@ impl MailWindow {
                     .text_size(px(13.0))
                     .text_color(rgba(th.text_dim))
                     .cursor_pointer()
-                    .hover(|s| s.bg(rgba(th.hover)))
+                    .relative()
+                    .child(crate::widgets::hover_fade("hover-glow", Some(4.0), th))
                     .when(current.is_none(), |d| d.font_weight(FontWeight::MEDIUM))
                     .child(if background {
                         tr!("compose-tool-no-background")
@@ -1927,7 +2173,8 @@ impl MailWindow {
                 .rounded(px(6.0))
                 .text_size(px(22.0))
                 .cursor_pointer()
-                .hover(|s| s.bg(rgba(th.hover)))
+                .relative()
+                .child(crate::widgets::hover_fade("hover-glow", Some(6.0), th))
                 .tooltip(tip(emoji.name().to_owned(), th))
                 .on_click(self.on_body(cx, move |e, cx| e.insert(text, cx)))
                 .child(text)
@@ -1944,10 +2191,15 @@ impl MailWindow {
             .h(px(380.0))
             .flex()
             .flex_col()
-            .rounded(px(12.0))
             .overflow_hidden()
-            .bg(rgba(th.menu))
-            .shadow(crate::widgets::elevation(th, 3.0))
+            .map(|d| {
+                crate::widgets::raised(
+                    d,
+                    th,
+                    katna_ui::tokens::radius::MD,
+                    katna_ui::tokens::elevation::MENU,
+                )
+            })
             .text_color(rgba(th.text))
             .child(
                 div()
@@ -2541,7 +2793,7 @@ impl MailWindow {
 
     // More options.
 
-    fn render_more_menu(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+    fn render_more_menu(&self, folded: Folded, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let Some(compose) = &self.compose else {
             return div().into_any_element();
         };
@@ -2590,8 +2842,50 @@ impl MailWindow {
                         .child(tr!("compose-tool-label-coming")),
                 )
             });
+        // The Send row's tools that did not fit it come first.
+        let folded_item =
+            |id: &'static str, name: &'static str, label: String| tool_item(id, name, &label, th);
+        let any_folded = folded.attach || folded.signature || folded.templates || folded.discard;
+        let folded_items = div()
+            .when(folded.attach, |d| {
+                d.child(
+                    folded_item("more-attach", "attachment", tr!("compose-tool-attach")).on_click(
+                        cx.listener(|this, _, window, cx| {
+                            if let Some(c) = &mut this.compose {
+                                c.popup = None;
+                            }
+                            this.open_compose_picker(window, cx)
+                        }),
+                    ),
+                )
+            })
+            .when(folded.signature, |d| {
+                d.child(
+                    folded_item("more-signature", "signature", tr!("compose-tool-signature"))
+                        .on_click(
+                            cx.listener(|this, _, _, cx| this.toggle_popup(Popup::Signature, cx)),
+                        ),
+                )
+            })
+            .when(folded.templates, |d| {
+                d.child(
+                    folded_item("more-templates", "template", tr!("compose-tool-templates"))
+                        .on_click(cx.listener(|this, _, _, cx| {
+                            this.toggle_popup(Popup::Templates, cx);
+                            this.load_templates(cx);
+                        })),
+                )
+            })
+            .when(folded.discard, |d| {
+                d.child(
+                    folded_item("more-discard", "trash", tr!("compose-tool-discard"))
+                        .on_click(cx.listener(|this, _, _, cx| this.discard_compose(cx))),
+                )
+            })
+            .when(any_folded, |d| d.child(menu_divider(th)));
         menu(th)
             .w(px(260.0))
+            .child(folded_items)
             .child(
                 tool_item(
                     "more-full-screen",
@@ -2800,7 +3094,6 @@ impl MailWindow {
         let popup = compose.popup.as_ref()?;
         let card = match popup {
             Popup::Link => self.render_link_dialog(th, cx),
-            Popup::PickTime => self.render_time_picker(th, cx),
             Popup::PlainText => self.render_plain_dialog(th, cx),
             Popup::SaveTemplate => self.render_save_template_dialog(th, cx),
             Popup::SendCheck {
@@ -2826,8 +3119,7 @@ impl MailWindow {
         if !has_field(popup) && !focus.is_focused(window) {
             window.focus(&focus, cx);
         }
-        let viewport = window.viewport_size();
-        let (vw, vh) = (unpx(viewport.width), unpx(viewport.height));
+        let (vw, vh) = (self.room_width(), self.room_height(window));
         Some(
             div()
                 .id("compose-dialog-scrim")
@@ -2936,7 +3228,8 @@ impl MailWindow {
                     .font_weight(FontWeight::MEDIUM)
                     .text_color(rgba(th.accent))
                     .cursor_pointer()
-                    .hover(|s| s.bg(rgba(th.hover)))
+                    .relative()
+                    .child(crate::widgets::hover_fade("hover-glow", None, th))
                     .on_click(cx.listener(|this, _, window, cx| this.close_popup(window, cx)))
                     .child(tr!("compose-tool-cancel")),
             )
@@ -2953,9 +3246,7 @@ impl MailWindow {
             .p(px(24.0))
             .flex()
             .flex_col()
-            .rounded(px(DIALOG_RADIUS))
-            .map(|d| crate::widgets::frosted(d, th, th.menu, DIALOG_RADIUS))
-            .shadow(crate::widgets::elevation(th, 3.0))
+            .map(|d| crate::widgets::dialog(d, th, th.menu))
             .text_color(rgba(th.text))
             .child(div().mb(px(16.0)).text_size(px(20.0)).child(title.into()))
     }
@@ -3088,7 +3379,8 @@ impl MailWindow {
                             .font_weight(FontWeight::MEDIUM)
                             .text_color(rgba(th.accent))
                             .cursor_pointer()
-                            .hover(|s| s.bg(rgba(th.hover)))
+                            .relative()
+                            .child(crate::widgets::hover_fade("hover-glow", None, th))
                             .on_click(cx.listener(move |this, _, window, cx| match check {
                                 SendCheck::Attachment => this.pick_files(false, cx),
                                 SendCheck::Subject => {
@@ -3111,150 +3403,20 @@ impl MailWindow {
             .into_any_element()
     }
 
-    fn render_time_picker(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
-        let Some(compose) = &self.compose else {
-            return div().into_any_element();
+    /// Pick date & time, in place of the menu it was opened from.
+    pub(super) fn render_time_picker(
+        &self,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> Option<AnyElement> {
+        let c = self.compose.as_ref()?;
+        let pick = c.dialog.pick.as_ref()?;
+        let (title, done) = if c.dialog.for_follow_up {
+            (tr!("follow-up-pick-title"), tr!("follow-up-done"))
+        } else {
+            (tr!("schedule-pick"), tr!("schedule-send"))
         };
-        let today = jiff::Timestamp::now().to_zoned(self.tz.clone()).date();
-        let (month, day) = (compose.dialog.month, compose.dialog.day);
-        let days = schedule::month_grid(month, format::first_weekday())
-            .into_iter()
-            .enumerate()
-            .map(|(ix, date)| {
-                let past = date < today;
-                let selected = date == day;
-                let other = date.month() != month.month();
-                div()
-                    .id(("pick-day", ix))
-                    .size(px(36.0))
-                    .flex()
-                    .items_center()
-                    .justify_center()
-                    .rounded_full()
-                    .text_size(px(13.0))
-                    .when(other, |d| d.text_color(rgba(th.text_faint)))
-                    .when(past, |d| d.opacity(0.38))
-                    .when(date == today && !selected, |d| {
-                        d.border_1().border_color(rgba(th.accent))
-                    })
-                    .when(selected, |d| {
-                        d.bg(rgba(th.accent)).text_color(rgba(th.on_accent))
-                    })
-                    .when(!past, |d| {
-                        d.cursor_pointer()
-                            .hover(|s| s.bg(rgba(th.hover)))
-                            .on_click(cx.listener(move |this, _, _, cx| {
-                                if let Some(c) = &mut this.compose {
-                                    c.dialog.day = date;
-                                    c.dialog.month = date;
-                                }
-                                cx.notify();
-                            }))
-                    })
-                    .child(format::number(date.day() as u64))
-            })
-            .collect::<Vec<_>>();
-        let step = |months: i32| {
-            move |this: &mut Self, _: &gpui::ClickEvent, _: &mut Window, cx: &mut Context<Self>| {
-                if let Some(c) = &mut this.compose
-                    && let Ok(m) = c
-                        .dialog
-                        .month
-                        .first_of_month()
-                        .checked_add(jiff::Span::new().months(months))
-                {
-                    c.dialog.month = m;
-                }
-                cx.notify();
-            }
-        };
-        let weekdays = format::weekdays_short().into_iter().map(|(_, d)| {
-            div()
-                .size(px(36.0))
-                .flex()
-                .items_center()
-                .justify_center()
-                .text_size(px(12.0))
-                .text_color(rgba(th.text_dim))
-                .child(d)
-        });
-        let (prev, next) = (cx.listener(step(-1)), cx.listener(step(1)));
-        Self::dialog_card(th, 330.0, tr!("schedule-pick"))
-            .child(
-                div()
-                    .flex()
-                    .flex_row()
-                    .items_center()
-                    .child(
-                        div()
-                            .flex_1()
-                            .text_size(px(14.0))
-                            .font_weight(FontWeight::MEDIUM)
-                            .child(format::month_year(month)),
-                    )
-                    .child(
-                        icon_button("pick-prev", "chevron-left", 20.0, th)
-                            .size(px(32.0))
-                            .on_click(prev),
-                    )
-                    .child(
-                        icon_button("pick-next", "chevron-right", 20.0, th)
-                            .size(px(32.0))
-                            .on_click(next),
-                    ),
-            )
-            .child(
-                div()
-                    .mt(px(8.0))
-                    .w(px(7.0 * 40.0))
-                    .flex()
-                    .flex_row()
-                    .flex_wrap()
-                    .gap_x(px(4.0))
-                    .children(weekdays)
-                    .children(days),
-            )
-            .child(
-                div()
-                    .mt(px(12.0))
-                    .flex()
-                    .flex_row()
-                    .gap(px(12.0))
-                    .child(
-                        div()
-                            .flex_1()
-                            .h(px(40.0))
-                            .px(px(12.0))
-                            .flex()
-                            .items_center()
-                            .rounded(px(6.0))
-                            .border_1()
-                            .border_color(rgba(th.outline))
-                            .text_size(px(14.0))
-                            .child(format::day_month_year(
-                                day.to_datetime(jiff::civil::Time::midnight()),
-                            )),
-                    )
-                    .child(
-                        div()
-                            .w(px(110.0))
-                            .h(px(40.0))
-                            .px(px(12.0))
-                            .flex()
-                            .items_center()
-                            .rounded(px(6.0))
-                            .border_1()
-                            .border_color(rgba(th.accent))
-                            .text_size(px(14.0))
-                            .child(compose.dialog.time.clone()),
-                    ),
-            )
-            .child(
-                self.dialog_buttons(th, tr!("schedule-send"), cx, |this, window, cx| {
-                    this.schedule_picked(window, cx)
-                }),
-            )
-            .into_any_element()
+        Some(self.render_date_pick(pick, title, done, th, cx))
     }
 
     // Signature.

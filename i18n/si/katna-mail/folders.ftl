@@ -10,6 +10,8 @@ nav-label-new = නව ලේබලයක් සාදන්න
 nav-folder-new = නව ෆෝල්ඩරයක් සාදන්න
 nav-menu-check-mail = නව තැපැල් පරීක්ෂා කරන්න
 nav-menu-check-inbox = මෙම එන ලිපි පරීක්ෂා කරන්න
+nav-unified-leave-out = ඒකාබද්ධ එන ලිපිවලින් ඉවත් කරන්න
+nav-unified-bring-back = ඒකාබද්ධ එන ලිපිවලට නැවත ගෙන එන්න
 nav-menu-sign-in-again = නැවත පුරනය වන්න
 nav-menu-new-mail = මෙම ගිණුමෙන් නව තැපැල
 nav-menu-account-settings = ගිණුම් සැකසීම්
@@ -22,6 +24,8 @@ nav-account-password-refused = මුරපදය ප්‍රතික්ෂේ
 nav-account-storage = { $total } න් { $used } භාවිතයි
 nav-menu-new-subfolder = ඇතුළත නව ෆෝල්ඩරය
 nav-menu-new-sublabel = ඇතුළත නව ලේබලය
+nav-menu-rename = නැවත නම් කරන්න
+nav-menu-delete = මකන්න
 nav-menu-empty-trash = කුණු කූඩය හිස් කරන්න
 nav-account-unnamed = ගිණුම { $number }
 nav-all-accounts = සියලු ගිණුම්
@@ -44,6 +48,10 @@ folder-spam = අයාචිත තැපැල්
 folder-trash = කුණු කූඩය
 folder-all-mail = සියලු තැපැල්
 folder-scheduled = උපලේඛනගත
+folder-waiting = පිළිතුරක් බලාපොරොත්තුවෙන්
+folder-waiting-short = බලාපොරොත්තුවෙන්
+folder-reminders = සිහිකැඳවීම්
+folder-outbox = පිටතට යන ලිපි
 folder-activity = ක්‍රියාකාරකම්
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
@@ -61,3 +69,44 @@ label-create = සාදන්න
 label-creating = සාදමින්…
 label-created = “{ $name }” ලේබලය සාදන ලදී.
 label-folder-created = “{ $name }” ෆෝල්ඩරය සාදන ලදී.
+label-rename-title = ලේබලය නැවත නම් කරන්න
+label-folder-rename-title = ෆෝල්ඩරය නැවත නම් කරන්න
+label-rename = නැවත නම් කරන්න
+label-renaming = නැවත නම් කරමින්…
+label-renamed = ලේබලය “{ $name }” ලෙස නැවත නම් කළා.
+label-folder-renamed = ෆෝල්ඩරය “{ $name }” ලෙස නැවත නම් කළා.
+
+## Deleting a folder or label (asked first)
+
+folder-delete-title = “{ $name }” මකන්නද?
+folder-delete-body = { $count ->
+    [0] එහි තැපැල් නැත. ෆෝල්ඩරය සේවාදායකයෙන් ඉවත් කෙරෙන නිසා, වෙබ් තැපැල් සහ ඔබේ දුරකථනයෙන්ද එය නැති වේ.
+   *[other] { $kind ->
+        [conversation] { $count ->
+            [one] එහි සංවාද { $count } කුණු කූඩයට යන නිසා, ඔබට එය තවමත් ආපසු ලබා ගත හැක.
+           *[other] එහි සංවාද { $count } කුණු කූඩයට යන නිසා, ඔබට ඒවා තවමත් ආපසු ලබා ගත හැක.
+        }
+       *[message] { $count ->
+            [one] එහි පණිවිඩ { $count } කුණු කූඩයට යන නිසා, ඔබට එය තවමත් ආපසු ලබා ගත හැක.
+           *[other] එහි පණිවිඩ { $count } කුණු කූඩයට යන නිසා, ඔබට ඒවා තවමත් ආපසු ලබා ගත හැක.
+        }
+    } ෆෝල්ඩරය සේවාදායකයෙන් ඉවත් කෙරෙන නිසා, වෙබ් තැපැල් සහ ඔබේ දුරකථනයෙන්ද එය නැති වේ.
+}
+folder-delete-forever-body = { $count ->
+    [0] එහි තැපැල් නැත. ෆෝල්ඩරය සේවාදායකයෙන් ඉවත් කෙරෙන නිසා, වෙබ් තැපැල් සහ ඔබේ දුරකථනයෙන්ද එය නැති වේ.
+   *[other] { $kind ->
+        [conversation] { $count ->
+            [one] එහි සංවාද { $count } සදහටම මැකේ; මෙම ගිණුමට කුණු කූඩයක් නැත.
+           *[other] එහි සංවාද { $count } සදහටම මැකේ; මෙම ගිණුමට කුණු කූඩයක් නැත.
+        }
+       *[message] { $count ->
+            [one] එහි පණිවිඩ { $count } සදහටම මැකේ; මෙම ගිණුමට කුණු කූඩයක් නැත.
+           *[other] එහි පණිවිඩ { $count } සදහටම මැකේ; මෙම ගිණුමට කුණු කූඩයක් නැත.
+        }
+    } ෆෝල්ඩරය සේවාදායකයෙන් ඉවත් කෙරෙන නිසා, වෙබ් තැපැල් සහ ඔබේ දුරකථනයෙන්ද එය නැති වේ.
+}
+folder-delete-label-body = ලේබලය ඉවත් කෙරේ. එහි තැපැල් සියලු තැපැල් තුළ සහ එහි අනෙක් ලේබලවල පවතී.
+folder-delete-confirm = ෆෝල්ඩරය මකන්න
+folder-delete-label-confirm = ලේබලය මකන්න
+folder-deleted = “{ $name }” ෆෝල්ඩරය මැකුවා
+label-deleted = “{ $name }” ලේබලය මැකුවා

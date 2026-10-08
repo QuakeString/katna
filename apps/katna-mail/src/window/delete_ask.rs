@@ -281,7 +281,8 @@ impl MailWindow {
                 .gap(px(10.0))
                 .rounded(px(8.0))
                 .cursor_pointer()
-                .hover(|s| s.bg(rgba(th.hover)))
+                .relative()
+                .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
                 .text_size(px(14.0))
                 .on_click(cx.listener(|this, _, _, cx| {
                     if let Some(ask) = &mut this.delete_ask {
@@ -355,19 +356,17 @@ impl MailWindow {
                     )),
             )
             .child(
-                div()
+                self.copyable(title, th)
                     .mt(px(14.0))
                     .text_size(px(20.0))
-                    .line_height(px(28.0))
-                    .child(title),
+                    .line_height(px(28.0)),
             )
             .child(
-                div()
+                self.copyable(body, th)
                     .mt(px(8.0))
                     .text_size(px(14.0))
                     .line_height(px(20.0))
-                    .text_color(rgba(th.text_dim))
-                    .child(body),
+                    .text_color(rgba(th.text_dim)),
             )
             .children(dont_ask)
             .child(

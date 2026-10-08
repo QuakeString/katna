@@ -21,7 +21,7 @@ use super::MailWindow;
 use super::apps::App as RailApp;
 use super::calendar::{civil, event_color, midnight, read};
 use crate::theme::{Theme, fade};
-use crate::widgets::{card_outline, card_shadow, filled_button, icon, icon_button_colored, tip};
+use crate::widgets::{card_outline, filled_button, icon, icon_button_colored, tip};
 
 /// The card's width.
 const AGENDA_WIDTH: f32 = 300.0;
@@ -66,6 +66,7 @@ impl MailWindow {
             && self.layout.shape.is_desktop()
             && self.app == RailApp::Mail
             && self.settings_page.is_none()
+            && self.app_on(super::apps::App::Calendar)
     }
 
     /// Whether the card fits beside the mail.
@@ -119,11 +120,15 @@ impl MailWindow {
             midnight(day.tomorrow().unwrap_or(day), &tz),
         );
         let paths = self.paths.clone();
-        let birthdays = !self.config.contacts.hide_birthdays;
+        // No Birthdays calendar while Contacts is off.
+        let birthdays = self
+            .app_on(super::apps::App::Contacts)
+            .then_some(!self.config.contacts.hide_birthdays);
+        let left_out = self.calendar_left_out();
         self.agenda.task = Some(cx.spawn(async move |this, cx| {
             let read = cx
                 .background_executor()
-                .spawn(async move { read(&paths, from, to, &tz, birthdays) })
+                .spawn(async move { read(&paths, from, to, &tz, birthdays, &left_out) })
                 .await;
             this.update(cx, |this, cx| {
                 match read {
@@ -347,9 +352,7 @@ impl MailWindow {
         div()
             .relative()
             .size_full()
-            .rounded(px(radius))
-            .map(|d| crate::widgets::pane(d, th.pane(), th.surface, radius))
-            .shadow(card_shadow(th, shadow))
+            .map(|d| crate::widgets::card(d, th, th.pane(), radius, shadow))
             .flex()
             .flex_col()
             .child(

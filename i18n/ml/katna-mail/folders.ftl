@@ -10,6 +10,8 @@ nav-label-new = പുതിയ ലേബൽ സൃഷ്‌ടിക്കു�
 nav-folder-new = പുതിയ ഫോൾഡർ സൃഷ്‌ടിക്കുക
 nav-menu-check-mail = പുതിയ മെയിൽ പരിശോധിക്കുക
 nav-menu-check-inbox = ഈ ഇൻബോക്‌സ് പരിശോധിക്കുക
+nav-unified-leave-out = ഏകീകൃത ഇൻബോക്‌സിൽ നിന്ന് ഒഴിവാക്കുക
+nav-unified-bring-back = ഏകീകൃത ഇൻബോക്‌സിലേക്ക് തിരികെ ചേർക്കുക
 nav-menu-sign-in-again = വീണ്ടും സൈൻ ഇൻ ചെയ്യുക
 nav-menu-new-mail = ഈ അക്കൗണ്ടിൽ നിന്ന് പുതിയ മെയിൽ
 nav-menu-account-settings = അക്കൗണ്ട് ക്രമീകരണം
@@ -22,6 +24,8 @@ nav-account-password-refused = പാസ്‌വേഡ് നിരസിച്
 nav-account-storage = { $total }-ൽ { $used } ഉപയോഗിച്ചു
 nav-menu-new-subfolder = ഉള്ളിൽ പുതിയ ഫോൾഡർ
 nav-menu-new-sublabel = ഉള്ളിൽ പുതിയ ലേബൽ
+nav-menu-rename = പേരുമാറ്റുക
+nav-menu-delete = ഇല്ലാതാക്കുക
 nav-menu-empty-trash = ട്രാഷ് ശൂന്യമാക്കുക
 nav-account-unnamed = അക്കൗണ്ട് { $number }
 nav-all-accounts = എല്ലാ അക്കൗണ്ടുകളും
@@ -44,6 +48,10 @@ folder-spam = സ്‌പാം
 folder-trash = ട്രാഷ്
 folder-all-mail = എല്ലാ മെയിലുകളും
 folder-scheduled = ഷെഡ്യൂൾ ചെയ്‌തവ
+folder-waiting = മറുപടിക്കായി കാത്തിരിക്കുന്നവ
+folder-waiting-short = കാത്തിരിക്കുന്നവ
+folder-reminders = ഓർമ്മപ്പെടുത്തലുകൾ
+folder-outbox = ഔട്ട്‌ബോക്‌സ്
 folder-activity = പ്രവർത്തനം
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
@@ -61,3 +69,44 @@ label-create = സൃഷ്‌ടിക്കുക
 label-creating = സൃഷ്‌ടിക്കുന്നു…
 label-created = “{ $name }” ലേബൽ സൃഷ്‌ടിച്ചു.
 label-folder-created = “{ $name }” ഫോൾഡർ സൃഷ്‌ടിച്ചു.
+label-rename-title = ലേബലിന്റെ പേരുമാറ്റുക
+label-folder-rename-title = ഫോൾഡറിന്റെ പേരുമാറ്റുക
+label-rename = പേരുമാറ്റുക
+label-renaming = പേരുമാറ്റുന്നു…
+label-renamed = ലേബലിന്റെ പേര് “{ $name }” എന്നാക്കി.
+label-folder-renamed = ഫോൾഡറിന്റെ പേര് “{ $name }” എന്നാക്കി.
+
+## Deleting a folder or label (asked first)
+
+folder-delete-title = “{ $name }” ഇല്ലാതാക്കണോ?
+folder-delete-body = { $count ->
+    [0] ഇതിൽ മെയിലൊന്നുമില്ല. ഫോൾഡർ സെർവറിൽ നിന്ന് നീക്കം ചെയ്യും, അതിനാൽ വെബ്‌മെയിലിലും ഫോണിലും അത് ഇല്ലാതാകും.
+   *[other] { $kind ->
+        [conversation] { $count ->
+            [one] അതിലെ { $count } സംഭാഷണം ട്രാഷിലേക്ക് പോകും, അതിനാൽ പിന്നീടും തിരികെ എടുക്കാം.
+           *[other] അതിലെ { $count } സംഭാഷണങ്ങൾ ട്രാഷിലേക്ക് പോകും, അതിനാൽ പിന്നീടും തിരികെ എടുക്കാം.
+        }
+       *[message] { $count ->
+            [one] അതിലെ { $count } സന്ദേശം ട്രാഷിലേക്ക് പോകും, അതിനാൽ പിന്നീടും തിരികെ എടുക്കാം.
+           *[other] അതിലെ { $count } സന്ദേശങ്ങൾ ട്രാഷിലേക്ക് പോകും, അതിനാൽ പിന്നീടും തിരികെ എടുക്കാം.
+        }
+    } ഫോൾഡർ സെർവറിൽ നിന്ന് നീക്കം ചെയ്യും, അതിനാൽ വെബ്‌മെയിലിലും ഫോണിലും അത് ഇല്ലാതാകും.
+}
+folder-delete-forever-body = { $count ->
+    [0] ഇതിൽ മെയിലൊന്നുമില്ല. ഫോൾഡർ സെർവറിൽ നിന്ന് നീക്കം ചെയ്യും, അതിനാൽ വെബ്‌മെയിലിലും ഫോണിലും അത് ഇല്ലാതാകും.
+   *[other] { $kind ->
+        [conversation] { $count ->
+            [one] അതിലെ { $count } സംഭാഷണം ശാശ്വതമായി ഇല്ലാതാക്കും; ഈ അക്കൗണ്ടിന് ട്രാഷ് ഇല്ല.
+           *[other] അതിലെ { $count } സംഭാഷണങ്ങൾ ശാശ്വതമായി ഇല്ലാതാക്കും; ഈ അക്കൗണ്ടിന് ട്രാഷ് ഇല്ല.
+        }
+       *[message] { $count ->
+            [one] അതിലെ { $count } സന്ദേശം ശാശ്വതമായി ഇല്ലാതാക്കും; ഈ അക്കൗണ്ടിന് ട്രാഷ് ഇല്ല.
+           *[other] അതിലെ { $count } സന്ദേശങ്ങൾ ശാശ്വതമായി ഇല്ലാതാക്കും; ഈ അക്കൗണ്ടിന് ട്രാഷ് ഇല്ല.
+        }
+    } ഫോൾഡർ സെർവറിൽ നിന്ന് നീക്കം ചെയ്യും, അതിനാൽ വെബ്‌മെയിലിലും ഫോണിലും അത് ഇല്ലാതാകും.
+}
+folder-delete-label-body = ലേബൽ നീക്കം ചെയ്യും. അതിലെ മെയിൽ “എല്ലാ മെയിലുകളിലും” മറ്റ് ലേബലുകളിലും നിലനിൽക്കും.
+folder-delete-confirm = ഫോൾഡർ ഇല്ലാതാക്കുക
+folder-delete-label-confirm = ലേബൽ ഇല്ലാതാക്കുക
+folder-deleted = “{ $name }” ഫോൾഡർ ഇല്ലാതാക്കി
+label-deleted = “{ $name }” ലേബൽ ഇല്ലാതാക്കി

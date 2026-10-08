@@ -6,6 +6,10 @@
 
 about-tooltip = O Katna
 about-tagline = Poczta i kalendarz dla pulpitu Linux
+about-copy-version = Kopiuj informacje o wersji
+about-version-copied = Skopiowano
+about-version-built = Zbudowano: { $date }
+about-version-system = System: { $system }
 about-whats-new = Co nowego
 
 ## Updates, in a box under the version in About (only in packages that
@@ -22,11 +26,13 @@ about-update-ready = Wersja { $version } jest gotowa do instalacji
 about-update-ready-detail = Katna Mail uruchomi się ponownie, aby zakończyć aktualizację.
 about-update-confirm = Zainstalować wersję { $version }?
 about-update-confirm-detail = Katna Mail zamknie się, zainstaluje aktualizację i otworzy się ponownie w tym samym miejscu co wcześniej. Komputer poprosi o hasło.
+about-update-confirm-detail-windows = Katna Mail zamknie się, zainstaluje aktualizację i za chwilę otworzy się ponownie.
 about-update-installing = Instalowanie wersji { $version }…
 about-update-installing-detail = Wpisz hasło w otwartym oknie.
+about-update-installing-detail-windows = Katna Mail zamyka się teraz i otworzy się ponownie po zainstalowaniu aktualizacji.
 about-update-cancelled = Aktualizacja nie została zainstalowana, ponieważ nie podano hasła.
 about-update-failed = Nie udało się zainstalować aktualizacji: { $error }
-about-update-unsupported = Ta kopia Katna Mail jest aktualizowana przez menedżera pakietów.
+about-update-not-self-updating = Ta kopia Katna Mail nie aktualizuje się sama. Zaktualizuj ją tak, jak ją zainstalowałeś.
 about-update-restart-failed = Aktualizacja jest zainstalowana, ale Katna Mail nie mogła się ponownie otworzyć ({ $error }). Otwórz ją samodzielnie.
 about-update-check = Sprawdź aktualizacje
 about-update-download = Pobierz
@@ -150,6 +156,7 @@ onboarding-katna-private = Ma własne hasło. Dane logowania do poczty nigdy nie
 onboarding-ready-title = Wszystko gotowe
 onboarding-ready-lead = Katna pobiera Twoją pocztę. Wiadomości pojawiają się w miarę napływania, a nowa poczta dochodzi sama.
 onboarding-ready-lead-address = Katna pobiera pocztę konta { $address }. Wiadomości pojawiają się w miarę napływania, a nowa poczta dochodzi sama.
+onboarding-apps = Aplikacje, których będziesz używać
 onboarding-ready-tour = Obejrzeć minutowy przewodnik, żeby zobaczyć, gdzie co jest?
 onboarding-skip = Na razie pomiń
 onboarding-take-tour = Obejrzyj przewodnik
@@ -222,11 +229,9 @@ crash-close = Zamknij
 ## Sign in again (a bar at the bottom when Google or Microsoft stopped
 ## letting an account in; $provider: Google or Microsoft)
 
-sign-in-again-text = { $provider } prosi o ponowne zalogowanie się do { $address }.
 sign-in-again-button = Zaloguj się
 sign-in-again-tooltip = Otwórz stronę logowania { $provider } w przeglądarce
 sign-in-again-waiting = Czekanie na przeglądarkę…
-sign-in-again-close = Zamknij
 google-api-off = { $api } jest wyłączone w projekcie Google Cloud Katna.
 google-api-turn-on = Włącz
 google-api-turn-on-tooltip = Otwórz Google Cloud, aby włączyć { $api }, a potem naciśnij Spróbuj ponownie

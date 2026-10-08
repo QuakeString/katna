@@ -888,7 +888,6 @@ Kepada, Cc, dan Bcc. Panah di samping ikon balas beralih antara Balas, Balas
 semua, dan Teruskan, tanpa menghapus yang sudah Anda tulis.
 """
 
-
 ["2026-09-28-1110-search-options-narrow"]
 title = "Opsi penelusuran muat di jendela sempit"
 text = """
@@ -3128,4 +3127,1309 @@ text = """
 Setiap tab di Setelan punya bilah gulir tipis yang sama seperti email yang
 terbuka dan File: bilah ini muncul saat Anda menggulir atau mengarahkan
 kursor ke halaman, dan Anda bisa menyeretnya.
+"""
+
+["2026-10-02-1248-account-colors"]
+title = "Warna untuk setiap akun"
+text = """
+Pilih warna untuk setiap akun di Setelan > Akun, atau klik kanan akun di
+panel folder: salah satu dari tujuh warna, atau warna apa pun dari roda
+pelangi setelahnya. Titik di samping setiap pengirim di Kotak masuk gabungan
+dan lingkaran di sekitar gambar akun memakai warna itu, dan mengarahkan
+kursor ke titik itu menampilkan nama akunnya. Setiap akun dimulai dengan
+warnanya sendiri, tidak pernah sama dengan warna tab kotak masuk.
+"""
+
+["2026-10-02-1340-colors-button-mail-only"]
+title = "Tombol warna asli hanya saat berguna"
+text = """
+Dalam tema gelap, tombol Tampilkan warna asli, yang menampilkan email dengan
+warnanya sendiri, kini bergeser menghilang selama percakapan ditampilkan
+sebagai chat, dan muncul kembali di Email.
+"""
+
+["2026-10-02-1340-logo-and-custom-accent"]
+title = "Logo mengikuti warna Anda, dan aksen apa pun yang Anda suka"
+text = """
+Logo Katna di jendela kini memakai warna aksen Anda, baik di tema terang
+maupun gelap. Dan Setelan > Tampilan > Aksen kini diakhiri dengan roda
+warna: klik untuk memilih aksen apa pun yang Anda suka.
+"""
+
+["2026-10-02-1358-empty-reply-no-draft"]
+title = "Balasan kosong tidak meninggalkan draf"
+text = """
+Balasan yang Anda klik tetapi tidak pernah Anda isi, di kotak chat atau di
+bawah email, kini cukup tertutup saat Anda meninggalkannya. Balasan itu
+tidak menyimpan draf dan tidak muncul kembali saat Anda beralih antara Chat
+dan Email.
+"""
+
+["2026-10-02-1400-folder-right-click-selects"]
+title = "Klik kanan membuka folder"
+text = """
+Mengklik kanan folder di panel folder kini memilih dan membukanya sebelum
+menunya muncul, jadi menu jelas berlaku untuk folder yang Anda lihat.
+"""
+
+["2026-10-02-1405-viewer-arrows-hover"]
+title = "Panah penampil tetap terlihat"
+text = """
+Panah di sisi penampil lampiran tidak lagi memudar hingga hampir putih saat
+Anda mengarahkan kursor ke sana. Panah kini menjadi abu-abu sedikit lebih
+terang, sehingga tetap mudah dilihat di atas halaman putih.
+"""
+
+["2026-10-02-1432-account-colour-button"]
+title = "Satu tombol warna per akun"
+text = """
+Setiap akun kini hanya menampilkan warnanya sendiri, pada tombol Warna di
+Setelan > Akun dan di menu klik kanan akun. Klik tombol itu untuk memilih
+salah satu dari delapan warna atau warna pilihan Anda sendiri, tepat di
+tempat Anda mengklik.
+"""
+
+["2026-10-02-1443-reply-at-the-end"]
+title = "Balasan Anda tetap di akhir"
+text = """
+Balasan kini selalu berada di akhir percakapan, bahkan saat email terbaru
+ditampilkan lebih dulu. Beralih dari Chat ke Email menggulir ke balasan itu,
+dengan kursor di tempat Anda meninggalkannya.
+"""
+
+["2026-10-02-1451-card-shows-signer"]
+title = "Kartu menampilkan siapa yang menandatangani email yang terbuka"
+text = """
+Kartu orang kini membaca tanda tangan email yang sedang Anda buka, bukan
+hanya email terbaru. Saat seorang rekan menandatangani email dari alamat
+bersama seperti accounts@, kartu menampilkan nama, jabatan, nomor telepon,
+dan alamat perusahaannya dari email tersebut.
+"""
+
+["2026-10-02-1510-search-click-away"]
+title = "Klik di mana saja untuk keluar dari kotak pencarian"
+text = """
+Mengklik ruang kosong di bilah atas, di samping kotak pencarian, kini
+membawa Anda keluar dari kotak itu, sama seperti mengklik daftar email.
+Pencarian Anda tetap seperti semula.
+"""
+
+["2026-10-02-1515-empty-message-no-draft"]
+title = "Tidak ada draf kosong"
+text = """
+Pesan baru yang Anda kosongkan lagi sebelum menutupnya tidak lagi tersimpan
+di Draf, sama seperti balasan kosong dalam percakapan.
+"""
+
+["2026-10-02-1513-dark-pages"]
+title = "Halaman gelap di penampil"
+text = """
+Dalam mode gelap, penampil lampiran punya tombol bulan sabit yang
+menampilkan PDF, dokumen, slide, lembar kerja, dan file teks yang terang
+menjadi gelap. Warna tetap mempertahankan ronanya, foto di dalam halaman
+diredupkan alih-alih dibalik menjadi negatif, dan kertas hasil pindaian
+menjadi gelap seperti teks. Katna mengingat pilihan Anda untuk file berikutnya.
+"""
+
+["2026-10-02-1522-window-corners"]
+title = "Pilih sudut dan tepi jendela Anda"
+text = """
+Dengan bilah judul Katna sendiri, Setelan > Eksperimental kini punya
+penggeser Kelengkungan sudut, dari persegi hingga bulat, dan sakelar Garis tepi
+dengan opasitasnya sendiri. Dengan Tingkat buram khusus aktif, penggeser
+Opasitas kini juga mengatur seberapa banyak latar belakang jendela yang
+buram meneruskan apa yang ada di belakangnya.
+"""
+
+["2026-10-02-1535-ctrl-shift-click-select"]
+title = "Pilih email dengan Ctrl dan Shift"
+text = """
+Ctrl+klik email di daftar untuk memilihnya, dan Ctrl+klik email lain untuk
+menambahkannya. Shift+klik memilih setiap email dari email terakhir yang Anda
+klik. Untuk membuka email di jendelanya sendiri, klik kanan email itu dan
+pilih Buka di jendela baru.
+"""
+
+["2026-10-02-1610-frosted-panes"]
+title = "Panel, chat, dan pencarian berkaca buram"
+text = """
+Dengan Buramkan latar belakang jendela aktif, daftar email, email yang
+terbuka, dan kartu orang kini juga meneruskan efek buram, dengan penggeser
+Opasitas panel. Ruang di belakang gelembung chat menampilkannya sedikit
+lebih banyak, dan kotak pencarian tetap berkaca buram saat Anda mengetik.
+Masing-masing punya sakelarnya sendiri di Setelan > Eksperimental.
+"""
+
+["2026-10-02-1618-fainter-hints"]
+title = "Petunjuk yang lebih samar di kotak kosong"
+text = """
+Petunjuk abu-abu di kotak kosong, seperti “Balas ke…” di bawah chat atau
+“Telusuri email”, kini lebih samar, sehingga tidak pernah terlihat seperti
+teks yang Anda ketik.
+"""
+
+["2026-10-02-1642-drag-from-empty-space"]
+title = "Pindahkan jendela dari ruang kosong"
+text = """
+Di Linux, Anda kini bisa memindahkan jendela dengan menyeret ruang kosong
+mana pun di bilah kiri, folder, atau bilah di atas email Anda, bukan hanya
+bilah atas.
+"""
+
+["2026-10-02-1643-space-folds-folders"]
+title = "Spasi melipat folder"
+text = """
+Klik folder yang berisi folder lain, lalu tekan Spasi untuk membuka atau
+melipatnya, sama seperti mengklik panahnya. Setelah mengklik, tombol panah
+juga berpindah di panel folder, dan Tab berlanjut ke daftar email.
+"""
+
+["2026-10-02-1646-viewer-more-menu"]
+title = "Kontrol penampil muat di jendela sempit"
+text = """
+Di jendela yang sempit, kontrol di bagian bawah penampil lampiran kini
+tetap berada di dalamnya. Tombol yang tidak muat pindah ke menu ⋮ Lainnya:
+putar lebih dulu, lalu Sesuaikan, lalu Halaman gelap. Nomor halaman dan zoom
+tetap terlihat paling lama.
+"""
+
+["2026-10-02-1743-activity-report-fits"]
+title = "Laporan aktivitas muat di jendela"
+text = """
+Laporan aktivitas kini tetap berada di dalam jendela dengan margin yang
+rata, dan dapat digulir saat jendela pendek, sehingga baris terakhirnya
+tidak pernah terpotong.
+"""
+
+["2026-10-02-1846-folders-and-labels"]
+title = "Ganti nama, hapus, dan seret ke folder"
+text = """
+Klik kanan folder yang Anda buat untuk mengganti nama atau menghapusnya;
+menghapus memindahkan emailnya ke Sampah lebih dulu. Seret email dari
+daftar ke folder untuk memindahkannya ke sana. Pindahkan ke punya kotak
+pencarian: ketik untuk menemukan folder, atau untuk membuat folder baru
+dan memindahkan email ke dalamnya. Di Gmail, Beri label memasang dan
+melepas label pada email, dan menjatuhkan email ke label menambahkan
+label itu.
+"""
+
+["2026-10-02-1928-mail-rules"]
+title = "Aturan email"
+text = """
+Aturan menyortir email baru dengan sendirinya: berdasarkan pengirim, subjek,
+atau kata, aturan memindahkan, memberi label, membintangi, meneruskan, atau
+membisukannya. Buat aturan di Setelan > Folder & aturan, atau klik kanan
+email dan pilih Buat aturan…, lalu lihat berapa banyak email terbaru yang
+cocok sebelum Anda menyimpannya. Di Pindahkan ke, centang “Selalu pindahkan
+email dari … ke sini” untuk memindahkan email seorang pengirim beserta email
+berikutnya darinya dengan satu klik.
+"""
+
+["2026-10-02-2017-rules-on-the-server"]
+title = "Aturan yang berjalan meski komputer Anda mati"
+text = """
+Aturan email kini berjalan di Gmail, atau di server email Anda jika server
+itu menerima aturan Sieve, sehingga aturan juga menyortir email di ponsel
+Anda dan saat komputer ini mati. Setelan > Folder & aturan menampilkan di
+mana setiap aturan berjalan, dan mengapa sebuah aturan tetap di Katna.
+"""
+
+["2026-10-03-0046-smooth-folded-tabs"]
+title = "Tab yang dilipat berganti dengan mulus"
+text = """
+Saat jendela sempit melipat tab kotak masuk menjadi ikon, berganti tab tidak
+lagi melompat: tab yang Anda tinggalkan menyusut kembali menjadi ikonnya
+saat namanya memudar, dan tab yang Anda buka membesar saat namanya muncul.
+"""
+
+["2026-10-03-0051-read-rows-frosted"]
+title = "Email yang sudah dibaca juga berkaca buram"
+text = """
+Dengan panel kaca buram aktif, email yang sudah Anda baca kini menampilkan
+efek buram di belakang daftar seperti email yang belum dibaca, hanya dengan
+corak sedikit berbeda, bukan pita solid.
+"""
+
+["2026-10-03-0101-rounder-corners"]
+title = "Sudut jendela yang lebih bulat"
+text = """
+Kelengkungan sudut di Setelan > Eksperimental kini bisa mencapai 32 piksel,
+dua kali lebih bulat dari sebelumnya, dan Anda bisa mengetik angkanya di
+kotak di samping penggeser.
+"""
+
+["2026-10-03-0113-viewer-round-corners"]
+title = "Penampil mengikuti sudut jendela yang membulat"
+text = """
+Dengan bilah judul Katna sendiri dan sudut membulat, penampil lampiran kini
+membulatkan sudut bawahnya agar sesuai dengan jendela, bukan menampilkan
+sudut abu-abu persegi yang melewati tepi jendela.
+"""
+
+["2026-10-03-0147-chat-go-down"]
+title = "Kembali ke email terbaru"
+text = """
+Saat Anda menggulir jauh ke atas dalam chat, sebuah tombol bulat muncul
+perlahan di kanan bawah. Tombol itu membawa Anda meluncur kembali ke email
+terbaru dan menghitung email yang masuk sementara itu.
+"""
+
+["2026-10-03-0147-chat-long-mails"]
+title = "Email panjang di chat"
+text = """
+Pada gelembung yang panjang, gambar pengirim tetap berada di bagian bawah
+yang Anda lihat, dan tombol balas, sematkan, dan lainnya tetap berada di
+bagian yang terlihat. Klik kanan teksnya untuk menjangkau semuanya.
+"""
+
+["2026-10-03-0147-chat-scroll-bar"]
+title = "Bilah gulir di chat"
+text = """
+Chat punya bilah gulir tenang yang sama seperti email yang terbuka, yang
+ditampilkan saat penunjuk berada di atasnya.
+"""
+
+["2026-10-03-0147-chat-translate"]
+title = "Terjemahkan di chat"
+text = """
+Email dalam bahasa lain juga menawarkan terjemahannya di chat, seperti di
+Email. Klik kanan gelembung mana pun dan pilih Terjemahkan untuk
+menerjemahkannya sendiri, dan pilih lagi untuk menampilkan aslinya.
+"""
+
+["2026-10-03-0150-search-pill-hovers"]
+title = "Efek arahkan yang rata di bilah pencarian ponsel"
+text = """
+Di ponsel, tombol folder dan gambar akun Anda kini berada di tengah ujung
+bilah pencarian yang membulat, dan setiap tombol di bilah itu punya efek
+arahkan bulat yang sama, dengan jarak yang rata dari tepi bilah.
+"""
+
+["2026-10-03-0159-starter-rules"]
+title = "Aturan siap pakai"
+text = """
+Setelan > Folder & aturan kini menawarkan aturan siap pakai, dalam keadaan
+nonaktif: bisukan promosi, buletin ke Bacaan, tanda terima, pengiriman
+barang, tiket kereta dan pesawat (IRCTC, Air India, IndiGo, dan lainnya),
+kode sekali pakai, peringatan keamanan, email sosial, dan undangan kalender.
+Aktifkan salah satunya dan aturan itu berlaku untuk semua akun Anda, sambil
+membuat folder seperti Perjalanan bila perlu. Aturan juga bisa memeriksa tab
+kotak masuk dan apakah email berasal dari milis.
+"""
+
+["2026-10-03-0200-chat-file-hover"]
+title = "Kartu file yang lebih lembut di chat"
+text = """
+File di gelembung chat tidak lagi menjadi gelap di bawah penunjuk. File itu
+sedikit terangkat dengan rona samar, dan namanya tetap mudah dibaca.
+"""
+
+["2026-10-03-0210-opened-mail-stays-in-view"]
+title = "Email yang Anda buka tetap terlihat"
+text = """
+Dengan panel baca di samping daftar, email yang Anda klik tetap berada di
+tempatnya di daftar saat panel terbuka, atau daftar menggulir secukupnya
+untuk menampilkannya utuh. Email itu tidak lagi tergelincir keluar dari
+pandangan, baik Anda membukanya dari daftar maupun dari hasil pencarian.
+"""
+
+["2026-10-03-0212-about-header-stays"]
+title = "Tentang menjaga kepalanya tetap terlihat"
+text = """
+Menggulir Tentang kini mengecilkan logo besar menjadi logo kecil di kiri
+atas, dengan Katna, slogannya, dan versinya di sampingnya, dan kepala itu
+tetap di tempatnya sementara bagian lainnya bergulir di bawahnya.
+"""
+
+["2026-10-03-0221-folded-tab-icon-settles"]
+title = "Tab yang dilipat berhenti tanpa bergeser"
+text = """
+Saat Anda berganti antara tab kotak masuk yang dilipat, tab yang Anda
+tinggalkan kini berhenti tepat di tempat ia menyusut, tanpa ikonnya bergeser
+satu atau dua piksel setelah gerakan selesai.
+"""
+
+["2026-10-03-0228-right-click-another-mail"]
+title = "Satu klik kanan sudah cukup"
+text = """
+Saat menu email atau folder terbuka, mengklik kanan email atau folder lain
+kini langsung menutup menu yang terbuka dan membuka menu yang baru, tanpa
+perlu klik kanan kedua.
+"""
+
+["2026-10-03-0235-rule-editor-fits"]
+title = "Editor aturan muat"
+text = """
+Di editor aturan, kata atau daftar alamat yang panjang kini terbungkus ke
+baris berikutnya alih-alih terpotong, “cocok dengan pola” ditampilkan utuh,
+dan editor tetap berada di dalam jendela, dapat digulir saat syaratnya
+banyak.
+"""
+
+["2026-10-03-0235-soft-button-hover"]
+title = "Efek arahkan tombol yang lebih lembut"
+text = """
+Mengarahkan penunjuk ke tombol bulat kini membesarkan lingkarannya dengan
+lembut dari dua pertiga ukurannya sambil memunculkannya perlahan, dan tombol
+pil seperti Balas muncul sedikit lebih lambat. Menjauhkan penunjuk
+mengecilkan lingkaran itu sedikit saat memudar.
+"""
+
+["2026-10-03-0249-account-ring"]
+title = "Lingkaran akun yang lebih jelas"
+text = """
+Lingkaran berwarna di sekitar gambar setiap akun kini lebih tebal, dengan
+sedikit lebih banyak jarak antara lingkaran dan gambarnya, di bilah atas,
+menu akun, dan Setelan.
+"""
+
+["2026-10-03-0335-chat-picture-steady"]
+title = "Gambar yang stabil di chat"
+text = """
+Menggulir melewati akhir chat, atau chat yang tidak perlu digulir, tidak lagi
+membuat gambar pengirim dan tombol gelembung melompat.
+"""
+
+["2026-10-03-0355-no-hover-while-scrolling"]
+title = "Gulir yang lebih tenang di daftar email"
+text = """
+Saat Anda menggulir daftar email, email yang lewat di bawah penunjuk tidak
+lagi menyala dan menampilkan tombolnya. Seperti di Gmail, email di bawah
+penunjuk menyala setelah guliran berhenti.
+"""
+
+["2026-10-03-0541-rule-rows-drag"]
+title = "Aturan diseret seperti akun"
+text = """
+Di Setelan > Folder & aturan, menyeret aturan kini mengangkat seluruh
+barisnya, aturan lain bergeser memberi jalan, dan aturan itu berhenti di
+tempat Anda melepasnya, sama seperti mengurutkan ulang akun.
+"""
+
+["2026-10-03-0545-chat-go-down-aligned"]
+title = "Tombol turun sejajar"
+text = """
+Di chat, tombol bulat yang membawa Anda ke email terbaru kini berada tepat
+di atas tombol kirim, pada garis yang sama.
+"""
+
+["2026-10-03-0555-bottom-corners-round"]
+title = "Sudut bawah yang membulat tetap bulat"
+text = """
+Dengan bilah judul Katna sendiri dan sudut membulat, sudut bawah jendela
+tidak lagi menampilkan kotak persegi latar belakangnya di luar tepi yang
+membulat.
+"""
+
+["2026-10-03-0606-account-dot-only"]
+title = "Daftar email yang lebih tenang"
+text = """
+Baris di kotak masuk terpadu hanya menampilkan titik berwarna akun di
+samping pengirim. Arahkan penunjuk ke titik itu untuk melihat akun pemilik
+email tersebut.
+"""
+
+["2026-10-03-0623-windows-updates"]
+title = "Pembaruan di Windows"
+text = """
+Katna di Windows kini memperbarui dirinya sendiri. Katna memeriksa versi
+baru setiap jam, mengunduhnya di latar belakang, dan memasangnya saat Anda
+menekan Perbarui, lalu terbuka kembali.
+"""
+
+["2026-10-03-0643-files-wildcard-search"]
+title = "Karakter pengganti di pencarian File"
+text = """
+Di File, mencari *.pdf kini menemukan setiap PDF, dan * serta ? berfungsi di
+mana saja dalam nama: invoice*2026* menemukan setiap faktur tahun 2026. Ini
+berlaku untuk file di email Anda serta di Google Drive dan OneDrive.
+"""
+
+["2026-10-03-0643-linux-package-updates"]
+title = "Pembaruan untuk setiap paket Linux"
+text = """
+AppImage dan tarball Linux kini memperbarui dirinya sendiri seperti paket
+Arch. Dengan paket Fedora, Snap, Flatpak, atau Nix, Katna memberi tahu Anda
+saat versi baru keluar dan menampilkan satu perintah untuk memasangnya, siap
+disalin.
+"""
+
+["2026-10-03-0708-copy-codes"]
+title = "Salin kode dari notifikasi"
+text = """
+Notifikasi email baru yang berisi kode masuk atau verifikasi kini punya
+tombol Salin untuk kode itu, dan notifikasi yang berisi link untuk
+memverifikasi atau mengonfirmasi alamat Anda punya tombol yang menyebut nama
+situs yang dibukanya. Tombol pada notifikasi tidak lagi membuat ikon Katna
+yang melompat-lompat mengikuti penunjuk mouse.
+"""
+
+["2026-10-03-0730-contact-card-popover"]
+title = "Kartu kontak di jendela sempit"
+text = """
+Saat jendela tidak punya ruang untuk panel kontak, mengklik nama atau gambar
+seseorang membuka kartu pendek di atas email, yang menunjuk ke tempat Anda
+mengklik. Lebarkan jendela dan panel lengkap menggantikannya.
+"""
+
+["2026-10-03-0733-compose-icon-turns"]
+title = "Ikon tombol besar berputar saat Anda berganti halaman"
+text = """
+Beralih antara Email, Kalender, Kontak, Tugas, dan Catatan tidak lagi
+mengganti ikon pada tombol besar di bagian atas bilah kiri dalam satu
+lompatan. Ikon lama berputar menjauh dan menyusut saat ikon baru berputar
+masuk, juga pada tombol di ponsel.
+"""
+
+["2026-10-03-0746-sound-sets"]
+title = "Set suara notifikasi"
+text = """
+Setelan > Notifikasi kini punya set suara: Burung, Alam, Hewan, Serangga,
+Elektronik, Pagi, lonceng Katna, atau suara desktop Anda sendiri. Email baru
+berkicau seperti burung robin kecuali Anda memilih set lain. Setiap kejadian
+juga bisa punya suaranya sendiri, atau file suara yang Anda pilih.
+"""
+
+["2026-10-03-0750-chat-seen-ticks"]
+title = "Siapa yang melihat email Anda, di chat"
+text = """
+Di tampilan chat, centang pada email yang Anda kirim dengan pelacakan
+berubah warna setelah seseorang membukanya. Di sampingnya, ikon mata kecil
+menghitung berapa kali email dibuka dan ikon link menghitung link yang
+diikuti. Arahkan penunjuk ke ikon itu untuk melihat siapa yang membukanya
+atau mengikuti link, seperti yang ditampilkan ikon mata di tampilan email.
+"""
+
+["2026-10-03-0834-drawer-edge-clean"]
+title = "Tidak ada garis di samping folder yang bergeser"
+text = """
+Di ponsel atau tablet, folder yang bergeser masuk dari menu kini berhenti di
+tepi tanpa garis tipis yang berkedip di sampingnya saat folder itu berhenti.
+"""
+
+["2026-10-03-0845-chat-summary-button-hides"]
+title = "Tombol ringkasan menyembunyikannya lagi"
+text = """
+Di tampilan chat, ikon kilau di bagian atas kini menyembunyikan ringkasan
+saat ringkasan ditampilkan, dan menampilkannya lagi pada klik berikutnya,
+seperti di tampilan email.
+"""
+
+["2026-10-03-0915-big-button-glides"]
+title = "Tombol besar meluncur antarhalaman"
+text = """
+Saat folder terbuka, berganti halaman tidak lagi membuat tombol besar di
+bagian atas langsung melompat ke lebar barunya atau mengganti katanya dalam
+satu lompatan. Tombol itu bergeser halus ke lebar barunya sementara kata
+lama memudar ke atas dan kata baru naik masuk, bersama ikon yang berputar.
+"""
+
+["2026-10-03-0945-flat-row-hover"]
+title = "Efek arahkan yang lebih tegas di daftar email"
+text = """
+Baris di bawah penunjuk tidak lagi terangkat dengan bayangan lembut. Sebagai
+gantinya, baris itu diberi rona datar yang sedikit lebih kuat, sehingga
+tepinya tetap tajam dalam tema terang maupun gelap.
+"""
+
+["2026-10-03-0959-drawer-bounce-back"]
+title = "Folder bergeser masuk dengan pantulannya, tepinya bersih"
+text = """
+Di ponsel atau tablet, folder yang bergeser masuk dari menu kembali punya
+pantulan kecilnya, dan tidak ada bayangan di sepanjang tepinya di samping
+rel.
+"""
+
+["2026-10-03-1030-crisp-card-edges"]
+title = "Tepi kartu yang lebih tegas dalam warna terang"
+text = """
+Dalam warna terang, daftar email, email yang terbuka, dan kartu lainnya kini
+punya tepi halus yang tegas dan bayangan yang sangat pendek alih-alih buram
+yang lembut, sehingga kartu tampak menonjol dari halaman setajam dalam warna
+gelap.
+"""
+
+["2026-10-03-1206-matching-choice-chips"]
+title = "Chip pilihan yang serasi"
+text = """
+Pilihan di Opsi penelusuran, Aktivitas, Bantuan menulis dengan AI, dan
+buku alamat kontak kini berupa satu jenis chip: ukurannya sama di
+mana-mana, dengan tanda centang pada yang dipilih.
+"""
+
+["2026-10-03-1453-summary-folds-smoothly"]
+title = "Ringkasan yang terlipat dengan mulus"
+text = """
+Melipat atau membuka ringkasan percakapan kini meluncur halus ke tinggi
+barunya, dan panahnya ikut berputar alih-alih melompat.
+"""
+
+["2026-10-03-1523-animation-speed"]
+title = "Pilih seberapa cepat gerakan"
+text = """
+Setelan > Tampilan punya Kecepatan animasi: ikuti kecepatan desktop, atau
+pilih kecepatan Katna sendiri, dari Lebih cepat hingga Lebih lambat. Kurangi
+gerakan juga mengikuti desktop, atau bisa selalu aktif atau tidak pernah aktif.
+"""
+
+["2026-10-03-1536-paste-signature-html"]
+title = "Tempel HTML tanda tangan"
+text = """
+Setelan > Tulis > Tanda tangan punya Tempel HTML, untuk tanda tangan yang
+didesain di situs web tanda tangan atau di aplikasi email lain. HTML itu
+dibersihkan, gambarnya diunduh dan dibawa di dalam email, dan jendela tulis
+menampilkannya persis seperti yang akan dikirim.
+"""
+
+["2026-10-03-1546-whats-new-header-stays"]
+title = "Yang baru menjaga judulnya"
+text = """
+Menggulir Yang baru kini hanya menggerakkan sorotannya: judul tetap di
+bagian atas dan Mengerti tetap di bagian bawah.
+"""
+
+["2026-10-03-1611-menus-fade-out"]
+title = "Menu memudar"
+text = """
+Menu klik kanan kini memudar saat ditutup, alih-alih langsung menghilang.
+"""
+
+["2026-10-03-1625-list-stays-put"]
+title = "Daftar email tetap di tempatnya saat Anda membuka email"
+text = """
+Membuka email tidak lagi menggeser daftar turun satu baris di folder yang
+beberapa emailnya menampilkan lampiran. Daftar tetap persis di tempat Anda
+menggulirnya.
+"""
+
+["2026-10-03-1628-drawer-top-clean"]
+title = "Tidak ada garis bayangan di atas folder yang bergeser"
+text = """
+Di ponsel atau tablet, folder yang bergeser masuk dari menu tidak lagi punya
+garis bayangan tipis di sepanjang bagian atasnya, di bawah bilah pencarian.
+"""
+
+["2026-10-03-1631-toolbar-menus-fade-out"]
+title = "Menu bilah alat juga memudar"
+text = """
+Menu di bawah tombol bilah alat, seperti Lainnya dan kotak pilih, memudar
+saat ditutup alih-alih langsung menghilang.
+"""
+
+["2026-10-03-1632-settings-by-app"]
+title = "Setelan diurutkan per aplikasi"
+text = """
+Setelan kini punya daftar halaman di sampingnya: Semua aplikasi untuk hal
+yang dipakai bersama oleh setiap aplikasi, lalu Email, Kalender, dan File
+untuk setelannya masing-masing, dengan halaman Email terlipat terbuka di
+bawahnya. Setelan terbuka di aplikasi yang sedang Anda pakai, dan Kalender
+punya setelan pertamanya di sana.
+"""
+
+["2026-10-03-1650-popovers-fade-out"]
+title = "Popover memudar"
+text = """
+Kartu kecil yang menunjuk ke tempat asalnya, seperti kartu kontak, siapa
+yang telah melihat email, hari di tampilan Tahun, tanggal pencarian khusus,
+dan pemilih warna, memudar saat ditutup alih-alih langsung menghilang.
+"""
+
+["2026-10-03-1711-ring-centred"]
+title = "Lingkaran akun terpasang rata"
+text = """
+Lingkaran berwarna di sekitar gambar akun Anda kini punya jarak yang sama di
+setiap sisi, pada skala berapa pun, alih-alih satu sisi tampak satu piksel
+lebih tebal.
+"""
+
+["2026-10-03-1717-signature-pictures"]
+title = "Gambar di tanda tangan kembali dimuat"
+text = """
+Gambar dari web, seperti logo di tanda tangan Gmail, kini dimuat di jaringan
+yang memutus koneksi Google lebih awal, alih-alih tetap menjadi kotak
+kosong.
+"""
+
+["2026-10-03-1723-import-signatures"]
+title = "Bawa masuk tanda tangan Anda"
+text = """
+Setelan > Tulis > Tanda tangan > Impor menemukan tanda tangan di Gmail, serta
+di Thunderbird, Evolution, dan KMail di komputer ini, beserta logonya.
+Centang yang Anda inginkan; yang sudah ada di Katna tetap tidak dicentang.
+"""
+
+["2026-10-03-1750-hover-folders-clean"]
+title = "Tepi bersih pada folder yang dibuka dari Tulis"
+text = """
+Di jendela seukuran tablet, folder yang terbuka saat Anda menahan penunjuk
+di atas Tulis tidak lagi menampilkan garis tipis di sepanjang tepi atas dan
+kirinya.
+"""
+
+["2026-10-03-1757-chat-links"]
+title = "Link terbuka dari chat"
+text = """
+Di tampilan chat, link di email terbuka dengan satu klik, seperti di
+tampilan email: link milik email itu sendiri, serta alamat web dan email
+yang tertulis di teks. Arahkan penunjuk ke salah satunya untuk melihat
+tujuannya. Email teks biasa di tampilan email kini juga membuka alamat yang
+tertulis.
+"""
+
+["2026-10-03-1811-folds-glide"]
+title = "Grup kalender terlipat dengan mulus"
+text = """
+Kalender sebuah akun di kolom samping Kalender kini meluncur halus saat
+dibuka dan ditutup, dan panah kecil pada bagian yang bisa dilipat (Lainnya
+di kartu kontak, orang di chat, akun di Aktivitas, inti balasan AI) berputar
+alih-alih membalik.
+"""
+
+["2026-10-03-1844-signature-layouts"]
+title = "Tanda tangan dari dua belas tata letak"
+text = """
+Setelan > Tulis > Tanda tangan kini punya dua belas tata letak siap pakai.
+Isi nama, nomor, logo, foto, dan halaman Anda sekali, pilih tata letak dan
+warna, lalu lihat seperti yang akan dilihat pembaca: terang, gelap, atau
+sebagai teks biasa. Gambar ikut di dalam email, sehingga tampil di mana-mana.
+"""
+
+["2026-10-03-1850-copy-about-whats-new"]
+title = "Salin dari Tentang dan Yang baru"
+text = """
+Kata-kata di Tentang Katna dan Yang baru kini bisa dipilih dan disalin,
+seperti di browser: seret di atasnya, klik dua kali sebuah kata atau klik
+tiga kali sebuah paragraf, lalu Ctrl+C atau klik kanan > Salin. Versinya
+berguna untuk ditempel ke laporan bug.
+"""
+
+["2026-10-03-1904-copy-version"]
+title = "Salin versi dengan satu klik"
+text = """
+Arahkan penunjuk ke versi di Tentang, Yang baru, atau Setelan, dan tombol
+salin kecil muncul di sampingnya. Tombol itu menyalin versi, kapan versi itu
+dibuat, dan sistem Anda, siap ditempel ke laporan bug.
+"""
+
+["2026-10-03-1924-settings-in-window"]
+title = "Setelan kembali di samping email Anda"
+text = """
+Setelan kembali terbuka di dalam jendela utama, menggantikan halaman yang
+sedang Anda buka, dengan daftar halamannya dikelompokkan menjadi Semua
+aplikasi dan setiap aplikasi.
+"""
+
+["2026-10-03-1934-copy-any-text"]
+title = "Salin teks di mana saja"
+text = """
+Teks yang memberi tahu Anda sesuatu kini bisa dipilih dan disalin di seluruh
+Katna: nama dan deskripsi setelan, detail kontak dan acara, status akun,
+pesan kesalahan, catatan halaman kosong, dan dialog. Seret di atasnya atau
+klik dua kali sebuah kata, lalu Ctrl+C atau klik kanan > Salin. Tombol dan
+baris yang Anda klik tetap seperti semula.
+"""
+
+["2026-10-03-2011-calendar-tasks-switch-month-drag"]
+title = "Tugas di Kalender: tampilkan atau sembunyikan, seret di Bulan"
+text = """
+Daftar samping Kalender punya kotak Tugas di bawah kalender Anda: hapus
+centangnya dan tugas hilang dari Hari, Minggu, Bulan, dan Jadwal sampai Anda
+mencentangnya lagi. Di tampilan Bulan, Anda kini bisa menyeret tugas ke hari
+lain; waktunya tetap, dan Urungkan mengembalikannya.
+"""
+
+["2026-10-03-2023-tasks-upcoming-completed-sort-select"]
+title = "Mendatang, Selesai, mengurutkan, dan memilih di Tugas"
+text = """
+Tugas punya dua tampilan baru. Mendatang menampilkan dua minggu ke depan
+hari demi hari, dengan tugas yang terlambat di atas; seret tugas ke hari
+lain untuk memindahkannya. Selesai menampilkan semua yang Anda centang, per
+hari, dan menghapus centang tugas mengembalikannya. Menu ⋮ setiap daftar
+bisa mengurutkannya berdasarkan tanggal, bintang, atau judul. Ctrl+klik atau
+Shift+klik beberapa tugas untuk menyelesaikan, memindahkan, memberi tanggal,
+membintangi, atau menghapus semuanya sekaligus.
+"""
+
+["2026-10-03-2040-task-labels-and-files"]
+title = "Label dan file pada tugas"
+text = """
+Tugas memakai label yang sama dengan catatan Anda: tambahkan di detail tugas
+atau ketik #rumah di tugas baru, dan pilih label di kiri untuk melihat setiap
+tugas yang memakainya. Jatuhkan file ke tugas untuk melampirkannya, dan
+Tambahkan ke Tugas menyimpan lampiran email. Bintang, label, dan file
+dikirim ke Microsoft To Do dan server CalDAV Anda, dan bintang ke Zoho.
+"""
+
+["2026-10-03-2102-notes-pictures-reminders-history"]
+title = "Catatan: gambar, pengingat, dan riwayat"
+text = """
+Catatan bisa berisi gambar, mengingatkan Anda pada waktu yang Anda pilih,
+dan menyimpan riwayat 30 hari yang bisa Anda pulihkan. Ctrl+klik beberapa
+catatan untuk menyematkan, mewarnai, memberi label, atau mengarsipkannya
+sekaligus, ketik [[ untuk menautkan satu catatan ke catatan lain, dan
+tambahkan kutipan, kode, serta pemisah. Kirim catatan sebagai email atau
+simpan sebagai Markdown atau PDF, dan dengan AI aktif, ikon kilau merapikan,
+membuat daftar, atau meringkasnya.
+"""
+
+["2026-10-03-2102-quick-capture"]
+title = "Tangkap ide dari mana saja"
+text = """
+Meta+Alt+T membuka kartu kecil di atas apa pun yang sedang Anda kerjakan
+untuk menambahkan tugas, dan Meta+Alt+N untuk membuat catatan. Ketik
+“Telepon tukang ledeng jum 18.00 #rumah” dan chip menampilkan hari, label,
+daftar, dan pengingat yang dipahaminya; klik salah satunya untuk
+mengubahnya. Tab beralih antara Tugas dan Catatan, Enter menyimpan. Fitur
+ini juga ada di menu baki, dan di KRunner sebagai task: dan note:.
+"""
+
+["2026-10-04-0102-soft-hovers"]
+title = "Efek arahkan yang lebih lembut"
+text = """
+Mengarahkan penunjuk ke rel aplikasi, kotak pilih, tab, dan banyak tombol
+lain kini memunculkan dan memudarkan sorotannya secara perlahan, alih-alih
+langsung menyalakannya.
+"""
+
+["2026-10-04-0119-cards-lift"]
+title = "Kartu yang terangkat"
+text = """
+File, lampiran, folder Drive, undangan, ringkasan, kotak balasan, dan
+layanan email di Tambahkan akun kini berupa kartu dengan tepi lembut dan
+bayangan yang sama seperti bagian Katna lainnya, bukan garis tepi datar.
+"""
+
+["2026-10-04-0119-notes-select-bar-matches"]
+title = "Catatan: kartu yang lebih lembut dan bergerak"
+text = """
+Catatan kini memakai kartu, chip, dan bilah yang sama seperti bagian Katna
+lainnya. Kartu berada di atas bayangan lembut dan sedikit terangkat di bawah
+penunjuk, catatan baru muncul perlahan, catatan yang dihapus memudar, dan
+catatan terbuka serta tertutup dengan zoom singkat. Bilah untuk memilih
+catatan punya bentuk membulat yang sama seperti “Buat catatan”, sehingga
+hanya isinya yang berubah. Semuanya mengikuti Kurangi gerakan dan Kecepatan
+animasi.
+"""
+
+["2026-10-04-0128-header-labels"]
+title = "Setiap label pada email yang terbuka"
+text = """
+Email yang terbuka kini menampilkan semua chipnya di bawah subjek, seperti
+Gmail: Kotak Masuk, Penting, tab kotak masuknya, Berbintang, dan setiap
+folder atau label tempat email itu berada. Arahkan penunjuk ke salah satunya
+untuk melepasnya dengan ×, lengkap dengan Urungkan.
+"""
+
+["2026-10-04-0150-settings-own-list"]
+title = "Setelan memakai seluruh jendela"
+text = """
+Saat Setelan terbuka, folder terlipat, sehingga Anda hanya melihat daftar
+halaman Setelan sendiri di samping halaman yang Anda pilih. Folder kembali
+saat Anda keluar.
+"""
+
+["2026-10-04-0154-summary-pill"]
+title = "Tombol ringkasan yang lebih tenang, dan kepala yang tetap di tempat"
+text = """
+Di tampilan chat, ikon kilau ringkasan kini berada di pil abu-abu kecilnya
+sendiri di samping sakelar Chat dan Email, dan menjadi putih saat ringkasan
+ditampilkan. Ringkasan meluncur halus saat dibuka dan ditutup alih-alih
+muncul seketika. Di tampilan email maupun chat, kepala kini tetap di atas
+sementara email bergulir di bawahnya, dan baris daftar email bergeser di
+bawah bilah atasnya dengan cara yang sama, berkaca buram saat efek buram
+aktif. Setelan > Eksperimental punya sakelar Header kaca buram untuk
+membuatnya tetap solid.
+"""
+
+["2026-10-04-0204-tasks-motion"]
+title = "Tugas yang bergerak"
+text = """
+Mencentang tugas mengisi lingkarannya, mencoret judulnya, dan melipat
+barisnya. Tugas baru dan yang dihapus bergeser masuk dan keluar, tugas yang
+diurutkan ulang meluncur ke tempatnya, dan kartu daftar sedikit terangkat
+saat Anda mengarahkan penunjuk ke atasnya.
+"""
+
+["2026-10-04-0225-shortcuts-dialog"]
+title = "Pintasan keyboard sekilas"
+text = """
+Bantuan > Pintasan keyboard, atau tombol ?, kini menampilkan setiap pintasan
+di jendela kecil di atas email Anda, dengan kotak untuk mencarinya. Tombol
+tetap diubah di Setelan > Pintasan.
+"""
+
+["2026-10-04-0305-unified-leave-out"]
+title = "Keluarkan kotak masuk dari Semua Akun"
+text = """
+Klik kanan kotak masuk sebuah akun di bawah Semua Akun dan pilih Keluarkan
+dari Kotak Masuk terpadu: emailnya tidak lagi mengisi Kotak Masuk terpadu,
+tetapi barisnya tetap ada dan membuka kotak masuk itu. Klik ikon matanya
+untuk mengembalikannya. Di Setelan > Kotak Masuk, Anda juga bisa
+mengeluarkan seluruh akun dari Semua Akun.
+"""
+
+["2026-10-04-0310-leave-account-out"]
+title = "Keluarkan akun dari sebuah aplikasi"
+text = """
+Setelan kini punya halaman untuk Kontak, Tugas, dan Catatan, dan setiap
+halaman ini serta File mencantumkan akun Anda dengan sakelar. Matikan salah
+satunya untuk mengeluarkan akun itu dari aplikasi, dan pengingatnya tetap
+senyap. Itemnya tetap disinkronkan, sehingga kembali begitu Anda
+mengaktifkannya lagi.
+"""
+
+["2026-10-04-0320-calendar-leave-account-out"]
+title = "Keluarkan akun dari Kalender"
+text = """
+Setelan > Kalender juga mencantumkan akun Anda dengan sakelar. Matikan salah
+satunya dan kalender, acara, serta tugasnya hilang dari Kalender, dan
+acaranya berhenti mengingatkan Anda. Akun itu tetap disinkronkan, sehingga
+kembali begitu Anda mengaktifkannya.
+"""
+
+["2026-10-04-0327-contact-card-points-right"]
+title = "Kartu kontak terbuka di tempat Anda mengklik"
+text = """
+Di jendela sempit, kartu kontak yang terbuka dari nama atau gambar seseorang
+kini menunjuk tepat ke sana, di tampilan chat maupun tampilan email, dan
+juga terbuka dengan mulus sejak pertama kali: Katna mulai membaca detail
+orang itu begitu penunjuk berhenti di atasnya. Klik kedua pada nama atau
+gambar yang sama menutup kartu.
+"""
+
+["2026-10-04-0336-files-card-corners"]
+title = "Kartu file yang lebih tenang"
+text = """
+Kartu file di File dan di bawah email kini berada di atas bayangan lembut
+dan sedikit terangkat saat Anda mengarahkan penunjuk ke salah satunya.
+Pratinjaunya tetap seperti semula: ukuran file muncul perlahan di kiri
+atasnya dan tombolnya di kanan atas, di atas kaca buram, sehingga tidak ada
+yang melompat.
+"""
+
+["2026-10-04-0345-pane-tops-whole"]
+title = "Bagian atas panel tidak lagi terpotong"
+text = """
+Dengan bilah judul Katna sendiri, tepi atas dan bayangan lembut daftar
+email, email yang terbuka, dan panel samping kini tampil utuh saat jendela
+tidak dimaksimalkan, alih-alih tampak terpotong rata di bawah bilah atas.
+"""
+
+["2026-10-04-0354-account-offline"]
+title = "Jadikan akun offline"
+text = """
+Klik kanan akun dan pilih Jadikan offline, selama satu jam atau sampai besok
+jika Anda mau. Katna berhenti terhubung ke akun itu, dan ikon awan dicoret
+tampil di samping jumlahnya dan di gambar Anda. Emailnya tetap ada di sini
+untuk dibaca, dan apa yang Anda arsipkan, hapus, atau kirim sementara itu
+diproses saat Anda mengklik awan untuk kembali online. Setelan > Akun punya
+sakelar Terhubung untuk setiap akun, dan kartu akun bisa menjadikan semua
+akun offline sekaligus.
+"""
+
+["2026-10-04-0420-resize-steady"]
+title = "Stabil saat mengubah ukuran"
+text = """
+Dengan bilah judul Katna sendiri di Wayland, isi jendela tetap diam saat
+Anda menyeret tepinya untuk mengubah ukuran, alih-alih bergetar.
+"""
+
+["2026-10-04-0531-turn-apps-off"]
+title = "Matikan aplikasi yang tidak Anda pakai"
+text = """
+Setelan > Aplikasi punya sakelar untuk Kalender, Kontak, Tugas, Catatan, dan
+File, dan mengklik kanan salah satunya di rel menawarkan Nonaktifkan. Aplikasi
+yang dimatikan hilang dari rel dan tombol pintasannya, dan tidak ada yang
+berubah di akun Anda. Jika hanya Email yang aktif, rel menghilang dan Katna
+menjadi aplikasi email saja.
+"""
+
+["2026-10-04-0635-remove-app-copy"]
+title = "Kosongkan ruang dari aplikasi yang Anda matikan"
+text = """
+Mematikan aplikasi di Setelan > Aplikasi kini menawarkan untuk menghapus
+salinannya di komputer ini. Tidak ada yang berubah di akun Anda, dan
+mengaktifkannya kembali akan mengunduhnya lagi. Akun baru hanya meminta apa
+yang dibutuhkan aplikasi yang Anda pakai.
+"""
+
+["2026-10-04-1100-account-problems"]
+title = "Lihat dan perbaiki masalah akun di satu tempat"
+text = """
+Saat sebuah akun membutuhkan Anda, satu baris di bagian atas daftar email
+menjelaskan apa yang terjadi dengan bahasa sederhana, dengan perbaikannya di
+sampingnya. Sandi yang berubah membuka kartu kecil tempat Anda mengetik
+sandi baru, dan Katna memeriksanya sebelum menyimpannya. Tanda amber juga
+menandai akun itu di panel folder dan di gambar Anda. Saat koneksi Anda
+terputus, satu baris tenang memberi tahu bahwa Anda sedang offline dan email
+yang Anda kirim menunggu sampai Anda kembali terhubung.
+"""
+
+["2026-10-04-1110-contact-card-placeholder"]
+title = "Kartu kontak terbuka utuh"
+text = """
+Saat detail seseorang perlu waktu untuk dimuat, kartu kontak yang muncul di
+atas nama atau gambar kini terbuka dengan ukuran biasanya, dengan garis
+samar di tempat detailnya berada, lalu mengisinya dan menyesuaikan ukuran
+dengan halus, alih-alih terbuka kecil lalu melompat lebih tinggi.
+"""
+
+["2026-10-04-1144-account-problems-settings"]
+title = "Masalah akun juga di Setelan"
+text = """
+Setelan > Akun kini menjelaskan apa yang salah dengan sebuah akun di bawah
+namanya, seperti sandi yang ditolak, dengan perbaikannya tepat di sana.
+"""
+
+["2026-10-04-1147-subject-scrolls-again"]
+title = "Subjek kembali bergulir bersama email"
+text = """
+Di tampilan email, subjek kembali bergulir menjauh bersama email, di bawah
+bilah alat biasa. Di tampilan chat, bilah alat bergabung dengan kepala yang
+disematkan, sehingga gelembung bergeser di bawah keduanya, berkaca buram
+saat efek buram aktif. Bilah atas daftar email kini mempertahankan sudut
+kartu yang membulat, dan dengan Header kaca buram nonaktif, baris tidak lagi
+terlihat menembusnya. Di jendela seukuran ponsel, sudut bawahnya juga bulat.
+"""
+
+["2026-10-04-1223-outbox"]
+title = "Kotak Keluar untuk email yang belum terkirim"
+text = """
+Email yang tidak dapat dikirim kini menunggu di Kotak Keluar di bawah
+Terkirim, yang hanya tampil selama ada isinya. Setiap pesan menjelaskan
+alasannya dengan bahasa sederhana, dengan Coba lagi, Edit, dan Hapus. Email
+yang Anda kirim saat sandi akun berubah atau sesi masuknya berakhir menunggu
+di sana dan terkirim begitu Anda memperbaikinya, alih-alih gagal.
+"""
+
+["2026-10-04-1246-refused-changes"]
+title = "Perubahan yang ditolak server tidak lagi dibatalkan diam-diam"
+text = """
+Saat server email terus menolak perubahan, seperti memindahkan pesan ke
+folder yang dihapus di tempat lain, Katna mengembalikannya seperti semula
+dan kini memberi tahu Anda dengan bahasa sederhana, dengan Detail untuk
+balasan dari server itu sendiri.
+"""
+
+["2026-10-04-1250-phone-scroll-steady"]
+title = "Daftar stabil di jendela seukuran ponsel"
+text = """
+Menggulir daftar email dengan cepat di jendela seukuran ponsel tidak lagi
+membuatnya bergetar naik turun saat tab bergeser menghilang.
+"""
+
+["2026-10-04-1309-needs-you-notifications"]
+title = "Diberi tahu sekali saat akun atau pesan membutuhkan Anda"
+text = """
+Saat server email menolak sandi Anda, sesi masuk berakhir, atau pesan tidak
+dapat dikirim, notifikasi desktop memberi tahu Anda sekali, bahkan saat
+Katna Mail ditutup. Tombolnya membuka perbaikannya: Sandi baru, Masuk, atau
+Kotak Keluar. Tooltip ikon baki mencantumkan apa yang sedang menunggu Anda.
+"""
+
+["2026-10-04-1510-dialogs-fit-phone"]
+title = "Dialog muat di jendela seukuran ponsel"
+text = """
+Yang baru, Tentang, Pembaruan, Pintasan keyboard, dan dialog lainnya kini
+muat di dalam jendela sempit dengan bingkai Katna sendiri, alih-alih
+melewati tepinya.
+"""
+
+["2026-10-04-1511-solid-mail-list-bar"]
+title = "Tidak ada yang bergeser di bawah bilah"
+text = """
+Email di daftar email, email yang terbuka, dan gelembung chat kini dimulai
+di bawah bilahnya alih-alih bergeser di bawahnya, dan bilah tetap solid.
+Sakelar Header kaca buram sudah dihapus, begitu juga sudut aneh yang
+ditimbulkannya.
+"""
+
+["2026-10-04-1525-menus-inside-window"]
+title = "Menu dan tooltip tetap di dalam jendela"
+text = """
+Dengan bingkai jendela Katna sendiri, menu klik kanan, popover, dan tooltip
+di dekat tepi tidak lagi meluber ke bayangan jendela; semuanya tetap di
+dalam jendela.
+"""
+
+["2026-10-04-1525-unified-stacked-picture"]
+title = "Semua Akun menampilkan setiap gambar"
+text = """
+Saat Semua Akun terbuka, gambar di kanan atas kini berupa tumpukan kecil
+gambar akun Anda, dengan +N untuk sisanya, sehingga Anda bisa membedakannya
+dari satu akun dalam sekilas. Arahkan penunjuk ke sana dan gambar-gambar itu
+merenggang dengan halus.
+"""
+
+["2026-10-04-2338-all-accounts-row"]
+title = "Kembali ke Semua Akun dari menu akun"
+text = """
+Menu akun kini dimulai dengan Semua Akun, beserta jumlah belum dibacanya,
+sehingga satu klik membawa Anda kembali setelah memilih satu akun. Menu
+menandai yang sedang terbuka dengan tanda centang, dan menggulir di atas
+gambar juga berhenti di Semua Akun.
+"""
+
+["2026-10-05-1257-service-starts-again"]
+title = "Katna menjalankan layanan latar belakangnya sendiri"
+text = """
+Jika layanan yang menyinkronkan email Anda dan menampilkan ikon baki tidak
+berjalan, Katna Mail menjalankannya lagi dengan sendirinya. Tidak perlu
+terminal. Jika tetap tidak mau berjalan, satu baris di atas email Anda
+memberi tahu hal itu, dengan Mulai lagi dan detail yang bisa disalin untuk
+laporan.
+"""
+
+["2026-10-05-1430-stuck-window-replaced"]
+title = "Katna Mail terbuka meski ada salinan yang macet"
+text = """
+Jika Katna Mail berhenti merespons di latar belakang, membukanya lagi kini
+menutup salinan yang macet dan membuka jendela baru, alih-alih tidak
+melakukan apa pun.
+"""
+
+["2026-10-05-1605-read-receipts-as-ticks"]
+title = "Tanda terima baca tidak lagi tampil sebagai email"
+text = """
+Saat aplikasi email seseorang mengirim tanda terima baca untuk email yang
+Anda kirim, tanda terima itu tidak lagi tampil sebagai pesan baru dalam
+percakapan. Pesan Anda mendapat centang biru dan satu baris yang menyebutkan
+siapa yang membacanya dan kapan, dan tanda terimanya ditandai sudah dibaca,
+sehingga tidak memberi notifikasi. Tanda terima itu tetap ada di kotak surat
+Anda dan di pencarian.
+"""
+
+["2026-10-05-1620-reply-tools-fold"]
+title = "Alat balasan muat di jendela sempit"
+text = """
+Saat panel baca atau jendela sempit, bilah format dan baris di samping Kirim
+tidak lagi melewati balasan. Alat yang tidak muat pindah ke ⋮ Lainnya,
+dimulai dari yang paling jarang dipakai, dan di ponsel Kirim hanya
+menampilkan ikonnya.
+"""
+
+["2026-10-05-1637-read-receipts-out-of-the-list"]
+title = "Tanda terima baca tidak masuk ke daftar email"
+text = """
+Tanda terima baca untuk email yang Anda kirim tidak lagi tampil di daftar
+email sebagai baris “Dibaca: …”. Percakapan mempertahankan subjek dan
+pratinjaunya sendiri, dan email terkirim Anda menampilkan centangnya.
+"""
+
+["2026-10-05-1640-windows-frost"]
+title = "Kaca buram di Windows"
+text = """
+Menu, popover, dialog, bilah penampil, dan panel kaca buram kini juga
+memburamkan apa yang ada di bawahnya di Windows, dengan setelan Kekuatan
+buram dan Opasitas yang sama seperti di Linux. Aktifkan atau nonaktifkan di
+Setelan, Eksperimental, Menu dan dialog kaca buram.
+"""
+
+["2026-10-06-0156-phone-activity"]
+title = "Aktivitas di ponsel"
+text = """
+Di jendela seukuran ponsel, Aktivitas kini berada di bilah pencarian di
+samping gambar akun Anda, dengan jumlah pembukaan dan klik barunya. Daftarnya
+muat di dalam jendela.
+"""
+
+["2026-10-06-0215-pin-bar-no-jump"]
+title = "Menyematkan tidak menggeser chat"
+text = """
+Di tampilan chat, menyematkan atau melepas sematan email tidak lagi membuat
+percakapan melompat, bahkan di bagian paling akhirnya: bilah sematan muncul
+perlahan di atasnya dan pesan tetap di tempatnya.
+"""
+
+["2026-10-06-0942-fainter-row-marks"]
+title = "Kotak centang dan bintang yang lebih tenang"
+text = """
+Di daftar email, kotak centang, bintang, dan penanda Penting pada sebuah
+baris tampak lebih samar sampai Anda mengarahkan penunjuk ke baris itu.
+Bintang dan penanda yang sudah dipasang tampil seperti sebelumnya.
+"""
+
+["2026-10-06-1448-activity-beside-calendar"]
+title = "Aktivitas bersama tombol lainnya"
+text = """
+Di jendela yang lebih lebar, tombol Aktivitas kini berada di kanan bersama
+Kalender dan Setelan. Saat Semua Akun terbuka, gambar akun merenggang saat
+diarahkan penunjuk tanpa menggeser tombol di sampingnya.
+"""
+
+["2026-10-06-1524-search-fills-bar"]
+title = "Kotak pencarian yang lebih panjang"
+text = """
+Di jendela yang lebar, kotak pencarian kini menjangkau tombol di kanan
+alih-alih berhenti di tengah jalan. Opsi penelusuran terbuka di tengah di
+bawahnya dan tetap dengan lebar yang nyaman.
+"""
+
+["2026-10-07-0110-follow-up-for-you"]
+title = "Tindak lanjut yang terkirim sendiri"
+text = """
+Di menu di samping Kirim, Tindak lanjuti jika tidak ada balasan kini bisa
+mengirimkan tindak lanjut singkat untuk Anda saat tidak ada yang menjawab:
+tulis sekali, pilih kapan, dan tentukan apakah perlu mencoba sekali lagi.
+Tindak lanjut terkirim pada hari kerja di jam kerja, berhenti begitu ada
+yang membalas (balasan otomatis tidak dihitung), dan menunggu Anda alih-alih
+terkirim terlambat jika komputer Anda mati. Chip di samping Kirim
+menampilkan apa yang diatur. Atau cukup jadikan pengingat, kini dengan
+tanggal apa pun yang Anda pilih.
+"""
+
+["2026-10-07-0117-drawer-logo"]
+title = "Logo Katna di laci"
+text = """
+Di ponsel, laci berisi folder Anda kini menampilkan logo Katna di samping
+namanya, dalam warna aksen Anda, alih-alih amplop polos. Di tablet, tempat
+bilah atas sudah menampilkannya, laci dimulai dengan folder Anda.
+"""
+
+["2026-10-07-0118-clock-popup"]
+title = "Jam desktop yang lebih rapi"
+text = """
+Di Katna Digital Clock, zona waktu Anda kini berada di samping tanggal di
+bagian atas, dan daftar Tugas terlipat dengan satu klik pada judulnya.
+Menambahkan acara membuka jendela kecil Acara baru alih-alih seluruh
+aplikasi. Tugas baru tidak lagi muncul dua kali setelah sinkronisasi
+tersendat.
+"""
+
+["2026-10-07-0232-mcp-server"]
+title = "Izinkan asisten AI memakai email Anda"
+text = """
+Setelan > Server MCP memungkinkan asisten AI di komputer ini, seperti Claude
+Desktop, Claude Code, dan LM Studio, mencari dan membaca email Anda serta
+menyimpan draf untuk Anda periksa. Fitur ini nonaktif sampai Anda
+mengaktifkannya. Pilih akun mana yang mereka lihat, salin apa yang perlu
+ditempel ke asisten Anda, dan lihat apa yang mereka lakukan belakangan ini.
+Asisten tidak pernah mengirim, menghapus, atau memindahkan email.
+"""
+
+["2026-10-07-0359-waiting-for-reply"]
+title = "Lihat apa yang menunggu balasan"
+text = """
+Email yang Anda kirim dengan tindak lanjut atau pengingat tercantum di
+Menunggu, di bawah Terkirim. Barisnya menampilkan chip berisi apa yang akan
+terjadi berikutnya dan kapan, di Menunggu dan juga di Kotak Masuk Anda. Buka
+salah satunya untuk memindahkan tindak lanjut ke waktu lain, mengirimnya
+sekarang, atau menghentikannya.
+"""
+
+["2026-10-07-0505-follow-ups-in-chats"]
+title = "Tindak lanjut di tampilan chat"
+text = """
+Di tampilan chat, tindak lanjut yang menunggu untuk dikirim tampil sebagai
+gelembung samar di akhir chat, dengan Edit, Kirim sekarang, dan Hentikan.
+Untuk mengaturnya, klik kanan atau tahan Kirim dan pilih Tindak lanjuti
+jika tidak ada balasan.
+"""
+
+["2026-10-07-0603-remind-me"]
+title = "Ingatkan saya tentang email apa pun"
+text = """
+Tekan H pada email, atau gunakan Ingatkan saya di samping Tunda, untuk
+diingatkan pada suatu waktu sementara email tetap di tempatnya. Jika email
+menyebutkan sesuatu jatuh tempo pada hari tertentu, Katna menawarkan pagi
+sebelumnya. Pengingat adalah tugas di Tugas, tercantum di bawah Pengingat
+dan ditampilkan di baris email. B menunda.
+"""
+
+["2026-10-07-0718-snooze-extras"]
+title = "Tunda tahu saat seseorang membalas"
+text = """
+Percakapan yang ditunda langsung kembali saat seseorang menulis di dalamnya.
+Di Pilih tanggal & waktu, Anda bisa mengetik “sel 15.00” atau “dalam 2 jam”.
+Notifikasi email baru bisa menundanya selama satu jam atau sampai besok.
+"""
+
+["2026-10-07-0802-your-snooze-times"]
+title = "Tunda dengan cara Anda"
+text = """
+Atur arti Nanti hari ini, Besok, Akhir pekan ini, dan Minggu depan, dan
+tambahkan waktu Anda sendiri, di Setelan > Kotak Masuk. Ditunda mencantumkan
+email berdasarkan kapan email itu kembali. Di ponsel, usap baris ke kiri
+untuk menundanya.
+"""
+
+["2026-10-07-0913-pick-date-in-place"]
+title = "Pilih tanggal di tempat Anda mengklik"
+text = """
+Pilih tanggal & waktu kini bergeser masuk ke dalam menu tunda dan Ingatkan
+saya itu sendiri, alih-alih kotak di tengah jendela. Panah kembali membawa
+Anda ke daftar waktu.
+"""
+
+["2026-10-07-0953-nudges"]
+title = "Pertanyaan yang tidak dijawab kembali muncul"
+text = """
+Email yang Anda kirim yang menanyakan sesuatu dan tidak mendapat jawaban
+dalam tiga hari kembali ke bagian atas Kotak Masuk dengan “Dikirim 3 hari yang
+lalu. Tindak lanjuti?”. Klik untuk menindaklanjuti, atau x untuk
+menyingkirkannya. Matikan di Setelan > Kotak Masuk.
+"""
+
+["2026-10-08-0128-settings-menu-tint"]
+title = "Setelan punya menu sendiri"
+text = """
+Daftar halaman di sebelah kiri Setelan kini punya rona tipis dari atas ke
+bawah, sehingga terpisah dari halaman yang sedang Anda baca.
+"""
+
+["2026-10-08-0136-schedule-pick-in-place"]
+title = "Jadwalkan pengiriman memilih tanggal di tempat"
+text = """
+Pilih tanggal & waktu di Jadwalkan pengiriman dan Tindak lanjuti jika tidak
+ada balasan kini bergeser masuk ke menu tempat Anda membukanya, seperti
+Tunda, alih-alih kotak di atas email. Panah kembali atau Esc membawa Anda
+ke daftar waktu.
+"""
+
+["2026-10-08-0141-tray-icon-follows-colors-after-login"]
+title = "Ikon baki cocok dengan panel sejak login"
+text = """
+Di KDE Plasma, ikon baki satu warna kini mengikuti warna panel Anda tepat
+setelah login dan mengikuti setiap peralihan antara terang dan gelap, tanpa
+memulai ulang Katna.
+"""
+
+["2026-10-08-0153-search-attachment-types"]
+title = "Cari gambar teknik dan foto"
+text = """
+Opsi penelusuran punya dua jenis lampiran baru: DWG untuk gambar AutoCAD (dan
+DXF), dan Gambar untuk foto dan gambar. XLSX kini juga menemukan file XLS
+lama, dan PPTX menemukan PPT, jadi masing-masing cukup satu tombol.
+"""
+
+["2026-10-08-0157-menus-one-of-each-pair"]
+title = "Menu hanya menampilkan yang berlaku"
+text = """
+Menu Lainnya tidak lagi mencantumkan kedua bagian dari satu pasangan. Email
+yang sudah dibaca menampilkan Tandai belum dibaca, email berbintang Hapus
+bintang, email penting Tandai sebagai tidak penting, email yang disematkan
+Lepas sematan. Jika beberapa email yang dipilih berbeda, Anda mendapat
+tindakan yang membuat semuanya sama, di sini dan di menu klik kanan.
+"""
+
+["2026-10-08-0210-settings-card-edge"]
+title = "Setelan berada di atas kartu"
+text = """
+Dalam warna terang, halaman Setelan kini punya tepi tipis dan bayangan lembut
+yang sama dengan daftar email, sehingga terpisah dari jendela di belakangnya.
+"""
+
+["2026-10-08-0212-steady-app-buttons"]
+title = "Tombol aplikasi lebih mulus"
+text = """
+Mengklik aplikasi di bilah kiri, atau di bilah bawah pada ponsel, tidak lagi
+membuatnya bergetar: gelombang tekan berjalan sampai selesai dan penanda
+pilihan tumbuh dari tengah sementara tombol tetap berukuran sama.
+"""
+
+["2026-10-08-0232-account-card-pages"]
+title = "Menu bergeser di dalam kartu akun"
+text = """
+Menu ☰ dan daftar bahasa kini bergeser masuk di dalam kartu akun alih-alih
+langsung muncul, dengan tombol kembali di kanan untuk kembali.
 """

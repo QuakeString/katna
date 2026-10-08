@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "The big button glides between pages"
+text = """
+When the folders are open, switching pages no longer snaps the big button
+at the top to its new width or swaps its word in one jump. The button
+eases to its new width while the old word fades up and the new one rises
+in, together with the turning icon.
+"""

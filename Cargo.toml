@@ -82,6 +82,9 @@ winreg = "0.56"
 # Windows tray icon, its menu and the message loop they need (katna-platform).
 tray-icon = { version = "0.25", default-features = false }
 winit = { version = "0.30", default-features = false }
+# Windows global shortcuts (quick capture's Meta+Alt+T): RegisterHotKey
+# without unsafe code, on the tray's message loop (katna-platform).
+global-hotkey = { version = "0.8", default-features = false }
 # Windows toasts (katna-platform).
 # Playing the Windows notification sounds outside toasts (katna-platform).
 windows = "0.62"
@@ -175,6 +178,8 @@ gpui-platform = { package = "gpui-pre-platform", version = "=0.3.6", features = 
 gpui-linux = { package = "gpui-pre-linux", version = "=0.3.6", default-features = false }
 # GPUI's renderer, for the backdrop blur marker from the patched copy below.
 gpui-wgpu = { package = "gpui-pre-wgpu", version = "=0.3.6" }
+# GPUI's Windows backend, for the backdrop blur marker from the patched copy below.
+gpui-windows = { package = "gpui-pre-windows", version = "=0.3.6" }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"
@@ -235,9 +240,10 @@ opt-level = "s"
 opt-level = "s"
 
 # GPUI's Linux backend with KDE global menu support (the window carries the
-# app's dbusmenu address) and compositor blur, and GPUI's renderer with a
-# backdrop blur for frosted menus and popovers. vendor/*/KATNA.md lists the
+# app's dbusmenu address) and compositor blur, and GPUI's renderer and its
+# Windows backend with a backdrop blur for frosted menus and popovers. vendor/*/KATNA.md lists the
 # changes; drop these when upstream GPUI has an equivalent.
 [patch.crates-io]
 gpui-pre-linux = { path = "vendor/gpui-pre-linux" }
 gpui-pre-wgpu = { path = "vendor/gpui-pre-wgpu" }
+gpui-pre-windows = { path = "vendor/gpui-pre-windows" }

@@ -8,6 +8,8 @@ reader-close = 閉じる
 reader-back = 戻る
 reader-mark-unread = 未読にする
 reader-move-to = 移動
+reader-snooze = スヌーズ
+reader-remind = リマインド
 reader-more = その他
 reader-original-colors = 元の色で表示
 reader-dark-colors = 暗い色で表示
@@ -35,6 +37,7 @@ reader-tick-bounced = 未配信: { $when } にエラーメールが返ってき�
 reader-tick-read = 開封済み { $when }（開封確認）
 reader-tick-opened = 開封、最終 { $when }（開封の追跡）
 reader-starred = スター付き
+reader-chip-remove = { $label } を外す
 reader-not-starred = スターなし
 reader-too-long = メールが長すぎるため、すべてを表示できません。
 reader-encrypted-images = 暗号化されたメールでは、ウェブ上の画像は読み込まれません。
@@ -52,6 +55,7 @@ reader-details-subject = 件名:
 
 reader-downloading = このメールをサーバーからダウンロードしています…
 reader-download-failed = このメールをダウンロードできませんでした。
+reader-download-offline = このアカウントはオフラインです。このメールをダウンロードするにはオンラインにしてください。
 reader-try-again = 再試行
 
 ## Reply row
@@ -96,6 +100,7 @@ tracking-clicked = { $who } がリンクを { $clicks } 回クリックしまし
 tracking-maybe-opened = { $who } が開いた可能性があります（Apple Mail はプライバシー保護のために画像を読み込みます）
 tracking-seen-none = まだ誰も開いておらず、リンクもクリックされていません
 tracking-receipt = { $who } から開封確認が届きました
+tracking-receipt-read = { $who } が読みました（開封確認）、{ $when }
 tracking-receipt-displayed = 開封確認: { $who } があなたのメッセージを開きました
 tracking-receipt-other = 開封確認: { $who } はあなたのメッセージを開かずに削除または処理しました
 

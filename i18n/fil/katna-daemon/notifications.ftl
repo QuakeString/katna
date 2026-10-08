@@ -14,6 +14,10 @@ notify-unknown-sender = Hindi kilalang nagpadala
 notify-snooze-back = Bumalik mula sa snooze
 notify-no-reply = Wala pang sagot
 notify-no-reply-to = Wala pang sumasagot sa “{ $subject }”.
+notify-follow-up-sent = Naipadala ang follow-up
+notify-follow-up-sent-to = Walang sumagot sa “{ $subject }”, kaya nag-follow up ang Katna.
+notify-follow-up-waiting = Hindi naipadala ang follow-up
+notify-follow-up-waiting-to = Dapat itong ipadala habang nakapatay ang computer na ito. Nasa iyong Inbox na muli ang “{ $subject }”.
 
 ## Open and click tracking (only for mail sent with "Track opens and clicks")
 
@@ -25,6 +29,19 @@ notify-tracking-clicked = Nag-click si { $who } ng link sa { $subject }
 notify-update-ready = Puwedeng i-update ang Katna Mail
 notify-update-ready-body = Na-download na ang bersyon { $version }. Ii-install ito ng I-update at ire-restart ang Katna Mail.
 notify-update = I-update
+
+## Something needs the user, shown once per problem
+
+notify-signed-out = Mag-sign in muli
+notify-signed-out-body = Na-sign out ng { $provider } ang Katna sa { $address }. Huminto ang pag-sync ng mail.
+notify-sign-in = Mag-sign in
+notify-password-refused = Tinanggihan ang password
+notify-password-refused-body = Tinanggihan ng mail server ang password para sa { $address }. Baka napalitan ito.
+notify-new-password = Bagong password
+notify-not-sent = Hindi naipadala ang “{ $subject }”
+notify-not-sent-no-subject = May mensaheng hindi naipadala
+notify-not-sent-body = Nasa Outbox ito, kung saan nakasaad kung bakit.
+notify-open-outbox = Buksan ang Outbox
 
 ## Reminders of calendar events
 
@@ -56,6 +73,12 @@ notify-reply-all = Sumagot sa lahat
 notify-mark-read = Markahan bilang nabasa na
 notify-mark-all-read = Markahan lahat bilang nabasa na
 notify-archive = I-archive
+notify-snooze-hour = I-snooze nang 1 oras
+notify-snooze-tomorrow = Bukas
+notify-copy-code = Kopyahin ang { $code }
+notify-link-verify = I-verify sa { $domain }
+notify-link-confirm = Kumpirmahin sa { $domain }
+notify-link-activate = I-activate sa { $domain }
 
 ## After Archive on a notification: a short note in the same place
 
@@ -65,6 +88,11 @@ notify-archived-count = { $count ->
    *[other] { $count } mensahe ang inilipat palabas ng inbox
 }
 notify-undo = I-undo
+
+## After Copy on a notification: a short note, with the code under the title
+
+notify-code-copied = Nakopya ang code
+notify-code-not-copied = Hindi makopya ang code
 
 ## After a reply typed into a notification: a note in the same place while
 ## it waits for the undo time

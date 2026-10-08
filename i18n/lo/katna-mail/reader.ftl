@@ -8,6 +8,8 @@ reader-close = ປິດ
 reader-back = ກັບຄືນ
 reader-mark-unread = ໝາຍວ່າຍັງບໍ່ໄດ້ອ່ານ
 reader-move-to = ຍ້າຍໄປທີ່
+reader-snooze = ເລື່ອນເວລາ
+reader-remind = ແຈ້ງເຕືອນຂ້ອຍ
 reader-more = ເພີ່ມເຕີມ
 reader-original-colors = ສະແດງສີຕົ້ນສະບັບ
 reader-dark-colors = ສະແດງເປັນສີເຂັ້ມ
@@ -35,6 +37,7 @@ reader-tick-bounced = ບໍ່ໄປເຖິງ: ຕີກັບ { $when }
 reader-tick-read = ອ່ານແລ້ວ { $when } (ໃບຢືນຢັນການອ່ານ)
 reader-tick-opened = ເປີດແລ້ວ, ຫຼ້າສຸດ { $when } (ການຕິດຕາມການເປີດ)
 reader-starred = ຕິດດາວແລ້ວ
+reader-chip-remove = ເອົາ { $label } ອອກ
 reader-not-starred = ບໍ່ໄດ້ຕິດດາວ
 reader-too-long = ຂໍ້ຄວາມຍາວເກີນໄປທີ່ຈະສະແດງທັງໝົດໄດ້.
 reader-encrypted-images = ຮູບພາບຈາກເວັບຈະບໍ່ຖືກໂຫຼດໃນອີເມວທີ່ເຂົ້າລະຫັດ.
@@ -52,6 +55,7 @@ reader-details-subject = ຫົວຂໍ້:
 
 reader-downloading = ກຳລັງດາວໂຫຼດຂໍ້ຄວາມນີ້ຈາກເຊີບເວີ…
 reader-download-failed = ບໍ່ສາມາດດາວໂຫຼດຂໍ້ຄວາມນີ້ໄດ້.
+reader-download-offline = ບັນຊີນີ້ອອບລາຍຢູ່. ອອນລາຍເພື່ອດາວໂຫຼດຂໍ້ຄວາມນີ້.
 reader-try-again = ລອງໃໝ່
 
 ## Reply row
@@ -95,6 +99,7 @@ tracking-clicked = { $who } ຄລິກລິ້ງ { $clicks } ເທື່ອ
 tracking-maybe-opened = { $who } ອາດຈະເປີດມັນແລ້ວ (Apple Mail ໂຫຼດຮູບພາບເພື່ອຄວາມເປັນສ່ວນຕົວ)
 tracking-seen-none = ຍັງບໍ່ມີໃຜເປີດມັນ ຫຼື ຄລິກລິ້ງເທື່ອ
 tracking-receipt = { $who } ສົ່ງໃບຢືນຢັນການອ່ານແລ້ວ
+tracking-receipt-read = { $who } ອ່ານມັນແລ້ວ (ໃບຢືນຢັນການອ່ານ), { $when }
 tracking-receipt-displayed = ໃບຢືນຢັນການອ່ານ: { $who } ເປີດຂໍ້ຄວາມຂອງທ່ານແລ້ວ
 tracking-receipt-other = ໃບຢືນຢັນການອ່ານ: { $who } ລຶບ ຫຼື ຈັດການຂໍ້ຄວາມຂອງທ່ານໂດຍບໍ່ໄດ້ເປີດມັນ
 

@@ -10,6 +10,8 @@ nav-label-new = အညွှန်းအသစ် ပြုလုပ်ရန်
 nav-folder-new = ဖိုင်တွဲအသစ် ပြုလုပ်ရန်
 nav-menu-check-mail = မေးလ်အသစ် စစ်ဆေးရန်
 nav-menu-check-inbox = ဤဝင်စာကို စစ်ဆေးရန်
+nav-unified-leave-out = ပေါင်းစည်း ဝင်စာမှ ချန်ထားရန်
+nav-unified-bring-back = ပေါင်းစည်း ဝင်စာသို့ ပြန်ထည့်ရန်
 nav-menu-sign-in-again = ထပ်မံ ဝင်ရောက်ရန်
 nav-menu-new-mail = ဤအကောင့်မှ မေးလ်အသစ်
 nav-menu-account-settings = အကောင့် ဆက်တင်များ
@@ -22,6 +24,8 @@ nav-account-password-refused = စကားဝှက်ကို လက်မခ
 nav-account-storage = { $total } အနက် { $used } သုံးထားသည်
 nav-menu-new-subfolder = အထဲတွင် ဖိုင်တွဲအသစ်
 nav-menu-new-sublabel = အထဲတွင် အညွှန်းအသစ်
+nav-menu-rename = အမည်ပြောင်းရန်
+nav-menu-delete = ဖျက်ရန်
 nav-menu-empty-trash = အမှိုက်ပုံး ရှင်းလင်းရန်
 nav-account-unnamed = အကောင့် { $number }
 nav-all-accounts = အကောင့်အားလုံး
@@ -44,6 +48,10 @@ folder-spam = စပမ်း
 folder-trash = အမှိုက်ပုံး
 folder-all-mail = မေးလ်အားလုံး
 folder-scheduled = အချိန်သတ်မှတ်ထားသည်
+folder-waiting = ပြန်စာ စောင့်နေသည်
+folder-waiting-short = စောင့်နေသည်
+folder-reminders = သတိပေးချက်များ
+folder-outbox = ထွက်စာ
 folder-activity = လှုပ်ရှားမှု
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
@@ -61,3 +69,44 @@ label-create = ပြုလုပ်ရန်
 label-creating = ပြုလုပ်နေသည်…
 label-created = အညွှန်း “{ $name }” ကို ပြုလုပ်ပြီးပါပြီ။
 label-folder-created = ဖိုင်တွဲ “{ $name }” ကို ပြုလုပ်ပြီးပါပြီ။
+label-rename-title = အညွှန်း အမည်ပြောင်းရန်
+label-folder-rename-title = ဖိုင်တွဲ အမည်ပြောင်းရန်
+label-rename = အမည်ပြောင်းရန်
+label-renaming = အမည်ပြောင်းနေသည်…
+label-renamed = အညွှန်းကို “{ $name }” သို့ အမည်ပြောင်းလိုက်ပြီ။
+label-folder-renamed = ဖိုင်တွဲကို “{ $name }” သို့ အမည်ပြောင်းလိုက်ပြီ။
+
+## Deleting a folder or label (asked first)
+
+folder-delete-title = “{ $name }” ကို ဖျက်မလား။
+folder-delete-body = { $count ->
+    [0] ၎င်းတွင် မေးလ် မရှိပါ။ ဖိုင်တွဲကို ဆာဗာမှ ဖယ်ရှားမည်ဖြစ်၍ ဝဘ်မေးလ်နှင့် သင့်ဖုန်းမှလည်း ပျောက်သွားမည်။
+   *[other] { $kind ->
+        [conversation] { $count ->
+            [one] ၎င်း၏ စကားဝိုင်း { $count } ခုသည် အမှိုက်ပုံးသို့ ရောက်သွားမည်ဖြစ်၍ ပြန်ယူနိုင်ပါသေးသည်။
+           *[other] ၎င်း၏ စကားဝိုင်း { $count } ခုသည် အမှိုက်ပုံးသို့ ရောက်သွားမည်ဖြစ်၍ ပြန်ယူနိုင်ပါသေးသည်။
+        }
+       *[message] { $count ->
+            [one] ၎င်း၏ မက်ဆေ့ဂျ် { $count } စောင်သည် အမှိုက်ပုံးသို့ ရောက်သွားမည်ဖြစ်၍ ပြန်ယူနိုင်ပါသေးသည်။
+           *[other] ၎င်း၏ မက်ဆေ့ဂျ် { $count } စောင်သည် အမှိုက်ပုံးသို့ ရောက်သွားမည်ဖြစ်၍ ပြန်ယူနိုင်ပါသေးသည်။
+        }
+    } ဖိုင်တွဲကို ဆာဗာမှ ဖယ်ရှားမည်ဖြစ်၍ ဝဘ်မေးလ်နှင့် သင့်ဖုန်းမှလည်း ပျောက်သွားမည်။
+}
+folder-delete-forever-body = { $count ->
+    [0] ၎င်းတွင် မေးလ် မရှိပါ။ ဖိုင်တွဲကို ဆာဗာမှ ဖယ်ရှားမည်ဖြစ်၍ ဝဘ်မေးလ်နှင့် သင့်ဖုန်းမှလည်း ပျောက်သွားမည်။
+   *[other] { $kind ->
+        [conversation] { $count ->
+            [one] ၎င်း၏ စကားဝိုင်း { $count } ခုကို အပြီးဖျက်မည်။ ဤအကောင့်တွင် အမှိုက်ပုံး မရှိပါ။
+           *[other] ၎င်း၏ စကားဝိုင်း { $count } ခုကို အပြီးဖျက်မည်။ ဤအကောင့်တွင် အမှိုက်ပုံး မရှိပါ။
+        }
+       *[message] { $count ->
+            [one] ၎င်း၏ မက်ဆေ့ဂျ် { $count } စောင်ကို အပြီးဖျက်မည်။ ဤအကောင့်တွင် အမှိုက်ပုံး မရှိပါ။
+           *[other] ၎င်း၏ မက်ဆေ့ဂျ် { $count } စောင်ကို အပြီးဖျက်မည်။ ဤအကောင့်တွင် အမှိုက်ပုံး မရှိပါ။
+        }
+    } ဖိုင်တွဲကို ဆာဗာမှ ဖယ်ရှားမည်ဖြစ်၍ ဝဘ်မေးလ်နှင့် သင့်ဖုန်းမှလည်း ပျောက်သွားမည်။
+}
+folder-delete-label-body = အညွှန်းကို ဖယ်ရှားမည်။ ၎င်း၏ မေးလ်များသည် မေးလ်အားလုံးနှင့် ၎င်း၏ အခြားအညွှန်းများတွင် ကျန်ရှိမည်။
+folder-delete-confirm = ဖိုင်တွဲ ဖျက်ရန်
+folder-delete-label-confirm = အညွှန်း ဖျက်ရန်
+folder-deleted = ဖိုင်တွဲ “{ $name }” ကို ဖျက်လိုက်ပြီ
+label-deleted = အညွှန်း “{ $name }” ကို ဖျက်လိုက်ပြီ

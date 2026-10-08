@@ -59,10 +59,25 @@ impl MenuKey for gpui::Stateful<gpui::Div> {
     }
 }
 
+/// A right press on a menu's scrim, after the menu closed: once a frame
+/// without the scrim is drawn, the press goes to what is under the
+/// pointer, so right-clicking another mail or folder opens its menu at
+/// once instead of only closing the open one.
+pub(super) fn pass_right_press(event: &MouseDownEvent, window: &Window) {
+    let event = event.clone();
+    // The first callback runs before the frame that drops the scrim; the
+    // second after it, against that frame's hitboxes.
+    window.on_next_frame(move |window, _| {
+        window.on_next_frame(move |window, cx| {
+            window.dispatch_event(gpui::PlatformInput::MouseDown(event), cx);
+        });
+    });
+}
+
 impl MailWindow {
     /// Whether a menu is open, whose items the arrow keys go through.
     fn menu_open(&self) -> bool {
-        self.context_menu.is_some()
+        self.open_context_menu_ref().is_some()
             || self.nav_menu.is_some()
             || self.menu.is_some()
             || self.files_menu.is_some()
@@ -211,7 +226,7 @@ impl MailWindow {
         {
             return false;
         }
-        let closed = if self.context_menu.is_some() {
+        let closed = if self.open_context_menu_ref().is_some() {
             if !self.context_menu_back(cx) {
                 self.close_context_menu(cx);
             }
@@ -223,9 +238,14 @@ impl MailWindow {
             || self.close_rules_menu(cx)
             || self.close_summary_peek(cx)
             || self.close_delete_ask(cx)
-            || self.close_snooze_menu(cx)
+            || self.close_app_off_ask(cx)
+            || self.close_service_details(cx)
+            || self.close_rail_menu(cx)
+            || self.snooze_escape(cx)
+            || self.close_note_popovers(cx)
             || self.close_quiet_menu(cx)
             || self.close_danger(cx)
+            || self.close_password_card(cx)
         {
             true
         } else if self.print_preview_open() {
@@ -240,22 +260,28 @@ impl MailWindow {
         } else if self.whats_new_open() {
             self.close_whats_new(window, cx);
             true
+        } else if self.shortcuts_dialog_open() {
+            self.close_shortcuts_dialog(window, cx);
+            true
         } else if self.update_dialog_open() {
             self.close_update_dialog(window, cx);
             true
         } else if self.about_open() {
             self.close_about(window, cx);
             true
-        } else if self.dismiss_activity(cx)
+        } else if self.close_gallery(cx)
+            || self.dismiss_activity(cx)
             || self.close_seen(cx)
             || self.menu.take().is_some()
             || self.contacts.label_menu.take().is_some()
             || self.files_menu.take().is_some()
             || self.app_menu_back(cx)
+            || self.menu_page_back(cx)
             || (std::mem::take(&mut self.account_menu) && {
                 self.app_menu = None;
                 true
             })
+            || self.language_page_back(cx)
             || self.language_picker.take().is_some()
             || self.dismiss_search_panel(window, cx)
         {
@@ -289,6 +315,7 @@ impl MailWindow {
             || self.contacts.label_dialog.is_some()
             || self.contacts.qr.is_some()
             || self.whats_new.is_some()
+            || self.shortcuts_dialog.is_some()
             || self.share_ask.is_some()
             || self.print_preview.is_some()
             || self.about.is_some()

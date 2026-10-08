@@ -9,6 +9,13 @@ shortcut-group-actions = Åtgärder
 shortcut-group-go-to = Gå till
 shortcut-group-app = Program
 
+## Help > Keyboard shortcuts: every shortcut in a dialog over the window
+
+shortcuts-dialog-title = Kortkommandon
+shortcuts-dialog-search = Hitta ett kortkommando
+shortcuts-dialog-none = Inget kortkommando matchar
+shortcuts-dialog-close = Stäng
+
 ## Settings > Keyboard shortcuts: what each shortcut does
 
 shortcut-next = Nästa konversation
@@ -37,6 +44,8 @@ shortcut-mark-read = Markera som läst
 shortcut-mark-unread = Markera som oläst
 shortcut-star = Lägg till eller ta bort stjärna
 shortcut-add-to-tasks = Lägg till i Uppgifter
+shortcut-snooze = Snooza
+shortcut-remind = Påminn mig
 shortcut-important = Markera som viktigt
 shortcut-not-important = Markera som inte viktigt
 shortcut-mute = Gör konversationen ljudlös eller slå på ljudet

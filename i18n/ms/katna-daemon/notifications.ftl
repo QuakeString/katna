@@ -14,6 +14,10 @@ notify-unknown-sender = Pengirim tidak diketahui
 notify-snooze-back = Kembali daripada tunda
 notify-no-reply = Belum ada balasan
 notify-no-reply-to = Tiada sesiapa yang membalas “{ $subject }”.
+notify-follow-up-sent = Susulan dihantar
+notify-follow-up-sent-to = Tiada sesiapa membalas “{ $subject }”, jadi Katna telah menyusulinya.
+notify-follow-up-waiting = Susulan tidak dihantar
+notify-follow-up-waiting-to = Masanya tiba semasa komputer ini dimatikan. “{ $subject }” kembali ke Peti Masuk anda.
 
 ## Open and click tracking (only for mail sent with "Track opens and clicks")
 
@@ -25,6 +29,19 @@ notify-tracking-clicked = { $who } mengklik pautan dalam { $subject }
 notify-update-ready = Katna Mail boleh dikemas kini
 notify-update-ready-body = Versi { $version } telah dimuat turun. Kemas kini akan memasangnya dan memulakan semula Katna Mail.
 notify-update = Kemas kini
+
+## Something needs the user, shown once per problem
+
+notify-signed-out = Log masuk semula
+notify-signed-out-body = { $provider } telah mengelog keluar Katna daripada { $address }. Mel berhenti disegerakkan.
+notify-sign-in = Log masuk
+notify-password-refused = Kata laluan ditolak
+notify-password-refused-body = Pelayan mel menolak kata laluan untuk { $address }. Kata laluan itu mungkin telah berubah.
+notify-new-password = Kata laluan baharu
+notify-not-sent = “{ $subject }” tidak dihantar
+notify-not-sent-no-subject = Satu mesej tidak dihantar
+notify-not-sent-body = Mesej itu ada dalam Peti Keluar, yang menerangkan sebabnya.
+notify-open-outbox = Buka Peti Keluar
 
 ## Reminders of calendar events
 
@@ -55,6 +72,12 @@ notify-reply-all = Balas semua
 notify-mark-read = Tandai sebagai dibaca
 notify-mark-all-read = Tandai semua sebagai dibaca
 notify-archive = Arkibkan
+notify-snooze-hour = Tunda 1 jam
+notify-snooze-tomorrow = Esok
+notify-copy-code = Salin { $code }
+notify-link-verify = Tentusahkan di { $domain }
+notify-link-confirm = Sahkan di { $domain }
+notify-link-activate = Aktifkan di { $domain }
 
 ## After Archive on a notification: a short note in the same place
 
@@ -63,6 +86,11 @@ notify-archived-count = { $count ->
    *[other] { $count } mesej dialihkan keluar dari peti masuk
 }
 notify-undo = Buat asal
+
+## After Copy on a notification: a short note, with the code under the title
+
+notify-code-copied = Kod disalin
+notify-code-not-copied = Tidak dapat menyalin kod
 
 ## After a reply typed into a notification: a note in the same place while
 ## it waits for the undo time

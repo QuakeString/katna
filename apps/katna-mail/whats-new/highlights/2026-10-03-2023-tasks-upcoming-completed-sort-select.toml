@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Upcoming, Completed, sorting and selecting in Tasks"
+text = """
+Tasks has two new views. Upcoming shows the next two weeks day by day,
+with overdue tasks on top; drag a task onto another day to move it.
+Completed shows everything you ticked, by day, and unticking a task
+brings it back. Each list's ⋮ menu can sort it by date, star or title.
+Ctrl+click or Shift+click several tasks to complete, move, date, star
+or delete them all at once.
+"""

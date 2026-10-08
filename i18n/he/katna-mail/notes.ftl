@@ -5,6 +5,7 @@
 ## Side list and search
 
 notes-view-notes = הערות
+notes-view-reminders = תזכורות
 notes-view-archive = ארכיון
 notes-view-trash = אשפה
 notes-edit-labels = עריכת תוויות
@@ -23,6 +24,7 @@ notes-archive-empty = הערות שהועברו לארכיון יופיעו כא
 notes-trash-empty = אין הערות באשפה
 notes-none-found = לא נמצאו הערות תואמות
 notes-label-empty = אין עדיין הערות עם התווית הזו
+notes-reminders-empty = הערות עם תזכורות קרובות יופיעו כאן
 notes-trash-note = הערות באשפה נמחקות אחרי 7 ימים.
 notes-empty-trash = ריקון האשפה
 notes-ticked = { $count ->
@@ -30,6 +32,13 @@ notes-ticked = { $count ->
     [two] + { $count } פריטים מסומנים
    *[other] + { $count } פריטים מסומנים
 }
+notes-select = בחירת הערה
+notes-selected = { $count ->
+    [one] אחת נבחרה
+    [two] { $count } נבחרו
+   *[other] { $count } נבחרו
+}
+notes-select-clear = ניקוי הבחירה
 
 ## A note's buttons
 
@@ -44,6 +53,15 @@ notes-color = אפשרויות רקע
 notes-checkboxes = הצגה או הסתרה של תיבות סימון
 notes-labels = תוויות
 notes-close = סגירה
+notes-more = עוד
+notes-make-copy = יצירת עותק
+notes-remind = להזכיר לי
+notes-add-picture = הוספת תמונה
+notes-history = היסטוריית גרסאות
+notes-ai = עזרה בכתיבה
+notes-send-as-mail = שליחה כדואר
+notes-save-markdown = שמירה כ־Markdown
+notes-save-pdf = שמירה כ־PDF
 
 ## The open note
 
@@ -51,6 +69,46 @@ notes-title = כותרת
 notes-edited = נערך לאחרונה: { $date }
 notes-on-this-computer = במחשב הזה
 notes-where = המקום שבו ההערה נשמרת
+notes-untitled = הערה ללא שם
+notes-picture-choose = הוספת תמונות
+notes-picture-remove = הסרת התמונה
+notes-picture-too-big = אפשר להוסיף להערה תמונות בגודל של עד { $size }
+notes-picture-kind = הקובץ הזה הוא לא תמונה ש־Katna יכולה להציג
+notes-picture-unreadable = לא ניתן היה לקרוא את { $name }: { $error }
+notes-remind-me = להזכיר לי
+notes-remind-off = הסרת התזכורת
+notes-remind-in-the-past = יש לבחור שעה שעוד לא עברה
+notes-remind-today = היום, { $time }
+notes-remind-tomorrow = מחר, { $time }
+notes-remind-weekday = { $day }, { $time }
+notes-reminder-set = נקבעה תזכורת ל־{ $when }
+notes-reminder-off = התזכורת הוסרה
+notes-link-note = קישור להערה
+notes-link-new = הערה חדשה "{ $title }"
+notes-linked-from = מקושרת מ־
+notes-link-gone = ההערה הזו כבר לא כאן
+notes-versions = גרסאות
+notes-version-now = עכשיו
+notes-version-here = את/ה, במחשב הזה
+notes-version-yesterday = אתמול, { $time }
+notes-version-changes = { $count ->
+    [one] שינוי אחד
+    [two] { $count } שינויים
+   *[other] { $count } שינויים
+}
+notes-version-from = מ־{ $device }
+notes-version-elsewhere = ממכשיר אחר
+notes-version-created = נוצרה
+notes-version-restore = שחזור הגרסה הזו
+notes-version-restored = הגרסה שוחזרה
+notes-history-none = עדיין אין גרסאות קודמות
+notes-ai-tidy = סידור הטקסט
+notes-ai-checklist = הפיכה לרשימת סימון
+notes-ai-summarise = סיכום
+notes-ai-empty = יש לכתוב משהו קודם
+notes-ai-tidied = הטקסט סודר. Ctrl+Z מחזיר אותו.
+notes-ai-listed = הפכה לרשימת סימון. Ctrl+Z מחזיר אותה.
+notes-ai-summarised = הסיכום נוסף למעלה
 
 ## Labels
 
@@ -89,6 +147,9 @@ notes-format-normal = טקסט רגיל
 notes-format-bold = מודגש
 notes-format-italic = נטוי
 notes-format-underline = קו תחתון
+notes-format-quote = ציטוט
+notes-format-code = קוד
+notes-format-divider = קו מפריד
 notes-format-clear = ניקוי העיצוב
 
 ## Tasks
@@ -116,6 +177,47 @@ notes-archived = ההערה הועברה לארכיון
 notes-unarchived = ההערה הוצאה מהארכיון
 notes-trashed = ההערה הועברה לאשפה
 notes-restored = ההערה שוחזרה
+notes-saved = ההערה נשמרה
+notes-pinned-count = { $count ->
+    [one] ההערה הוצמדה
+    [two] { $count } הערות הוצמדו
+   *[other] { $count } הערות הוצמדו
+}
+notes-unpinned-count = { $count ->
+    [one] הצמדת ההערה בוטלה
+    [two] הצמדת { $count } הערות בוטלה
+   *[other] הצמדת { $count } הערות בוטלה
+}
+notes-colored-count = { $count ->
+    [one] הצבע שונה
+    [two] הצבע שונה ב־{ $count } הערות
+   *[other] הצבע שונה ב־{ $count } הערות
+}
+notes-archived-count = { $count ->
+    [one] ההערה הועברה לארכיון
+    [two] { $count } הערות הועברו לארכיון
+   *[other] { $count } הערות הועברו לארכיון
+}
+notes-unarchived-count = { $count ->
+    [one] ההערה הוצאה מהארכיון
+    [two] { $count } הערות הוצאו מהארכיון
+   *[other] { $count } הערות הוצאו מהארכיון
+}
+notes-trashed-count = { $count ->
+    [one] ההערה הועברה לאשפה
+    [two] { $count } הערות הועברו לאשפה
+   *[other] { $count } הערות הועברו לאשפה
+}
+notes-restored-count = { $count ->
+    [one] ההערה שוחזרה
+    [two] { $count } הערות שוחזרו
+   *[other] { $count } הערות שוחזרו
+}
+notes-copied-count = { $count ->
+    [one] נוצר עותק
+    [two] נוצרו { $count } עותקים
+   *[other] נוצרו { $count } עותקים
+}
 notes-empty-discarded = הערה ריקה נמחקה
 notes-mail-gone = האימייל הזה כבר לא כאן
 notes-deleted-forever = { $count ->

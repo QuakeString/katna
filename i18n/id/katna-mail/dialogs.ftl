@@ -6,6 +6,10 @@
 
 about-tooltip = Tentang Katna
 about-tagline = Email dan kalender untuk desktop Linux
+about-copy-version = Salin detail versi
+about-version-copied = Disalin
+about-version-built = Dibuat: { $date }
+about-version-system = Sistem: { $system }
 about-whats-new = Yang baru
 
 ## Updates, in a box under the version in About (only in packages that
@@ -22,11 +26,13 @@ about-update-ready = Versi { $version } siap dipasang
 about-update-ready-detail = Katna Mail akan memulai ulang untuk menyelesaikan pembaruan.
 about-update-confirm = Pasang versi { $version }?
 about-update-confirm-detail = Katna Mail akan menutup, memasang pembaruan, lalu terbuka lagi seperti sebelumnya. Komputer Anda akan meminta sandi Anda.
+about-update-confirm-detail-windows = Katna Mail akan ditutup, memasang pembaruan, lalu terbuka lagi sebentar lagi.
 about-update-installing = Memasang versi { $version }…
 about-update-installing-detail = Masukkan sandi Anda di jendela yang terbuka.
+about-update-installing-detail-windows = Katna Mail ditutup sekarang dan terbuka lagi setelah pembaruan terpasang.
 about-update-cancelled = Pembaruan tidak dipasang, karena sandi tidak diberikan.
 about-update-failed = Pembaruan tidak dapat dipasang: { $error }
-about-update-unsupported = Salinan Katna Mail ini diperbarui oleh pengelola paket Anda.
+about-update-not-self-updating = Salinan Katna Mail ini tidak memperbarui dirinya sendiri. Perbarui dengan cara yang sama seperti Anda memasangnya.
 about-update-restart-failed = Pembaruan telah dipasang, tetapi Katna Mail tidak dapat terbuka lagi ({ $error }). Buka sendiri.
 about-update-check = Periksa pembaruan
 about-update-download = Unduh
@@ -145,6 +151,7 @@ onboarding-katna-private = Akun ini memiliki sandinya sendiri. Info masuk email 
 onboarding-ready-title = Semua sudah siap
 onboarding-ready-lead = Katna sedang mengambil email Anda. Email muncul saat tiba, dan email baru akan muncul dengan sendirinya.
 onboarding-ready-lead-address = Katna sedang mengambil email { $address }. Email muncul saat tiba, dan email baru akan muncul dengan sendirinya.
+onboarding-apps = Aplikasi yang akan Anda gunakan
 onboarding-ready-tour = Ikuti tur satu menit untuk melihat letak semuanya?
 onboarding-skip = Lewati untuk sekarang
 onboarding-take-tour = Ikuti tur
@@ -211,11 +218,9 @@ crash-close = Tutup
 ## Sign in again (a bar at the bottom when Google or Microsoft stopped
 ## letting an account in; $provider: Google or Microsoft)
 
-sign-in-again-text = { $provider } meminta Anda masuk lagi ke { $address }.
 sign-in-again-button = Masuk
 sign-in-again-tooltip = Buka halaman masuk { $provider } di browser Anda
 sign-in-again-waiting = Menunggu browser Anda…
-sign-in-again-close = Tutup
 google-api-off = { $api } dinonaktifkan di project Google Cloud milik Katna.
 google-api-turn-on = Aktifkan
 google-api-turn-on-tooltip = Buka Google Cloud untuk mengaktifkan { $api }, lalu tekan Coba lagi

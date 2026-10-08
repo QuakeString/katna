@@ -11,7 +11,7 @@ use katna_i18n::tr;
 use katna_store::{Bell, FolderId, Mute, MuteTarget};
 use katna_ui::px;
 
-use super::{MailWindow, note};
+use super::MailWindow;
 use crate::daemon::{Command, Muted};
 use crate::sidebar::Role;
 use crate::theme::Theme;
@@ -183,7 +183,8 @@ impl MailWindow {
                     .justify_center()
                     .rounded(px(8.0))
                     .cursor_pointer()
-                    .hover(|s| s.bg(rgba(th.hover)))
+                    .relative()
+                    .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
                     .child(checkbox_colored(
                         ("bell-box", id * 2 + which),
                         Check::from(on),
@@ -262,7 +263,9 @@ impl MailWindow {
     /// Everything muted, with when it ends and Unmute.
     fn muted_list(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         if self.alerts.mutes.is_empty() {
-            return note(tr!("settings-notifications-nothing-muted"), th).into_any_element();
+            return self
+                .quiet_note(tr!("settings-notifications-nothing-muted"), th)
+                .into_any_element();
         }
         let rows = self.alerts.mutes.iter().enumerate().map(|(n, mute)| {
             let (glyph, name) = self.mute_name(mute);

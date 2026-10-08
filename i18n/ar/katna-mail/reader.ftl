@@ -8,6 +8,8 @@ reader-close = إغلاق
 reader-back = رجوع
 reader-mark-unread = وضع علامة «غير مقروءة»
 reader-move-to = نقل إلى
+reader-snooze = تأجيل
+reader-remind = ذكّرني
 reader-more = المزيد
 reader-original-colors = إظهار الألوان الأصلية
 reader-dark-colors = إظهار بألوان داكنة
@@ -35,6 +37,7 @@ reader-tick-bounced = لم تُسلَّم: أُعيدت { $when }
 reader-tick-read = قُرئت { $when } (إشعار بالقراءة)
 reader-tick-opened = فُتحت، آخر مرة { $when } (تتبُّع الفتح)
 reader-starred = مميّزة بنجمة
+reader-chip-remove = إزالة { $label }
 reader-not-starred = غير مميّزة بنجمة
 reader-too-long = الرسالة طويلة جدًا بحيث لا يمكن عرضها بالكامل.
 reader-encrypted-images = لا يتم أبدًا تحميل الصور من الويب في البريد المشفّر.
@@ -52,6 +55,7 @@ reader-details-subject = الموضوع:
 
 reader-downloading = جارٍ تنزيل هذه الرسالة من الخادم…
 reader-download-failed = تعذّر تنزيل هذه الرسالة.
+reader-download-offline = هذا الحساب غير متصل. اتصل لتنزيل هذه الرسالة.
 reader-try-again = إعادة المحاولة
 
 ## Reply row
@@ -120,6 +124,7 @@ tracking-clicked = تابع { $who } رابطًا { $clicks ->
 tracking-maybe-opened = ربما فتحها { $who } (يحمّل Apple Mail الصور حفاظًا على الخصوصية)
 tracking-seen-none = لم يفتحها أحد أو يتابع رابطًا فيها بعد
 tracking-receipt = أرسل { $who } إشعارًا بالقراءة
+tracking-receipt-read = قرأها { $who } (إيصال قراءة)، { $when }
 tracking-receipt-displayed = إشعار بالقراءة: فتح { $who } رسالتك
 tracking-receipt-other = إشعار بالقراءة: حذف { $who } رسالتك أو تعامل معها دون فتحها
 

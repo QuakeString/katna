@@ -8,6 +8,8 @@ reader-close = Vala
 reader-back = Emuva
 reader-mark-unread = Maka njengokungafundiwe
 reader-move-to = Hambisa ku-
+reader-snooze = Libazisa
+reader-remind = Ngikhumbuze
 reader-more = Okuningi
 reader-original-colors = Bonisa imibala yangempela
 reader-dark-colors = Bonisa ngemibala emnyama
@@ -35,6 +37,7 @@ reader-tick-bounced = Akulethwanga: kubuyile { $when }
 reader-tick-read = Kufundiwe { $when } (isaziso sokufunda)
 reader-tick-opened = Kuvuliwe, okokugcina { $when } (ukulandelela ukuvulwa)
 reader-starred = Kunenkanyezi
+reader-chip-remove = Susa { $label }
 reader-not-starred = Akunankanyezi
 reader-too-long = Umlayezo mude kakhulu ukuthi uboniswe wonke.
 reader-encrypted-images = Izithombe ezivela kuwebhu azilayishwa neze kumeyili ebethelwe.
@@ -52,6 +55,7 @@ reader-details-subject = isihloko:
 
 reader-downloading = Ilanda lo mlayezo kuseva…
 reader-download-failed = Ayikwazanga ukulanda lo mlayezo.
+reader-download-offline = Le akhawunti ayixhunyiwe. Xhuma futhi ukuze ulande lo mlayezo.
 reader-try-again = Zama futhi
 
 ## Reply row
@@ -104,6 +108,7 @@ tracking-clicked = U-{ $who } ulandele isixhumanisi { $clicks ->
 tracking-maybe-opened = Kungenzeka ukuthi u-{ $who } uwuvulile (i-Apple Mail ilayisha izithombe ngenxa yobumfihlo)
 tracking-seen-none = Akekho osewuvulile noma olandele isixhumanisi okwamanje
 tracking-receipt = U-{ $who } uthumele isaziso sokufunda
+tracking-receipt-read = { $who } ukufundile (isaziso sokufundwa), { $when }
 tracking-receipt-displayed = Isaziso sokufunda: u-{ $who } uvule umlayezo wakho
 tracking-receipt-other = Isaziso sokufunda: u-{ $who } ususile noma uphathe umlayezo wakho engawuvulanga
 

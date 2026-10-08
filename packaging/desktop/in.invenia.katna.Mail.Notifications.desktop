@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# What Katna's notifications name as their app (`desktop-entry`): Katna Mail,
+# hidden from menus. No launch feedback: KWin bounces an app's icon for a
+# notification button as if the app were starting, though most buttons
+# (Peek, Mark as read, Archive) open no window.
+[Desktop Entry]
+Type=Application
+Name=Katna Mail
+Comment=Katna Mail's notifications
+Exec=katna-mail
+Icon=in.invenia.katna.Mail
+NoDisplay=true
+StartupNotify=false
+X-GNOME-UsesNotifications=true

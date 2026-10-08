@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Nothing slides under the bars"
+text = """
+The mail list's mails, the open mail and a chat's bubbles now start below
+their bars instead of sliding under them, and the bars stay solid. The
+Frosted headers switch is gone, and so are the odd corners it brought.
+"""

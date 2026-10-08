@@ -189,6 +189,8 @@ list-empty-tab = Tiada mel dalam { $tab }.
 list-empty-tab-unknown = Tiada mel dalam tab ini.
 list-empty-folder = Tiada mesej dalam { $folder }.
 list-empty-folder-unknown = Tiada mesej dalam folder ini.
+list-empty-waiting = Tiada apa-apa yang menunggu balasan.
+list-empty-reminders = Tiada peringatan. Tekan H pada mel untuk menambah satu.
 list-first-sync = Mendapatkan mel anda…
 list-first-sync-detail = Mel akan dipaparkan di sini sebaik sahaja tiba.
 
@@ -208,6 +210,14 @@ row-tracking-clicked = Dibuka oleh { $opened } daripada { $recipients }, pautan 
 row-pin = Sematkan di atas
 row-unpin = Nyahsemat
 row-snoozed-until = Ditunda hingga { $when }
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = Hari ini
+snoozed-group-tomorrow = Esok
+snoozed-group-this-week = Minggu ini
+snoozed-group-later = Kemudian
+row-follow-up-step = Susulan { $step } daripada { $steps } · { $date }
+row-follow-up-waiting = Susulan menunggu
+row-reminder = Peringatan { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -230,6 +240,7 @@ menu-not-important = Tandai sebagai tidak penting
 menu-pin = Sematkan di atas
 menu-unpin = Nyahsemat
 menu-snooze = Tunda
+menu-remind = Ingatkan saya
 menu-unsnooze = Nyahtunda
 menu-add-to-tasks = Tambah pada Tugas
 menu-schedule-meeting = Jadualkan mesyuarat
@@ -241,7 +252,24 @@ menu-move-to = Alih ke
 menu-follow-up = Susulan
 menu-more = Lagi
 menu-move-to-heading = Alih ke:
+menu-move-to-search = Alih ke…
+menu-label-as = Labelkan sebagai
+menu-label-as-search = Labelkan sebagai…
+menu-no-folder = Tiada folder bernama “{ $name }”
+menu-no-label = Tiada label bernama “{ $name }”
+menu-create-folder = Cipta “{ $name }”
+menu-always-move = Sentiasa alihkan mel daripada { $name } ke sini
+toast-always-move-failed = Mel telah dialihkan, tetapi peraturan tidak dibuat: { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+       *[other] { $count } perbualan
+    }
+   *[message] { $count ->
+       *[other] { $count } mesej
+    }
+}
 menu-find-from = Cari e-mel daripada { $name }
+menu-make-rule = Buat peraturan…
 
 ## Snackbar after an action on mail in the list
 
@@ -257,6 +285,8 @@ toast-moved = { $kind ->
     [conversation] { $count } perbualan dialihkan.
    *[message] { $count } mesej dialihkan.
 }
+toast-label-added = Label “{ $label }” ditambah.
+toast-label-removed = Label “{ $label }” dialih keluar.
 toast-starred = { $kind ->
     [conversation] { $count } perbualan dibintangi.
    *[message] { $count } mesej dibintangi.

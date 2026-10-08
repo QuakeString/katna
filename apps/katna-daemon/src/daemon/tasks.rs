@@ -21,6 +21,7 @@ use std::{
 use async_channel::Receiver;
 use futures_lite::FutureExt;
 use jiff::tz::TimeZone;
+use katna_core::config::AppKind;
 use katna_core::{Account, AccountId, AccountKind, AccountSettings, OAuthProvider};
 use katna_dbus::task_state;
 use katna_store::tasks::TaskFields;
@@ -115,6 +116,7 @@ impl Daemon {
                         repeat,
                         starred: task.starred,
                         mail: task.mail,
+                        labels: task.labels,
                     },
                 )?);
             }
@@ -346,6 +348,10 @@ impl Daemon {
             if self.closing() {
                 break;
             }
+            // Its changes wait in the store until it is back online.
+            if self.is_offline(account.id) {
+                continue;
+            }
             let (status, account_changed) = self.sync_account_tasks(&account, known).await;
             changed |= account_changed;
             let old = self
@@ -444,6 +450,11 @@ pub(crate) async fn run(daemon: Weak<Daemon>, wakes: Receiver<()>) {
         };
         if daemon.closing() {
             return;
+        }
+        // Turned off in Settings > Apps: nothing syncs until it is on again,
+        // which wakes this.
+        if !daemon.app_on(AppKind::Tasks) {
+            continue;
         }
         if daemon.sync_tasks(&mut known).await {
             let _ = daemon.notices().try_send(Notice::TasksChanged);

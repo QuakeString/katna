@@ -237,7 +237,11 @@ impl MailWindow {
                     .children(sides)
                     .with_spring(
                         ElementId::Name(format!("scheme-ring-{id}").into()),
-                        SpringAnimation::new(motion::SMOOTH).to(if on { 1.0 } else { 0.0 }),
+                        SpringAnimation::new(katna_ui::motion::scaled(motion::SMOOTH)).to(if on {
+                            1.0
+                        } else {
+                            0.0
+                        }),
                         {
                             let (off, accent) = (th.divider, th.accent);
                             move |el, s: f32| {

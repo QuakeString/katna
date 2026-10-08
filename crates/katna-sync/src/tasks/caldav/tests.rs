@@ -255,3 +255,179 @@ fn to_dos_sync_both_ways() {
             .all(|(_, t)| !t.contains("Call the bank"))
     );
 }
+
+#[test]
+fn labels_are_categories_and_files_go_inside_the_to_do() {
+    let server = Arc::new(Mutex::new(Server::default()));
+    server.lock().unwrap().put(
+        &format!("{LIST}a.ics"),
+        &todo(
+            "a",
+            "Pay electricity bill",
+            "PRIORITY:5\r\nATTACH:https://example.test/tariff.pdf\r\n",
+        ),
+    );
+    let inner = server.clone();
+    let (origin, _seen) = fake::serve(move |request| answer(&inner, request));
+    let dav = CalDav::with_origin(&origin, "me", "secret", Tls::insecure_for_local_tests());
+    let service = TaskService::CalDav(DavTasks::new(dav));
+    let dir = tempfile::tempdir().unwrap();
+    let mut store = Store::open(&Paths::with_root(dir.path()), Mode::ReadWrite).unwrap();
+    let account = store
+        .add_account(AccountKind::Imap, "Me", "me@example.test")
+        .unwrap()
+        .id;
+    let store = Mutex::new(store);
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+    let list = store.lock().unwrap().task_lists().unwrap()[0].id;
+    let task = store.lock().unwrap().tasks_in(list).unwrap().remove(0);
+    // The server's categories are its labels; priority 5 is no star.
+    assert_eq!(task.labels, ["Kept"]);
+    assert!(!task.starred);
+
+    // Starred, a label and a file here: PRIORITY:1, CATEGORIES and an
+    // inline ATTACH; the server's link to a file stays.
+    {
+        let mut store = store.lock().unwrap();
+        let fields = TaskFields {
+            starred: true,
+            labels: vec!["Kept".into(), "Home".into()],
+            ..TaskFields::of(&task)
+        };
+        store.edit_task(task.id, &fields).unwrap();
+        store
+            .add_task_file(task.id, "meter.txt", "text/plain", b"4521 units")
+            .unwrap();
+        let huge = vec![1u8; (MAX_FILE + 1) as usize];
+        store
+            .add_task_file(task.id, "scan.tiff", "image/tiff", &huge)
+            .unwrap();
+    }
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+    {
+        let server = server.lock().unwrap();
+        let text = &server.todos[&format!("{LIST}a.ics")].1;
+        assert!(text.contains("PRIORITY:1\r\n"), "{text}");
+        assert!(!text.contains("PRIORITY:5"));
+        assert!(text.contains("CATEGORIES:Kept,Home\r\n"), "{text}");
+        assert!(text.contains("ATTACH:https://example.test/tariff.pdf\r\n"));
+        let unfolded = text.replace("\r\n ", "");
+        assert!(
+            unfolded.contains("FILENAME=meter.txt:NDUyMSB1bml0cw==\r\n"),
+            "{text}"
+        );
+        assert!(!unfolded.contains("scan.tiff"));
+    }
+    let files = store.lock().unwrap().files_of_task(task.id).unwrap();
+    let meter = files.iter().find(|f| f.name == "meter.txt").unwrap();
+    assert!(meter.remote_id.as_deref().unwrap().starts_with("inline:"));
+    assert!(
+        files
+            .iter()
+            .find(|f| f.name == "scan.tiff")
+            .unwrap()
+            .local_only
+    );
+
+    // The next pull reads the same file back: nothing doubles.
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+    assert_eq!(
+        store.lock().unwrap().files_of_task(task.id).unwrap().len(),
+        2
+    );
+
+    // Unstarred, and the file removed, here: PRIORITY goes, so does the
+    // ATTACH.
+    {
+        let mut store = store.lock().unwrap();
+        let task = store.task(task.id).unwrap().unwrap();
+        let fields = TaskFields {
+            starred: false,
+            ..TaskFields::of(&task)
+        };
+        store.edit_task(task.id, &fields).unwrap();
+        store.remove_task_file(meter.id).unwrap();
+    }
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+    {
+        let server = server.lock().unwrap();
+        let text = &server.todos[&format!("{LIST}a.ics")].1;
+        assert!(!text.contains("PRIORITY"), "{text}");
+        assert!(!text.contains("meter.txt"), "{text}");
+        assert!(text.contains("tariff.pdf"));
+    }
+
+    // Labels changed on the server come here.
+    {
+        let mut server = server.lock().unwrap();
+        let href = format!("{LIST}a.ics");
+        let text = server.todos[&href]
+            .1
+            .replace("CATEGORIES:Kept,Home", "CATEGORIES:Work");
+        server.put(&href, &text);
+    }
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+    let task = store.lock().unwrap().task(task.id).unwrap().unwrap();
+    assert_eq!(task.labels, ["Work"]);
+}
+
+#[test]
+fn files_a_server_refuses_stay_here() {
+    let server = Arc::new(Mutex::new(Server::default()));
+    server
+        .lock()
+        .unwrap()
+        .put(&format!("{LIST}a.ics"), &todo("a", "Insurance", ""));
+    let inner = server.clone();
+    // This server takes no attachments.
+    let (origin, _seen) = fake::serve(move |request| {
+        if request.method == "PUT" && request.text().contains("ATTACH") {
+            return Answer::xml(413, "");
+        }
+        answer(&inner, request)
+    });
+    let dav = CalDav::with_origin(&origin, "me", "secret", Tls::insecure_for_local_tests());
+    let service = TaskService::CalDav(DavTasks::new(dav));
+    let dir = tempfile::tempdir().unwrap();
+    let mut store = Store::open(&Paths::with_root(dir.path()), Mode::ReadWrite).unwrap();
+    let account = store
+        .add_account(AccountKind::Imap, "Me", "me@example.test")
+        .unwrap()
+        .id;
+    let store = Mutex::new(store);
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+    let list = store.lock().unwrap().task_lists().unwrap()[0].id;
+    let task = store.lock().unwrap().tasks_in(list).unwrap()[0].id;
+    let file = store
+        .lock()
+        .unwrap()
+        .add_task_file(task, "policy.pdf", "application/pdf", b"%PDF")
+        .unwrap()
+        .unwrap();
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+    assert!(
+        store
+            .lock()
+            .unwrap()
+            .task_file(file)
+            .unwrap()
+            .unwrap()
+            .local_only
+    );
+    assert!(
+        store
+            .lock()
+            .unwrap()
+            .pending_task_files(list)
+            .unwrap()
+            .is_empty()
+    );
+    assert!(
+        !server.lock().unwrap().todos[&format!("{LIST}a.ics")]
+            .1
+            .contains("ATTACH")
+    );
+    // Still there after the next pull.
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+    assert!(store.lock().unwrap().task_file(file).unwrap().is_some());
+}

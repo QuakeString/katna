@@ -14,6 +14,7 @@ search-without = 제외할 단어
 search-date-within = 기간
 search-has-attachment = 첨부파일 있음
 search-attachment-custom = 직접 지정
+search-attachment-image = 이미지
 search-attachment-custom-hint = png 같은 확장자를 입력하고 스페이스 키를 누르세요
 search-attachment-remove = 삭제
 search-clear-filter = 필터 지우기

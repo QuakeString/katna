@@ -31,6 +31,9 @@
 //!   is empty: where it was dragged to.
 //! - `AddTaskList(x account, s title) -> x list`: `account` `0` is this
 //!   computer. `RenameTaskList(x list, s title)`, `DeleteTaskList(x list)`.
+//! - `AddTaskFile(s id, s name, s mime, ay data) -> x file`: a file on
+//!   task `id` (at most [`MAX_TASK_FILE`] bytes), dropped on it or kept
+//!   from its mail. `RemoveTaskFile(x file)`.
 //! - signal `Changed()`: read again.
 
 use std::collections::HashMap;
@@ -39,6 +42,9 @@ use zbus::zvariant::OwnedValue;
 
 /// One event or task on the wire.
 pub type Item = HashMap<String, OwnedValue>;
+
+/// The largest file `AddTaskFile` takes, in bytes.
+pub const MAX_TASK_FILE: usize = 25 * 1024 * 1024;
 
 /// Keys of an event.
 pub mod event {
@@ -79,6 +85,8 @@ pub mod task {
     pub const LIST: &str = "list";
     /// `s`: the Message-ID of the mail it was made from, or empty.
     pub const MAIL: &str = "mail";
+    /// `as`: its labels, the same names as the notes' labels.
+    pub const LABELS: &str = "labels";
 }
 
 /// Keys of `EditTask`'s fields; each is optional.
@@ -99,6 +107,9 @@ pub mod edit {
     pub const STARRED: &str = "starred";
     /// `s`: the Message-ID of the mail it was made from, or empty.
     pub const MAIL: &str = "mail";
+    /// `as`: its labels, the same names as the notes' labels; empty for
+    /// none.
+    pub const LABELS: &str = "labels";
 }
 
 macro_rules! agenda_proxy {
@@ -141,6 +152,18 @@ macro_rules! agenda_proxy {
             fn rename_task_list(&self, list: i64, title: &str) -> zbus::Result<()>;
 
             fn delete_task_list(&self, list: i64) -> zbus::Result<()>;
+
+            /// Puts a file on task `id`. Returns the file's ID.
+            fn add_task_file(
+                &self,
+                id: &str,
+                name: &str,
+                mime: &str,
+                data: &[u8],
+            ) -> zbus::Result<i64>;
+
+            /// Takes a file off its task.
+            fn remove_task_file(&self, file: i64) -> zbus::Result<()>;
 
             /// Shows an event (the Calendar on its day) or a task (the
             /// Tasks page) in Katna. False for an ID it doesn't know.

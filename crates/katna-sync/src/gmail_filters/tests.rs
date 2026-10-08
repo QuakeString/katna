@@ -522,3 +522,37 @@ fn without_the_scope_rules_wait_for_a_new_sign_in() {
     assert!(matches!(push.error, Some(Error::Auth(_))));
     assert_eq!(push.verdicts, [(1, Err(RunsNote::SignIn))]);
 }
+
+#[test]
+fn reads_the_signatures_gmail_adds() {
+    let (api, _) = serve(|request, _| match request.path.as_str() {
+        "/gmail/v1/users/me/settings/sendAs" => (
+            200,
+            Vec::new(),
+            r#"{"sendAs":[{"sendAsEmail":"alias@x.org","displayName":"Ada","signature":""},
+                          {"sendAsEmail":"ada@x.org","displayName":"Ada L","isDefault":true,
+                           "signature":"<div dir=\"ltr\"><b>Ada</b></div>"}]}"#
+                .into(),
+        ),
+        _ => (404, Vec::new(), "{}".into()),
+    });
+    let gmail = client(&api, "https://mail.test/");
+    let all = smol::block_on(gmail.send_as()).unwrap();
+    assert_eq!(all[0].send_as_email, "ada@x.org");
+    assert_eq!(all[0].signature, "<div dir=\"ltr\"><b>Ada</b></div>");
+    assert!(all[1].signature.is_empty());
+    // A token without a scope that allows it: sign in again.
+    let (api, _) = serve(|_, _| {
+        (
+            403,
+            Vec::new(),
+            r#"{"error":{"code":403,"message":"Request had insufficient authentication scopes."}}"#
+                .into(),
+        )
+    });
+    let gmail = client(&api, "https://mail.test/");
+    assert!(matches!(
+        smol::block_on(gmail.send_as()),
+        Err(Error::Auth(_))
+    ));
+}

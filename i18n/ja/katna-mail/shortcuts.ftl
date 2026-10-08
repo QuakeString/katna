@@ -9,6 +9,13 @@ shortcut-group-actions = 操作
 shortcut-group-go-to = ジャンプ
 shortcut-group-app = アプリケーション
 
+## Help > Keyboard shortcuts: every shortcut in a dialog over the window
+
+shortcuts-dialog-title = キーボード ショートカット
+shortcuts-dialog-search = ショートカットを検索
+shortcuts-dialog-none = 一致するショートカットはありません
+shortcuts-dialog-close = 閉じる
+
 ## Settings > Keyboard shortcuts: what each shortcut does
 
 shortcut-next = 次のスレッド
@@ -37,6 +44,8 @@ shortcut-mark-read = 既読にする
 shortcut-mark-unread = 未読にする
 shortcut-star = スターを付ける/外す
 shortcut-add-to-tasks = タスクに追加
+shortcut-snooze = スヌーズ
+shortcut-remind = リマインド
 shortcut-important = 重要マークを付ける
 shortcut-not-important = 重要ではないとマーク
 shortcut-mute = スレッドをミュート／ミュート解除

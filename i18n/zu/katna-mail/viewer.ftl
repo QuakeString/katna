@@ -21,12 +21,20 @@ viewer-page-count = kwangu-{ $count }
 viewer-go-to-page-tip = Thayipha inombolo yekhasi bese ucindezela u-Enter (Ctrl+G)
 viewer-rotate-clockwise-tip = Jikisa ngokwewashi (Ctrl+R)
 viewer-rotate-anticlockwise-tip = Jikisa ngokuphambene newashi (Ctrl+Shift+R)
+viewer-dark-pages-tip = Amakhasi amnyama
+viewer-light-pages-tip = Bonisa amakhasi njengoba enjalo
 viewer-fit-page-tip = Lingana nekhasi
 viewer-fit-picture-tip = Lingana newindi
 viewer-fit-width-tip = Lingana nobubanzi
 viewer-real-size-tip = Usayizi wangempela (1:1)
 viewer-page-back-tip = Ikhasi elidlule
 viewer-page-on-tip = Ikhasi elilandelayo
+viewer-more-tip = Okwengeziwe
+viewer-zoom-in = Sondeza
+viewer-zoom-out = Hlehlisa
+viewer-real-size = Usayizi wangempela
+viewer-rotate-anticlockwise = Jikisa ngokuphambene newashi
+viewer-rotate-clockwise = Jikisa ngokwewashi
 
 ## Marking up a PDF
 

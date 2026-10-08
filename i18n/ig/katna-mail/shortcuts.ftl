@@ -9,6 +9,13 @@ shortcut-group-actions = Omume
 shortcut-group-go-to = Gaa na
 shortcut-group-app = Ngwa
 
+## Help > Keyboard shortcuts: every shortcut in a dialog over the window
+
+shortcuts-dialog-title = Ụzọ mkpirisi kiibọọdụ
+shortcuts-dialog-search = Chọta ụzọ mkpirisi
+shortcuts-dialog-none = Ọ dịghị ụzọ mkpirisi dabara
+shortcuts-dialog-close = Mechie
+
 ## Settings > Keyboard shortcuts: what each shortcut does
 
 shortcut-next = Mkparịta ụka ọzọ
@@ -37,6 +44,8 @@ shortcut-mark-read = Kaa akara dị ka agụrụ
 shortcut-mark-unread = Kaa akara dị ka a gụghị
 shortcut-star = Tinye ma ọ bụ wepụ kpakpando
 shortcut-add-to-tasks = Tinye na Ọrụ
+shortcut-snooze = Yigharịa
+shortcut-remind = Chetara m
 shortcut-important = Kaa akara dị ka ọ dị mkpa
 shortcut-not-important = Kaa akara dị ka ọ dịghị mkpa
 shortcut-mute = Mee ka mkparịta ụka gbachi nkịtị ma ọ bụ kwụsị ya

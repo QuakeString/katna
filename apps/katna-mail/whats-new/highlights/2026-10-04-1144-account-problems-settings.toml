@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Account problems in Settings too"
+text = """
+Settings › Accounts now says what is wrong with an account under its
+name, such as a refused password, with the fix right there.
+"""

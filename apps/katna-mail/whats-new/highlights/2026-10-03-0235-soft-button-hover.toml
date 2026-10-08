@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Softer button hover"
+text = """
+Pointing at a round button now grows its circle gently from two thirds of
+its size and fades it in, and pill buttons such as Reply fade in a little
+slower. Moving away shrinks the circle back a little as it fades.
+"""

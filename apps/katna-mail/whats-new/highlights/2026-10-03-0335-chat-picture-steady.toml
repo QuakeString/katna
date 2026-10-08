@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Steady pictures in chats"
+text = """
+Scrolling past the end of a chat, or a chat with nothing to scroll, no
+longer makes the sender's picture and the bubble's buttons jump.
+"""

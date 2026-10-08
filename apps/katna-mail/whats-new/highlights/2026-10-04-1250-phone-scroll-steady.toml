@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Steady list on a phone-sized window"
+text = """
+Scrolling the mail list quickly on a phone-sized window no longer leaves it
+shaking up and down while the tabs slide away.
+"""

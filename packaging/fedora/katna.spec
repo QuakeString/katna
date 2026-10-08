@@ -69,6 +69,9 @@ unset RUSTFLAGS
 # Katna Mail names this version in What's new, and the build's date in
 # the Update dialog.
 export KATNA_VERSION=%{version}
+# Katna offers the new build and the dnf command that installs it
+# (katna_core::update::Package::Rpm).
+export KATNA_PACKAGE=rpm
 export KATNA_BUILT=%{katna_built}
 # Two builds: in one, Cargo would give katna-daemon and katnactl the
 # features GPUI turns on in shared crates, making them bigger for nothing.

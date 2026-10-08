@@ -20,12 +20,20 @@ viewer-page-count = / { $count }
 viewer-go-to-page-tip = 페이지 번호를 입력하고 Enter 키를 누르세요 (Ctrl+G)
 viewer-rotate-clockwise-tip = 시계 방향으로 회전(Ctrl+R)
 viewer-rotate-anticlockwise-tip = 시계 반대 방향으로 회전(Ctrl+Shift+R)
+viewer-dark-pages-tip = 어두운 페이지
+viewer-light-pages-tip = 페이지를 원래대로 표시
 viewer-fit-page-tip = 페이지에 맞추기
 viewer-fit-picture-tip = 창에 맞추기
 viewer-fit-width-tip = 너비에 맞추기
 viewer-real-size-tip = 실제 크기(1:1)
 viewer-page-back-tip = 이전 페이지
 viewer-page-on-tip = 다음 페이지
+viewer-more-tip = 더보기
+viewer-zoom-in = 확대
+viewer-zoom-out = 축소
+viewer-real-size = 실제 크기
+viewer-rotate-anticlockwise = 왼쪽으로 회전
+viewer-rotate-clockwise = 오른쪽으로 회전
 
 ## Marking up a PDF
 

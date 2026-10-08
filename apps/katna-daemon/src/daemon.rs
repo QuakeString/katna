@@ -16,7 +16,7 @@ use async_channel::{Receiver, Sender};
 use futures_lite::FutureExt;
 use katna_core::{
     Account, AccountId, AccountKind, AccountSettings, Config, Paths, Pop3Keep, Security, Server,
-    config::Metered,
+    config::{AppKind, AppsOn, HiddenAccounts, Metered, OfflineAccounts},
 };
 use katna_dbus::{
     AccountStatus, NewImapAccount, NewPop3Account, OutboxItem, ServerSpec, TemplateItem, state,
@@ -61,6 +61,8 @@ mod linked;
 mod meet;
 mod mutes;
 mod notes;
+mod nudges;
+mod offline;
 mod other_contacts;
 mod reminders;
 mod rules;
@@ -101,7 +103,7 @@ fn template_name(name: &str) -> Result<String, CommandError> {
 const STOP_TIMEOUT: Duration = Duration::from_secs(10);
 
 /// Something D-Bus clients should hear about.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Notice {
     AccountsChanged,
     StatusChanged(AccountId),
@@ -126,6 +128,15 @@ pub enum Notice {
     TasksChanged,
     /// Mail rules changed, or one was switched off because it failed.
     RulesChanged,
+    /// The server refused changes for good and they were undone here:
+    /// how many, of what kind (`katna_sync::ops::Change`, or `other` for
+    /// a mix) and the server's first answer.
+    ChangesRefused {
+        account: AccountId,
+        change: &'static str,
+        count: u32,
+        reason: String,
+    },
 }
 
 /// Why a command failed. Mapped to `org.freedesktop.DBus.Error.*` names.
@@ -234,6 +245,12 @@ pub struct Daemon {
     offline_days: Mutex<Option<u32>>,
     /// The user's `general.language` setting, as last applied.
     language: Mutex<String>,
+    /// The accounts left out of each app (`hidden_accounts`): their
+    /// tasks' and notes' reminders stay quiet.
+    hidden_accounts: Mutex<HiddenAccounts>,
+    /// Which apps are on (`[apps]`): one turned off isn't synced and its
+    /// reminders, tray items and search results stay away.
+    apps: Mutex<AppsOn>,
     status: Mutex<HashMap<AccountId, Status>>,
     outbox: Mutex<Option<Sending>>,
     /// Why each outbox entry's last try failed.
@@ -312,6 +329,13 @@ pub struct Daemon {
     rules_wake: (Sender<Option<AccountId>>, Receiver<Option<AccountId>>),
     /// Where each account last ran each rule, since the daemon started.
     rules_placed: Mutex<HashMap<AccountId, rules_server::Placed>>,
+    /// The accounts the user took offline (`[offline]`), as last read
+    /// from the settings ([`offline`]).
+    offline: Mutex<OfflineAccounts>,
+    /// The accounts offline now, as last applied.
+    offline_now: Mutex<std::collections::HashSet<AccountId>>,
+    /// Has [`offline::run`] apply the settings again.
+    offline_wake: (Sender<()>, Receiver<()>),
 }
 
 /// A refresh token that replaced the account's old one.
@@ -343,6 +367,11 @@ impl Daemon {
             metered_setting: Mutex::new(setting),
             offline_days: Mutex::new(sync.offline_window()),
             language: Mutex::new(saved.general.language),
+            hidden_accounts: Mutex::new(saved.hidden_accounts),
+            apps: Mutex::new(saved.apps),
+            offline: Mutex::new(saved.offline),
+            offline_now: Mutex::default(),
+            offline_wake: async_channel::bounded(1),
             status: Mutex::default(),
             outbox: Mutex::default(),
             send_errors: Mutex::default(),
@@ -434,6 +463,13 @@ impl Daemon {
         .detach();
         // In the background: at login the keyring may ask to be unlocked,
         // and nothing else waits for that answer.
+        // Before any worker starts: an offline account never connects.
+        self.apply_offline_at_start();
+        smol::spawn(offline::run(
+            Arc::downgrade(self),
+            self.offline_wake.1.clone(),
+        ))
+        .detach();
         let daemon = self.clone();
         smol::spawn(async move {
             for account in accounts {
@@ -449,6 +485,9 @@ impl Daemon {
         ))
         .detach();
         self.start_scheduler();
+        // Sent mail from before this start, for nudges.
+        let daemon = self.clone();
+        smol::unblock(move || daemon.find_nudges()).detach();
         smol::spawn(crate::crash_upload::run(
             Arc::downgrade(self),
             self.crash_uploads.1.clone(),
@@ -1038,6 +1077,8 @@ impl Daemon {
         }
         self.start_account(&account).await;
         self.wake_task_sync();
+        // Mail held for the new password goes now.
+        self.send_waiting_mail(id);
         Ok(())
     }
 
@@ -1256,7 +1297,22 @@ impl Daemon {
     /// Reads the settings file again and applies what the daemon uses from
     /// it (`sync.metered`, `sync.offline_days`, `notifications`, `sounds`,
     /// the `general` language, tray and badge switches, search trigger words,
-    /// `feedback.send_crash_reports`). Katna Mail calls this after saving
+    /// `feedback.send_crash_reports`, the accounts taken `offline`). Katna Mail calls this after saving
+    /// The accounts left out of each app, as last read from the settings.
+    pub(crate) fn hidden_accounts(&self) -> HiddenAccounts {
+        self.hidden_accounts.lock().unwrap().clone()
+    }
+
+    /// Which apps are on, as last read from the settings.
+    pub(crate) fn apps(&self) -> AppsOn {
+        self.apps.lock().unwrap().clone()
+    }
+
+    /// Whether `app` is on: its sync, reminders and search results run.
+    pub(crate) fn app_on(&self, app: AppKind) -> bool {
+        self.apps.lock().unwrap().is_on(app)
+    }
+
     /// settings.
     pub fn reload_config(&self) -> Result<(), CommandError> {
         let config = Config::load(&self.paths.config_file())
@@ -1283,17 +1339,92 @@ impl Daemon {
         if std::mem::replace(&mut *self.language.lock().unwrap(), language.clone()) != *language {
             katna_i18n::apply(language);
         }
+        *self.hidden_accounts.lock().unwrap() = config.hidden_accounts.clone();
+        let was = std::mem::replace(&mut *self.apps.lock().unwrap(), config.apps.clone());
+        if was != config.apps {
+            self.apps_changed(&was, &config.apps);
+        }
+        self.set_offline(config.offline.clone());
         if let Some(finder) = self.finder.get() {
             finder.set_triggers(config.general.search_triggers.clone());
         }
         if let Some(desktop) = self.desktop.get() {
-            desktop.settings(config.general.clone());
+            desktop.settings(config.general.clone(), config.apps.clone());
         }
         self.apply_metered();
         // Sending crash reports may have been turned on.
         let _ = self.crash_uploads.0.try_send(());
         // Downloading updates may have been turned on.
         self.updates.settings_changed();
+        Ok(())
+    }
+
+    /// An app turned on syncs at once; reminders are read again either way,
+    /// so an app turned off goes quiet.
+    fn apps_changed(&self, was: &AppsOn, now: &AppsOn) {
+        tracing::info!(?now, "apps turned on or off");
+        for app in AppKind::ALL {
+            if was.is_on(app) || !now.is_on(app) {
+                continue;
+            }
+            match app {
+                AppKind::Calendar => self.wake_calendars(),
+                AppKind::Contacts => self.wake_contacts(),
+                AppKind::Tasks => self.wake_task_sync(),
+                AppKind::Notes => self.wake_notes(),
+                AppKind::Files => {}
+            }
+        }
+        self.wake_scheduler();
+    }
+
+    /// Deletes the local copy of app `key` ([`AppKind::key`]), which must
+    /// be off, so no sync runs into it; once it is on again, its sync
+    /// downloads everything afresh. Whatever only this computer has, or
+    /// has not reached its service yet, stays (`katna_store::forget`).
+    pub fn forget_app(&self, key: &str) -> Result<(), CommandError> {
+        let app = AppKind::from_key(key)
+            .ok_or_else(|| CommandError::InvalidArgs(format!("no app {key:?}")))?;
+        // The settings saying it is off may not have been read yet.
+        if self.app_on(app) {
+            self.reload_config()?;
+        }
+        if self.app_on(app) {
+            return Err(CommandError::InvalidArgs(format!(
+                "{key} is on; turn it off first"
+            )));
+        }
+        match app {
+            AppKind::Calendar => {
+                let gone = self.forget_calendar_copy()?;
+                tracing::info!(gone, "calendars' local copy removed");
+            }
+            AppKind::Contacts => {
+                if self.store().forget_account_contacts()? {
+                    let _ = self.notices.try_send(Notice::ContactsChanged);
+                }
+                tracing::info!("contacts' local copy removed");
+            }
+            AppKind::Tasks => {
+                let gone = self.store().forget_account_task_lists()?;
+                let _ = self.notices.try_send(Notice::TasksChanged);
+                tracing::info!(gone, "task lists' local copy removed");
+            }
+            AppKind::Notes => {
+                let gone = self.store().forget_account_notes()?;
+                tracing::info!(gone, "notes' local copy removed");
+            }
+            AppKind::Files => {
+                // Files keeps no copy of its own: its list is read from
+                // the mail; only the drives' opened files are kept.
+                let drives = self.paths.cache_dir().join("drives");
+                if drives.exists() {
+                    std::fs::remove_dir_all(&drives)
+                        .map_err(|err| CommandError::Failed(err.to_string()))?;
+                }
+                tracing::info!("drive files' local copy removed");
+            }
+        }
         Ok(())
     }
 
@@ -1331,6 +1462,9 @@ impl Daemon {
         let account = account.ok_or_else(|| {
             CommandError::Failed(format!("message {} is not on a server", message.0))
         })?;
+        if self.is_offline(account) {
+            return Err(CommandError::Failed("the account is offline".into()));
+        }
         let session = self.on_demand.session(account);
         let mut connection = session.connection.lock().await;
         let mut store = Store::open(&self.paths, Mode::ReadWrite)?;
@@ -1725,6 +1859,20 @@ impl Daemon {
         Ok(undone)
     }
 
+    /// Sends a failed message again now.
+    pub fn retry_send(&self, id: i64) -> Result<bool, CommandError> {
+        let queued = outbox::retry(&mut self.store(), id)?;
+        if queued {
+            self.send_errors.lock().unwrap().remove(&id);
+            tracing::info!(id, "sending again");
+            let _ = self.notices.try_send(Notice::OutboxChanged(id));
+            if let Some(sending) = self.outbox.lock().unwrap().as_ref() {
+                sending.handle.wake();
+            }
+        }
+        Ok(queued)
+    }
+
     /// Forgets a cancelled or failed message.
     pub fn discard_send(&self, id: i64) -> Result<bool, CommandError> {
         let discarded = outbox::discard(&mut self.store(), id)?;
@@ -1874,6 +2022,11 @@ impl Daemon {
         if let Some(old) = old {
             stop(account.id, old).await;
         }
+        // It starts when it is brought back online.
+        if self.is_offline(account.id) {
+            self.set_status(account.id, Status::new(state::PAUSED, ""));
+            return;
+        }
         let connector = self.connector(account).await;
         // The keyring may have kept it waiting while the daemon stopped.
         if self.closing.load(Ordering::SeqCst) || self.resetting.load(Ordering::SeqCst) {
@@ -1897,6 +2050,9 @@ impl Daemon {
     /// How to reach the account's IMAP or POP3 server; `None` if it has
     /// none.
     async fn connector(&self, account: &Account) -> Result<Option<Link>, String> {
+        if self.is_offline(account.id) {
+            return Err("the account is offline".into());
+        }
         let settings = self
             .store()
             .account_settings(account.id)
@@ -2021,6 +2177,20 @@ impl Daemon {
                     // Refused changes were undone in the store.
                     if report.failed > 0 {
                         let _ = self.notices.try_send(Notice::MailChanged(id));
+                    }
+                    // And the user hears of it, in words of what they did.
+                    if let Some(first) = report.refused.first() {
+                        let same = report.refused.iter().all(|r| r.change == first.change);
+                        let _ = self.notices.try_send(Notice::ChangesRefused {
+                            account: id,
+                            change: if same {
+                                first.change.as_str()
+                            } else {
+                                katna_sync::ops::Change::Other.as_str()
+                            },
+                            count: report.refused.len() as u32,
+                            reason: first.reason.clone(),
+                        });
                     }
                     continue;
                 }
@@ -2190,6 +2360,10 @@ impl Outgoing for SmtpAccounts {
 
     async fn connect(&self, account: AccountId) -> katna_sync::Result<SmtpSender> {
         let (daemon, settings) = self.settings(account)?;
+        // Waits in the outbox like on a lost network, until it is back.
+        if daemon.is_offline(account) {
+            return Err(katna_sync::Error::Closed("the account is offline".into()));
+        }
         let smtp = settings.smtp.clone().ok_or_else(|| {
             katna_sync::Error::Rejected(format!("account {account} has no SMTP server"))
         })?;

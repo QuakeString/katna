@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Frosted glass on Windows"
+text = """
+Menus, popovers, dialogs, viewer bars and frosted panes now blur what is
+under them on Windows too, with the same Blur strength and Opacity
+settings as on Linux. Turn it on or off in Settings, Experimental,
+Frosted menus and dialogs.
+"""

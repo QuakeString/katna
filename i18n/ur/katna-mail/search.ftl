@@ -14,6 +14,7 @@ search-without = یہ شامل نہ ہوں
 search-date-within = تاریخ کی حد
 search-has-attachment = منسلکہ موجود ہو
 search-attachment-custom = حسب منشا
+search-attachment-image = تصویر
 search-attachment-custom-hint = کوئی ایکسٹینشن ٹائپ کریں، جیسے png، پھر اسپیس دبائیں
 search-attachment-remove = ہٹائیں
 search-clear-filter = فلٹر صاف کریں

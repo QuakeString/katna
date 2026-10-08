@@ -6,6 +6,10 @@
 
 about-tooltip = Informazioni su Katna
 about-tagline = Posta e calendario per il desktop Linux
+about-copy-version = Copia i dettagli della versione
+about-version-copied = Copiato
+about-version-built = Compilato: { $date }
+about-version-system = Sistema: { $system }
 about-whats-new = Novità
 
 ## Updates, in a box under the version in About (only in packages that
@@ -22,11 +26,13 @@ about-update-ready = La versione { $version } è pronta per l’installazione
 about-update-ready-detail = Katna Mail si riavvia per completare l’aggiornamento.
 about-update-confirm = Installare la versione { $version }?
 about-update-confirm-detail = Katna Mail si chiuderà, installerà l’aggiornamento e si aprirà di nuovo da dove avevi interrotto. Il computer chiederà la tua password.
+about-update-confirm-detail-windows = Katna Mail si chiuderà, installerà l’aggiornamento e si riaprirà tra un momento.
 about-update-installing = Installazione della versione { $version }…
 about-update-installing-detail = Inserisci la password nella finestra che si è aperta.
+about-update-installing-detail-windows = Katna Mail si chiude ora e si riapre una volta installato l’aggiornamento.
 about-update-cancelled = L’aggiornamento non è stato installato, perché la password non è stata fornita.
 about-update-failed = Non è stato possibile installare l’aggiornamento: { $error }
-about-update-unsupported = Questa copia di Katna Mail viene aggiornata dal tuo gestore dei pacchetti.
+about-update-not-self-updating = Questa copia di Katna Mail non si aggiorna da sola. Aggiornala nello stesso modo in cui l’hai installata.
 about-update-restart-failed = L’aggiornamento è installato, ma Katna Mail non è riuscito ad aprirsi di nuovo ({ $error }). Aprilo tu stesso.
 about-update-check = Controlla aggiornamenti
 about-update-download = Scarica
@@ -149,6 +155,7 @@ onboarding-katna-private = Ha una propria password. Le credenziali della tua pos
 onboarding-ready-title = Tutto pronto
 onboarding-ready-lead = Katna sta scaricando la tua posta. I messaggi compaiono man mano che arrivano, e la nuova posta appare da sola.
 onboarding-ready-lead-address = Katna sta scaricando la posta di { $address }. I messaggi compaiono man mano che arrivano, e la nuova posta appare da sola.
+onboarding-apps = App che userai
 onboarding-ready-tour = Vuoi fare un tour di un minuto per vedere dove si trova tutto?
 onboarding-skip = Salta per ora
 onboarding-take-tour = Fai il tour
@@ -219,11 +226,9 @@ crash-close = Chiudi
 ## Sign in again (a bar at the bottom when Google or Microsoft stopped
 ## letting an account in; $provider: Google or Microsoft)
 
-sign-in-again-text = { $provider } ti chiede di accedere di nuovo a { $address }.
 sign-in-again-button = Accedi
 sign-in-again-tooltip = Apri la pagina di accesso di { $provider } nel browser
 sign-in-again-waiting = In attesa del browser…
-sign-in-again-close = Chiudi
 google-api-off = { $api } è disattivata nel progetto Google Cloud di Katna.
 google-api-turn-on = Attiva
 google-api-turn-on-tooltip = Apri Google Cloud per attivare { $api }, poi premi Riprova

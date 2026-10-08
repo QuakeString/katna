@@ -9,18 +9,18 @@
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 use gpui::{
-    Animation, AnimationExt, AnyElement, Bounds, ClickEvent, Context, FontWeight, MouseButton,
-    Pixels, SharedString, Size, Task, Window, anchored, deferred, div, ease_out_quint, point,
-    prelude::*, rgba,
+    Animation, AnimationExt, AnyElement, Bounds, ClickEvent, Context, FontWeight, Pixels,
+    SharedString, Size, Task, Window, deferred, div, ease_out_quint, point, prelude::*, rgba,
 };
 use jiff::civil::{Date, Time};
 use katna_dav::Occurrence;
 use katna_i18n::{format, tr};
 use katna_store::calendar::EventKind;
 use katna_store::tasks::Task as TaskItem;
+use katna_ui::anchored;
 use katna_ui::{px, unpx};
 
 use super::super::MailWindow;
@@ -28,7 +28,7 @@ use super::super::event_edit::kind_icon;
 use super::super::notched::{self, notch};
 use super::{CalView, civil, midnight};
 use crate::theme::Theme;
-use crate::widgets::{icon, raised};
+use crate::widgets::icon;
 
 /// How long the pointer rests on a day before its popover opens, so
 /// passing over the months opens nothing.
@@ -38,7 +38,7 @@ const OPEN_DELAY: Duration = Duration::from_millis(280);
 const LINGER: Duration = Duration::from_millis(220);
 
 const WIDTH: f32 = 288.0;
-const RADIUS: f32 = 12.0;
+const RADIUS: f32 = notched::RADIUS;
 const PAD: f32 = 6.0;
 const HEAD: f32 = 34.0;
 const ROW: f32 = 32.0;
@@ -66,6 +66,8 @@ struct Open {
     /// Opened by a tap: stays until a press outside it.
     pinned: bool,
     closing: Option<Task<()>>,
+    /// When it closed and began to fade out.
+    fading: Option<Instant>,
 }
 
 impl Open {
@@ -76,6 +78,7 @@ impl Open {
             over_popover: false,
             pinned,
             closing: None,
+            fading: None,
         }
     }
 }
@@ -83,7 +86,7 @@ impl Open {
 /// One line of the popover.
 enum Item {
     Event(Occurrence),
-    Task(TaskItem, bool, Option<u32>),
+    Task(Box<TaskItem>, bool, Option<u32>),
 }
 
 impl MailWindow {
@@ -104,7 +107,7 @@ impl MailWindow {
         items.extend(
             self.tasks_on(day)
                 .into_iter()
-                .map(|(task, done, time)| Item::Task(task, done, time)),
+                .map(|(task, done, time)| Item::Task(Box::new(task), done, time)),
         );
         items
     }
@@ -113,7 +116,7 @@ impl MailWindow {
     pub(super) fn year_day_hover(&mut self, day: Date, hovered: bool, cx: &mut Context<Self>) {
         let peek = &mut self.calendar.peek;
         if hovered {
-            match &mut peek.open {
+            match peek.open.as_mut().filter(|o| o.fading.is_none()) {
                 Some(open) if open.day == day => {
                     open.over_day = true;
                     open.closing = None;
@@ -152,7 +155,13 @@ impl MailWindow {
 
     /// The pointer went onto or off the popover.
     fn year_popover_hover(&mut self, hovered: bool, cx: &mut Context<Self>) {
-        let Some(open) = &mut self.calendar.peek.open else {
+        let Some(open) = self
+            .calendar
+            .peek
+            .open
+            .as_mut()
+            .filter(|o| o.fading.is_none())
+        else {
             return;
         };
         open.over_popover = hovered;
@@ -165,7 +174,13 @@ impl MailWindow {
 
     /// Closes the popover after [`LINGER`] unless the pointer comes back.
     fn year_peek_linger(&mut self, cx: &mut Context<Self>) {
-        let Some(open) = &mut self.calendar.peek.open else {
+        let Some(open) = self
+            .calendar
+            .peek
+            .open
+            .as_mut()
+            .filter(|o| o.fading.is_none())
+        else {
             return;
         };
         if open.pinned || open.over_day || open.over_popover {
@@ -181,8 +196,7 @@ impl MailWindow {
                     .as_ref()
                     .is_some_and(|o| o.day == day && !o.over_day && !o.over_popover)
                 {
-                    peek.open = None;
-                    cx.notify();
+                    this.close_year_peek(cx);
                 }
             })
             .ok();
@@ -204,11 +218,28 @@ impl MailWindow {
 
     /// Closes the popover, if open.
     pub(super) fn close_year_peek(&mut self, cx: &mut Context<Self>) {
-        let peek = &mut self.calendar.peek;
-        peek.waiting = None;
-        if peek.open.take().is_some() {
-            cx.notify();
+        self.calendar.peek.waiting = None;
+        if self
+            .calendar
+            .peek
+            .open
+            .as_ref()
+            .is_none_or(|o| o.fading.is_some())
+        {
+            return;
         }
+        let fading = notched::fade_out(cx);
+        let peek = &mut self.calendar.peek;
+        match fading {
+            Some(since) => {
+                if let Some(open) = &mut peek.open {
+                    open.fading = Some(since);
+                    open.closing = None;
+                }
+            }
+            None => peek.open = None,
+        }
+        cx.notify();
     }
 
     /// The popover of the day it is open for, over everything.
@@ -220,7 +251,11 @@ impl MailWindow {
         if self.calendar.view != CalView::Year {
             return None;
         }
-        let day = self.calendar.peek.open.as_ref()?.day;
+        let open = self.calendar.peek.open.as_ref()?;
+        let (day, fading) = (open.day, open.fading);
+        if fading.is_some_and(|since| notched::faded(since, cx)) {
+            return None;
+        }
         let (cell, viewport) = *self.calendar.peek.cells.borrow().get(&day)?;
         let items = self.year_day_items(day);
         if items.is_empty() {
@@ -248,7 +283,8 @@ impl MailWindow {
             .font_weight(FontWeight::MEDIUM)
             .text_color(rgba(th.text))
             .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
+            .relative()
+            .child(crate::widgets::hover_fade("hover-glow", Some(6.0), th))
             .child(tr!(
                 "calendar-peek-day",
                 weekday = format::weekday(date),
@@ -277,7 +313,8 @@ impl MailWindow {
                 .font_weight(FontWeight::MEDIUM)
                 .text_color(rgba(th.text_dim))
                 .cursor_pointer()
-                .hover(|s| s.bg(rgba(th.hover)))
+                .relative()
+                .child(crate::widgets::hover_fade("hover-glow", Some(6.0), th))
                 .child(tr!("calendar-more", count = more))
                 .on_click(cx.listener(move |this, _, _, cx| {
                     this.close_year_peek(cx);
@@ -295,24 +332,26 @@ impl MailWindow {
             .py(px(PAD))
             .flex()
             .flex_col()
-            .border_1()
-            .border_color(rgba(th.outline))
-            .map(|d| raised(d, th, RADIUS, 4.0))
-            .occlude()
+            .map(|d| notched::popover(d, th))
             .on_hover(
                 cx.listener(|this, hovered: &bool, _, cx| this.year_popover_hover(*hovered, cx)),
             )
-            .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
             .on_mouse_down_out(cx.listener(|this, _, _, cx| this.close_year_peek(cx)))
             .child(head)
             .children(rows)
             .children(more_row)
-            .children(notch(side, along, (WIDTH, height), th))
-            .with_animation(
-                SharedString::from(format!("year-peek-{day}")),
-                Animation::new(Duration::from_millis(140)).with_easing(ease_out_quint()),
-                |el, t| el.opacity(t),
-            );
+            .children(notch(side, along, th));
+        let popover = match fading {
+            Some(_) => notched::fading(popover, SharedString::from(format!("year-peek-out-{day}"))),
+            None => popover
+                .with_animation(
+                    SharedString::from(format!("year-peek-{day}")),
+                    Animation::new(katna_ui::motion::time(Duration::from_millis(140)))
+                        .with_easing(ease_out_quint()),
+                    |el, t| el.opacity(t),
+                )
+                .into_any_element(),
+        };
         let layer = div().relative().w(px(vw)).h(px(vh)).child(popover);
         Some(
             deferred(anchored().position(point(px(0.0), px(0.0))).child(layer))
@@ -376,7 +415,8 @@ impl MailWindow {
             .rounded(px(6.0))
             .text_size(px(13.0))
             .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
+            .relative()
+            .child(crate::widgets::hover_fade("hover-glow", Some(6.0), th))
             .child(div().flex_none().child(icon(glyph, color, 18.0)))
             .when_some(time, |d, time| {
                 d.child(

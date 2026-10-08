@@ -53,7 +53,7 @@ calendar-account-signed-in = { $address } hesabında yeniden oturum açıldı. T
 calendar-account-sign-in-refused = { $provider }, Katna'nın girişine izin vermedi. Tekrar deneyin ve takvimlerinize erişime izin verin.
 calendar-account-refused = Sunucu parolayı kabul etmedi. Yahoo, iCloud, Zoho ve diğerleri bir uygulama parolası gerektirir.
 calendar-account-change-password = Parolayı değiştir
-calendar-account-change-password-tooltip = Ayarlar > Hesaplar'ı aç
+calendar-account-change-password-tooltip = Yeni parolayı yazın; Katna onu sunucuyla denetler
 calendar-account-not-enabled = Katna için takvim erişimi henüz açılmadı.
 calendar-account-failed = Takvimler okunamadı.
 calendar-account-error = Takvimler okunamadı: { $reason }
@@ -69,6 +69,7 @@ calendar-account-try-again = Tekrar dene
 calendar-account-try-again-tooltip = Bu hesabın takvimlerini şimdi yeniden denetle
 calendar-account-fixing = Üzerinde çalışılıyor…
 calendar-birthdays = Doğum günleri
+calendar-tasks = Görevler
 calendar-birthday-of = { $name } doğum günü
 calendar-empty-title = Henüz takvim yok
 calendar-empty-text = Katna, Google ve Microsoft hesaplarınızın takvimlerini eşitlendikten sonra, ayrıca CalDAV sunan diğer sunucuların takvimlerini burada gösterir.
@@ -127,6 +128,7 @@ calendar-event-details = Etkinlik ayrıntıları
 # Right-click menus on the calendar: on a free time or day, an event and
 # a task.
 calendar-menu-new-event = Yeni etkinlik
+calendar-event-window-title = Yeni etkinlik
 # Shows the day right-clicked on its own, in the Day view.
 calendar-menu-open-day = Günü aç
 calendar-menu-duplicate = Çoğalt

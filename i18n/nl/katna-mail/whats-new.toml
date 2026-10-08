@@ -3146,3 +3146,1342 @@ Elk tabblad van Instellingen heeft dezelfde dunne schuifbalk als een
 geopende e-mail en Bestanden: hij verschijnt terwijl je scrolt of de
 aanwijzer boven de pagina houdt, en je kunt hem verslepen.
 """
+
+["2026-10-02-1248-account-colors"]
+title = "Een kleur voor elk account"
+text = """
+Kies een kleur voor elk account in Instellingen > Accounts, of klik met de
+rechtermuisknop op het account in het mappenpaneel: een van zeven, of
+elke kleur uit het regenboogwiel erachter. De stip naast elke afzender in
+de gecombineerde inbox en de ring om de afbeelding van het account nemen
+die kleur aan, en als je de aanwijzer boven de stip houdt, zie je de naam
+van het account. Elk account begint met een eigen kleur, nooit een van
+die van de inboxtabbladen.
+"""
+
+["2026-10-02-1340-colors-button-mail-only"]
+title = "Knop Originele kleuren tonen alleen waar die helpt"
+text = """
+In een donker thema schuift de knop die een e-mail in zijn eigen kleuren
+toont nu weg zolang een gesprek als chat wordt getoond, en schuift hij
+terug in E-mail.
+"""
+
+["2026-10-02-1340-logo-and-custom-accent"]
+title = "Het logo neemt je kleuren aan, en elk accent dat je wilt"
+text = """
+Het Katna-logo in het venster draagt nu je accentkleur, in licht en in
+donker. En Instellingen > Weergave > Accent eindigt nu met een kleurenwiel:
+klik erop om elk accent te kiezen dat je wilt.
+"""
+
+["2026-10-02-1358-empty-reply-no-draft"]
+title = "Lege antwoorden laten geen concept achter"
+text = """
+Een antwoord waarin je hebt geklikt maar nooit hebt geschreven, in het
+chatvak of onder een e-mail, sluit nu gewoon als je het verlaat. Het
+bewaart geen concept en komt niet terug als je wisselt tussen Chat en
+E-mail.
+"""
+
+["2026-10-02-1400-folder-right-click-selects"]
+title = "Rechtsklikken opent de map"
+text = """
+Met de rechtermuisknop op een map in het mappenpaneel klikken selecteert
+en opent die map nu voordat het menu verschijnt, zodat het menu duidelijk
+werkt op de map die je ziet.
+"""
+
+["2026-10-02-1405-viewer-arrows-hover"]
+title = "Pijlen in de viewer blijven zichtbaar"
+text = """
+De pijlen aan de zijkanten van de bijlageviewer vervagen niet meer tot
+bijna wit als je de aanwijzer erboven houdt. Ze worden in plaats daarvan
+een tint lichter grijs, zodat ze goed zichtbaar blijven boven een witte
+pagina.
+"""
+
+["2026-10-02-1432-account-colour-button"]
+title = "Eén kleurknop per account"
+text = """
+Elk account toont nu alleen zijn eigen kleur, op een knop Kleur in
+Instellingen > Accounts en in het rechtsklikmenu van het account. Klik
+erop om een van acht kleuren of een eigen kleur te kiezen, precies waar je
+klikte.
+"""
+
+["2026-10-02-1443-reply-at-the-end"]
+title = "Je antwoord blijft aan het einde"
+text = """
+Een antwoord staat nu altijd aan het einde van het gesprek, ook als de
+nieuwste e-mail bovenaan staat. Als je van Chat naar E-mail wisselt, scrolt
+het ernaartoe, met de cursor waar je die liet.
+"""
+
+["2026-10-02-1451-card-shows-signer"]
+title = "De kaart toont wie de open e-mail heeft ondertekend"
+text = """
+De contactkaart leest nu de handtekening van de e-mail die je open hebt,
+niet alleen van de nieuwste. Als een collega e-mail ondertekent vanaf een
+gedeeld adres zoals accounts@, toont de kaart zijn of haar naam, functie,
+telefoonnummer en het adres van het bedrijf uit die e-mail.
+"""
+
+["2026-10-02-1510-search-click-away"]
+title = "Klik ergens om het zoekvak te verlaten"
+text = """
+Klikken op de lege ruimte in de bovenste balk, naast het zoekvak, haalt
+je nu uit het vak, net als klikken op de e-maillijst. Je zoekopdracht
+blijft zoals hij is.
+"""
+
+["2026-10-02-1515-empty-message-no-draft"]
+title = "Geen lege concepten"
+text = """
+Een nieuw bericht dat je weer hebt leeggemaakt voordat je het sloot,
+blijft niet meer in Concepten staan, net als een leeg antwoord in een
+gesprek.
+"""
+
+["2026-10-02-1513-dark-pages"]
+title = "Donkere pagina's in de viewer"
+text = """
+In de donkere modus heeft de bijlageviewer een knop met een halve maan die
+felle pdf's, documenten, dia's, spreadsheets en tekstbestanden donker
+toont. Kleuren behouden hun tint, foto's op een pagina worden gedimd in
+plaats van negatieven, en gescand papier wordt donker net als tekst. Katna
+onthoudt je keuze voor het volgende bestand.
+"""
+
+["2026-10-02-1522-window-corners"]
+title = "Kies de hoeken en rand van je venster"
+text = """
+Met Katna's eigen titelbalk heeft Instellingen > Experimenteel nu een
+schuifregelaar Afronding van hoeken, van vierkant tot rond, en een schakelaar
+Rand met een eigen dekking. Met Eigen mate van vervaging aan bepaalt de
+schuifregelaar Dekking nu ook hoeveel een vervaagde vensterachtergrond
+doorlaat.
+"""
+
+["2026-10-02-1535-ctrl-shift-click-select"]
+title = "E-mails selecteren met Ctrl en Shift"
+text = """
+Ctrl+klik op een e-mail in de lijst om hem te selecteren, en Ctrl+klik op
+meer om ze toe te voegen. Shift+klik selecteert elke e-mail vanaf de
+laatste waarop je klikte. Om een e-mail in een eigen venster te openen,
+klik je er met de rechtermuisknop op en kies je Openen in nieuw venster.
+"""
+
+["2026-10-02-1610-frosted-panes"]
+title = "Matglazen panelen, chat en zoeken"
+text = """
+Met De vensterachtergrond vervagen aan laten de e-maillijst, de geopende
+e-mail en de contactkaart de vervaging nu ook door, met een
+schuifregelaar Dekking van panelen. De ruimte achter de bubbels van een
+chat toont er wat meer van, en het zoekvak blijft matglas terwijl je
+typt. Elk heeft een eigen schakelaar in Instellingen > Experimenteel.
+"""
+
+["2026-10-02-1618-fainter-hints"]
+title = "Zwakkere hints in lege vakken"
+text = """
+De grijze hint in een leeg vak, zoals „Antwoord aan…” onder een chat of
+„Zoeken in e-mail”, is nu zwakker, zodat hij nooit lijkt op tekst die je
+hebt getypt.
+"""
+
+["2026-10-02-1642-drag-from-empty-space"]
+title = "Verplaats het venster vanuit lege ruimte"
+text = """
+Op Linux kun je het venster nu verplaatsen door een lege plek te slepen
+in de linkerbalk, de mappen of de balk boven je e-mail, niet alleen in de
+bovenste balk.
+"""
+
+["2026-10-02-1643-space-folds-folders"]
+title = "Spatie klapt mappen in"
+text = """
+Klik op een map met mappen erin en druk op Spatie om hem te openen of in
+te klappen, net als klikken op het pijltje. Na een klik bewegen de
+pijltjestoetsen ook door het mappenpaneel, en Tab gaat door naar de
+e-maillijst.
+"""
+
+["2026-10-02-1646-viewer-more-menu"]
+title = "Knoppen van de viewer passen in smalle vensters"
+text = """
+In een smal venster blijven de knoppen onderaan de bijlageviewer nu
+binnen de viewer. Knoppen die niet passen, verhuizen naar een menu ⋮ Meer:
+eerst draaien, dan Passend maken, dan Donkere pagina’s. Het paginanummer
+en de zoom blijven het langst in beeld.
+"""
+
+["2026-10-02-1743-activity-report-fits"]
+title = "Activiteitenrapport past in het venster"
+text = """
+Het Activiteitenrapport blijft nu binnen het venster met gelijke marges,
+en scrolt als het venster laag is, zodat de laatste rijen nooit worden
+afgesneden.
+"""
+
+["2026-10-02-1846-folders-and-labels"]
+title = "Mappen hernoemen, verwijderen en ernaartoe slepen"
+text = """
+Klik met de rechtermuisknop op een map die je hebt gemaakt om hem te
+hernoemen of te verwijderen; verwijderen verplaatst de e-mail erin eerst
+naar de Prullenbak. Sleep e-mail uit de lijst naar een map om hem daarheen
+te verplaatsen. Verplaatsen naar heeft een zoekvak: typ om een map te
+vinden, of om een nieuwe te maken en de e-mail erin te verplaatsen. Bij
+Gmail zet Labelen als labels op e-mail en haalt ze er weer af, en e-mail
+op een label neerzetten voegt dat label toe.
+"""
+
+["2026-10-02-1928-mail-rules"]
+title = "E-mailregels"
+text = """
+Regels sorteren nieuwe e-mail vanzelf: op afzender, onderwerp of woorden
+verplaatsen, labelen, markeren met een ster, doorsturen of dempen ze die.
+Maak er een in Instellingen > Mappen en regels, of klik met de
+rechtermuisknop op een e-mail en kies Regel maken…, en zie hoeveel
+recente e-mails erbij passen voordat je opslaat. Vink in Verplaatsen naar
+„E-mail van … altijd hierheen verplaatsen” aan om de e-mail van een
+afzender en zijn toekomstige e-mail met één klik te verplaatsen.
+"""
+
+["2026-10-02-2017-rules-on-the-server"]
+title = "Regels die werken terwijl je computer uit staat"
+text = """
+E-mailregels werken nu bij Gmail, of op je mailserver als die
+Sieve-regels accepteert, zodat ze ook op je telefoon e-mail sorteren en
+terwijl deze computer uit staat. Instellingen > Mappen en regels toont
+waar elke regel werkt, en waarom een regel in Katna blijft.
+"""
+
+["2026-10-03-0046-smooth-folded-tabs"]
+title = "Ingeklapte tabbladen wisselen soepel"
+text = """
+Als een smal venster de inboxtabbladen tot pictogrammen inklapt,
+verspringt wisselen van tabblad niet meer: het tabblad dat je verlaat
+krimpt terug tot zijn pictogram terwijl de naam vervaagt, en het tabblad
+dat je opent groeit terwijl de naam verschijnt.
+"""
+
+["2026-10-03-0051-read-rows-frosted"]
+title = "Gelezen e-mail is ook matglas"
+text = """
+Met matglazen panelen aan toont e-mail die je hebt gelezen nu het matglas
+achter de lijst zoals ongelezen e-mail, alleen een tint anders, in plaats
+van een effen band.
+"""
+
+["2026-10-03-0101-rounder-corners"]
+title = "Rondere vensterhoeken"
+text = """
+Afronding van hoeken in Instellingen > Experimenteel gaat nu tot 32 pixels,
+twee keer zo rond als eerst, en je kunt het getal typen in het vak naast
+de schuifregelaar.
+"""
+
+["2026-10-03-0113-viewer-round-corners"]
+title = "De viewer volgt afgeronde vensterhoeken"
+text = """
+Met Katna's eigen titelbalk en afgeronde hoeken rondt de bijlageviewer nu
+zijn onderste hoeken af zoals het venster, in plaats van vierkante grijze
+hoeken voorbij de rand van het venster te tonen.
+"""
+
+["2026-10-03-0147-chat-go-down"]
+title = "Terug naar de nieuwste e-mail"
+text = """
+Als je ver omhoog bent gescrold in een chat, verschijnt rechtsonder een
+ronde knop. Die brengt je soepel terug naar de nieuwste e-mail en telt
+de e-mails die intussen binnenkwamen.
+"""
+
+["2026-10-03-0147-chat-long-mails"]
+title = "Lange e-mails in chats"
+text = """
+Bij een lange bubbel blijft de afbeelding van de afzender onderaan wat je
+ziet, en blijven de knoppen voor beantwoorden, vastzetten en meer in het
+zichtbare deel. Klik met de rechtermuisknop op de tekst om ze allemaal te
+bereiken.
+"""
+
+["2026-10-03-0147-chat-scroll-bar"]
+title = "Een schuifbalk in chats"
+text = """
+Chats hebben dezelfde rustige schuifbalk als een geopende e-mail, zichtbaar
+zolang de aanwijzer erboven staat.
+"""
+
+["2026-10-03-0147-chat-translate"]
+title = "Vertalen in chats"
+text = """
+Een e-mail in een andere taal biedt zijn vertaling nu ook in de chat aan,
+net als in E-mail. Klik met de rechtermuisknop op een bubbel en kies
+Vertalen om hem zelf te vertalen, en nog eens om het origineel te tonen.
+"""
+
+["2026-10-03-0150-search-pill-hovers"]
+title = "Gelijke hovers in de zoekbalk op de telefoon"
+text = """
+Op een telefoon staan de mappenknop en de afbeelding van je account nu
+gecentreerd in de ronde uiteinden van de zoekbalk, en elke knop in de
+balk heeft dezelfde ronde hover, op gelijke afstand van de rand van de
+balk.
+"""
+
+["2026-10-03-0159-starter-rules"]
+title = "Startregels"
+text = """
+Instellingen > Mappen en regels biedt nu kant-en-klare regels aan,
+uitgeschakeld: promoties dempen, nieuwsbrieven naar Lezen, bonnetjes,
+bezorgingen, trein- en vliegtickets (IRCTC, Air India, IndiGo en meer),
+eenmalige codes, beveiligingsmeldingen, sociale e-mail en
+agenda-uitnodigingen. Zet er een aan en hij werkt voor al je accounts,
+en maakt waar nodig mappen zoals Reizen. Regels kunnen ook het
+inboxtabblad controleren en of e-mail van een mailinglijst kwam.
+"""
+
+["2026-10-03-0200-chat-file-hover"]
+title = "Zachtere bestandskaarten in chats"
+text = """
+Een bestand in een chatbubbel wordt niet meer donker onder de aanwijzer.
+Het komt iets omhoog met een lichte tint, en de naam blijft goed leesbaar.
+"""
+
+["2026-10-03-0210-opened-mail-stays-in-view"]
+title = "De e-mail die je opent blijft in beeld"
+text = """
+Met het leesvenster naast de lijst blijft de e-mail waarop je klikt op
+zijn plek in de lijst terwijl het venster opent, of scrolt de lijst net
+genoeg om hem helemaal te tonen. Hij verdwijnt niet meer uit beeld, of je
+hem nu uit de lijst of uit zoekresultaten opende.
+"""
+
+["2026-10-03-0212-about-header-stays"]
+title = "Over Katna houdt de kop in beeld"
+text = """
+Scrollen in Over Katna verkleint het grote logo nu tot een klein logo
+linksboven, met Katna, de slogan en de versie ernaast, en die kop blijft
+staan terwijl de rest eronder door scrolt.
+"""
+
+["2026-10-03-0221-folded-tab-icon-settles"]
+title = "Ingeklapte tabbladen komen rustig tot stilstand"
+text = """
+Als je wisselt tussen ingeklapte inboxtabbladen, komt het tabblad dat je
+verlaat nu precies tot rust waar het naartoe kromp, zonder dat het
+pictogram een pixel of twee verschuift als de beweging klaar is.
+"""
+
+["2026-10-03-0228-right-click-another-mail"]
+title = "Eén keer rechtsklikken is genoeg"
+text = """
+Als het menu van een e-mail of map open is, sluit rechtsklikken op een
+andere e-mail of map nu het open menu en opent meteen het nieuwe, in
+plaats van een tweede rechtsklik nodig te hebben.
+"""
+
+["2026-10-03-0235-rule-editor-fits"]
+title = "De regeleditor past"
+text = """
+In de regeleditor lopen lange woorden of adreslijsten door op meer regels
+in plaats van te worden afgesneden, „komt overeen met het patroon” staat
+er volledig, en de editor blijft binnen het venster en scrolt als hij veel
+voorwaarden heeft.
+"""
+
+["2026-10-03-0235-soft-button-hover"]
+title = "Zachtere hover op knoppen"
+text = """
+Wijzen naar een ronde knop laat de cirkel nu rustig groeien vanaf twee
+derde van zijn grootte en laat hem verschijnen, en pilvormige knoppen
+zoals Beantwoorden verschijnen iets langzamer. Weggaan laat de cirkel
+iets krimpen terwijl hij vervaagt.
+"""
+
+["2026-10-03-0249-account-ring"]
+title = "Een duidelijkere accountring"
+text = """
+De gekleurde ring om de afbeelding van elk account is dikker, met wat
+meer ruimte tussen de ring en de afbeelding, in de bovenste balk, het
+accountmenu en Instellingen.
+"""
+
+["2026-10-03-0335-chat-picture-steady"]
+title = "Stilstaande afbeeldingen in chats"
+text = """
+Voorbij het einde van een chat scrollen, of een chat zonder iets om te
+scrollen, laat de afbeelding van de afzender en de knoppen van de bubbel
+niet meer verspringen.
+"""
+
+["2026-10-03-0355-no-hover-while-scrolling"]
+title = "Rustiger scrollen in de e-maillijst"
+text = """
+Terwijl je door de e-maillijst scrolt, lichten e-mails die onder de
+aanwijzer door gaan niet meer op en tonen ze hun knoppen niet. Net als in
+Gmail licht de e-mail onder de aanwijzer op zodra het scrollen stopt.
+"""
+
+["2026-10-03-0541-rule-rows-drag"]
+title = "Regels slepen zoals accounts"
+text = """
+In Instellingen > Mappen en regels tilt het slepen van een regel nu de
+hele rij op, schuiven de andere regels opzij, en komt hij te staan waar
+je loslaat, net als bij het herschikken van accounts.
+"""
+
+["2026-10-03-0545-chat-go-down-aligned"]
+title = "Knop naar beneden netjes uitgelijnd"
+text = """
+In chats staat de ronde knop die je naar de nieuwste e-mail brengt nu
+recht boven de verzendknop, op dezelfde lijn.
+"""
+
+["2026-10-03-0555-bottom-corners-round"]
+title = "Afgeronde onderhoeken blijven rond"
+text = """
+Met Katna's eigen titelbalk en afgeronde hoeken tonen de onderste hoeken
+van het venster geen vierkantje achtergrond meer voorbij de afgeronde
+rand.
+"""
+
+["2026-10-03-0606-account-dot-only"]
+title = "Een rustigere e-maillijst"
+text = """
+Regels in de gecombineerde inbox tonen alleen de gekleurde stip van het
+account naast de afzender. Houd de aanwijzer boven de stip om te zien bij
+welk account de e-mail hoort.
+"""
+
+["2026-10-03-0623-windows-updates"]
+title = "Updates op Windows"
+text = """
+Katna op Windows werkt zichzelf nu bij. Het zoekt elk uur naar nieuwe
+versies, downloadt ze op de achtergrond en installeert ze als je op
+Bijwerken drukt, en opent daarna opnieuw.
+"""
+
+["2026-10-03-0643-files-wildcard-search"]
+title = "Jokertekens bij zoeken in Bestanden"
+text = """
+In Bestanden vindt zoeken op *.pdf nu elke pdf, en * en ? werken overal in
+een naam: factuur*2026* vindt elke factuur van 2026. Het werkt voor de
+bestanden in je e-mail en in Google Drive en OneDrive.
+"""
+
+["2026-10-03-0643-linux-package-updates"]
+title = "Updates voor elk Linux-pakket"
+text = """
+De AppImage en de Linux-tarball werken zichzelf nu bij, net als het
+Arch-pakket. Met het Fedora-pakket, Snap, Flatpak of Nix laat Katna je
+weten wanneer er een nieuwe versie is en toont het de ene opdracht die
+hem installeert, klaar om te kopiëren.
+"""
+
+["2026-10-03-0708-copy-codes"]
+title = "Codes kopiëren uit meldingen"
+text = """
+Een melding van nieuwe e-mail met een aanmeld- of verificatiecode heeft
+nu een knop Kopiëren ervoor, en een met een link om je adres te
+verifiëren of te bevestigen heeft een knop met de naam van de site die
+hij opent. Knoppen op meldingen laten geen stuiterend Katna-pictogram
+meer de muisaanwijzer volgen.
+"""
+
+["2026-10-03-0730-contact-card-popover"]
+title = "Contactkaart in smalle vensters"
+text = """
+Als het venster geen ruimte heeft voor het contactpaneel, opent klikken
+op de naam of afbeelding van iemand een korte kaart boven de e-mail, die
+wijst naar waar je klikte. Maak het venster breder en het volledige
+paneel neemt de plaats in.
+"""
+
+["2026-10-03-0733-compose-icon-turns"]
+title = "Het pictogram van de grote knop draait als je van pagina wisselt"
+text = """
+Wisselen tussen E-mail, Agenda, Contacten, Taken en Notities verwisselt
+het pictogram op de grote knop bovenaan de linkerbalk niet meer in één
+sprong. Het oude pictogram draait weg en krimpt terwijl het nieuwe
+indraait, ook op de knop van een telefoon.
+"""
+
+["2026-10-03-0746-sound-sets"]
+title = "Sets met meldingsgeluiden"
+text = """
+Instellingen > Meldingen heeft nu sets met geluiden: Vogels, Natuur,
+Dieren, Insecten, Elektronisch, Ochtend, Katna's belletjes, of die van je
+eigen bureaublad. Nieuwe e-mail zingt als een roodborstje, tenzij je een
+andere set kiest. Elke gebeurtenis kan ook een eigen geluid hebben, of een
+geluidsbestand dat je kiest.
+"""
+
+["2026-10-03-0750-chat-seen-ticks"]
+title = "Wie je e-mail zag, in chats"
+text = """
+In de chatweergave worden de vinkjes bij e-mail die je met tracking hebt
+verstuurd gekleurd zodra iemand hem opent. Ernaast telt een klein oog de
+keren dat hij is geopend en een link de gevolgde links. Laat de aanwijzer
+erop rusten om te zien wie hem opende of een link volgde, zoals het oog
+in de e-mailweergave toont.
+"""
+
+["2026-10-03-0834-drawer-edge-clean"]
+title = "Geen lijn naast de inschuivende mappen"
+text = """
+Op een telefoon of tablet komen de mappen die vanuit het menu inschuiven
+nu tot rust tegen de rand, zonder dat er een dunne lijn naast oplicht
+terwijl ze op hun plek vallen.
+"""
+
+["2026-10-03-0845-chat-summary-button-hides"]
+title = "De samenvattingsknop verbergt hem weer"
+text = """
+In de chatweergave verbergt de fonkeling bovenaan nu de samenvatting als
+die zichtbaar is, en toont hem weer bij de volgende klik, net als in de
+e-mailweergave.
+"""
+
+["2026-10-03-0915-big-button-glides"]
+title = "De grote knop glijdt tussen pagina's"
+text = """
+Als de mappen open zijn, springt de grote knop bovenaan bij het wisselen
+van pagina niet meer naar zijn nieuwe breedte en verwisselt hij zijn
+woord niet meer in één sprong. De knop gaat soepel naar zijn nieuwe
+breedte terwijl het oude woord omhoog vervaagt en het nieuwe opkomt,
+samen met het draaiende pictogram.
+"""
+
+["2026-10-03-0945-flat-row-hover"]
+title = "Een scherpere hover in de e-maillijst"
+text = """
+De regel onder de aanwijzer komt niet meer omhoog met een zachte schaduw.
+Hij krijgt in plaats daarvan een vlakke, iets sterkere tint, zodat de
+randen scherp blijven in licht en donker.
+"""
+
+["2026-10-03-0959-drawer-bounce-back"]
+title = "Mappen schuiven in met hun vering, met een schone rand"
+text = """
+Op een telefoon of tablet hebben de mappen die vanuit het menu inschuiven
+hun kleine vering terug, en ligt er geen schaduw langs hun rand naast de
+zijbalk.
+"""
+
+["2026-10-03-1030-crisp-card-edges"]
+title = "Scherpere kaartranden in lichte kleuren"
+text = """
+In lichte kleuren hebben de e-maillijst, de geopende e-mail en de andere
+kaarten nu een fijne, scherpe rand en een heel korte schaduw in plaats van
+een zachte vervaging, zodat ze net zo scherp afsteken tegen de pagina als
+in donkere kleuren.
+"""
+
+["2026-10-03-1206-matching-choice-chips"]
+title = "Keuzechips die bij elkaar passen"
+text = """
+De keuzes in Zoekopties, Activiteit, Schrijven met AI en de adresboeken
+van een contact zijn nu één soort chip: overal even groot, met een
+vinkje bij de gekozen chip.
+"""
+
+["2026-10-03-1453-summary-folds-smoothly"]
+title = "Een samenvatting die soepel inklapt"
+text = """
+Het in- of uitklappen van de samenvatting van een gesprek glijdt nu naar
+de nieuwe hoogte, en het pijltje draait mee in plaats van te verspringen.
+"""
+
+["2026-10-03-1523-animation-speed"]
+title = "Kies hoe snel dingen bewegen"
+text = """
+Instellingen > Weergave heeft een Animatiesnelheid: volg de snelheid van
+het bureaublad, of kies die van Katna zelf, van Sneller tot Langzamer.
+Beweging beperken volgt ook het bureaublad, of kan altijd of nooit aan
+staan.
+"""
+
+["2026-10-03-1536-paste-signature-html"]
+title = "De HTML van een handtekening plakken"
+text = """
+Instellingen > Opstellen > Handtekeningen heeft HTML plakken, voor een
+handtekening die is ontworpen op een handtekeningwebsite of in een andere
+mailapp. Hij wordt opgeschoond, de afbeeldingen worden gedownload en in de
+e-mail meegestuurd, en het opstelvenster toont hem precies zoals hij
+wordt verzonden.
+"""
+
+["2026-10-03-1546-whats-new-header-stays"]
+title = "Wat is er nieuw houdt de kop in beeld"
+text = """
+Scrollen in Wat is er nieuw beweegt nu alleen de hoogtepunten: de kop
+blijft bovenaan en Begrepen blijft onderaan.
+"""
+
+["2026-10-03-1611-menus-fade-out"]
+title = "Menu's vervagen"
+text = """
+Een rechtsklikmenu vervaagt nu als het sluit, in plaats van te
+verdwijnen.
+"""
+
+["2026-10-03-1625-list-stays-put"]
+title = "De e-maillijst blijft staan als je een e-mail opent"
+text = """
+Een e-mail openen duwt de lijst niet meer een regel omlaag in mappen waar
+sommige e-mails bijlagen tonen. De lijst blijft precies waar je hem hebt
+neergescrold.
+"""
+
+["2026-10-03-1628-drawer-top-clean"]
+title = "Geen schaduwlijn boven de inschuivende mappen"
+text = """
+Op een telefoon of tablet hebben de mappen die vanuit het menu inschuiven
+geen dunne schaduwlijn meer langs de bovenkant, onder de zoekbalk.
+"""
+
+["2026-10-03-1631-toolbar-menus-fade-out"]
+title = "Ook menu's van de werkbalk vervagen"
+text = """
+De menu's onder de knoppen van de werkbalk, zoals Meer en het
+selectievak, vervagen als ze sluiten in plaats van te verdwijnen.
+"""
+
+["2026-10-03-1632-settings-by-app"]
+title = "Instellingen per app"
+text = """
+Instellingen heeft nu een lijst met pagina's aan de zijkant: Alle apps
+voor wat elke app deelt, daarna E-mail, Agenda en Bestanden voor hun eigen
+instellingen, met de pagina's van E-mail eronder uitklapbaar. Instellingen
+opent bij de app waarin je bent, en Agenda heeft daar zijn eerste
+instellingen.
+"""
+
+["2026-10-03-1650-popovers-fade-out"]
+title = "Pop-ups vervagen"
+text = """
+De kleine kaarten die wijzen naar waar ze bij horen, zoals de
+contactkaart, wie een e-mail heeft gezien, een dag in de jaarweergave,
+eigen zoekdatums en de kleurkiezer, vervagen als ze sluiten in plaats van
+te verdwijnen.
+"""
+
+["2026-10-03-1711-ring-centred"]
+title = "Accountringen zitten gelijkmatig"
+text = """
+De gekleurde ring om je accountafbeelding heeft nu aan elke kant dezelfde
+ruimte, bij elke schaal, in plaats van dat één kant een pixel dikker
+lijkt.
+"""
+
+["2026-10-03-1717-signature-pictures"]
+title = "Afbeeldingen in handtekeningen laden weer"
+text = """
+Afbeeldingen van het web, zoals de logo's in Gmail-handtekeningen, laden
+nu op netwerken die de verbinding met Google vroeg verbreken, in plaats
+van een leeg vak te blijven.
+"""
+
+["2026-10-03-1723-import-signatures"]
+title = "Haal je handtekeningen binnen"
+text = """
+Instellingen > Opstellen > Handtekeningen > Importeren vindt de
+handtekeningen in Gmail, en in Thunderbird, Evolution en KMail op deze
+computer, met hun logo's. Vink aan welke je wilt; handtekeningen die al
+in Katna staan, blijven uitgevinkt.
+"""
+
+["2026-10-03-1750-hover-folders-clean"]
+title = "Schone randen bij mappen die vanuit Opstellen openen"
+text = """
+In een venster ter grootte van een tablet tonen de mappen die openen als
+je de aanwijzer op Opstellen laat rusten geen dunne lijnen meer langs hun
+boven- en linkerrand.
+"""
+
+["2026-10-03-1757-chat-links"]
+title = "Links openen vanuit chats"
+text = """
+In de chatweergave openen de links van een e-mail met een klik, net als
+in de e-mailweergave: de eigen links van de e-mail, en web- en
+e-mailadressen die uitgeschreven in de tekst staan. Houd de aanwijzer
+erboven om te zien waar hij naartoe gaat. Platte-tekstmail in de
+e-mailweergave opent uitgeschreven adressen nu ook.
+"""
+
+["2026-10-03-1811-folds-glide"]
+title = "Agendagroepen klappen soepel in"
+text = """
+De agenda's van een account in de zijkolom van Agenda schuiven nu soepel
+open en dicht, en de kleine pijltjes bij dingen die inklappen (Meer op de
+contactkaart, de personen in een chat, de accounts in Activiteit, de kern
+van een AI-antwoord) draaien in plaats van om te klappen.
+"""
+
+["2026-10-03-1844-signature-layouts"]
+title = "Handtekeningen uit twaalf ontwerpen"
+text = """
+Instellingen > Opstellen > Handtekeningen heeft nu twaalf kant-en-klare
+ontwerpen. Vul één keer je naam, nummers, logo, foto en pagina's in, kies
+een ontwerp en een kleur, en zie het zoals de lezer het ziet: licht,
+donker of als platte tekst. Afbeeldingen reizen mee in de e-mail, dus ze
+zijn overal te zien.
+"""
+
+["2026-10-03-1850-copy-about-whats-new"]
+title = "Kopiëren uit Over Katna en Wat is er nieuw"
+text = """
+De tekst in Over Katna en Wat is er nieuw kun je nu selecteren en
+kopiëren, zoals in een browser: sleep eroverheen, dubbelklik op een woord
+of klik drie keer op een alinea, en druk dan op Ctrl+C of kies
+rechtsklik > Kopiëren. De versie is handig om in een bugmelding te
+plakken.
+"""
+
+["2026-10-03-1904-copy-version"]
+title = "De versie kopiëren met één klik"
+text = """
+Houd de aanwijzer boven de versie in Over Katna, Wat is er nieuw of
+Instellingen en er verschijnt een kleine kopieerknop naast. Die kopieert
+de versie, wanneer hij is gebouwd en je systeem, klaar om in een
+bugmelding te plakken.
+"""
+
+["2026-10-03-1924-settings-in-window"]
+title = "Instellingen weer naast je e-mail"
+text = """
+Instellingen opent weer in het hoofdvenster, op de plek van de pagina
+waar je was, met de lijst van pagina's gegroepeerd in Alle apps en per
+app.
+"""
+
+["2026-10-03-1934-copy-any-text"]
+title = "Overal tekst kopiëren"
+text = """
+Tekst die je iets vertelt, kun je nu overal in Katna selecteren en
+kopiëren: namen en beschrijvingen van instellingen, gegevens van
+contacten en afspraken, de status van accounts, foutmeldingen, teksten op
+lege pagina's en dialoogvensters. Sleep eroverheen of dubbelklik op een
+woord, en druk dan op Ctrl+C of kies rechtsklik > Kopiëren. Knoppen en
+regels waarop je klikt, blijven zoals ze waren.
+"""
+
+["2026-10-03-2011-calendar-tasks-switch-month-drag"]
+title = "Taken in Agenda: tonen of verbergen, slepen in Maand"
+text = """
+De zijlijst van Agenda heeft een vakje Taken onder je agenda's: vink het
+uit en taken verdwijnen uit Dag, Week, Maand en Agenda totdat je het weer
+aanvinkt. In de weergave Maand kun je een taak nu naar een andere dag
+slepen; hij houdt zijn tijd, en Ongedaan maken zet hem terug.
+"""
+
+["2026-10-03-2023-tasks-upcoming-completed-sort-select"]
+title = "Binnenkort, Voltooid, sorteren en selecteren in Taken"
+text = """
+Taken heeft twee nieuwe weergaven. Binnenkort toont de komende twee weken
+per dag, met achterstallige taken bovenaan; sleep een taak naar een
+andere dag om hem te verplaatsen. Voltooid toont alles wat je hebt
+afgevinkt, per dag, en een taak uitvinken brengt hem terug. Het ⋮-menu
+van elke lijst sorteert op datum, ster of titel. Ctrl+klik of Shift+klik
+op meerdere taken om ze in één keer te voltooien, te verplaatsen, een
+datum te geven, een ster te geven of te verwijderen.
+"""
+
+["2026-10-03-2040-task-labels-and-files"]
+title = "Labels en bestanden bij taken"
+text = """
+Taken krijgen dezelfde labels als je notities: voeg ze toe in de details
+van een taak of typ #thuis in een nieuwe taak, en kies links een label om
+elke taak ermee te zien. Zet een bestand op een taak neer om het bij te
+voegen, en Toevoegen aan Taken houdt de bijlagen van de e-mail. De ster,
+labels en bestanden gaan naar Microsoft To Do en je CalDAV-server, en de
+ster naar Zoho.
+"""
+
+["2026-10-03-2102-notes-pictures-reminders-history"]
+title = "Notities: afbeeldingen, herinneringen en geschiedenis"
+text = """
+Notities kunnen afbeeldingen bevatten, herinneren je op een tijd die je
+kiest en bewaren 30 dagen geschiedenis die je kunt terugzetten. Ctrl+klik
+op meerdere notities om ze samen vast te zetten, een kleur of label te
+geven of te archiveren, typ [[ om een notitie aan een andere te koppelen,
+en voeg citaten, code en scheidingslijnen toe. Verstuur een notitie als
+e-mail of sla hem op als Markdown of PDF, en met AI aan ruimt het
+sterretje hem op, maakt er een lijst van of vat hem samen.
+"""
+
+["2026-10-03-2102-quick-capture"]
+title = "Leg overal een gedachte vast"
+text = """
+Meta+Alt+T opent een kleine kaart boven waar je ook mee bezig bent om een
+taak toe te voegen, en Meta+Alt+N om een notitie te maken. Typ
+„Loodgieter bellen vr 18u #thuis” en chips tonen de dag, het label, de
+lijst en de herinnering die het begreep; klik op een chip om hem te
+wijzigen. Tab wisselt tussen Taak en Notitie, Enter slaat op. Het staat
+ook in het menu van het systeemvak, en in KRunner als task: en note:.
+"""
+
+["2026-10-04-0102-soft-hovers"]
+title = "Zachtere hovers"
+text = """
+Als je de aanwijzer boven de appbalk, het selectievak, een tabblad en
+veel andere knoppen houdt, vervaagt hun markering nu in en uit in plaats
+van ineens aan te gaan.
+"""
+
+["2026-10-04-0119-cards-lift"]
+title = "Kaarten die oprijzen"
+text = """
+Bestanden, bijlagen, Drive-mappen, uitnodigingen, samenvattingen, het
+antwoordvak en de e-maildiensten in Account toevoegen zijn nu kaarten met
+dezelfde zachte rand en schaduw als de rest van Katna, in plaats van een
+platte omlijning.
+"""
+
+["2026-10-04-0119-notes-select-bar-matches"]
+title = "Notities: zachtere kaarten die bewegen"
+text = """
+Notities gebruikt nu dezelfde kaarten, chips en balken als de rest van
+Katna. Kaarten rusten op een zachte schaduw en komen zacht omhoog onder
+de aanwijzer, nieuwe notities verschijnen geleidelijk, verwijderde
+vervagen, en een notitie opent en sluit met een korte zoom. De balk
+waarmee je notities selecteert, heeft dezelfde ronde vorm als „Notitie
+maken”, zodat alleen de inhoud verandert. Dit alles volgt Beweging
+beperken en Animatiesnelheid.
+"""
+
+["2026-10-04-0128-header-labels"]
+title = "Elk label op een geopende e-mail"
+text = """
+Een geopende e-mail toont nu al zijn chips onder het onderwerp, zoals
+Gmail: Inbox, Belangrijk, zijn inboxtabblad, Met ster, en elke map of
+elk label waarin hij staat. Wijs er een aan om hem te verwijderen met
+zijn ×, met Ongedaan maken.
+"""
+
+["2026-10-04-0150-settings-own-list"]
+title = "Instellingen heeft het venster voor zich alleen"
+text = """
+Zolang Instellingen open is, klappen de mappen weg, zodat je alleen de
+eigen lijst van pagina's van Instellingen ziet naast de pagina die je
+koos. Ze komen terug als je Instellingen verlaat.
+"""
+
+["2026-10-04-0154-summary-pill"]
+title = "Een rustigere samenvattingsknop, en een kop die blijft staan"
+text = """
+In de chatweergave staat het samenvattingssterretje nu in een eigen
+kleine grijze pil naast de schakelaar Chat en E-mail, en wordt het wit
+zolang de samenvatting te zien is. De samenvatting schuift soepel open en
+dicht in plaats van ineens te verschijnen. In zowel de e-mail- als de
+chatweergave blijft de kop nu bovenaan terwijl de e-mails eronder
+scrollen, en de regels van de e-maillijst schuiven op dezelfde manier
+onder de bovenbalk, van matglas als Vervaging aan staat. Instellingen >
+Experimenteel heeft een schakelaar Koppen van matglas om ze ondoorzichtig
+te houden.
+"""
+
+["2026-10-04-0204-tasks-motion"]
+title = "Taken die bewegen"
+text = """
+Een taak afvinken vult het rondje, streept de titel door en klapt de
+regel weg. Nieuwe en verwijderde taken schuiven in en uit beeld,
+verplaatste glijden naar hun plek, en de lijstkaarten komen een beetje
+omhoog als je ze aanwijst.
+"""
+
+["2026-10-04-0225-shortcuts-dialog"]
+title = "Sneltoetsen in één oogopslag"
+text = """
+Help > Sneltoetsen, of de toets ?, toont nu elke sneltoets in een klein
+venster boven je e-mail, met een vak om er een te zoeken. Toetsen wijzig
+je nog steeds in Instellingen > Sneltoetsen.
+"""
+
+["2026-10-04-0305-unified-leave-out"]
+title = "Een inbox weglaten uit Alle accounts"
+text = """
+Klik met de rechtermuisknop op de inbox van een account onder Alle
+accounts en kies Weglaten uit gecombineerde inbox: de e-mail ervan vult
+de gecombineerde inbox niet meer, maar de regel blijft staan en opent die
+inbox. Klik op het oogje om hem terug te halen. In Instellingen > Inbox
+kun je ook een heel account uit Alle accounts halen.
+"""
+
+["2026-10-04-0310-leave-account-out"]
+title = "Een account weglaten uit een app"
+text = """
+Instellingen heeft nu een pagina voor Contacten, Taken en Notities, en
+elk daarvan en Bestanden toont je accounts met een schakelaar. Zet er een
+uit om dat account uit de app te laten, en de herinneringen ervan blijven
+stil. De items blijven synchroniseren, dus ze zijn terug zodra je het
+weer aanzet.
+"""
+
+["2026-10-04-0320-calendar-leave-account-out"]
+title = "Een account weglaten uit Agenda"
+text = """
+Instellingen > Agenda toont je accounts ook met een schakelaar. Zet er
+een uit en de agenda's, afspraken en taken ervan verdwijnen uit Agenda,
+en de afspraken herinneren je niet meer. Het account blijft
+synchroniseren, dus het is terug zodra je het aanzet.
+"""
+
+["2026-10-04-0327-contact-card-points-right"]
+title = "Contactkaarten openen waar je klikte"
+text = """
+In een smal venster wijst de contactkaart die opent vanuit de naam of
+afbeelding van iemand nu precies daarnaar, in de chatweergave en in de
+e-mailweergave, en opent ook de eerste keer soepel: Katna begint de
+gegevens van de persoon te lezen zodra de aanwijzer erboven blijft
+hangen. Nog een klik op dezelfde naam of afbeelding sluit de kaart.
+"""
+
+["2026-10-04-0336-files-card-corners"]
+title = "Rustigere bestandskaarten"
+text = """
+Bestandskaarten in Bestanden en onder een e-mail rusten nu op een zachte
+schaduw en komen een beetje omhoog als je er een aanwijst. Het voorbeeld
+blijft zoals het is: de grootte van het bestand verschijnt linksboven en
+de knoppen rechtsboven, op matglas, zodat er niets verspringt.
+"""
+
+["2026-10-04-0345-pane-tops-whole"]
+title = "Bovenkanten van panelen niet meer afgekapt"
+text = """
+Met de eigen titelbalk van Katna zijn de bovenrand en de zachte schaduw
+van de e-maillijst, de geopende e-mail en de zijpanelen nu helemaal te
+zien als het venster niet gemaximaliseerd is, in plaats van recht
+afgesneden onder de bovenbalk.
+"""
+
+["2026-10-04-0354-account-offline"]
+title = "Een account offline zetten"
+text = """
+Klik met de rechtermuisknop op een account en kies Offline gaan, als je
+wilt voor een uur of tot morgen. Katna maakt er geen verbinding meer mee,
+en een doorgestreept wolkje staat naast het aantal en op je afbeelding.
+De e-mail blijft hier om te lezen, en wat je intussen archiveert,
+verwijdert of verstuurt, gaat de deur uit als je op het wolkje klikt om
+online te gaan. Instellingen > Accounts heeft een schakelaar Verbonden
+voor elk account, en de accountkaart kan alle accounts tegelijk offline
+zetten.
+"""
+
+["2026-10-04-0420-resize-steady"]
+title = "Rustig tijdens het vergroten of verkleinen"
+text = """
+Met de eigen titelbalk van Katna op Wayland blijft de inhoud van het
+venster stil staan terwijl je een rand versleept om het te vergroten of
+verkleinen, in plaats van te trillen.
+"""
+
+["2026-10-04-0531-turn-apps-off"]
+title = "Zet de apps uit die je niet gebruikt"
+text = """
+Instellingen › Apps heeft een schakelaar voor Agenda, Contacten, Taken,
+Notities en Bestanden, en met de rechtermuisknop op een app in de
+appbalk krijg je Uitzetten. Een uitgezette app verdwijnt uit de appbalk
+en uit de sneltoetsen, en er verandert niets aan je accounts. Met alleen
+E-mail aan verdwijnt de appbalk en is Katna gewoon een e-mailapp.
+"""
+
+["2026-10-04-0635-remove-app-copy"]
+title = "Maak de ruimte vrij van een app die je uitzette"
+text = """
+Als je een app uitzet in Instellingen › Apps, biedt Katna nu aan om de
+kopie op deze computer te verwijderen. Er verandert niets aan je
+accounts, en de app weer aanzetten downloadt hem opnieuw. Nieuwe accounts
+vragen alleen om wat de apps die je gebruikt nodig hebben.
+"""
+
+["2026-10-04-1100-account-problems"]
+title = "Accountproblemen op één plek zien en oplossen"
+text = """
+Als een account je nodig heeft, zegt een regel bovenaan de e-maillijst in
+gewone woorden wat er is gebeurd, met de oplossing ernaast. Een gewijzigd
+wachtwoord opent een kleine kaart waarin je het nieuwe typt, en Katna
+controleert het voordat het wordt bewaard. Een oranje teken markeert het
+account ook in het mappenpaneel en op je afbeelding. Als je verbinding
+wegvalt, zegt één rustige regel dat je offline bent en dat e-mail die je
+verstuurt wacht tot je weer online bent.
+"""
+
+["2026-10-04-1110-contact-card-placeholder"]
+title = "Contactkaarten openen in één keer"
+text = """
+Als de gegevens van iemand even nodig hebben om te laden, opent de
+contactkaart boven een naam of afbeelding nu op zijn gewone grootte met
+vage lijnen waar de gegevens komen, vult ze daarna in en past zich
+soepel aan, in plaats van klein te openen en ineens hoger te springen.
+"""
+
+["2026-10-04-1144-account-problems-settings"]
+title = "Accountproblemen ook in Instellingen"
+text = """
+Instellingen › Accounts zegt nu onder de naam van een account wat er mis
+mee is, zoals een geweigerd wachtwoord, met de oplossing er meteen bij.
+"""
+
+["2026-10-04-1147-subject-scrolls-again"]
+title = "Het onderwerp scrolt weer mee met de e-mail"
+text = """
+In de e-mailweergave scrolt het onderwerp weer weg met de e-mails, onder
+een gewone werkbalk. In de chatweergave hoort de werkbalk bij de
+vastgezette kop, zodat de bubbels onder allebei door schuiven, van
+matglas als Vervaging aan staat. De bovenbalk van de e-maillijst houdt nu
+de ronde hoeken van de kaart, en met Koppen van matglas uit schijnen de
+regels er niet meer doorheen. In een venster zo groot als een telefoon
+zijn de onderste hoeken ook rond.
+"""
+
+["2026-10-04-1223-outbox"]
+title = "Een Postvak UIT voor e-mail die niet is verstuurd"
+text = """
+E-mail die niet kon worden verstuurd, wacht nu in een Postvak UIT onder
+Verzonden, dat alleen te zien is zolang er iets in staat. Elk bericht
+zegt in gewone woorden waarom, met Opnieuw proberen, Bewerken en
+Verwijderen. E-mail die je verstuurt terwijl het wachtwoord van een
+account is gewijzigd of de aanmelding is verlopen, wacht daar en gaat de
+deur uit zodra je het oplost, in plaats van te mislukken.
+"""
+
+["2026-10-04-1246-refused-changes"]
+title = "Wijzigingen die de server weigerde, worden niet meer stil teruggedraaid"
+text = """
+Als een mailserver een wijziging blijft weigeren, zoals een bericht
+verplaatsen naar een map die elders is verwijderd, zet Katna het terug
+zoals het was en zegt dat nu in gewone woorden, met Details voor het
+eigen antwoord van de server.
+"""
+
+["2026-10-04-1250-phone-scroll-steady"]
+title = "Rustige lijst in een venster zo groot als een telefoon"
+text = """
+Snel scrollen door de e-maillijst in een venster zo groot als een
+telefoon laat de lijst niet meer op en neer trillen terwijl de tabbladen
+wegschuiven.
+"""
+
+["2026-10-04-1309-needs-you-notifications"]
+title = "Eén melding als een account of bericht je nodig heeft"
+text = """
+Als een mailserver je wachtwoord weigert, een aanmelding verloopt of een
+bericht niet kan worden verstuurd, zegt een desktopmelding dat één keer,
+ook als Katna Mail gesloten is. De knop ervan opent de oplossing: Nieuw
+wachtwoord, Aanmelden of het Postvak UIT. De tooltip van het pictogram in
+het systeemvak toont wat er op je wacht.
+"""
+
+["2026-10-04-1510-dialogs-fit-phone"]
+title = "Dialoogvensters passen in een venster zo groot als een telefoon"
+text = """
+Wat is er nieuw, Over Katna, Updates, Sneltoetsen en de andere
+dialoogvensters passen nu in een smal venster met het eigen kader van
+Katna, in plaats van over de randen heen te lopen.
+"""
+
+["2026-10-04-1511-solid-mail-list-bar"]
+title = "Niets schuift meer onder de balken"
+text = """
+De e-mails in de e-maillijst, de geopende e-mail en de bubbels van een
+chat beginnen nu onder hun balken in plaats van eronder door te schuiven,
+en de balken blijven ondoorzichtig. De schakelaar Koppen van matglas is
+weg, en de vreemde hoeken die hij meebracht ook.
+"""
+
+["2026-10-04-1525-menus-inside-window"]
+title = "Menu's en tooltips blijven binnen het venster"
+text = """
+Met het eigen vensterkader van Katna lopen rechtsklikmenu's, pop-ups en
+tooltips bij een rand niet meer over de schaduw van het venster heen; ze
+blijven erbinnen.
+"""
+
+["2026-10-04-1525-unified-stacked-picture"]
+title = "Alle accounts toont elke afbeelding"
+text = """
+Met Alle accounts open is de afbeelding rechtsboven nu een klein stapeltje
+afbeeldingen van je accounts, met +N voor de rest, zodat je het in één
+oogopslag onderscheidt van één account. Wijs het aan en de afbeeldingen
+schuiven soepel uit elkaar.
+"""
+
+["2026-10-04-2338-all-accounts-row"]
+title = "Terug naar Alle accounts vanuit het accountmenu"
+text = """
+Het accountmenu begint nu met Alle accounts, met het aantal ongelezen
+berichten, zodat één klik je terugbrengt nadat je één account hebt
+gekozen. Het menu markeert wat open is met een vinkje, en scrollen boven
+de afbeelding stopt ook bij Alle accounts.
+"""
+
+["2026-10-05-1257-service-starts-again"]
+title = "Katna start zijn achtergronddienst zelf"
+text = """
+Als de dienst die je e-mail synchroniseert en het pictogram in het
+systeemvak toont niet draait, start Katna Mail hem zelf opnieuw. Geen
+terminal nodig. Als hij nog steeds niet start, zegt een regel boven je
+e-mail dat, met Opnieuw starten en de details om te kopiëren voor een
+melding.
+"""
+
+["2026-10-05-1430-stuck-window-replaced"]
+title = "Katna Mail opent ook als een kopie is vastgelopen"
+text = """
+Als Katna Mail op de achtergrond niet meer reageerde, sluit opnieuw
+openen nu de vastgelopen kopie en opent een nieuw venster, in plaats van
+niets te doen.
+"""
+
+["2026-10-05-1605-read-receipts-as-ticks"]
+title = "Leesbevestigingen verschijnen niet meer als e-mail"
+text = """
+Als de e-mailapp van iemand een leesbevestiging stuurt voor e-mail die jij
+hebt verstuurd, verschijnt die niet meer als nieuw bericht in het gesprek.
+Je bericht krijgt blauwe vinkjes en een regel die zegt wie het las en
+wanneer, en de bevestiging wordt als gelezen gemarkeerd, zodat je er geen
+melding van krijgt. Hij blijft in je mailbox en in de zoekresultaten.
+"""
+
+["2026-10-05-1620-reply-tools-fold"]
+title = "Antwoordknoppen passen in een smal venster"
+text = """
+Als het leesvenster of het venster smal is, lopen de opmaakbalk en de rij
+naast Verzenden niet meer buiten het antwoord. Knoppen die niet passen,
+gaan naar ⋮ Meer, de minst gebruikte eerst, en op een telefoon toont
+Verzenden alleen zijn pictogram.
+"""
+
+["2026-10-05-1637-read-receipts-out-of-the-list"]
+title = "Leesbevestigingen blijven uit de e-maillijst"
+text = """
+Een leesbevestiging voor e-mail die je hebt verstuurd, verschijnt niet
+meer in de e-maillijst als een regel „Gelezen: …”. Het gesprek houdt zijn
+eigen onderwerp en voorbeeld, en je verzonden e-mail toont de vinkjes.
+"""
+
+["2026-10-05-1640-windows-frost"]
+title = "Matglas op Windows"
+text = """
+Menu's, pop-ups, dialoogvensters, viewerbalken en panelen van matglas
+vervagen nu ook op Windows wat eronder zit, met dezelfde instellingen
+Vervagingssterkte en Dekking als op Linux. Zet het aan of uit in
+Instellingen, Experimenteel, Menu’s en dialogen van matglas.
+"""
+
+["2026-10-06-0156-phone-activity"]
+title = "Activiteit op een telefoon"
+text = """
+In een venster zo groot als een telefoon staat Activiteit nu in de
+zoekbalk naast je accountafbeelding, met het aantal nieuwe keren geopend
+en geklikt. De lijst past binnen het venster.
+"""
+
+["2026-10-06-0215-pin-bar-no-jump"]
+title = "Vastzetten houdt de chat stil"
+text = """
+In de chatweergave laat het vastzetten of losmaken van een e-mail het
+gesprek niet meer verspringen, ook niet helemaal aan het einde: de balk
+met vastgezette e-mail verschijnt geleidelijk erboven en de berichten
+blijven waar ze waren.
+"""
+
+["2026-10-06-0942-fainter-row-marks"]
+title = "Rustigere selectievakjes en sterren"
+text = """
+In de e-maillijst zijn het selectievakje, de ster en het teken Belangrijk
+van een regel vager totdat je de regel aanwijst. Gezette sterren en
+tekens zie je zoals voorheen.
+"""
+
+["2026-10-06-1448-activity-beside-calendar"]
+title = "Activiteit bij de andere knoppen"
+text = """
+In een breder venster staat de knop Activiteit nu rechts bij Agenda en
+Instellingen. Met Alle accounts open schuiven de accountafbeeldingen uit
+elkaar als je ze aanwijst, zonder de knoppen ernaast te verplaatsen.
+"""
+
+["2026-10-06-1524-search-fills-bar"]
+title = "Een langer zoekvak"
+text = """
+In een breed venster loopt het zoekvak nu door tot de knoppen rechts, in
+plaats van halverwege te stoppen. Zoekopties openen gecentreerd eronder
+en houden een prettige breedte.
+"""
+
+["2026-10-07-0110-follow-up-for-you"]
+title = "Opvolgberichten die zichzelf versturen"
+text = """
+In het menu naast Verzenden kan Opvolgen als er geen antwoord komt nu
+een kort opvolgbericht voor je versturen als niemand antwoordt: schrijf
+het één keer, kies wanneer, en kies of het nog een keer mag proberen. Het
+gaat op werkdagen tijdens werktijd de deur uit, stopt zodra iemand
+antwoordt (automatische antwoorden tellen niet), en wacht op jou in
+plaats van te laat te vertrekken als je computer uit stond. Een chip
+naast Verzenden toont wat er is ingesteld. Of houd het bij een
+herinnering, nu met elke datum die je kiest.
+"""
+
+["2026-10-07-0117-drawer-logo"]
+title = "Katna-logo in de lade"
+text = """
+Op een telefoon toont de lade met je mappen nu het Katna-logo naast de
+naam, in je accentkleur, in plaats van een gewone envelop. Op een tablet,
+waar de bovenbalk ze al toont, begint de lade met je mappen.
+"""
+
+["2026-10-07-0118-clock-popup"]
+title = "Een nettere bureaubladklok"
+text = """
+In Katna Digital Clock staan je tijdzones nu bovenaan naast de datum, en
+de lijst Taken klapt weg met een klik op de kop. Een afspraak toevoegen
+opent een klein venster Nieuwe afspraak in plaats van de hele app. Nieuwe
+taken verschijnen niet meer dubbel na een hapering bij het
+synchroniseren.
+"""
+
+["2026-10-07-0232-mcp-server"]
+title = "Laat AI-assistenten je e-mail gebruiken"
+text = """
+Met Instellingen › MCP-server kunnen AI-assistenten op deze computer,
+zoals Claude Desktop, Claude Code en LM Studio, je e-mail doorzoeken en
+lezen en concepten opslaan die jij controleert. Het staat uit totdat je
+het aanzet. Kies welke accounts ze zien, kopieer wat je in je assistent
+plakt, en zie wat ze onlangs hebben gedaan. Assistenten versturen,
+verwijderen of verplaatsen nooit e-mail.
+"""
+
+["2026-10-07-0359-waiting-for-reply"]
+title = "Zie wat op een antwoord wacht"
+text = """
+E-mail die je verstuurde met een opvolgbericht of een herinnering staat
+onder Wachtend, onder Verzonden. De regels tonen een chip met wat er
+daarna gebeurt en wanneer, in Wachtend en ook in je Inbox. Open er een om
+het opvolgbericht naar een ander tijdstip te verplaatsen, het nu te
+versturen of het te stoppen.
+"""
+
+["2026-10-07-0505-follow-ups-in-chats"]
+title = "Opvolgberichten in de chatweergave"
+text = """
+In de chatweergave verschijnt een opvolgbericht dat nog moet vertrekken
+als een vage bubbel aan het einde van de chat, met Bewerken, Nu versturen
+en Stoppen. Klik met de rechtermuisknop op Verzenden of houd het
+ingedrukt en kies Opvolgen als er geen antwoord komt om er een in te
+stellen.
+"""
+
+["2026-10-07-0603-remind-me"]
+title = "Laat je herinneren aan elke e-mail"
+text = """
+Druk op H bij een e-mail, of gebruik Herinner mij naast Snoozen, om op
+een tijdstip herinnerd te worden terwijl de e-mail blijft waar hij is.
+Als de e-mail zegt dat iets op een bepaalde dag klaar moet zijn, biedt
+Katna de ochtend ervoor aan. Herinneringen zijn taken in Taken, staan
+onder Herinneringen en zijn te zien op de regel van de e-mail. B snoozet.
+"""
+
+["2026-10-07-0718-snooze-extras"]
+title = "Snoozen weet wanneer iemand antwoordt"
+text = """
+Een gesnoozed gesprek komt meteen terug als iemand erin schrijft. In
+Datum en tijd kiezen kun je „di 15u” of „over 2 uur” typen. De melding
+van een nieuwe e-mail kan die een uur of tot morgen snoozen.
+"""
+
+["2026-10-07-0802-your-snooze-times"]
+title = "Snoozen zoals jij wilt"
+text = """
+Stel in wat Later vandaag, Morgen, Dit weekend en Volgende week betekenen,
+en voeg een eigen tijd toe, in Instellingen > Inbox. Gesnoozed toont
+e-mail op het moment dat hij terugkomt. Veeg op een telefoon een regel
+naar links om hem te snoozen.
+"""
+
+["2026-10-07-0913-pick-date-in-place"]
+title = "Kies een datum waar je klikte"
+text = """
+Datum en tijd kiezen schuift nu in het menu Snoozen en Herinner mij zelf,
+in plaats van een vak midden in het venster. De pijl terug brengt je
+naar de tijden.
+"""
+
+["2026-10-07-0953-nudges"]
+title = "Vragen waarop niemand antwoordde, komen terug"
+text = """
+E-mail die je verstuurde met een vraag en waarop in drie dagen geen
+antwoord kwam, komt terug bovenaan de Inbox met „3 dagen geleden
+verstuurd. Opvolgen?”. Klik erop om op te volgen, of op de x om hem weg
+te leggen. In Instellingen > Inbox zet je het uit.
+"""
+
+["2026-10-08-0128-settings-menu-tint"]
+title = "Instellingen heeft een eigen menu"
+text = """
+De lijst met pagina's links in Instellingen heeft een vage tint van boven
+naar beneden, zodat hij loskomt van de pagina die je leest.
+"""
+
+["2026-10-08-0136-schedule-pick-in-place"]
+title = "Verzending plannen kiest een datum ter plekke"
+text = """
+Datum en tijd kiezen in Verzending plannen en Opvolgen als er geen
+antwoord komt schuift nu in het menu waaruit je het opende, net als bij
+Snoozen, in plaats van een vak boven de e-mail. De pijl terug of Esc
+brengt je terug naar de tijden.
+"""
+
+["2026-10-08-0141-tray-icon-follows-colors-after-login"]
+title = "Systeemvakpictogram past vanaf het inloggen bij je paneel"
+text = """
+Op KDE Plasma neemt het eenkleurige systeemvakpictogram nu meteen na het
+inloggen de kleur van je paneel aan en volgt het elke wissel tussen licht
+en donker, zonder Katna opnieuw te starten.
+"""
+
+["2026-10-08-0153-search-attachment-types"]
+title = "Zoek naar tekeningen en afbeeldingen"
+text = """
+Zoekopties heeft twee nieuwe bijlagetypen: DWG voor AutoCAD-tekeningen (en
+DXF), en Afbeelding voor foto's en plaatjes. XLSX vindt nu ook oude
+XLS-bestanden en PPTX vindt PPT, zodat elk één knop heeft.
+"""
+
+["2026-10-08-0157-menus-one-of-each-pair"]
+title = "Menu's tonen alleen wat van toepassing is"
+text = """
+Het menu Meer toont niet langer beide helften van een paar. Een gelezen
+e-mail toont Markeren als ongelezen, een e-mail met ster Ster verwijderen,
+een belangrijke Markeren als niet belangrijk, een vastgezette Losmaken.
+Als je meerdere e-mails selecteert die verschillen, krijg je de actie die
+ze allemaal gelijk maakt, hier en in het rechtermuisknopmenu.
+"""
+
+["2026-10-08-0210-settings-card-edge"]
+title = "Instellingen staat op een kaart"
+text = """
+In lichte kleuren heeft de pagina Instellingen nu dezelfde dunne rand en
+zachte schaduw als de e-maillijst, zodat hij loskomt van het venster
+erachter.
+"""
+
+["2026-10-08-0212-steady-app-buttons"]
+title = "Soepelere appknoppen"
+text = """
+Klikken op een app in de appbalk links, of in de balk onderaan op een
+telefoon, schudt niet meer: de drukgolf speelt uit en de geselecteerde
+pil groeit vanuit het midden terwijl de knop zijn grootte houdt.
+"""
+
+["2026-10-08-0232-account-card-pages"]
+title = "Menu's schuiven in de accountkaart"
+text = """
+Het ☰-menu en de taallijst schuiven nu binnen de accountkaart in in
+plaats van ineens te verschijnen, met rechts een knop terug om terug te
+gaan.
+"""

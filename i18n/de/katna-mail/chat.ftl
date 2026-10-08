@@ -40,6 +40,7 @@ chat-reply-only = Nur { $name } antworten
 chat-forward = Weiterleiten
 chat-copy-text = Text kopieren
 chat-show-as-mail = Als E-Mail anzeigen
+chat-go-down = Zur neuesten E-Mail
 chat-pin = Oben anheften
 chat-pin-file = Datei oben anheften
 chat-unpin = Lösen
@@ -59,7 +60,8 @@ chat-pins-cancel = Abbrechen
 chat-undo = Rückgängig
 
 chat-reply-to = Antwort an { $names }
-chat-send = Senden (Strg+Eingabe)
+chat-send = Senden (Strg+Eingabe). Rechtsklick oder gedrückt halten für mehr
+chat-send-now = Jetzt senden
 chat-attach = Anhängen
 chat-attach-photo = Foto
 chat-attach-file = Datei

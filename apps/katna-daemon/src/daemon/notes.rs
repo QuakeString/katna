@@ -9,9 +9,10 @@ use std::time::Duration;
 
 use async_channel::Receiver;
 use futures_lite::FutureExt;
+use katna_core::config::AppKind;
 use katna_core::{AccountId, AccountKind};
 use katna_dbus::NoteItem;
-use katna_store::{Mode, Note, Store};
+use katna_store::{Mode, Note, NotePicture, Store};
 
 use super::{CommandError, Daemon, Notice, unix_now};
 
@@ -32,6 +33,11 @@ const MAX_NOTE_BODY: usize = 1_000_000;
 const MAX_NOTE_LABELS: usize = 50;
 /// The longest label, in characters (Keep's limit).
 const MAX_LABEL: usize = 50;
+/// The most pictures in one note.
+const MAX_NOTE_PICTURES: usize = 50;
+/// The most bytes of pictures in one note (a mail server takes a message
+/// of about 25 MB).
+const MAX_NOTE_PICTURE_BYTES: usize = 20_000_000;
 
 impl Daemon {
     /// Saves a note (a new one for ID 0). Returns its ID.
@@ -59,6 +65,14 @@ impl Daemon {
                 "a note has at most {MAX_NOTE_LABELS} labels"
             )));
         }
+        if note.pictures.len() > MAX_NOTE_PICTURES
+            || note.pictures.iter().map(|p| p.data.len()).sum::<usize>() > MAX_NOTE_PICTURE_BYTES
+        {
+            return Err(CommandError::InvalidArgs(format!(
+                "a note's pictures are at most {} MB",
+                MAX_NOTE_PICTURE_BYTES / 1_000_000
+            )));
+        }
         let account_id = (note.account != 0).then_some(note.account);
         if let Some(account) = account_id
             && self
@@ -84,14 +98,35 @@ impl Daemon {
                 .filter(|l| !l.is_empty())
                 .collect(),
             link: Some(note.link).filter(|l| !l.is_empty()),
+            remind_at: (note.remind_at > 0).then_some(note.remind_at),
             ..Note::default()
         };
+        let pictures: Option<Vec<NotePicture>> = note.pictures_set.then(|| {
+            note.pictures
+                .into_iter()
+                .map(|p| NotePicture {
+                    cid: p.cid,
+                    name: p.name,
+                    mime: p.mime,
+                    width: p.width,
+                    height: p.height,
+                    data: p.data,
+                })
+                .collect()
+        });
         let old_account = if saved.id == 0 {
             None
         } else {
             self.store().note(saved.id)?.and_then(|n| n.account_id)
         };
-        let id = self.store().save_note(&saved)?;
+        let id = {
+            let mut store = self.store();
+            let id = store.save_note_with(&saved, pictures.as_deref())?;
+            if saved.id == 0 {
+                store.purge_note_versions(unix_now())?;
+            }
+            id
+        };
         tracing::debug!(id, "note saved");
         self.notes_changed(account_id);
         if old_account != account_id {
@@ -165,8 +200,18 @@ impl Daemon {
         Ok(accounts)
     }
 
+    /// Brings every IMAP account's notes in step soon: Notes was turned on.
+    pub(super) fn wake_notes(&self) {
+        let Ok(accounts) = self.store().accounts() else {
+            return;
+        };
+        for account in accounts.iter().filter(|a| a.kind == AccountKind::Imap) {
+            let _ = self.notes_wake.0.try_send(account.id);
+        }
+    }
+
     /// Has the notes of `account` go to its Notes folder soon.
-    fn notes_changed(&self, account: Option<i64>) {
+    pub(super) fn notes_changed(&self, account: Option<i64>) {
         if let Some(account) = account {
             let _ = self.notes_wake.0.try_send(AccountId(account));
         }
@@ -175,6 +220,11 @@ impl Daemon {
     /// Brings `account`'s notes and its Notes folder in step, on a
     /// connection of its own.
     async fn sync_account_notes(&self, account: AccountId) -> Result<(), CommandError> {
+        // Its changes wait in the store until it is back online, or until
+        // Notes is turned on again in Settings > Apps.
+        if self.is_offline(account) || !self.app_on(AppKind::Notes) {
+            return Ok(());
+        }
         let from = self.account(account)?.address;
         let connection = self.connect_on_demand(account).await?;
         let mut store = Store::open(&self.paths, Mode::ReadWrite)?;

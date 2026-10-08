@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "The mail you open stays in view"
+text = """
+With the reading pane beside the list, the mail you click stays where it
+was in the list as the pane opens, or the list scrolls just enough to show
+it whole. It no longer slips out of sight, whether you opened it from the
+list or from search results.
+"""

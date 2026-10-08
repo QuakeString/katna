@@ -8,6 +8,8 @@ reader-close = बन्द गर्नुहोस्
 reader-back = पछाडि
 reader-mark-unread = नपढिएको भनी चिन्ह लगाउनुहोस्
 reader-move-to = यहाँ सार्नुहोस्
+reader-snooze = स्नुज गर्नुहोस्
+reader-remind = मलाई सम्झाउनुहोस्
 reader-more = थप
 reader-original-colors = मौलिक रङहरू देखाउनुहोस्
 reader-dark-colors = गाढा रङहरूमा देखाउनुहोस्
@@ -35,6 +37,7 @@ reader-tick-bounced = पुगेन: { $when } मा बाउन्स भ�
 reader-tick-read = पढियो: { $when } (पढेको रसिद)
 reader-tick-opened = खोलियो, पछिल्लो पटक { $when } (खोलेको ट्र्याकिङ)
 reader-starred = तारा लगाइएको
+reader-chip-remove = { $label } हटाउनुहोस्
 reader-not-starred = तारा नलगाइएको
 reader-too-long = सन्देश पूरै देखाउन धेरै लामो छ।
 reader-encrypted-images = इन्क्रिप्ट गरिएको मेलमा वेबका तस्बिरहरू कहिल्यै लोड गरिँदैनन्।
@@ -52,6 +55,7 @@ reader-details-subject = विषय:
 
 reader-downloading = सर्भरबाट यो सन्देश डाउनलोड गर्दै…
 reader-download-failed = यो सन्देश डाउनलोड गर्न सकिएन।
+reader-download-offline = यो खाता अफलाइन छ। यो सन्देश डाउनलोड गर्न अनलाइन हुनुहोस्।
 reader-try-again = फेरि प्रयास गर्नुहोस्
 
 ## Reply row
@@ -104,6 +108,7 @@ tracking-clicked = { $who } ले लिङ्क { $clicks ->
 tracking-maybe-opened = { $who } ले यो खोल्नुभएको हुन सक्छ (Apple Mail ले गोपनीयताका लागि तस्बिरहरू लोड गर्छ)
 tracking-seen-none = अहिलेसम्म कसैले यो खोल्नुभएको छैन वा कुनै लिङ्क खोल्नुभएको छैन
 tracking-receipt = { $who } ले पढेको रसिद पठाउनुभयो
+tracking-receipt-read = { $who } ले यो पढ्नुभयो (पठन रसिद), { $when }
 tracking-receipt-displayed = पढेको रसिद: { $who } ले तपाईंको सन्देश खोल्नुभयो
 tracking-receipt-other = पढेको रसिद: { $who } ले तपाईंको सन्देश नखोली मेटाउनुभयो वा व्यवस्थापन गर्नुभयो
 

@@ -6,6 +6,10 @@
 
 about-tooltip = Maka Katna
 about-tagline = Ozi na kalịnda maka desktọpụ Linux
+about-copy-version = Detuo nkọwa ụdị
+about-version-copied = Edetuola
+about-version-built = E wuru: { $date }
+about-version-system = Sistemụ: { $system }
 about-whats-new = Ihe ọhụrụ
 
 ## Updates, in a box under the version in About (only in packages that
@@ -22,11 +26,13 @@ about-update-ready = Ụdị { $version } dị njikere ka a wụnye ya
 about-update-ready-detail = Katna Mail ga-amaligharị ka o mechaa imelite ahụ.
 about-update-confirm = Wụnye ụdị { $version }?
 about-update-confirm-detail = Katna Mail ga-emechi, wụnye imelite ahụ wee meghee ọzọ n'ebe ị hapụrụ. Kọmputa gị ga-ajụ okwuntughe gị.
+about-update-confirm-detail-windows = Katna Mail ga-emechi, wụnye imelite ahụ ma mepee ọzọ n'otu ntabi anya.
 about-update-installing = Na-awụnye ụdị { $version }…
 about-update-installing-detail = Tinye okwuntughe gị na windo mepere.
+about-update-installing-detail-windows = Katna Mail na-emechi ugbu a ma ga-emepe ọzọ ozugbo etinyechara imelite ahụ.
 about-update-cancelled = A wụnyeghị imelite ahụ, n'ihi na e nyeghị okwuntughe.
 about-update-failed = Enweghị ike iwụnye imelite ahụ: { $error }
-about-update-unsupported = Onye njikwa ngwugwu gị na-emelite ihe oyiyi Katna Mail a.
+about-update-not-self-updating = Oyiri Katna Mail a anaghị emelite onwe ya. Melite ya n'ụzọ i si wụnye ya.
 about-update-restart-failed = A wụnyela imelite ahụ, mana Katna Mail enweghị ike imeghe ọzọ ({ $error }). Meghee ya n'onwe gị.
 about-update-check = Lelee imelite ndị dị
 about-update-download = Budata
@@ -145,6 +151,7 @@ onboarding-katna-private = O nwere okwuntughe nke ya. Ihe nbanye ozi gị anagh�
 onboarding-ready-title = Ihe niile adịla njikere
 onboarding-ready-lead = Katna na-ebute ozi gị. Ọ na-apụta ka ọ na-abịa, ozi ọhụrụ ga-apụtakwa n'onwe ya.
 onboarding-ready-lead-address = Katna na-ebute ozi nke { $address }. Ọ na-apụta ka ọ na-abịa, ozi ọhụrụ ga-apụtakwa n'onwe ya.
+onboarding-apps = Ngwa ị ga-eji
 onboarding-ready-tour = Ị chọrọ nleta nkeji otu iji hụ ebe ihe niile dị?
 onboarding-skip = Wụfee ya ugbu a
 onboarding-take-tour = Mee nleta
@@ -207,11 +214,9 @@ crash-view = Lelee akụkọ
 crash-view-tooltip = Mepee akụkọ ahụ, nke echekwara na kọmputa a
 crash-copy = Detuo akụkọ
 crash-close = Mechie
-sign-in-again-text = { $provider } na-arịọ ka ị banye ọzọ na { $address }.
 sign-in-again-button = Banye
 sign-in-again-tooltip = Mepee peeji mbanye { $provider } na ihe nchọgharị gị
 sign-in-again-waiting = Na-echere ihe nchọgharị gị…
-sign-in-again-close = Mechie
 google-api-off = Agbanyụrụ { $api } na ọrụ Google Cloud nke Katna.
 google-api-turn-on = Gbanye
 google-api-turn-on-tooltip = Mepee Google Cloud ka i gbanye { $api }, wee pịa Nwaa ọzọ

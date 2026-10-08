@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Settings sits on a card"
+text = """
+In light colours the Settings page now has the same thin edge and soft
+shadow as the mail list, so it stands apart from the window behind it.
+"""

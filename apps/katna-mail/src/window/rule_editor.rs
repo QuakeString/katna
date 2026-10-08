@@ -15,26 +15,25 @@ use std::time::Duration;
 use gpui::{
     AnyElement, App, ClickEvent, Context, ElementId, Entity, Focusable, FontWeight, HighlightStyle,
     MouseButton, Pixels, Point, SharedString, Stateful, StyledText, Subscription, Task, Window,
-    anchored, deferred, div, prelude::*, rgba,
+    deferred, div, prelude::*, rgba,
 };
-use katna_core::AccountId;
+use katna_core::{AccountId, MailCategory};
 use katna_i18n::tr;
 use katna_store::FolderId;
 use katna_store::rules::{
     Action, Comparator, Condition, Field, MAX_READ_AFTER_DAYS, MatchMode, Rule, RunsNote, RunsOn,
 };
+use katna_ui::anchored;
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::px;
 use katna_ui::unpx;
-use katna_ui::{InputEvent, TextInput};
+use katna_ui::{InputEvent, TextArea, TextInput};
 
 use super::MailWindow;
 use super::add_account::text_button;
 use crate::sidebar::Role;
 use crate::theme::{Theme, fade};
-use crate::widgets::{
-    Check, FocusRing, checkbox, elevation, filled_button, icon, icon_button, menu, tip,
-};
+use crate::widgets::{Check, FocusRing, checkbox, filled_button, icon, icon_button, menu, tip};
 use crate::{daemon, data, format};
 
 const WIDTH: f32 = 680.0;
@@ -47,7 +46,7 @@ const PREVIEW_DELAY: Duration = Duration::from_millis(400);
 const NARROW: f32 = 520.0;
 
 /// What a condition can look at, in the order the menu lists them.
-const FIELDS: [Field; 9] = [
+const FIELDS: [Field; 11] = [
     Field::From,
     Field::To,
     Field::Cc,
@@ -57,6 +56,8 @@ const FIELDS: [Field; 9] = [
     Field::Body,
     Field::AttachmentName,
     Field::HasAttachment,
+    Field::MailingList,
+    Field::Tab,
 ];
 
 const COMPARATORS: [Comparator; 6] = [
@@ -144,7 +145,41 @@ pub(super) fn field_label(field: Field) -> String {
         Field::Body => tr!("rules-field-body"),
         Field::AttachmentName => tr!("rules-field-attachment-name"),
         Field::HasAttachment => tr!("rules-field-has-attachment"),
+        Field::MailingList => tr!("rules-field-mailing-list"),
+        Field::Tab => tr!("rules-field-tab"),
     }
+}
+
+/// An inbox tab's name, as the mail list's tabs show it.
+pub(super) fn tab_label(tab: MailCategory) -> String {
+    match tab {
+        MailCategory::Primary => tr!("tab-primary"),
+        MailCategory::Promotions => tr!("tab-promotions"),
+        MailCategory::Social => tr!("tab-social"),
+        MailCategory::Updates => tr!("tab-updates"),
+        MailCategory::Forums => tr!("tab-forums"),
+    }
+}
+
+/// The tab an "Inbox tab" condition names (Primary for one it can't read).
+fn tab_of(value: &str) -> MailCategory {
+    value.trim().parse().unwrap_or_default()
+}
+
+/// How many alternatives of a pattern a rule's line names before "and N
+/// more".
+const MAX_LISTED: usize = 3;
+
+/// A pattern that is only words or addresses joined by `|`
+/// ("irctc.co.in|railyatri.in"), as its alternatives; `None` for any
+/// other pattern.
+fn plain_alternatives(pattern: &str) -> Option<Vec<String>> {
+    let plain = |c: char| c.is_alphanumeric() || matches!(c, '.' | '@' | '-' | ' ' | '_');
+    let words: Vec<String> = pattern.split('|').map(|w| w.trim().to_owned()).collect();
+    words
+        .iter()
+        .all(|w| !w.is_empty() && w.chars().all(plain))
+        .then_some(words)
 }
 
 pub(super) fn comparator_label(comparator: Comparator) -> String {
@@ -158,12 +193,9 @@ pub(super) fn comparator_label(comparator: Comparator) -> String {
     }
 }
 
-/// Whether a "Has attachment" condition's value means "has none".
+/// Whether a yes-or-no condition's value means no.
 fn means_no(value: &str) -> bool {
-    matches!(
-        value.trim().to_ascii_lowercase().as_str(),
-        "false" | "no" | "0"
-    )
+    katna_store::rules::says_no(value)
 }
 
 /// A rule in one line, for its row in Settings: "From contains
@@ -187,18 +219,49 @@ pub(super) fn summary(rule: &Rule, folder: impl Fn(i64) -> Option<String>) -> St
     };
     // Conditions on the same field that compare the same way say it
     // once: "From contains substack.com or medium.com".
+    // Alternatives inside one condition always read "or".
+    let any = |mut values: Vec<String>| -> String {
+        // A long list names its first few and counts the rest.
+        if values.len() > MAX_LISTED + 1 {
+            let more = values.len() - MAX_LISTED;
+            values.truncate(MAX_LISTED);
+            values.push(tr!("rules-summary-more", count = more));
+        }
+        let mut items = values.into_iter();
+        let mut text = items.next().unwrap_or_default();
+        let rest: Vec<String> = items.collect();
+        let last = rest.len().saturating_sub(1);
+        for (ix, next) in rest.into_iter().enumerate() {
+            text = if ix < last {
+                tr!("rules-summary-list", first = text, next = next)
+            } else {
+                tr!("rules-summary-or", first = text, next = next)
+            };
+        }
+        text
+    };
+    // A pattern of plain words joined by `|` reads as "contains" them.
     let mut groups: Vec<(Field, Comparator, Vec<String>)> = Vec::new();
     for c in &rule.conditions {
-        let value = c.value.trim().to_owned();
+        let (comparator, value) = match c.comparator {
+            Comparator::Matches if !c.field.is_yes_no() && c.field != Field::Tab => {
+                match plain_alternatives(&c.value) {
+                    Some(words) => (Comparator::Contains, any(words)),
+                    None => (c.comparator, c.value.trim().to_owned()),
+                }
+            }
+            comparator => (comparator, c.value.trim().to_owned()),
+        };
         match groups.last_mut() {
-            Some((field, comparator, values))
+            Some((field, last, values))
                 if *field == c.field
-                    && *comparator == c.comparator
-                    && c.field != Field::HasAttachment =>
+                    && *last == comparator
+                    && !c.field.is_yes_no()
+                    && c.field != Field::Tab =>
             {
                 values.push(value)
             }
-            _ => groups.push((c.field, c.comparator, vec![value])),
+            _ => groups.push((c.field, comparator, vec![value])),
         }
     }
     let conditions = groups
@@ -208,6 +271,18 @@ pub(super) fn summary(rule: &Rule, folder: impl Fn(i64) -> Option<String>) -> St
                 tr!("rules-summary-no-attachment")
             }
             Field::HasAttachment => tr!("rules-summary-has-attachment"),
+            Field::MailingList if values.iter().all(|v| means_no(v)) => {
+                tr!("rules-summary-not-mailing-list")
+            }
+            Field::MailingList => tr!("rules-summary-mailing-list"),
+            Field::Tab => {
+                let tab = tab_label(tab_of(&values.concat()));
+                if comparator == Comparator::NotContains {
+                    tr!("rules-summary-not-tab", tab = tab)
+                } else {
+                    tr!("rules-summary-tab", tab = tab)
+                }
+            }
             field => tr!(
                 "rules-summary-condition",
                 field = field_label(field),
@@ -217,10 +292,16 @@ pub(super) fn summary(rule: &Rule, folder: impl Fn(i64) -> Option<String>) -> St
         })
         .collect();
     let when = join(conditions);
-    let then = rule
-        .actions
-        .iter()
-        .map(|a| action_text(a, &folder))
+    // A folder in each account says its name once.
+    let mut said: Vec<String> = Vec::new();
+    for action in &rule.actions {
+        let text = action_text(action, &folder);
+        if !said.contains(&text) {
+            said.push(text);
+        }
+    }
+    let then = said
+        .into_iter()
         .reduce(|first, next| tr!("rules-summary-list", first = first, next = next));
     match (when, then) {
         (Some(when), Some(then)) => tr!("rules-summary", when = when, then = then),
@@ -274,7 +355,7 @@ pub(super) fn note_text(note: &RunsNote, folder: &impl Fn(i64) -> Option<String>
             field,
             comparator,
         } => {
-            let test = if *field == Field::HasAttachment {
+            let test = if field.is_yes_no() || *field == Field::Tab {
                 field_label(*field)
             } else {
                 tr!(
@@ -391,6 +472,7 @@ enum Pick {
     Field(usize),
     Comparator(usize),
     Has(usize),
+    Tab(usize),
     Action(usize),
     Folder(usize),
     Accounts,
@@ -408,9 +490,11 @@ enum Preview {
 struct ConditionRow {
     field: Field,
     comparator: Comparator,
-    value: Entity<TextInput>,
-    /// A "Has attachment" condition's choice.
+    value: Entity<TextArea>,
+    /// A yes-or-no condition's choice.
     has: bool,
+    /// An "Inbox tab" condition's tab.
+    tab: MailCategory,
     _subscription: Subscription,
 }
 
@@ -443,6 +527,9 @@ pub(super) struct RuleEditor {
     asking_delete: bool,
     closing: bool,
     shown: Spring,
+    /// Folders saving makes first, as (stand-in ID below 0, account,
+    /// name): a starter rule's folder an account doesn't have yet.
+    new_folders: Vec<(i64, i64, String)>,
 }
 
 impl RuleEditor {
@@ -454,24 +541,32 @@ impl RuleEditor {
             .conditions
             .iter()
             .filter_map(|row| {
-                let value = if row.field == Field::HasAttachment {
+                let picked = row.field.is_yes_no() || row.field == Field::Tab;
+                let value = if row.field.is_yes_no() {
                     if row.has { "true" } else { "false" }.to_owned()
+                } else if row.field == Field::Tab {
+                    row.tab.as_str().to_owned()
                 } else {
                     row.value.read(cx).text().trim().to_owned()
                 };
-                (strict || row.field == Field::HasAttachment || !value.is_empty()).then_some(
-                    Condition {
-                        field: row.field,
-                        comparator: row.comparator,
-                        value,
-                    },
-                )
+                // A tab is "is in" unless it says "isn't".
+                let comparator = match (row.field, row.comparator) {
+                    (Field::Tab, Comparator::NotContains) => Comparator::NotContains,
+                    (Field::Tab, _) => Comparator::Equals,
+                    (_, comparator) => comparator,
+                };
+                (strict || picked || !value.is_empty()).then_some(Condition {
+                    field: row.field,
+                    comparator,
+                    value,
+                })
             })
             .collect();
         let mut actions = Vec::new();
         for row in &self.actions {
             let text = row.text.read(cx).text().trim().to_owned();
-            let folder = row.folder.filter(|f| *f > 0);
+            // A folder still to make counts as chosen only for saving.
+            let folder = row.folder.filter(|f| *f > 0 || (strict && *f < 0));
             actions.push(match row.kind {
                 ActionKind::Move | ActionKind::AddLabel if strict && folder.is_none() => {
                     return Err(tr!("rules-editor-needs-folder"));
@@ -513,9 +608,11 @@ impl RuleEditor {
 
 impl MailWindow {
     /// Opens the editor on `rule`: a saved one, or a new one (ID 0) to
-    /// fill in. A Move to or Add label with folder 0 has none chosen yet.
+    /// fill in. A Move to or Add label with folder 0 has none chosen yet;
+    /// one below 0 is a folder of `new_folders` that saving makes.
     pub(super) fn open_rule_editor(
         &mut self,
+        new_folders: Vec<(i64, i64, String)>,
         rule: Rule,
         window: &mut Window,
         cx: &mut Context<Self>,
@@ -553,6 +650,7 @@ impl MailWindow {
             asking_delete: false,
             closing: false,
             shown,
+            new_folders,
         });
         self.count_rule_mail(cx);
         cx.notify();
@@ -575,7 +673,7 @@ impl MailWindow {
             accounts,
             ..Rule::default()
         };
-        self.open_rule_editor(rule, window, cx);
+        self.open_rule_editor(Vec::new(), rule, window, cx);
     }
 
     /// Make a rule… on a mail: the editor filled in with its sender. (Move
@@ -600,7 +698,7 @@ impl MailWindow {
             accounts: vec![account.0],
             ..Rule::default()
         };
-        self.open_rule_editor(rule, window, cx);
+        self.open_rule_editor(Vec::new(), rule, window, cx);
     }
 
     /// Escape: an open menu of the editor, else the editor.
@@ -652,16 +750,47 @@ impl MailWindow {
         (input, subscription)
     }
 
+    /// A long field of the editor that wraps instead of scrolling
+    /// sideways; any change counts the matching mail again.
+    fn rule_area(
+        &mut self,
+        placeholder: String,
+        text: String,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> (Entity<TextArea>, Subscription) {
+        let accent = rgba(self.theme(window).accent).into();
+        let area = cx.new(|cx| {
+            let mut area = TextArea::new(placeholder, cx);
+            area.set_single_line(true);
+            area.set_text(text, 0, cx);
+            area.set_accent(accent);
+            area
+        });
+        let subscription =
+            cx.subscribe_in(
+                &area,
+                window,
+                |this, _, event: &InputEvent, _, cx| match event {
+                    InputEvent::Changed => this.rule_changed(cx),
+                    InputEvent::Submit => this.save_rule_edit(cx),
+                    InputEvent::Cancel => this.close_rule_editor(cx),
+                },
+            );
+        (area, subscription)
+    }
+
     fn condition_row(
         &mut self,
         condition: &Condition,
         window: &mut Window,
         cx: &mut Context<Self>,
     ) -> ConditionRow {
-        let has = condition.field == Field::HasAttachment;
-        let (value, subscription) = self.rule_input(
+        let has = condition.field.is_yes_no();
+        let tab = condition.field == Field::Tab;
+        let (value, subscription) = self.rule_area(
             tr!("rules-editor-value-hint"),
-            if has {
+            if has || tab {
                 String::new()
             } else {
                 condition.value.clone()
@@ -674,6 +803,11 @@ impl MailWindow {
             comparator: condition.comparator,
             value,
             has: !has || !means_no(&condition.value),
+            tab: if tab {
+                tab_of(&condition.value)
+            } else {
+                MailCategory::Promotions
+            },
             _subscription: subscription,
         }
     }
@@ -693,7 +827,7 @@ impl MailWindow {
         let (text, subscription) = self.rule_input(action_hint(kind), text, window, cx);
         ActionRow {
             kind,
-            folder: action.folder().filter(|f| *f > 0),
+            folder: action.folder().filter(|f| *f != 0),
             text,
             _subscription: subscription,
         }
@@ -826,7 +960,9 @@ impl MailWindow {
                 cx,
             );
         });
-        // Only one action may move the mail: the others that do give way.
+        // Only one action may move the mail, the others that do give
+        // way, but a rule for several accounts may move to a folder in
+        // each.
         let moves = |k: ActionKind| {
             matches!(
                 k,
@@ -838,7 +974,9 @@ impl MailWindow {
         {
             let mut at = 0;
             e.actions.retain(|a| {
-                let keep = at == ix || !moves(a.kind);
+                let keep = at == ix
+                    || !moves(a.kind)
+                    || (kind == ActionKind::Move && a.kind == ActionKind::Move);
                 at += 1;
                 keep
             });
@@ -877,6 +1015,13 @@ impl MailWindow {
             }
         };
         let apply = e.also_apply && matches!(e.preview, Preview::Count(n) if n > 0);
+        let make: Vec<(i64, i64, String)> = e
+            .new_folders
+            .iter()
+            .filter(|(id, _, _)| rule.actions.iter().any(|a| a.folder() == Some(*id)))
+            .cloned()
+            .collect();
+        let mut rule = rule;
         e.busy = true;
         e.error = None;
         e.pick = None;
@@ -889,6 +1034,19 @@ impl MailWindow {
                         Some(connection) => connection,
                         None => daemon::connect().await?,
                     };
+                    for (stand_in, account, name) in make {
+                        let id = daemon::create_folder(&connection, account, &name, None).await?;
+                        for action in &mut rule.actions {
+                            match action {
+                                Action::Move { folder } | Action::AddLabel { folder }
+                                    if *folder == stand_in =>
+                                {
+                                    *folder = id;
+                                }
+                                _ => {}
+                            }
+                        }
+                    }
                     let id = daemon::rules::save(&connection, &rule).await?;
                     let applied = if apply {
                         Some(daemon::rules::apply(&connection, id, PREVIEW_DAYS).await)
@@ -979,20 +1137,40 @@ impl MailWindow {
         })
     }
 
-    /// The folders action row `ix` can choose from, with their names:
-    /// any folder of the rule's accounts for Move to, their own folders
-    /// and labels for Add label.
-    fn rule_folders(&self, e: &RuleEditor, kind: ActionKind) -> Vec<(i64, String)> {
+    /// The folders an action row can choose from, with their names: any
+    /// folder of the rule's accounts for Move to, their own folders and
+    /// labels for Add label, and folders still to make. Only the account
+    /// that has `chosen`, when a row has one: a row moves mail of one
+    /// account.
+    fn rule_folders_of(
+        &self,
+        e: &RuleEditor,
+        kind: ActionKind,
+        chosen: Option<i64>,
+    ) -> Vec<(i64, String)> {
         let several = e.accounts.len() > 1;
+        let owner = chosen.and_then(|f| {
+            e.accounts.iter().copied().find(|&a| {
+                e.new_folders
+                    .iter()
+                    .any(|(id, acc, _)| *id == f && *acc == a)
+                    || self
+                        .tree
+                        .folders_of(AccountId(a))
+                        .into_iter()
+                        .any(|(id, _, _)| id.0 == f)
+            })
+        });
         let mut out = Vec::new();
         for &account in &e.accounts {
+            if owner.is_some_and(|o| o != account) {
+                continue;
+            }
             let id = AccountId(account);
             let address = self.account_address(id).unwrap_or_default();
-            let folders: Vec<i64> = if kind == ActionKind::AddLabel {
-                // Labels are Gmail's (`SetLabels`).
-                if !self.tree.is_gmail(id) {
-                    continue;
-                }
+            let folders: Vec<i64> = if kind == ActionKind::AddLabel && self.tree.is_gmail(id) {
+                // Labels are Gmail's (`SetLabels`); elsewhere a label is a
+                // copy in the folder.
                 self.tree
                     .nest_targets(id)
                     .into_iter()
@@ -1008,13 +1186,26 @@ impl MailWindow {
                             Role::Inbox | Role::Drafts | Role::Sent | Role::Snoozed | Role::Flagged
                         )
                     })
+                    // A label keeps mail where it is: never in Trash or
+                    // the archive.
+                    .filter(|(_, _, role)| {
+                        kind != ActionKind::AddLabel
+                            || !matches!(role, Role::Archive | Role::Trash | Role::Junk)
+                    })
                     .map(|(f, _, _)| f.0)
                     .collect()
             };
-            for folder in folders {
-                let Some(name) = self.rule_folder_name(folder) else {
-                    continue;
-                };
+            let new = e
+                .new_folders
+                .iter()
+                .filter(|(_, a, _)| *a == account)
+                .map(|(f, _, name)| (*f, tr!("rules-editor-new-folder", name = name.as_str())));
+            let named = folders
+                .into_iter()
+                .filter_map(|f| Some((f, self.rule_folder_name(f)?)))
+                .chain(new)
+                .collect::<Vec<_>>();
+            for (folder, name) in named {
                 out.push((
                     folder,
                     if several {
@@ -1053,7 +1244,7 @@ impl MailWindow {
         let width = WIDTH.min(vw - 32.0);
         let narrow = width < NARROW;
         let e = self.rule_editor.as_ref()?;
-        let body = self.rule_editor_body(e, narrow, th, window, cx);
+        let body = self.rule_editor_body(e, narrow, th, cx);
         let pick = self.render_rule_pick(e, th, cx);
         let card = div()
             .id("rule-editor")
@@ -1062,13 +1253,12 @@ impl MailWindow {
             .occlude()
             .w(px(width))
             .max_h(px((vh - 48.0).max(240.0)))
+            // Shrinks to the room around it; the body scrolls.
+            .min_h_0()
             .flex()
             .flex_col()
-            .overflow_hidden()
-            .rounded(px(super::PANEL_RADIUS))
-            .map(|d| crate::widgets::frosted(d, th, th.surface, super::PANEL_RADIUS))
+            .map(|d| crate::widgets::dialog(d, th, th.surface))
             .text_color(rgba(th.text))
-            .shadow(elevation(th, 3.0))
             .child(body);
         Some(
             div()
@@ -1080,6 +1270,8 @@ impl MailWindow {
                 .items_center()
                 .justify_center()
                 .bg(rgba(fade(0x0000_0066, t)))
+                // Even margins inside the room below the top bar.
+                .p(px(24.0))
                 .child(
                     div()
                         .id("rule-editor-scrim")
@@ -1089,7 +1281,15 @@ impl MailWindow {
                         .size_full()
                         .on_click(cx.listener(|this, _, _, cx| this.close_rule_editor(cx))),
                 )
-                .child(div().opacity(t).mt(px(lerp(24.0, 0.0, t))).child(card))
+                .child(
+                    div()
+                        .max_h_full()
+                        .flex()
+                        .flex_col()
+                        .opacity(t)
+                        .mt(px(lerp(24.0, 0.0, t)))
+                        .child(card),
+                )
                 .children(pick)
                 .into_any_element(),
         )
@@ -1100,7 +1300,6 @@ impl MailWindow {
         e: &RuleEditor,
         narrow: bool,
         th: &Theme,
-        window: &Window,
         cx: &mut Context<Self>,
     ) -> AnyElement {
         let picked = e.pick.map(|p| p.0);
@@ -1109,7 +1308,7 @@ impl MailWindow {
         } else {
             tr!("rules-editor-edit-title")
         };
-        let name = text_field("rule-name", &e.name, 44.0, th, window, cx);
+        let name = text_field("rule-name", &e.name, 44.0, th, cx);
         let when = div()
             .mt(px(16.0))
             .flex()
@@ -1145,8 +1344,19 @@ impl MailWindow {
                 )
                 .map(|d| if narrow { d.flex_1() } else { d.w(px(120.0)) })
                 .on_click(pick_at(Pick::Field(ix), cx));
-                let what: AnyElement = if row.field == Field::HasAttachment {
-                    select_box(
+                let what: AnyElement = if row.field == Field::Tab {
+                    let tab = select_box(
+                        ("rule-tab", ix),
+                        tab_label(row.tab),
+                        picked == Some(Pick::Tab(ix)),
+                        th,
+                    )
+                    .w(px(150.0))
+                    .on_click(pick_at(Pick::Tab(ix), cx));
+                    // Fills the row, so its remove button sits at the end.
+                    div().flex_1().child(tab).into_any_element()
+                } else if row.field.is_yes_no() {
+                    let has = select_box(
                         ("rule-has", ix),
                         if row.has {
                             tr!("rules-has-yes")
@@ -1157,8 +1367,8 @@ impl MailWindow {
                         th,
                     )
                     .w(px(150.0))
-                    .on_click(pick_at(Pick::Has(ix), cx))
-                    .into_any_element()
+                    .on_click(pick_at(Pick::Has(ix), cx));
+                    div().flex_1().child(has).into_any_element()
                 } else {
                     div()
                         .flex()
@@ -1174,11 +1384,13 @@ impl MailWindow {
                                 picked == Some(Pick::Comparator(ix)),
                                 th,
                             )
-                            .w(px(150.0))
+                            // As wide as its label, so "matches the
+                            // pattern" shows in full.
+                            .min_w(px(192.0))
                             .on_click(pick_at(Pick::Comparator(ix), cx)),
                         )
                         .child(
-                            text_field(("rule-value", ix), &row.value, 36.0, th, window, cx)
+                            text_area_field(("rule-value", ix), &row.value, th, cx)
                                 .flex_1()
                                 .min_w(px(160.0)),
                         )
@@ -1218,7 +1430,14 @@ impl MailWindow {
                 .on_click(pick_at(Pick::Action(ix), cx));
                 let what: AnyElement = match row.kind {
                     ActionKind::Move | ActionKind::AddLabel => {
-                        let chosen = row.folder.and_then(|f| self.rule_folder_name(f));
+                        // With several accounts, named with its account.
+                        let chosen = row.folder.and_then(|f| {
+                            self.rule_folders_of(e, row.kind, Some(f))
+                                .into_iter()
+                                .find(|(id, _)| *id == f)
+                                .map(|(_, name)| name)
+                                .or_else(|| self.rule_folder_name(f))
+                        });
                         let empty = chosen.is_none();
                         select_box(
                             ("rule-folder", ix),
@@ -1233,25 +1452,22 @@ impl MailWindow {
                             th,
                         )
                         .flex_1()
+                        // Keeps its width; a long name ends in …
+                        .min_w_0()
                         .when(empty, |d| d.text_color(rgba(th.text_faint)))
                         .on_click(pick_at(Pick::Folder(ix), cx))
                         .into_any_element()
                     }
-                    ActionKind::Forward => {
-                        text_field(("rule-text", ix), &row.text, 36.0, th, window, cx)
-                            .flex_1()
-                            .into_any_element()
-                    }
+                    ActionKind::Forward => text_field(("rule-text", ix), &row.text, 36.0, th, cx)
+                        .flex_1()
+                        .into_any_element(),
                     ActionKind::MarkReadAfter => div()
                         .flex_1()
                         .flex()
                         .flex_row()
                         .items_center()
                         .gap(px(8.0))
-                        .child(
-                            text_field(("rule-text", ix), &row.text, 36.0, th, window, cx)
-                                .w(px(80.0)),
-                        )
+                        .child(text_field(("rule-text", ix), &row.text, 36.0, th, cx).w(px(80.0)))
                         .child(
                             div()
                                 .text_size(px(14.0))
@@ -1325,11 +1541,14 @@ impl MailWindow {
                 .line_height(px(18.0))
                 .text_color(rgba(th.error))
                 .child(icon("warning", th.error, 18.0))
-                .child(div().flex_1().min_w_0().child(err))
+                .child(self.copyable(err, th).flex_1().min_w_0())
         });
         let buttons = self.rule_editor_buttons(e, th, cx);
-        div()
+        let scroll = div()
             .id("rule-editor-body")
+            // Shrinks to the card's height so it scrolls instead of running
+            // past the window.
+            .min_h_0()
             .flex()
             .flex_col()
             .overflow_y_scroll()
@@ -1341,7 +1560,7 @@ impl MailWindow {
                     .flex_col()
                     .px(px(if narrow { 16.0 } else { 26.0 }))
                     .pt(px(22.0))
-                    .pb(px(20.0))
+                    .pb(px(4.0))
                     .child(
                         div()
                             .text_size(px(22.0))
@@ -1386,7 +1605,19 @@ impl MailWindow {
                     )
                     .child(stop)
                     .child(accounts)
-                    .child(panel)
+                    .child(panel),
+            );
+        // Save and Cancel stay below the scrolling part.
+        div()
+            .min_h_0()
+            .flex()
+            .flex_col()
+            .child(scroll)
+            .child(
+                div()
+                    .flex_none()
+                    .px(px(if narrow { 16.0 } else { 26.0 }))
+                    .pb(px(20.0))
                     .children(error)
                     .child(buttons),
             )
@@ -1719,6 +1950,25 @@ impl MailWindow {
                     .into_any_element()
                 })
                 .collect(),
+            Pick::Tab(ix) => MailCategory::ALL
+                .into_iter()
+                .enumerate()
+                .map(|(n, tab)| {
+                    let on = e.conditions.get(ix).is_some_and(|r| r.tab == tab);
+                    item(("rule-pick-tab", n).into(), tab_label(tab), on)
+                        .on_click(cx.listener(move |this, _, _, cx| {
+                            this.edit_rule(
+                                |e| {
+                                    if let Some(row) = e.conditions.get_mut(ix) {
+                                        row.tab = tab;
+                                    }
+                                },
+                                cx,
+                            )
+                        }))
+                        .into_any_element()
+                })
+                .collect(),
             Pick::Action(ix) => ActionKind::ALL
                 .into_iter()
                 .enumerate()
@@ -1739,7 +1989,7 @@ impl MailWindow {
                 .collect(),
             Pick::Folder(ix) => {
                 let row = e.actions.get(ix)?;
-                self.rule_folders(e, row.kind)
+                self.rule_folders_of(e, row.kind, row.folder)
                     .into_iter()
                     .enumerate()
                     .map(|(n, (folder, name))| {
@@ -1944,7 +2194,8 @@ fn select_box_with(
         .border_color(rgba(if open { th.accent } else { th.outline }))
         .text_size(px(14.0))
         .cursor_pointer()
-        .hover(|s| s.bg(rgba(th.hover)))
+        .relative()
+        .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
         .child(content)
         .child(icon("chevron-down", th.text_dim, 16.0))
 }
@@ -1956,31 +2207,30 @@ fn text_field(
     input: &Entity<TextInput>,
     height: f32,
     th: &Theme,
-    window: &Window,
     cx: &App,
 ) -> Stateful<gpui::Div> {
-    use crate::widgets::ScaledEdge;
-    let focus = input.focus_handle(cx);
-    let focused = focus.is_focused(window);
-    div()
-        .id(id)
+    crate::widgets::field(id, &input.focus_handle(cx), th)
         .h(px(height))
-        .px(px(if focused { 11.0 } else { 12.0 }))
         .flex()
         .items_center()
-        .rounded(px(8.0))
-        .map(|d| {
-            if focused {
-                d.border_px(2.0)
-            } else {
-                d.border_1()
-            }
-        })
-        .border_color(rgba(if focused { th.accent } else { th.outline }))
-        .text_size(px(15.0))
-        .cursor_text()
-        .on_click(move |_, window, cx| window.focus(&focus, cx))
         .child(div().flex_1().min_w_0().child(input.clone()))
+}
+
+/// A [`text_field`] for a [`TextArea`]: at least as tall as a field and
+/// taller as its text wraps.
+fn text_area_field(
+    id: impl Into<ElementId>,
+    area: &Entity<TextArea>,
+    th: &Theme,
+    cx: &App,
+) -> Stateful<gpui::Div> {
+    crate::widgets::field(id, &area.focus_handle(cx), th)
+        .min_h(px(36.0))
+        .py(px(7.0))
+        .flex()
+        .items_center()
+        .line_height(px(20.0))
+        .child(div().flex_1().min_w_0().child(area.clone()))
 }
 
 /// A condition or action row: its menu, what goes with it, and ✕. On a
@@ -2000,7 +2250,7 @@ fn part_row(
                 div()
                     .flex()
                     .flex_row()
-                    .items_center()
+                    .items_start()
                     .gap(px(8.0))
                     .child(first)
                     .child(remove),
@@ -2011,7 +2261,7 @@ fn part_row(
     div()
         .flex()
         .flex_row()
-        .items_center()
+        .items_start()
         .gap(px(8.0))
         .child(first)
         .child(rest)
@@ -2023,6 +2273,8 @@ fn remove_button(id: impl Into<ElementId>, th: &Theme) -> Stateful<gpui::Div> {
     icon_button(id, "close", 18.0, th)
         .flex_none()
         .size(px(32.0))
+        // Centred on the 36 px boxes of its row when rows align at the top.
+        .mt(px(2.0))
         .focus_ring(th)
         .tooltip(tip(tr!("rules-editor-remove"), th))
 }
@@ -2124,6 +2376,47 @@ mod tests {
             "Subject contains invoice, receipt or order or From contains shop.com \
              → mark read, star, don't notify"
         );
+    }
+
+    #[test]
+    fn summarizes_tabs_lists_plain_patterns_and_a_folder_per_account() {
+        let r = rule(
+            vec![
+                (Field::From, Comparator::Matches, "irctc.co.in|railyatri.in"),
+                (
+                    Field::Subject,
+                    Comparator::Matches,
+                    "ticket|pnr|boarding pass",
+                ),
+                (Field::Tab, Comparator::NotContains, "promotions"),
+                (Field::MailingList, Comparator::Equals, "no"),
+            ],
+            vec![
+                Action::AddLabel { folder: 7 },
+                Action::AddLabel { folder: 8 },
+                Action::MarkImportant,
+            ],
+        );
+        assert_eq!(
+            summary(&r, |_| Some("Travel".to_owned())),
+            "From contains irctc.co.in or railyatri.in, \
+             Subject contains ticket, pnr or boarding pass, \
+             Not in the Promotions tab and Not from a mailing list \
+             → label Travel, mark important"
+        );
+        let long = rule(
+            vec![(Field::Subject, Comparator::Matches, "a|b|c|d|e|f")],
+            vec![Action::MarkRead],
+        );
+        assert_eq!(
+            summary(&long, |_| None),
+            "Subject contains a, b, c or 3 more → mark read"
+        );
+        let pattern = rule(
+            vec![(Field::Subject, Comparator::Matches, "^re: .*")],
+            vec![Action::MarkRead],
+        );
+        assert!(summary(&pattern, |_| None).contains("matches the pattern ^re: .*"));
     }
 
     #[test]

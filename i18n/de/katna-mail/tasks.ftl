@@ -7,8 +7,11 @@
 tasks-create = Neue Aufgabe
 tasks-all = Alle Aufgaben
 tasks-today = Heute
+tasks-upcoming = Demnächst
 tasks-starred = Markiert
+tasks-completed-view = Erledigt
 tasks-new-list = Neue Liste erstellen
+tasks-labels-heading = Labels
 tasks-on-this-computer = Auf diesem Computer
 tasks-my-tasks = Meine Aufgaben
 # The line under an account in the side list whose task lists could not
@@ -18,7 +21,7 @@ tasks-account-signed-in = Wieder bei { $address } angemeldet. Ihre Aufgaben werd
 tasks-account-sign-in-refused = { $provider } hat Katna keinen Zugang gewährt. Versuchen Sie es erneut und erlauben Sie den Zugriff auf Ihre Aufgaben.
 tasks-account-refused = Der Server hat das Passwort nicht akzeptiert. Yahoo, iCloud, Zoho und andere brauchen ein App-Passwort.
 tasks-account-change-password = Passwort ändern
-tasks-account-change-password-tooltip = Einstellungen > Konten öffnen
+tasks-account-change-password-tooltip = Geben Sie das neue Passwort ein; Katna prüft es beim Server
 tasks-account-not-enabled = Der Aufgabenzugriff für Katna ist noch nicht eingeschaltet.
 tasks-account-failed = Die Aufgabenlisten konnten nicht gelesen werden.
 # $reason is the server's own words, in English.
@@ -47,7 +50,14 @@ tasks-title-placeholder = Titel
 tasks-add-step = Unteraufgabe hinzufügen
 tasks-empty = Noch keine Aufgaben. Fügen Sie oben eine hinzu.
 tasks-starred-empty = Markieren Sie eine Aufgabe, damit sie hier erscheint.
+tasks-label-empty = Keine offenen Aufgaben mit diesem Label.
 tasks-today-empty = Heute ist nichts fällig.
+tasks-completed-empty = Erledigte Aufgaben erscheinen hier.
+tasks-upcoming-add = Aufgabe für { $day } hinzufügen
+tasks-upcoming-overdue-day = { $weekday }, { $day }
+tasks-from-mail-quiet = Aus E-Mail
+tasks-from-note-quiet = Aus Notiz
+tasks-steps-done = { $done }/{ $count }
 tasks-today-date = { $weekday }, { $day }
 tasks-overdue = Überfällig
 tasks-completed = { $count ->
@@ -55,6 +65,11 @@ tasks-completed = { $count ->
    *[other] Erledigt ({ $count })
 }
 tasks-list-options = Listenoptionen
+tasks-sort-by = Sortieren nach
+tasks-sort-my-order = Meine Reihenfolge
+tasks-sort-date = Datum
+tasks-sort-starred = Zuletzt markiert
+tasks-sort-title = Titel
 tasks-rename-list = Liste umbenennen
 tasks-delete-list = Liste löschen
 tasks-mark-done = Als erledigt markieren
@@ -71,6 +86,17 @@ tasks-from-note = Notiz
 tasks-open-note = Die Notiz öffnen
 tasks-note-gone = Diese Notiz gibt es nicht mehr.
 tasks-no-subject = (kein Betreff)
+
+## Several tasks selected (Ctrl+click, Shift+click)
+
+tasks-selected = { $count ->
+    [one] { $count } ausgewählt
+   *[other] { $count } ausgewählt
+}
+tasks-select-clear = Auswahl aufheben
+tasks-select-move = In Liste verschieben
+tasks-select-date = Datum festlegen
+tasks-next-week = Nächste Woche
 
 ## The details dialog
 
@@ -91,6 +117,13 @@ tasks-remind-on-time = Zur festgelegten Zeit
 tasks-remind-morning = Am selben Tag, { $time }
 tasks-remind-hour-before = Eine Stunde vorher
 tasks-remind-day-before = Einen Tag vorher
+tasks-label-add = Label hinzufügen
+tasks-label-task = Aufgabe mit Label versehen
+tasks-files-attach = Dateien anhängen
+tasks-files-pick = Anhängen
+tasks-file-open = Öffnen
+tasks-file-remove = Datei entfernen
+tasks-file-here = Nur auf diesem Computer
 tasks-cancel = Abbrechen
 tasks-save = Speichern
 tasks-not-a-time = „{ $text }“ ist keine Uhrzeit, zum Beispiel { $example }.
@@ -107,6 +140,13 @@ tasks-due-at = { $day }, { $time }
 tasks-toast-done = Aufgabe erledigt
 tasks-toast-next = Erledigt. Nächste am { $date }
 tasks-toast-deleted = Aufgabe gelöscht
+tasks-files-added = { $count ->
+    [one] Datei angehängt
+   *[other] { $count } Dateien angehängt
+}
+tasks-file-removed = „{ $name }“ entfernt
+tasks-files-left-out = Nicht angehängt: { $names }. Eine Aufgabe nimmt Dateien bis { $limit } auf, keine Ordner.
+tasks-file-missing = Diese Datei ist nicht mehr vorhanden.
 tasks-toast-added = { $count ->
     [one] Zu Aufgaben hinzugefügt
    *[other] { $count } Aufgaben hinzugefügt
@@ -117,3 +157,27 @@ tasks-toast-moved = Nach { $list } verschoben
 # A task dragged to another place in its own list.
 tasks-toast-placed = Aufgabe verschoben
 tasks-toast-rescheduled = Aufgabe neu terminiert
+tasks-toast-rescheduled-several = { $count ->
+    [one] Aufgabe neu terminiert
+   *[other] { $count } Aufgaben neu terminiert
+}
+tasks-toast-done-several = { $count ->
+    [one] Aufgabe erledigt
+   *[other] { $count } Aufgaben erledigt
+}
+tasks-toast-open-several = { $count ->
+    [one] Aufgabe als nicht erledigt markiert
+   *[other] { $count } Aufgaben als nicht erledigt markiert
+}
+tasks-toast-starred = { $count ->
+    [one] Aufgabe markiert
+   *[other] { $count } Aufgaben markiert
+}
+tasks-toast-unstarred = { $count ->
+    [one] Markierung entfernt
+   *[other] Markierung von { $count } Aufgaben entfernt
+}
+tasks-toast-deleted-several = { $count ->
+    [one] Aufgabe gelöscht
+   *[other] { $count } Aufgaben gelöscht
+}

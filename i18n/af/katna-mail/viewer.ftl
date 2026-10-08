@@ -21,12 +21,20 @@ viewer-page-count = van { $count }
 viewer-go-to-page-tip = Tik ’n bladsynommer en druk Enter (Ctrl+G)
 viewer-rotate-clockwise-tip = Draai kloksgewys (Ctrl+R)
 viewer-rotate-anticlockwise-tip = Draai antikloksgewys (Ctrl+Shift+R)
+viewer-dark-pages-tip = Donker bladsye
+viewer-light-pages-tip = Wys bladsye soos hulle is
 viewer-fit-page-tip = Pas bladsy
 viewer-fit-picture-tip = Pas in venster
 viewer-fit-width-tip = Pas wydte
 viewer-real-size-tip = Werklike grootte (1:1)
 viewer-page-back-tip = Vorige bladsy
 viewer-page-on-tip = Volgende bladsy
+viewer-more-tip = Meer
+viewer-zoom-in = Zoem in
+viewer-zoom-out = Zoem uit
+viewer-real-size = Werklike grootte
+viewer-rotate-anticlockwise = Draai antikloksgewys
+viewer-rotate-clockwise = Draai kloksgewys
 
 ## Marking up a PDF
 

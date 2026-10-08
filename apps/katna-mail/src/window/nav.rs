@@ -13,8 +13,8 @@ use gpui::{
     canvas, div, list, point, prelude::*, radians, rgba, svg,
 };
 use katna_ui::motion::{self, Spring, lerp};
-use katna_ui::px;
 use katna_ui::{Glow, Ripple};
+use katna_ui::{px, tokens};
 
 use super::apps::APP_RAIL_WIDTH;
 use super::mail_drag::MailDrag;
@@ -23,16 +23,19 @@ use super::{
     FocusSearch, Hover, Listing, MailWindow, NAV_ROW_INSET, NAV_WIDTH, PANEL_RADIUS,
     SEARCH_CONTEXT, ToggleNavigation, ToggleSettings, compose,
 };
-use katna_core::AccountKind;
+use katna_core::{AccountId, AccountKind};
 use katna_i18n::tr;
 
-use crate::format;
 use crate::sidebar::{self, Role, Unified};
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{
     elevation, icon, icon_button, icon_button_colored, katna_mark, keys_ring, tip,
 };
 use katna_platform::colors::over;
+
+/// The crossed cloud of an offline account's line, and of its heading.
+const OFFLINE_MARK: f32 = tokens::space::S6 + tokens::space::S2;
+const OFFLINE_HEADING_MARK: f32 = tokens::space::S5 + tokens::space::S2;
 
 /// How far the floating folder pane stands off the rail and the top bar.
 const FLOAT_GAP: f32 = 8.0;
@@ -176,7 +179,9 @@ pub(super) fn side_row_with(
         .when(on, |d| {
             d.bg(rgba(th.row_selected)).font_weight(FontWeight::BOLD)
         })
-        .when(!on, |d| d.hover(|s| s.bg(rgba(th.hover))))
+        .when(!on, |d| {
+            d.child(crate::widgets::hover_fade("hover-glow", None, th))
+        })
         .child(Ripple::new(id, rgba(th.ripple)).rounded(NAV_ROW_HEIGHT / 2.0))
         .child(mark)
         .child(
@@ -189,30 +194,18 @@ pub(super) fn side_row_with(
         )
 }
 
-/// A side line's count, in a tight, faint pill of the line's text color:
-/// Mail's folders and the Files page's kinds and accounts. On the open
-/// line the pill is lighter than the line's grey.
-pub(super) fn count_pill(count: u64, on: bool, th: &Theme) -> gpui::Div {
-    let bg = if on {
-        th.row_selected_pill
-    } else {
-        fade(th.text, 0.08)
-    };
-    div().flex_none().pl(px(8.0)).child(
-        div()
-            .h(px(18.0))
-            .px(px(6.0))
-            .flex()
-            .items_center()
-            .rounded_full()
-            .bg(rgba(bg))
-            .text_size(px(12.0))
-            .child(format::thousands(count)),
-    )
-}
-
 /// The line the app's name rolls through on the top bar.
 const TITLE_LINE: f32 = 28.0;
+
+/// The hover circle of a button in a phone's search pill's rounded end,
+/// as wide as the account picture at the other end.
+const PILL_END_CIRCLE: f32 = 38.0;
+/// How far a sliding drawer's color reaches back over the rail's edge,
+/// past the spring's overshoot and the list's shadow there.
+const DRAWER_APRON: f32 = 12.0;
+/// How far a sliding drawer's color reaches up over the top bar, under the
+/// list's shadow there, clear of the search bar.
+const DRAWER_TOP_APRON: f32 = 8.0;
 
 /// The width of the Upload button's arrow, beside its words.
 const UPLOAD_ARROW: f32 = 44.0;
@@ -237,10 +230,16 @@ impl MailWindow {
             self.reserve_spring.value()
         };
         let open = docked.max(self.layout.drawer_t()).clamp(0.0, 1.0);
+        // On a phone the button sits in the search pill's rounded end:
+        // centred on it, its hover a circle inside the pill's, as far from
+        // the pill's edge as the account picture at the other end.
+        let phone = self.layout.shape.phone;
+        let hover_size = lerp(48.0, PILL_END_CIRCLE, phone);
         let menu = div()
             .id("menu-button")
+            .group("menu-button")
             .relative()
-            .ml(px(6.0))
+            .ml(px(lerp(6.0, 0.0, phone)))
             .size(px(48.0))
             .flex_none()
             .flex()
@@ -249,7 +248,6 @@ impl MailWindow {
             .rounded_full()
             .cursor_pointer()
             .keeps_press()
-            .hover(|s| s.bg(rgba(th.hover)))
             .on_mouse_move(|_, _, cx| cx.stop_propagation())
             .tooltip(tip(
                 match (page, open > 0.5) {
@@ -263,28 +261,39 @@ impl MailWindow {
             .on_click(cx.listener(|this, _, window, cx| {
                 this.toggle_navigation(&ToggleNavigation, window, cx)
             }))
-            .child(Ripple::new("menu-ripple", rgba(th.ripple)).centered())
             .child(self.tour_mark(Spot::Menu))
             // A panel whose left part fills while the folders show, fading
             // with the pane as it opens or folds.
             .child(
                 div()
                     .relative()
-                    .size(px(24.0))
+                    .flex_none()
+                    .size(px(hover_size))
+                    .flex()
+                    .items_center()
+                    .justify_center()
+                    .rounded_full()
+                    .group_hover("menu-button", |s| s.bg(rgba(th.hover)))
+                    .child(Ripple::new("menu-ripple", rgba(th.ripple)).centered())
                     .child(
-                        svg()
-                            .path("icons/folders-pane.svg")
-                            .size_full()
-                            .text_color(rgba(th.text_dim)),
-                    )
-                    .child(
-                        svg()
-                            .path("icons/folders-pane-fill.svg")
-                            .absolute()
-                            .top_0()
-                            .left_0()
-                            .size_full()
-                            .text_color(rgba(fade(th.text_dim, open))),
+                        div()
+                            .relative()
+                            .size(px(24.0))
+                            .child(
+                                svg()
+                                    .path("icons/folders-pane.svg")
+                                    .size_full()
+                                    .text_color(rgba(th.text_dim)),
+                            )
+                            .child(
+                                svg()
+                                    .path("icons/folders-pane-fill.svg")
+                                    .absolute()
+                                    .top_0()
+                                    .left_0()
+                                    .size_full()
+                                    .text_color(rgba(fade(th.text_dim, open))),
+                            ),
                     ),
             )
             .into_any_element();
@@ -404,7 +413,7 @@ impl MailWindow {
         }
         // Each page's own action, in the same button and place.
         let mail = self.app == super::RailApp::Mail;
-        let (icon_name, label) = self.primary_button();
+        let label = self.primary_button().1;
         // While a drive is open the button uploads, with an arrow beside
         // it for files or a folder.
         let upload = self.drive_upload_here();
@@ -413,7 +422,7 @@ impl MailWindow {
             super::COMPOSE_RAIL_LEFT,
             APP_RAIL_WIDTH + NAV_ROW_INSET,
             dock,
-        ) - APP_RAIL_WIDTH * shape.phone;
+        ) - (APP_RAIL_WIDTH - shape.rail());
         let top = super::COMPOSE_TOP;
         Some(
             div()
@@ -464,12 +473,7 @@ impl MailWindow {
                     Ripple::new("compose-ripple", rgba(th.ripple)).rounded(super::COMPOSE_RADIUS),
                 )
                 .child(self.tour_mark(Spot::Compose))
-                .child(
-                    div()
-                        .flex_none()
-                        .pl(px(16.0))
-                        .child(icon(icon_name, th.compose_text, 24.0)),
-                )
+                .child(div().flex_none().pl(px(16.0)).child(self.primary_icon(th)))
                 .child(
                     div()
                         .flex_none()
@@ -477,8 +481,7 @@ impl MailWindow {
                         .opacity(dock * dock)
                         .text_size(px(super::COMPOSE_TEXT_SIZE))
                         .font_weight(FontWeight::MEDIUM)
-                        .whitespace_nowrap()
-                        .child(label),
+                        .child(self.primary_label()),
                 )
                 .when(arrow > 0.5, |d| {
                     d.child(
@@ -573,6 +576,7 @@ impl MailWindow {
         th: &Theme,
         width: f32,
         t: f32,
+        activity_inside: bool,
         window: &gpui::Window,
         cx: &mut Context<Self>,
     ) -> AnyElement {
@@ -588,7 +592,7 @@ impl MailWindow {
             super::RailApp::Contacts | super::RailApp::Calendar
         );
         // On a phone the box is a pill across the bar, with the menu button
-        // and the account picture over its two ends.
+        // and the account picture (or pictures) over its two ends.
         let phone = self.layout.shape.phone;
         div()
             .id("search-box")
@@ -597,7 +601,8 @@ impl MailWindow {
             .w(px(width))
             .h(px(lerp(SEARCH_HEIGHT, 48.0, phone)))
             .pl(px(lerp(0.0, 56.0, phone)))
-            .pr(px(lerp(0.0, 50.0, phone)))
+            // All Accounts' stacked pictures reach further in than one.
+            .pr(px(lerp(0.0, 50.0 + self.account_stack_room(), phone)))
             .flex()
             .flex_row()
             .items_center()
@@ -699,6 +704,7 @@ impl MailWindow {
             .when(has_text, |d| {
                 d.child(
                     icon_button("search-clear", "close", 22.0, th)
+                        .when(phone > 0.5, |d| d.size(px(PILL_END_CIRCLE)))
                         .tooltip(tip(tr!("search-clear"), th))
                         .on_click(cx.listener(|this, _, window, cx| {
                             this.clear_keeps_open = true;
@@ -716,16 +722,33 @@ impl MailWindow {
                         if panel_open { th.accent } else { th.text_dim },
                         th,
                     )
+                    // As wide as the circles in the pill's ends, on a phone.
+                    .when(phone > 0.5, |d| d.size(px(PILL_END_CIRCLE)))
                     .tooltip(tip(tr!("search-options-show"), th))
                     .on_click(cx.listener(|this, _, window, cx| {
                         this.toggle_search_panel(window, cx);
                     })),
                 )
             })
+            // Activity, when the bar has no room for it at the right end.
+            .when(activity_inside, |d| {
+                d.children(self.render_activity_button(
+                    th,
+                    lerp(SEARCH_HEIGHT - 8.0, PILL_END_CIRCLE, phone),
+                    cx,
+                ))
+            })
             .into_any_element()
     }
 
-    pub(super) fn render_top_end(&self, th: &Theme, cx: &mut Context<Self>) -> Vec<AnyElement> {
+    /// The buttons at the bar's right end; `activity` puts Activity first
+    /// among them.
+    pub(super) fn render_top_end(
+        &self,
+        th: &Theme,
+        activity: bool,
+        cx: &mut Context<Self>,
+    ) -> Vec<AnyElement> {
         let settings = icon_button_colored(
             "settings-button",
             "settings",
@@ -752,6 +775,36 @@ impl MailWindow {
                 } else {
                     account.display_name.clone()
                 };
+                // All Accounts open: the accounts' pictures, stacked.
+                let stacked = self.stacked_accounts();
+                let label = |a: &katna_core::Account| {
+                    if a.display_name.trim().is_empty() {
+                        a.address.clone()
+                    } else {
+                        a.display_name.clone()
+                    }
+                };
+                let picture = |this: &Self| match &stacked {
+                    Some(accounts) => {
+                        // On a phone the pictures sit in the search pill's end.
+                        let fill = search_fill(th, 0.0);
+                        let pill = mix(th.backdrop, fill | 0xff, (fill & 0xff) as f32 / 255.0);
+                        let cut = mix(th.backdrop, pill, this.layout.shape.phone);
+                        this.render_account_stack(
+                            accounts,
+                            super::account_stack::PICTURE,
+                            // Spread while the menu is open too, so the
+                            // button's fill fits the pictures.
+                            this.account_hovered || this.account_menu,
+                            true,
+                            cut,
+                            th,
+                        )
+                    }
+                    None => {
+                        this.account_ring(&account.address, this.render_rolling_avatar(32.0), th)
+                    }
+                };
                 div()
                     .id("top-account")
                     .relative()
@@ -759,14 +812,49 @@ impl MailWindow {
                     .rounded_full()
                     .cursor_pointer()
                     .keeps_press()
-                    .hover(|s| s.bg(rgba(th.hover)))
+                    .child(crate::widgets::hover_fade("hover-glow", None, th))
                     .when(self.account_menu, |d| d.bg(rgba(th.hover)))
                     .on_mouse_move(|_, _, cx| cx.stop_propagation())
                     .tooltip(tip(
-                        if self.accounts.len() > 1 {
-                            format!("{name}\n{}\n{}", account.address, tr!("account-wheel-hint"))
-                        } else {
-                            format!("{name}\n{}", account.address)
+                        {
+                            let mut text = if let Some(accounts) = &stacked {
+                                let mut text = tr!("nav-all-accounts");
+                                for a in accounts {
+                                    text.push_str(&format!("\n{}", label(a)));
+                                }
+                                text.push_str(&format!("\n{}", tr!("account-wheel-hint")));
+                                text
+                            } else if self.accounts.len() > 1 {
+                                format!(
+                                    "{name}\n{}\n{}",
+                                    account.address,
+                                    tr!("account-wheel-hint")
+                                )
+                            } else {
+                                format!("{name}\n{}", account.address)
+                            };
+                            // Which accounts are offline, under the crossed
+                            // cloud on the picture.
+                            for offline in self
+                                .accounts
+                                .iter()
+                                .filter(|a| a.kind.is_mail() && self.is_account_offline(a.id))
+                            {
+                                let label = if offline.display_name.trim().is_empty() {
+                                    &offline.address
+                                } else {
+                                    &offline.display_name
+                                };
+                                text.push_str(&format!(
+                                    "\n{}",
+                                    tr!("offline-account-tip", account = label.clone())
+                                ));
+                            }
+                            // And what needs the user, under the amber sign.
+                            for problem in self.all_problems() {
+                                text.push_str(&format!("\n{}", problem.text()));
+                            }
+                            text
                         },
                         th,
                     ))
@@ -774,17 +862,26 @@ impl MailWindow {
                         cx.stop_propagation();
                         this.wheel_accounts(event, cx);
                     }))
+                    .on_hover(cx.listener(|this, hovered: &bool, _, cx| {
+                        if this.account_hovered != *hovered {
+                            this.account_hovered = *hovered;
+                            cx.notify();
+                        }
+                    }))
                     .on_click(cx.listener(|this, _, _, cx| {
                         this.account_menu = !this.account_menu;
                         this.app_menu = None;
                         cx.notify();
                     }))
-                    .child(self.account_ring(
-                        &account.address,
-                        self.render_rolling_avatar(32.0),
-                        32.0,
-                        th,
-                    ))
+                    .child(match self.top_problem() {
+                        // What needs the user wins the corner over offline.
+                        Some(problem) => {
+                            self.problem_badge(picture(self), 32.0, Some(&problem), th)
+                        }
+                        None => {
+                            self.offline_badge(picture(self), 32.0, self.any_account_offline(), th)
+                        }
+                    })
                     .child(self.tour_mark(Spot::Account))
                     .into_any_element()
             }
@@ -796,6 +893,19 @@ impl MailWindow {
         // A phone has Settings in its drawer.
         let phone = self.layout.shape.phone;
         let mut end = Vec::new();
+        // Opens and clicks, with the same gap as the buttons after it.
+        if activity {
+            end.extend(
+                self.render_activity_button(th, super::ACTIVITY_BUTTON_WIDTH, cx)
+                    .map(|button| {
+                        div()
+                            .flex_none()
+                            .mr(px(super::TOP_BAR_GAP - super::BAR_ITEM_GAP))
+                            .child(button)
+                            .into_any_element()
+                    }),
+            );
+        }
         // The day's agenda, on the Mail page of a desktop window.
         if self.agenda_button_shown() {
             end.push(
@@ -820,7 +930,8 @@ impl MailWindow {
         end.push(
             div()
                 .ml(px(super::TOP_BAR_GAP - super::BAR_ITEM_GAP))
-                .mr(px(8.0))
+                // On a phone, centred in the search pill's rounded end.
+                .mr(px(lerp(8.0, 4.0, phone)))
                 .child(account)
                 .into_any_element(),
         );
@@ -846,6 +957,8 @@ impl MailWindow {
         // A drawer (opened with the menu on a phone or tablet) slides in
         // whole; the desktop's panel unfolds.
         let slides = !shape.is_desktop() && !self.nav_peek;
+        // A drawer's color reaches back over the rail's edge.
+        let apron = if drawer { DRAWER_APRON } else { 0.0 };
         let width = if slides {
             self.drawer_width()
         } else {
@@ -881,9 +994,17 @@ impl MailWindow {
             .bottom(px(if drawer { 0.0 } else { 16.0 * float + gap }))
             .map(|d| {
                 if slides {
-                    d.left(px(-width * (1.0 - t))).w(px(width))
+                    // Its apron reaches back over the rail's edge, under
+                    // the list's shadow there. As the spring overshoots,
+                    // the apron stretches instead of moving, so its edge
+                    // and shadow never come into view.
+                    let over = width * (t - 1.0).max(0.0);
+                    d.left(px(-width * (1.0 - t).max(0.0)))
+                        .w(px(width + DRAWER_APRON + over))
+                        .pl(px(DRAWER_APRON + over))
                 } else {
-                    d.w(px(width * t)).opacity(t.min(1.0))
+                    // Unfolding from a hover, a drawer's apron does the same.
+                    d.w(px(width * t + apron)).pl(px(apron)).opacity(t.min(1.0))
                 }
             })
             .flex()
@@ -917,15 +1038,29 @@ impl MailWindow {
             .h_full()
             .w(px(NAV_WIDTH * reserve))
             .children(self.render_scrim(scrim_width, cx))
+            // Covers the list's shadow above the drawer; apart from the
+            // drawer, so the drawer's own shadow stays below the top bar.
+            .when(drawer && float > 0.0, |d| {
+                d.child(
+                    div()
+                        .absolute()
+                        .top(px(-DRAWER_TOP_APRON))
+                        .left(px(-apron))
+                        .w(px(apron + width * t))
+                        .h(px(DRAWER_TOP_APRON))
+                        .bg(rgba(th.page))
+                        .when(!slides, |d| d.opacity(t.min(1.0))),
+                )
+            })
             // Clips the drawer as it slides out from the rail's edge.
             .child(
                 div()
                     .absolute()
                     .top_0()
-                    .left_0()
+                    .left(px(-apron))
                     .bottom_0()
                     // Room for the panel's shadow.
-                    .w(px(width + 24.0))
+                    .w(px(width + 24.0 + apron))
                     .overflow_hidden()
                     .child(panel)
                     .children((!drawer && float > 0.0).then(|| self.render_notch(gap, float, th))),
@@ -976,6 +1111,7 @@ impl MailWindow {
                 ix,
                 tr!("nav-all-accounts"),
                 (*expanded, self.checking_all(), None),
+                (None, None),
                 th,
                 cx,
             ),
@@ -988,6 +1124,10 @@ impl MailWindow {
                     *expanded,
                     self.checking_account(*id),
                     self.account_bell_icon(*id),
+                ),
+                (
+                    self.is_account_offline(*id).then_some(*id),
+                    self.account_problem(*id),
                 ),
                 th,
                 cx,
@@ -1062,6 +1202,9 @@ impl MailWindow {
                                 .into_iter()
                                 .any(|f| self.checking_folder(f)),
                         bell: None,
+                        offline: None,
+                        left_out: None,
+                        warn: false,
                     },
                     th,
                     cx,
@@ -1073,6 +1216,7 @@ impl MailWindow {
                 name,
                 folder,
                 unread,
+                left_out,
             } => {
                 let selected = match folder {
                     Some(f) => self.listing == Some(Listing::Folder(*f)),
@@ -1099,6 +1243,10 @@ impl MailWindow {
                         checking: (*view == Unified::Inbox && self.checking_account(*account))
                             || folder.is_some_and(|f| self.checking_folder(f)),
                         bell: self.account_bell_icon(*account),
+                        offline: (*view == Unified::Inbox && self.is_account_offline(*account))
+                            .then_some(*account),
+                        left_out: left_out.then_some(*account),
+                        warn: false,
                     },
                     th,
                     cx,
@@ -1115,10 +1263,19 @@ impl MailWindow {
                 expanded,
             } => {
                 let scheduled = key == compose::SCHEDULED_NAV_KEY;
+                let outbox = key == compose::OUTBOX_NAV_KEY;
+                let waiting = key == super::waiting::NAV_KEY;
+                let reminders = key == super::remind::NAV_KEY;
                 // Special folders show their name in the current language;
                 // the user's own keep theirs.
                 let label = if scheduled {
                     tr!("folder-scheduled")
+                } else if waiting {
+                    tr!("folder-waiting-short")
+                } else if reminders {
+                    tr!("folder-reminders")
+                } else if outbox {
+                    tr!("folder-outbox")
                 } else {
                     role.title().unwrap_or_else(|| label.clone())
                 };
@@ -1129,18 +1286,29 @@ impl MailWindow {
                         depth: *depth,
                         icon: if scheduled {
                             "schedule"
+                        } else if waiting {
+                            "history"
+                        } else if reminders {
+                            "bell"
+                        } else if outbox {
+                            "outbox"
                         } else {
                             role_icon(*role)
                         },
                         label,
                         // Settings > Folders & rules can keep the counts
                         // to the inbox.
-                        unread: if self.config.mail.folder_unread_counts || *role == Role::Inbox {
+                        unread: if self.config.mail.folder_unread_counts
+                            || *role == Role::Inbox
+                            || outbox
+                        {
                             *unread
                         } else {
                             0
                         },
-                        selected: folder.is_some_and(|f| self.listing == Some(Listing::Folder(f))),
+                        selected: folder.is_some_and(|f| self.listing == Some(Listing::Folder(f)))
+                            || waiting && self.listing == Some(Listing::Waiting)
+                            || reminders && self.listing == Some(Listing::Reminders),
                         bold: true,
                         chevron: has_children.then_some(*expanded),
                         // New mail lands in the inbox.
@@ -1150,6 +1318,9 @@ impl MailWindow {
                                     .and_then(|f| self.tree.account_of(f))
                                     .is_some_and(|a| self.checking_account(a)),
                         bell: folder.and_then(|f| self.folder_bell_icon(f)),
+                        offline: None,
+                        left_out: None,
+                        warn: outbox && self.writing.outbox_needs_you(),
                     },
                     th,
                     cx,
@@ -1165,6 +1336,7 @@ impl MailWindow {
         ix: usize,
         name: String,
         (expanded, checking, bell): (bool, bool, Option<&'static str>),
+        (offline, problem): (Option<AccountId>, Option<super::problems::Problem>),
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
@@ -1211,6 +1383,34 @@ impl MailWindow {
                     14.0,
                 )))
             })
+            .when_some(offline, |d, account| {
+                d.child(
+                    div()
+                        .flex_none()
+                        .pl(px(tokens::space::S2))
+                        .child(self.offline_mark(
+                            ("nav-heading-offline", ix),
+                            account,
+                            OFFLINE_HEADING_MARK,
+                            th,
+                            cx,
+                        )),
+                )
+            })
+            .when_some(problem, |d, problem| {
+                d.child(
+                    div()
+                        .flex_none()
+                        .pl(px(tokens::space::S2))
+                        .child(self.problem_mark(
+                            ("nav-heading-problem", ix),
+                            problem,
+                            OFFLINE_HEADING_MARK,
+                            th,
+                            cx,
+                        )),
+                )
+            })
             .child(div().flex_1().pl(px(6.0)).pb(px(3.0)).when(checking, |d| {
                 d.child(super::nav_menu::turning_arrow(
                     "heading-checking",
@@ -1227,7 +1427,8 @@ impl MailWindow {
                     .items_center()
                     .justify_center()
                     .rounded_full()
-                    .hover(|s| s.bg(rgba(th.hover)))
+                    .relative()
+                    .child(crate::widgets::hover_fade("hover-glow", None, th))
                     .child(turning_chevron(
                         SharedString::from(format!("heading:{ix}")),
                         expanded,
@@ -1251,6 +1452,9 @@ impl MailWindow {
             chevron,
             checking,
             bell,
+            offline,
+            left_out,
+            warn,
         } = pill;
         let indent = 12.0 * depth as f32;
         let drop_folder = match self.nav_rows.get(ix) {
@@ -1354,6 +1558,8 @@ impl MailWindow {
                 icon_name,
                 if selected {
                     text
+                } else if left_out.is_some() {
+                    th.text_faint
                 } else {
                     folder_icon_color(icon_name, th)
                 },
@@ -1365,6 +1571,9 @@ impl MailWindow {
                     .min_w_0()
                     .pl(px(18.0))
                     .truncate()
+                    .when(left_out.is_some() && !selected, |d| {
+                        d.text_color(rgba(th.text_faint))
+                    })
                     .child(label),
             )
             // Beside the name, so the markers of lines line up whatever
@@ -1390,13 +1599,45 @@ impl MailWindow {
                         )),
                 )
             })
-            .when(unread > 0, |d| d.child(count_pill(unread, selected, th)))
+            // Before the count, which stays where it is.
+            .when_some(offline, |d, account| {
+                d.child(self.offline_mark(("nav-offline", ix), account, OFFLINE_MARK, th, cx))
+            })
+            .when(unread > 0 && left_out.is_none(), |d| {
+                d.child(
+                    crate::widgets::count_pill(unread, selected, th)
+                        .when(warn, |d| d.text_color(rgba(th.warning))),
+                )
+            })
+            .when_some(left_out, |d, account| {
+                d.child(
+                    div()
+                        .id(("nav-left-out", ix))
+                        .flex_none()
+                        .size(px(NAV_ROW_HEIGHT - 2.0 * tokens::space::S1))
+                        .flex()
+                        .items_center()
+                        .justify_center()
+                        .rounded_full()
+                        .hover(|s| s.bg(rgba(th.hover)))
+                        .child(icon("eye-off", th.text_dim, 18.0))
+                        .tooltip(tip(tr!("nav-unified-bring-back"), th))
+                        .on_click(cx.listener(move |this, _, _, cx| {
+                            cx.stop_propagation();
+                            this.set_inbox_left_out(account, false, cx);
+                        })),
+                )
+            })
             .children(chevron);
         // Named by the line rather than its place, which moves as lines
         // above fold or open.
         let row = row.with_spring(
             ElementId::Name(format!("nav-selected:{key}").into()),
-            SpringAnimation::new(motion::SMOOTH).to(if selected { 1.0 } else { 0.0 }),
+            SpringAnimation::new(katna_ui::motion::scaled(motion::SMOOTH)).to(if selected {
+                1.0
+            } else {
+                0.0
+            }),
             {
                 let bg = th.row_selected;
                 move |row, s: f32| {
@@ -1468,6 +1709,20 @@ impl MailWindow {
                 self.leave_settings(window, cx);
                 self.open_scheduled(cx);
             }
+            sidebar::Row::Folder { key, .. } if key == super::waiting::NAV_KEY => {
+                self.leave_listing(Listing::Waiting, cx);
+                self.open_waiting(cx);
+                self.picked_from_nav(window, cx);
+            }
+            sidebar::Row::Folder { key, .. } if key == super::remind::NAV_KEY => {
+                self.leave_listing(Listing::Reminders, cx);
+                self.open_reminders(cx);
+                self.picked_from_nav(window, cx);
+            }
+            sidebar::Row::Folder { key, .. } if key == compose::OUTBOX_NAV_KEY => {
+                self.leave_settings(window, cx);
+                self.open_outbox(cx);
+            }
             _ => self.toggle_nav_row(ix, cx),
         }
     }
@@ -1535,7 +1790,7 @@ impl MailWindow {
 
     /// A list picked in the folder pane while Settings is open takes its
     /// place, as in Gmail; folding a line does not.
-    fn leave_settings(&mut self, window: &mut gpui::Window, cx: &mut Context<Self>) {
+    pub(super) fn leave_settings(&mut self, window: &mut gpui::Window, cx: &mut Context<Self>) {
         if self.settings_page.is_some() {
             self.close_settings_page(window, cx);
         }
@@ -1760,6 +2015,14 @@ struct Pill {
     /// A bell, or a crossed bell, when its notifications differ from
     /// the usual (§15.1.1).
     bell: Option<&'static str>,
+    /// An account taken offline: a crossed cloud before its count, which
+    /// brings it back online.
+    offline: Option<AccountId>,
+    /// An account's inbox left out of the unified Inbox: it shows dimmed,
+    /// with an eye in place of its count that brings it back.
+    left_out: Option<AccountId>,
+    /// The count shows in amber: the outbox has mail that needs the user.
+    warn: bool,
 }
 
 /// An arrow that turns from pointing right to down as its line opens.
@@ -1771,7 +2034,11 @@ fn turning_chevron(key: SharedString, expanded: bool, color: u32) -> AnyElement 
         .text_color(rgba(color))
         .with_spring(
             ElementId::Name(format!("nav-turn:{key}").into()),
-            SpringAnimation::new(motion::SMOOTH).to(if expanded { 1.0 } else { 0.0 }),
+            SpringAnimation::new(katna_ui::motion::scaled(motion::SMOOTH)).to(if expanded {
+                1.0
+            } else {
+                0.0
+            }),
             |arrow, t: f32| {
                 arrow.with_transformation(Transformation::rotate(radians(FRAC_PI_2 * t)))
             },
@@ -1824,6 +2091,12 @@ pub(super) fn role_icon(role: Role) -> &'static str {
 /// The list a line of the folder pane opens, if it opens one.
 fn listing_of(row: &sidebar::Row) -> Option<Listing> {
     match row {
+        sidebar::Row::Folder { key, .. } if key == super::waiting::NAV_KEY => {
+            Some(Listing::Waiting)
+        }
+        sidebar::Row::Folder { key, .. } if key == super::remind::NAV_KEY => {
+            Some(Listing::Reminders)
+        }
         sidebar::Row::Folder {
             folder: Some(folder),
             ..

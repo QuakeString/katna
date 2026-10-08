@@ -13,14 +13,15 @@
 use std::time::Duration;
 
 use gpui::{
-    Animation, AnimationExt, AnyElement, Context, Div, MouseButton, Pixels, Point, SharedString,
-    Stateful, Transformation, Window, anchored, deferred, div, ease_out_quint, percentage,
+    Animation, AnimationExt, AnyElement, ClickEvent, Context, Div, MouseButton, Pixels, Point,
+    SharedString, Stateful, Transformation, Window, deferred, div, ease_out_quint, percentage,
     prelude::*, rgba, svg,
 };
 use katna_core::AccountId;
 use katna_i18n::tr;
 use katna_store::FolderId;
-use katna_ui::px;
+use katna_ui::anchored;
+use katna_ui::{px, tokens};
 
 use super::MenuKey;
 use super::{Act, Listing, MailWindow};
@@ -61,7 +62,7 @@ pub(super) fn turning_arrow(id: &'static str, color: u32, size: f32) -> impl Int
         .text_color(rgba(color))
         .with_animation(
             id,
-            Animation::new(Duration::from_millis(900)).repeat(),
+            Animation::new(katna_ui::motion::time(Duration::from_millis(900))).repeat(),
             |arrow, t| arrow.with_transformation(Transformation::rotate(percentage(t))),
         )
 }
@@ -87,6 +88,9 @@ pub(super) struct NavMenu {
     about: Option<AccountId>,
     /// Where that account's sync stands, once the daemon said.
     status: Option<katna_dbus::AccountStatus>,
+    /// An account's inbox under the unified Inbox, and whether the
+    /// unified Inbox leaves it out.
+    left_out: Option<(AccountId, bool)>,
 }
 
 impl MailWindow {
@@ -120,6 +124,7 @@ impl MailWindow {
                 editable: false,
                 about: None,
                 status: None,
+                left_out: None,
             },
             // Each account's own folder of that kind; a list by flag
             // spans every folder, so every account is checked.
@@ -139,6 +144,7 @@ impl MailWindow {
                 editable: false,
                 about: None,
                 status: None,
+                left_out: None,
             },
             sidebar::Row::Account { id, .. } | sidebar::Row::Labels { account: id } => NavMenu {
                 ix,
@@ -152,11 +158,14 @@ impl MailWindow {
                 editable: false,
                 about: matches!(row, sidebar::Row::Account { .. }).then_some(*id),
                 status: None,
+                left_out: None,
             },
             sidebar::Row::UnifiedAccount {
+                view,
                 account,
                 folder,
                 unread,
+                left_out,
                 ..
             } => NavMenu {
                 ix,
@@ -172,6 +181,7 @@ impl MailWindow {
                 editable: false,
                 about: Some(*account),
                 status: None,
+                left_out: (*view == sidebar::Unified::Inbox).then_some((*account, *left_out)),
             },
             sidebar::Row::Folder {
                 folder: Some(folder),
@@ -198,9 +208,10 @@ impl MailWindow {
                     editable: account.is_some_and(imap) && self.tree.editable(*folder),
                     about: None,
                     status: None,
+                    left_out: None,
                 }
             }
-            // Scheduled mail lives on this computer only.
+            // Scheduled mail and the outbox live on this computer only.
             sidebar::Row::Folder { .. } => return,
         };
         let about = menu.about;
@@ -267,7 +278,12 @@ impl MailWindow {
         } else {
             info.display_name.clone()
         };
+        // Taken offline here: the daemon has stopped it.
+        let offline = self.offline_text(account);
         let state = status.and_then(|status| {
+            if let Some(text) = offline.clone() {
+                return Some((th.text_faint, text));
+            }
             let provider = status.sign_in.parse::<OAuthProvider>().ok();
             let (color, text) = match status.state.as_str() {
                 state::ONLINE => (
@@ -282,7 +298,7 @@ impl MailWindow {
                 state::CONNECTING => (th.text_faint, tr!("nav-account-connecting")),
                 state::OFFLINE => (th.text_faint, tr!("nav-account-offline")),
                 state::AUTH_FAILED => (
-                    th.error,
+                    th.warning,
                     match provider {
                         Some(provider) => {
                             tr!("nav-account-signed-out", provider = provider.name())
@@ -292,7 +308,11 @@ impl MailWindow {
                 ),
                 _ => return None,
             };
-            Some(
+            Some((color, text))
+        });
+        let state = state
+            .or_else(|| offline.map(|text| (th.text_faint, text)))
+            .map(|(color, text)| {
                 div()
                     .flex()
                     .flex_row()
@@ -307,9 +327,8 @@ impl MailWindow {
                             .rounded_full()
                             .bg(rgba(color)),
                     )
-                    .child(div().min_w_0().truncate().child(text)),
-            )
-        });
+                    .child(div().min_w_0().truncate().child(text))
+            });
         let storage = self.quotas.get(&account).copied().map(|quota| {
             let fraction = quota.fraction();
             div()
@@ -351,7 +370,6 @@ impl MailWindow {
                 .child(div().flex_none().child(self.account_ring(
                     &info.address,
                     self.person_avatar(&name, &info.address, 36.0),
-                    36.0,
                     th,
                 )))
                 .child(
@@ -539,18 +557,11 @@ impl MailWindow {
         let check = menu.check.clone();
         let about = menu.about;
         let card = about.and_then(|a| self.render_nav_account(a, menu.status.as_ref(), th));
-        // Sign in again, for an account whose provider stopped letting it in.
-        let sign_in = menu
-            .status
-            .as_ref()
-            .filter(|s| s.state == state::AUTH_FAILED)
-            .and_then(|s| {
-                Some((
-                    s.id,
-                    s.address.clone(),
-                    s.sign_in.parse::<OAuthProvider>().ok()?,
-                ))
-            });
+        // The fix of an account that needs the user: Sign in again, or a
+        // new password.
+        let fix = about
+            .and_then(|a| self.account_problem(a))
+            .filter(|p| p.needs_you());
         // Mute… (or Unmute) the folder, or the account on its heading.
         let at = menu.at;
         let quiet = match (menu.folder, about) {
@@ -608,18 +619,18 @@ impl MailWindow {
                     }
                 },
             )
-            .when_some(sign_in, |d, (id, address, provider)| {
+            .when_some(fix, |d, fix| {
+                let label = match fix {
+                    super::problems::Problem::SignIn { .. } => tr!("nav-menu-sign-in-again"),
+                    _ => tr!("problems-new-password"),
+                };
                 d.child(
-                    item(
-                        "nav-menu-sign-in",
-                        "warning",
-                        tr!("nav-menu-sign-in-again").into(),
-                    )
-                    .text_color(rgba(th.error))
-                    .on_click(cx.listener(move |this, _, _, cx| {
-                        this.nav_menu = None;
-                        this.sign_in_account(id, address.clone(), provider, cx);
-                    })),
+                    item("nav-menu-fix", "warning", label.into())
+                        .text_color(rgba(th.warning))
+                        .on_click(cx.listener(move |this, event: &ClickEvent, window, cx| {
+                            this.nav_menu = None;
+                            this.fix_problem(fix.clone(), event.position(), window, cx);
+                        })),
                 )
                 .child(divider())
             })
@@ -656,6 +667,24 @@ impl MailWindow {
                 )
             })
             .children(quiet_item)
+            .when_some(menu.left_out, |d, (account, out)| {
+                d.child(
+                    item(
+                        "nav-menu-left-out",
+                        if out { "eye" } else { "eye-off" },
+                        if out {
+                            tr!("nav-unified-bring-back")
+                        } else {
+                            tr!("nav-unified-leave-out")
+                        }
+                        .into(),
+                    )
+                    .on_click(cx.listener(move |this, _, _, cx| {
+                        this.nav_menu = None;
+                        this.set_inbox_left_out(account, !out, cx);
+                    })),
+                )
+            })
             .when(
                 menu.folder.is_some() && (menu.nests || menu.editable),
                 |d| d.child(divider()),
@@ -700,6 +729,14 @@ impl MailWindow {
                     ),
                 )
             })
+            .when_some(
+                about.filter(|a| self.accounts.iter().any(|x| x.id == *a && x.kind.is_mail())),
+                |d, about| {
+                    d.child(divider())
+                        .children(self.offline_items(about, th, cx))
+                        .child(divider())
+                },
+            )
             .when_some(
                 about.filter(|a| self.accounts.iter().any(|x| x.id == *a && x.kind.is_mail())),
                 |d, about| {
@@ -749,7 +786,8 @@ impl MailWindow {
             )
             .with_animation(
                 ("nav-menu", menu.ix),
-                Animation::new(Duration::from_millis(140)).with_easing(ease_out_quint()),
+                Animation::new(katna_ui::motion::time(Duration::from_millis(140)))
+                    .with_easing(ease_out_quint()),
                 |el, t| el.opacity(t).mt(px(-4.0 * (1.0 - t))),
             );
         let close = || {
@@ -772,7 +810,13 @@ impl MailWindow {
                             .h(px(6000.0))
                             .occlude()
                             .on_mouse_down(MouseButton::Left, close())
-                            .on_mouse_down(MouseButton::Right, close()),
+                            .on_mouse_down(
+                                MouseButton::Right,
+                                cx.listener(|this, event: &gpui::MouseDownEvent, window, cx| {
+                                    this.close_nav_menu(cx);
+                                    super::popovers::pass_right_press(event, window);
+                                }),
+                            ),
                     )
                     .with_priority(3),
                 )
@@ -787,6 +831,79 @@ impl MailWindow {
                 )
                 .into_any_element(),
         )
+    }
+}
+
+impl MailWindow {
+    /// Go offline (for an hour, until tomorrow), or Go online, for
+    /// `account`.
+    fn offline_items(
+        &self,
+        account: AccountId,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> Vec<AnyElement> {
+        use super::offline::OfflineFor;
+        let line = |id: &'static str, glyph: Option<&str>, label: String| {
+            div()
+                .id(id)
+                .h(px(ITEM_HEIGHT))
+                .pl(px(tokens::space::S5))
+                .pr(px(tokens::space::S6))
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(tokens::space::S5))
+                .cursor_pointer()
+                .hover(|s| s.bg(rgba(th.hover)))
+                .menu_key(th)
+                .child(match glyph {
+                    Some(glyph) => icon(glyph, th.text_dim, 20.0),
+                    // Under the item it belongs to, its label in line.
+                    None => div().flex_none().size(px(20.0)).into_any_element(),
+                })
+                .child(div().flex_1().min_w_0().truncate().child(label))
+        };
+        if self.is_account_offline(account) {
+            return vec![
+                line("nav-menu-online", Some("cloud"), tr!("offline-go-online"))
+                    .on_click(cx.listener(move |this, _, _, cx| {
+                        this.nav_menu = None;
+                        this.set_account_offline(account, None, cx);
+                    }))
+                    .into_any_element(),
+            ];
+        }
+        [
+            (
+                "nav-menu-offline",
+                Some("cloud-off"),
+                tr!("offline-go-offline"),
+                OfflineFor::Now,
+            ),
+            (
+                "nav-menu-offline-hour",
+                None,
+                tr!("offline-for-hour"),
+                OfflineFor::Hour,
+            ),
+            (
+                "nav-menu-offline-tomorrow",
+                None,
+                tr!("offline-until-tomorrow"),
+                OfflineFor::Tomorrow,
+            ),
+        ]
+        .into_iter()
+        .map(|(id, glyph, label, time)| {
+            line(id, glyph, label)
+                .on_click(cx.listener(move |this, _, _, cx| {
+                    this.nav_menu = None;
+                    this.set_account_offline(account, Some(time), cx);
+                }))
+                .into_any_element()
+        })
+        .collect()
     }
 }
 

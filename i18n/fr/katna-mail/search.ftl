@@ -14,6 +14,7 @@ search-without = Ne contient pas
 search-date-within = Période
 search-has-attachment = Contient une pièce jointe
 search-attachment-custom = Personnalisé
+search-attachment-image = Image
 search-attachment-custom-hint = Saisissez une extension, par exemple png, puis Espace
 search-attachment-remove = Retirer
 search-clear-filter = Effacer le filtre

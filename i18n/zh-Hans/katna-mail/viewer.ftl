@@ -20,12 +20,20 @@ viewer-page-count = 页，共 { $count } 页
 viewer-go-to-page-tip = 输入页码并按 Enter 键（Ctrl+G）
 viewer-rotate-clockwise-tip = 顺时针旋转 (Ctrl+R)
 viewer-rotate-anticlockwise-tip = 逆时针旋转 (Ctrl+Shift+R)
+viewer-dark-pages-tip = 深色页面
+viewer-light-pages-tip = 按原样显示页面
 viewer-fit-page-tip = 适合页面
 viewer-fit-picture-tip = 适合窗口
 viewer-fit-width-tip = 适合宽度
 viewer-real-size-tip = 实际大小 (1:1)
 viewer-page-back-tip = 上一页
 viewer-page-on-tip = 下一页
+viewer-more-tip = 更多
+viewer-zoom-in = 放大
+viewer-zoom-out = 缩小
+viewer-real-size = 实际大小
+viewer-rotate-anticlockwise = 逆时针旋转
+viewer-rotate-clockwise = 顺时针旋转
 
 ## Marking up a PDF
 

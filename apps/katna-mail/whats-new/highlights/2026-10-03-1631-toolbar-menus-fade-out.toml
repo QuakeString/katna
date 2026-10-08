@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Toolbar menus fade away too"
+text = """
+The menus under the toolbar buttons, such as More and the select box,
+fade out when they close instead of vanishing.
+"""

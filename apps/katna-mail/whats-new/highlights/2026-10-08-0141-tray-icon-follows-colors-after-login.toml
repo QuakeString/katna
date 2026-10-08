@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Tray icon matches your panel from login"
+text = """
+On KDE Plasma, the one-color tray icon now takes your panel's color right
+after login and follows each switch between light and dark, without
+restarting Katna.
+"""

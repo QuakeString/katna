@@ -9,6 +9,13 @@ shortcut-group-actions = Ayyuka
 shortcut-group-go-to = Je zuwa
 shortcut-group-app = Manhaja
 
+## Help > Keyboard shortcuts: every shortcut in a dialog over the window
+
+shortcuts-dialog-title = Gajerun hanyoyin madannai
+shortcuts-dialog-search = Nemo gajeriyar hanya
+shortcuts-dialog-none = Babu gajeriyar hanyar da ta dace
+shortcuts-dialog-close = Rufe
+
 ## Settings > Keyboard shortcuts: what each shortcut does
 
 shortcut-next = Tattaunawa ta gaba
@@ -37,6 +44,8 @@ shortcut-mark-read = Yi alama an karanta
 shortcut-mark-unread = Yi alama ba a karanta ba
 shortcut-star = Saka ko cire tauraro
 shortcut-add-to-tasks = Ƙara a Ayyuka
+shortcut-snooze = Jinkirta
+shortcut-remind = Tunatar da ni
 shortcut-important = Yi alama muhimmi
 shortcut-not-important = Yi alama ba muhimmi ba
 shortcut-mute = Yi shiru ko cire shirun tattaunawa

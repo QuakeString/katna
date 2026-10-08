@@ -5,18 +5,21 @@
 
 use std::cell::{Cell, RefCell};
 use std::collections::HashMap;
+use std::f32::consts::PI;
 use std::rc::Rc;
+use std::time::{Duration, Instant};
 
 use gpui::{
     AnimationExt, AnyElement, AnyView, App, Bounds, BoxShadow, Div, ElementId, FocusHandle,
-    FontWeight, Pixels, ScrollHandle, SharedString, Stateful, StyleRefinement, Window, canvas, div,
-    img, point, prelude::*, rgba, svg,
+    FontWeight, Pixels, ScrollHandle, SharedString, SpringAnimation, Stateful, StyleRefinement,
+    Transformation, Window, canvas, div, img, point, prelude::*, radians, rgba, svg,
 };
-use katna_ui::motion::lerp;
-use katna_ui::px;
+use katna_ui::motion::{self, lerp};
+use katna_ui::tokens::{radius, space, state, text};
 use katna_ui::{Glow, Ripple, Tooltip, WindowDrag};
+use katna_ui::{px, unpx};
 
-use crate::theme::{Theme, avatar_color, fade, initial};
+use crate::theme::{Theme, avatar_color, fade, initial, mix};
 use crate::window::MenuKey;
 
 pub const TOOLBAR_HEIGHT: f32 = 48.0;
@@ -27,6 +30,76 @@ pub fn icon(name: &str, color: u32, size: f32) -> AnyElement {
         .size(px(size))
         .flex_none()
         .text_color(rgba(color))
+        .into_any_element()
+}
+
+/// Icon `to` turning in from where `from` turns away, `t` of the way (0
+/// to 1): the old one turns a quarter clockwise as it shrinks and fades,
+/// the new one follows it round from a quarter back, growing in.
+pub fn morph_icon(from: &str, to: &str, t: f32, color: u32, size: f32) -> AnyElement {
+    let t = t.clamp(0.0, 1.0);
+    if t >= 0.999 || from == to {
+        return icon(to, color, size);
+    }
+    let turned = |name: &str, turn: f32, scale: f32, opacity: f32| {
+        svg()
+            .path(SharedString::from(format!("icons/{name}.svg")))
+            .absolute()
+            .top_0()
+            .left_0()
+            .size(px(size))
+            .text_color(rgba(color))
+            .opacity(opacity)
+            .with_transformation(
+                gpui::Transformation::rotate(gpui::radians(std::f32::consts::FRAC_PI_2 * turn))
+                    .with_scaling(gpui::size(scale, scale)),
+            )
+    };
+    // The two overlap in the middle so the button is never empty.
+    let out = (t / 0.6).min(1.0);
+    let into = ((t - 0.3) / 0.7).max(0.0);
+    div()
+        .relative()
+        .flex_none()
+        .size(px(size))
+        .child(turned(from, t, lerp(1.0, 0.4, out), 1.0 - out))
+        .child(turned(to, t - 1.0, lerp(0.4, 1.0, t), into))
+        .into_any_element()
+}
+
+/// Word `to` rolling up into the place of `from`, `t` of the way (0 to
+/// 1), in step with [`morph_icon`]: the old word rises a little as it
+/// fades and the new one rises after it, both clipped to `width`.
+pub fn morph_label(from: &str, to: &str, t: f32, width: f32) -> AnyElement {
+    const LINE: f32 = 20.0;
+    const RISE: f32 = 8.0;
+    let t = t.clamp(0.0, 1.0);
+    let word = |text: &str, top: f32, opacity: f32| {
+        div()
+            .absolute()
+            .left_0()
+            .top(px(RISE + top))
+            .h(px(LINE))
+            .whitespace_nowrap()
+            .opacity(opacity)
+            .child(text.to_owned())
+    };
+    let out = (t / 0.6).min(1.0);
+    let into = ((t - 0.3) / 0.7).max(0.0);
+    let turning = t < 0.999 && from != to;
+    div()
+        .relative()
+        .flex_none()
+        .w(px(width))
+        .h(px(LINE + 2.0 * RISE))
+        .line_height(px(LINE))
+        .overflow_hidden()
+        .when(turning, |d| d.child(word(from, -RISE * out, 1.0 - out)))
+        .child(if turning {
+            word(to, RISE * (1.0 - t), into)
+        } else {
+            word(to, 0.0, 1.0)
+        })
         .into_any_element()
 }
 
@@ -79,7 +152,10 @@ pub fn spinner(id: impl Into<ElementId>, color: u32, size: f32) -> AnyElement {
         .text_color(rgba(color))
         .with_animation(
             id,
-            gpui::Animation::new(std::time::Duration::from_millis(900)).repeat(),
+            gpui::Animation::new(katna_ui::motion::time(std::time::Duration::from_millis(
+                900,
+            )))
+            .repeat(),
             |arc, t| arc.with_transformation(gpui::Transformation::rotate(gpui::percentage(t))),
         )
         .into_any_element()
@@ -102,9 +178,16 @@ pub fn katna_mark(size: f32, th: &Theme) -> AnyElement {
 /// Katna Mail's wordmark, "katna mail" in script on its disc in the
 /// colour scheme's accent, `height` px tall.
 pub fn katna_wordmark(height: f32, th: &Theme) -> AnyElement {
+    katna_wordmark_from(height, height, th)
+}
+
+/// [`katna_wordmark`] drawn from its picture `source` px tall: a wordmark
+/// that grows and shrinks keeps one picture, so it never blinks while a
+/// new size loads.
+pub fn katna_wordmark_from(height: f32, source: f32, th: &Theme) -> AnyElement {
     let (w, h) = crate::assets::WORDMARK_SIZE;
     img(SharedString::from(crate::assets::wordmark_path(
-        height * katna_ui::scale::scale(),
+        source * katna_ui::scale::scale(),
         logo_tint(th),
     )))
     .w(px(height * w as f32 / h as f32))
@@ -205,7 +288,8 @@ fn swatch_ring(
         .keeps_press()
         .border_2()
         .border_color(rgba(ring.unwrap_or(0x00000000)))
-        .hover(|s| s.bg(rgba(th.hover)))
+        .relative()
+        .child(crate::widgets::hover_fade("hover-glow", None, th))
 }
 
 /// The logo's disc takes the accent and its mark the accent's text
@@ -240,6 +324,15 @@ pub fn icon_button_colored(
     color: u32,
     th: &Theme,
 ) -> Stateful<Div> {
+    icon_button_with(id, icon(name, color, size), th)
+}
+
+/// An [`icon_button_colored`] around any icon, such as a [`fold_arrow`].
+pub fn icon_button_with(
+    id: impl Into<gpui::ElementId>,
+    glyph: AnyElement,
+    th: &Theme,
+) -> Stateful<Div> {
     let id = id.into();
     div()
         .id(id.clone())
@@ -257,7 +350,141 @@ pub fn icon_button_colored(
         .on_mouse_move(|_, _, cx| cx.stop_propagation())
         .child(Glow::new(("glow", id_hash(&id)), rgba(th.hover)))
         .child(Ripple::new(("ripple", id_hash(&id)), rgba(th.ripple)).centered())
-        .child(icon(name, color, size))
+        .child(glyph)
+}
+
+/// What a [`fold_box`] and its [`fold_arrow`] keep between frames: how often
+/// it turned, when it last did, and how tall its content was then and is
+/// now. Keep one per thing that opens and closes.
+#[derive(Default)]
+pub struct Fold {
+    turns: Cell<u32>,
+    at: Cell<Option<Instant>>,
+    from: Cell<f32>,
+    now: Rc<Cell<f32>>,
+    /// Whether `now` has been measured, so a box folded to nothing can
+    /// glide open from 0.
+    measured: Rc<Cell<bool>>,
+    /// Whether it was open when last drawn by [`fold_arrow`].
+    was_open: Cell<Option<bool>>,
+}
+
+impl Fold {
+    /// One that starts closed, at no height, so the first time it opens
+    /// glides from nothing (a box that appears rather than unfolds).
+    pub fn closed() -> Self {
+        let fold = Self::default();
+        fold.measured.set(true);
+        fold.was_open.set(Some(false));
+        fold
+    }
+
+    /// Call when it opens or closes, so the next frames glide there.
+    pub fn turn(&self) {
+        self.turns.set(self.turns.get().wrapping_add(1));
+        self.at.set(Some(Instant::now()));
+        self.from.set(if self.measured.get() {
+            self.now.get()
+        } else {
+            -1.0
+        });
+    }
+
+    /// Turns it when `open` changed since the last call, so an arrow
+    /// turns however its state changed.
+    pub fn sync(&self, open: bool) {
+        if self
+            .was_open
+            .replace(Some(open))
+            .is_some_and(|was| was != open)
+        {
+            self.turn();
+        }
+    }
+
+    /// It turned a moment ago and is still gliding.
+    pub fn moving(&self) -> bool {
+        self.at.get().is_some_and(|at| at.elapsed() < FOLD_GLIDE)
+    }
+
+    pub fn id(&self, name: &str) -> SharedString {
+        SharedString::from(format!("{name}-{}", self.turns.get()))
+    }
+}
+
+/// Longer than a fold's spring takes to settle.
+const FOLD_GLIDE: Duration = Duration::from_millis(700);
+
+/// A box that glides between the heights of what it showed before its
+/// [`Fold`] turned and what it shows now (`content`, the open or the
+/// folded form), on the `SLIDE` spring with its little overshoot; the
+/// new content shows through it as it grows, with no fade, so nothing
+/// that stays (a header) blinks. At rest it is as tall as `content`.
+pub fn fold_box(name: &str, fold: &Fold, content: impl IntoElement) -> AnyElement {
+    let (measure, measured) = (fold.now.clone(), fold.measured.clone());
+    let body = div().flex().flex_col().overflow_hidden().child(
+        div().flex_none().relative().child(content).child(
+            canvas(
+                move |bounds, _, _| {
+                    measure.set(unpx(bounds.size.height));
+                    measured.set(true);
+                },
+                |_, _, _, _| {},
+            )
+            .absolute()
+            .top_0()
+            .left_0()
+            .size_full(),
+        ),
+    );
+    let from = fold.from.get();
+    if !fold.moving() || from < 0.0 {
+        return body.into_any_element();
+    }
+    let now = fold.now.clone();
+    body.with_spring(
+        fold.id(name),
+        SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE))
+            .to(1.0)
+            .from(0.0),
+        move |el, t| el.h(px(lerp(from, now.get(), t).max(0.0))),
+    )
+    .into_any_element()
+}
+
+/// The arrow of a [`fold_box`]: points down while closed and turns half round
+/// to point up as it opens, on the `SMOOTH` spring.
+pub fn fold_arrow(name: &str, fold: &Fold, open: bool, color: u32, size: f32) -> AnyElement {
+    fold.sync(open);
+    let (was, to) = if open { (0.0, PI) } else { (PI, 0.0) };
+    let animation = SpringAnimation::new(katna_ui::motion::scaled(motion::SMOOTH)).to(to);
+    let animation = if fold.moving() {
+        animation.from(was)
+    } else {
+        animation
+    };
+    svg()
+        .path("icons/chevron-down.svg")
+        .size(px(size))
+        .flex_none()
+        .text_color(rgba(color))
+        .with_spring(fold.id(name), animation, |arrow, turn: f32| {
+            arrow.with_transformation(Transformation::rotate(radians(turn)))
+        })
+        .into_any_element()
+}
+
+/// The shared hover fade (`katna_ui::Glow`) for a box that is not one of
+/// the round or pill buttons above: it eases in and out instead of
+/// switching, and follows Animation speed and Reduce motion. Make the box
+/// `relative()` and put this first among its children; `radius` is its
+/// corner radius, `None` for a pill or circle.
+pub fn hover_fade(id: impl Into<gpui::ElementId>, radius: Option<f32>, th: &Theme) -> Glow {
+    let glow = Glow::new(id, rgba(th.hover));
+    match radius {
+        Some(r) => glow.corners([r; 4]),
+        None => glow.fade(),
+    }
 }
 
 /// A stable number for a ripple's ID derived from its button's ID.
@@ -316,20 +543,49 @@ pub fn pill_button(
 /// How far a card's shadow reaches past its edges.
 pub const CARD_SHADOW_ROOM: f32 = 4.0;
 
-/// The very short, soft shadow under a card, for a little depth. `t`
-/// fades it away (0 on a phone, whose cards run edge to edge).
+/// The very short shadow under a card, for a little depth. `t` fades it
+/// away (0 on a phone, whose cards run edge to edge); a card at rest
+/// beside the one with the keys gets [`CARD_REST`] of it. In light colors
+/// the card also gets a crisp hairline ring ([`Theme::card_edge`]) and a
+/// tighter shadow, so its edge stays sharp on the near-white page.
 pub fn card_shadow(th: &Theme, t: f32) -> Vec<BoxShadow> {
     if t <= 0.001 {
         return Vec::new();
     }
-    vec![BoxShadow {
-        color: rgba(fade(th.shadow, 0.3 * t.min(1.0))).into(),
-        offset: point(px(0.0), px(1.0)),
-        blur_radius: px(3.0),
-        spread_radius: px(0.0),
-        inset: false,
-    }]
+    let t = t.min(1.0);
+    if th.card_edge & 0xff == 0 {
+        return vec![BoxShadow {
+            color: rgba(fade(th.shadow, 0.3 * t)).into(),
+            offset: point(px(0.0), px(1.0)),
+            blur_radius: px(3.0),
+            spread_radius: px(0.0),
+            inset: false,
+        }];
+    }
+    // The ring stays nearly full at rest (80%) so every card keeps its
+    // edge; it fades in with the card only below that.
+    let ring = (t / CARD_REST).min(1.0) * lerp(0.8, 1.0, t);
+    vec![
+        BoxShadow {
+            color: rgba(fade(th.card_edge, ring)).into(),
+            offset: point(px(0.0), px(0.0)),
+            blur_radius: px(0.0),
+            spread_radius: px(1.0),
+            inset: false,
+        },
+        BoxShadow {
+            color: rgba(fade(th.shadow, 0.47 * t)).into(),
+            offset: point(px(0.0), px(1.0)),
+            blur_radius: px(2.0),
+            spread_radius: px(0.0),
+            inset: false,
+        },
+    ]
 }
+
+/// How strongly a card at rest beside the one with the keys shows its
+/// shadow, as `t` of [`card_shadow`].
+pub const CARD_REST: f32 = 0.15;
 
 /// A faint line around a card (the list, the reading pane, Quick
 /// settings). It is drawn over the card's content, so lines of the list
@@ -350,31 +606,72 @@ pub fn card_outline(th: &Theme, radius: f32, t: f32) -> Option<AnyElement> {
     })
 }
 
+/// How a button shows. Every labelled button is one of these
+/// (`docs/DESIGN.md`); round icon buttons are [`icon_button`] and
+/// [`tonal_icon_button`].
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum ButtonStyle {
+    /// Accent fill: the primary action of a panel.
+    Filled,
+    /// An edge and accent text: a second action beside a filled one.
+    Outlined,
+    /// Accent text alone, with a soft hover: a light action inside a card.
+    Text,
+}
+
+/// The height of a labelled button.
+pub const BUTTON_HEIGHT: f32 = 36.0;
+
+/// A rounded button in `style`, ready for its label (and an icon before
+/// it, with [`ButtonStyle::Text`]): shape, colours, hover and ripple.
+pub fn button(id: impl Into<gpui::ElementId>, style: ButtonStyle, th: &Theme) -> Stateful<Div> {
+    let id = id.into();
+    let ripple = id_hash(&id);
+    let base = div()
+        .id(id)
+        .relative()
+        .overflow_hidden()
+        .flex_none()
+        .h(px(BUTTON_HEIGHT))
+        .flex()
+        .flex_row()
+        .items_center()
+        .rounded_full()
+        .text_size(px(text::BODY))
+        .font_weight(FontWeight::MEDIUM)
+        .cursor_pointer()
+        .keeps_press();
+    match style {
+        ButtonStyle::Filled => base
+            .px(px(space::S6))
+            .bg(rgba(th.accent))
+            .text_color(rgba(th.on_accent))
+            .hover(|s| s.shadow(elevation(th, 1.0)))
+            .child(Ripple::new(("ripple", ripple), rgba(0xffffff3d))),
+        // 20, between S5 and S6: the edge makes the button look wider.
+        ButtonStyle::Outlined => base
+            .px(px(20.0))
+            .border_1()
+            .border_color(rgba(fade(th.text_faint, 0.7)))
+            .text_color(rgba(th.accent))
+            .child(Glow::new(("glow", ripple), rgba(th.hover)).fade())
+            .child(Ripple::new(("ripple", ripple), rgba(th.ripple))),
+        ButtonStyle::Text => base
+            .px(px(space::S4))
+            .gap(px(6.0))
+            .text_color(rgba(th.accent))
+            .child(Glow::new(("glow", ripple), rgba(th.hover)).fade())
+            .child(Ripple::new(("ripple", ripple), rgba(th.ripple))),
+    }
+}
+
 /// A filled, rounded button (the primary action of a panel).
 pub fn filled_button(
     id: impl Into<gpui::ElementId>,
     label: impl Into<SharedString>,
     th: &Theme,
 ) -> Stateful<Div> {
-    let id = id.into();
-    div()
-        .id(id.clone())
-        .relative()
-        .overflow_hidden()
-        .h(px(36.0))
-        .px(px(24.0))
-        .flex()
-        .items_center()
-        .rounded_full()
-        .bg(rgba(th.accent))
-        .text_color(rgba(th.on_accent))
-        .text_size(px(14.0))
-        .font_weight(FontWeight::MEDIUM)
-        .cursor_pointer()
-        .keeps_press()
-        .hover(|s| s.shadow(elevation(th, 1.0)))
-        .child(Ripple::new(("ripple", id_hash(&id)), rgba(0xffffff3d)))
-        .child(label.into())
+    button(id, ButtonStyle::Filled, th).child(label.into())
 }
 
 /// An outlined, rounded button with a label.
@@ -383,26 +680,314 @@ pub fn outlined_button(
     label: impl Into<SharedString>,
     th: &Theme,
 ) -> Stateful<Div> {
+    button(id, ButtonStyle::Outlined, th).child(label.into())
+}
+
+/// An accent label with an icon before it, and no edge or fill until the
+/// pointer is over it ("Add email").
+pub fn text_button(
+    id: impl Into<gpui::ElementId>,
+    name: &str,
+    label: impl Into<SharedString>,
+    th: &Theme,
+) -> Stateful<Div> {
+    button(id, ButtonStyle::Text, th)
+        .child(icon(name, th.accent, 18.0))
+        .child(label.into())
+}
+
+/// The fill of a [`tonal_icon_button`] at rest and under the pointer: the
+/// accent, lightly, over the card.
+pub fn tonal_fill(th: &Theme) -> (u32, u32) {
+    let accent = th.accent | 0xff;
+    let t = if th.dark { 0.16 } else { 0.17 };
+    (
+        mix(th.surface, accent, t),
+        mix(th.surface, accent, t + 0.08),
+    )
+}
+
+/// A round icon button on a light accent fill (a contact's mail, search
+/// and call actions). `on` fills it with the accent (muted); one that is
+/// not `enabled` dims and takes no clicks.
+pub fn tonal_icon_button(
+    id: impl Into<gpui::ElementId>,
+    name: &str,
+    size: f32,
+    on: bool,
+    enabled: bool,
+    th: &Theme,
+) -> Stateful<Div> {
     let id = id.into();
+    let ripple = id_hash(&id);
+    let (rest, hover) = tonal_fill(th);
+    let (fill, glyph) = if on {
+        (th.accent | 0xff, th.on_accent)
+    } else {
+        (rest, th.accent)
+    };
     div()
-        .id(id.clone())
+        .id(id)
         .relative()
         .overflow_hidden()
-        .h(px(36.0))
-        .px(px(20.0))
+        .size(px(size))
+        .flex_none()
         .flex()
         .items_center()
+        .justify_center()
+        .rounded_full()
+        .bg(rgba(fill))
+        .when(!enabled, |d| d.opacity(state::DISABLED))
+        .when(enabled, |d| {
+            d.cursor_pointer()
+                .when(!on, |d| d.hover(move |s| s.bg(rgba(hover))))
+                .child(Ripple::new(("ripple", ripple), rgba(th.ripple)).centered())
+        })
+        .child(icon(name, glyph, 20.0))
+}
+
+/// The height of a [`choice_chip`].
+pub const CHIP_HEIGHT: f32 = 32.0;
+
+/// One choice in a row of them (a date range, an address book): an edge
+/// at rest, soft grey with a check while picked.
+pub fn choice_chip(
+    id: impl Into<gpui::ElementId>,
+    label: impl Into<SharedString>,
+    on: bool,
+    th: &Theme,
+) -> Stateful<Div> {
+    let id = id.into();
+    let ripple = id_hash(&id);
+    div()
+        .id(id)
+        .relative()
+        .overflow_hidden()
+        .flex_none()
+        .h(px(CHIP_HEIGHT))
+        .px(px(space::S4))
+        .flex()
+        .flex_row()
+        .items_center()
+        .gap(px(6.0))
+        .rounded(px(radius::SM))
+        .border_1()
+        .border_color(rgba(if on { th.nav_selected } else { th.outline }))
+        .bg(rgba(if on { th.nav_selected } else { th.surface }))
+        .when(!on, |d| d.hover(|s| s.bg(rgba(th.hover))))
+        .cursor_pointer()
+        .text_size(px(text::SMALL))
+        .text_color(rgba(if on { th.nav_selected_text } else { th.text }))
+        .child(Ripple::new(("ripple", ripple), rgba(th.ripple)))
+        .when(on, |d| d.child(icon("check", th.nav_selected_text, 16.0)))
+        // A long address or name is cut short with "…" rather than
+        // running past the row.
+        .max_w_full()
+        .min_w_0()
+        .child(div().min_w_0().truncate().child(label.into()))
+}
+
+/// A small grey label that is not clicked (Coming soon, a day in a chat,
+/// a contact's label).
+pub fn tag(label: impl Into<SharedString>, th: &Theme) -> Div {
+    div()
+        .flex_none()
+        .px(px(10.0))
+        .py(px(space::S1))
+        .rounded_full()
+        .bg(rgba(th.chip))
+        .text_size(px(text::CAPTION))
+        .text_color(rgba(th.text_dim))
+        .child(label.into())
+}
+
+/// A [`tag`] with a small icon before its label (a reminder's time, a
+/// note's mail).
+pub fn icon_tag(name: &str, label: impl IntoElement, th: &Theme) -> Div {
+    div()
+        .flex_none()
+        .flex()
+        .flex_row()
+        .items_center()
+        .gap(px(space::S2))
+        .pl(px(space::S3))
+        .pr(px(10.0))
+        .py(px(space::S1))
+        .rounded_full()
+        .bg(rgba(th.chip))
+        .text_size(px(text::CAPTION))
+        .text_color(rgba(th.text_dim))
+        .child(icon(name, th.text_dim, 14.0))
+        .child(label)
+}
+
+/// A chip on a mail line (a task's due day, a follow-up's time): a small
+/// outlined capsule with an icon, in `color`, lit on hover. The line's
+/// height does not change for it.
+pub fn line_chip(
+    id: impl Into<ElementId>,
+    glow: impl Into<ElementId>,
+    name: &str,
+    label: impl Into<SharedString>,
+    color: u32,
+    th: &Theme,
+) -> Stateful<Div> {
+    div()
+        .id(id)
+        .flex_none()
+        .min_w_0()
+        .h(px(22.0))
+        .pl(px(space::S2))
+        .pr(px(space::S3))
+        .flex()
+        .flex_row()
+        .items_center()
+        .gap(px(space::S2))
         .rounded_full()
         .border_1()
-        .border_color(rgba(fade(th.text_faint, 0.7)))
-        .text_size(px(14.0))
-        .font_weight(FontWeight::MEDIUM)
-        .text_color(rgba(th.accent))
+        .border_color(rgba(fade(th.text, 0.16)))
+        .text_size(px(text::CAPTION))
+        .text_color(rgba(color))
+        .relative()
+        .child(Glow::new(glow, rgba(fade(th.text, 0.08))).fade())
+        .child(icon(name, color, 14.0))
+        .child(div().min_w_0().truncate().child(label.into()))
+}
+
+/// The height a [`row`] is at least.
+pub const ROW_HEIGHT: f32 = 40.0;
+
+/// A clickable line of a list or a settings page, ready for its content:
+/// soft grey while `on` (the one open), the hover tint under the pointer,
+/// a ripple on click and `SM` corners.
+pub fn row(id: impl Into<gpui::ElementId>, on: bool, th: &Theme) -> Stateful<Div> {
+    let (rest, hover) = if on {
+        (th.nav_selected, th.nav_selected)
+    } else {
+        (0, th.hover)
+    };
+    line_row(id.into(), rest, hover, th).when(on, |d| d.text_color(rgba(th.nav_selected_text)))
+}
+
+/// A [`row`] of a side pane (folders, Settings' pages): the open one is
+/// the side panes' quiet grey rather than the accent's tint.
+pub fn pane_row(id: impl Into<gpui::ElementId>, on: bool, th: &Theme) -> Stateful<Div> {
+    let (rest, hover) = if on {
+        (th.row_selected, th.row_selected)
+    } else {
+        (0, th.hover)
+    };
+    line_row(id.into(), rest, hover, th).when(on, |d| d.text_color(rgba(th.row_selected_text)))
+}
+
+/// A [`row`] the user ticked (Ctrl+click, a tick box): the ticked tint at
+/// rest and under the pointer, like Mail's list.
+pub fn ticked_row(id: impl Into<gpui::ElementId>, th: &Theme) -> Stateful<Div> {
+    line_row(id.into(), th.checked_row, th.checked_row, th)
+}
+
+fn line_row(id: gpui::ElementId, rest: u32, hover: u32, th: &Theme) -> Stateful<Div> {
+    let ripple = id_hash(&id);
+    div()
+        .id(id)
+        .relative()
+        .overflow_hidden()
+        .min_h(px(ROW_HEIGHT))
+        .py(px(space::S3))
+        .px(px(space::S3))
+        .flex()
+        .flex_row()
+        .items_center()
+        .gap(px(space::S4))
+        .rounded(px(radius::SM))
+        .text_size(px(text::BODY))
+        .bg(rgba(rest))
         .cursor_pointer()
-        .keeps_press()
-        .child(Glow::new(("glow", id_hash(&id)), rgba(th.hover)).fade())
-        .child(Ripple::new(("ripple", id_hash(&id)), rgba(th.ripple)))
-        .child(label.into())
+        // The hover tint eases in and out, as a button's does.
+        .when(hover != rest, |d| {
+            d.child(Glow::new(("row-glow", ripple), rgba(hover)).corners([radius::SM; 4]))
+        })
+        .child(Ripple::new(("ripple", ripple), rgba(th.ripple)).rounded(radius::SM))
+}
+
+/// A [`row`]'s count at its end, in a tight, faint pill of the row's text
+/// color: Mail's folders and the Files page's kinds and accounts. On the
+/// open row the pill is lighter than the row's tint.
+pub fn count_pill(count: u64, on: bool, th: &Theme) -> Div {
+    let bg = if on {
+        th.row_selected_pill
+    } else {
+        fade(th.text, 0.08)
+    };
+    div().flex_none().pl(px(space::S3)).child(
+        div()
+            .h(px(18.0))
+            .px(px(6.0))
+            .flex()
+            .items_center()
+            .rounded_full()
+            .bg(rgba(bg))
+            .text_size(px(text::CAPTION))
+            .child(crate::format::thousands(count)),
+    )
+}
+
+/// A box to type in around `focus`'s input: an edge at rest and, while
+/// it has the keys, the accent ring (2 px, inside the edge so nothing
+/// moves). A click anywhere in it gives its input the keys. A field whose
+/// text scrolls keeps the scrolling in a child, so the ring stays put.
+pub fn field(id: impl Into<gpui::ElementId>, focus: &FocusHandle, th: &Theme) -> Stateful<Div> {
+    let ring = rgba(th.accent);
+    let (shows, takes) = (focus.clone(), focus.clone());
+    div()
+        .id(id)
+        .relative()
+        .px(px(space::S4))
+        .rounded(px(radius::SM))
+        .border_1()
+        .border_color(rgba(th.outline))
+        .text_size(px(text::BODY))
+        .cursor_text()
+        .on_click(move |_, window, cx| window.focus(&takes, cx))
+        .child(
+            canvas(
+                |_, _, _| {},
+                move |bounds, _, window, _| {
+                    if shows.is_focused(window) {
+                        // Over the edge, which lies just outside the layer.
+                        window.paint_quad(gpui::quad(
+                            bounds.dilate(px(1.0)),
+                            px(radius::SM),
+                            gpui::transparent_black(),
+                            px(2.0),
+                            ring,
+                            gpui::BorderStyle::Solid,
+                        ));
+                    }
+                },
+            )
+            .absolute()
+            .top_0()
+            .left_0()
+            .size_full(),
+        )
+}
+
+/// The height of a one-line [`field`].
+pub const FIELD_HEIGHT: f32 = 40.0;
+
+/// A one-line [`field`] holding `input`.
+pub fn line_field(
+    id: impl Into<gpui::ElementId>,
+    input: &gpui::Entity<katna_ui::TextInput>,
+    th: &Theme,
+    cx: &App,
+) -> Stateful<Div> {
+    field(id, &gpui::Focusable::focus_handle(input.read(cx), cx), th)
+        .h(px(FIELD_HEIGHT))
+        .flex()
+        .items_center()
+        .child(div().flex_1().min_w_0().child(input.clone()))
 }
 
 /// A row of buttons over a card; its empty space moves the window.
@@ -517,7 +1102,7 @@ pub fn keys_ring(th: &Theme) -> Vec<BoxShadow> {
     }]
 }
 
-fn ring_style(th: &Theme) -> impl FnOnce(StyleRefinement) -> StyleRefinement + use<> {
+pub fn ring_style(th: &Theme) -> impl FnOnce(StyleRefinement) -> StyleRefinement + use<> {
     let ring = rgba(th.accent);
     let tint = rgba(fade(th.accent, 0.08));
     move |s| {
@@ -635,6 +1220,12 @@ pub fn elevation(th: &Theme, level: f32) -> Vec<BoxShadow> {
 }
 
 pub fn placeholder(text: &str, th: &Theme) -> AnyElement {
+    placeholder_with(div().child(text.to_owned()), th)
+}
+
+/// A [`placeholder`] around `text` drawn by the caller (text that can be
+/// selected, `MailWindow::placeholder`).
+pub fn placeholder_with(text: Div, th: &Theme) -> AnyElement {
     div()
         .size_full()
         .flex()
@@ -644,7 +1235,7 @@ pub fn placeholder(text: &str, th: &Theme) -> AnyElement {
         .text_size(px(14.0))
         .text_color(rgba(th.text_faint))
         // Its own box, so a long line wraps in a narrow window.
-        .child(div().min_w_0().text_center().child(text.to_owned()))
+        .child(text.min_w_0().text_center())
         .into_any_element()
 }
 
@@ -710,14 +1301,63 @@ pub fn raised<E: Styled + ParentElement>(panel: E, th: &Theme, radius: f32, leve
 /// says rather than its tint over the window's. `radius` is the card's
 /// corner radius. Call it before adding the card's children.
 pub fn pane<E: Styled + ParentElement>(card: E, fill: u32, solid: u32, radius: f32) -> E {
+    pane_corners(card, fill, solid, gpui::Corners::all(px(radius)))
+}
+
+/// [`pane`] with each corner its own radius.
+pub fn pane_corners<E: Styled + ParentElement>(
+    card: E,
+    fill: u32,
+    solid: u32,
+    corners: gpui::Corners<gpui::Pixels>,
+) -> E {
     if fill & 0xff == 0xff {
         return card.bg(rgba(fill));
     }
     card.child(katna_ui::frost::clear_fill(
         rgba(fill).into(),
         rgba(solid | 0xff).into(),
-        px(radius),
+        corners,
     ))
+}
+
+/// A card (level 1): the mail list, the open mail, the person card, the
+/// agenda, Settings. Rounds it to `radius`, fills it with `fill` through
+/// [`pane`] and gives it [`card_shadow`] at `shadow` (0 = none). Call it
+/// before adding the card's children.
+pub fn card<E: Styled + ParentElement>(
+    card: E,
+    th: &Theme,
+    fill: u32,
+    radius: f32,
+    shadow: f32,
+) -> E {
+    pane(card.rounded(px(radius)), fill, th.surface, radius).shadow(card_shadow(th, shadow))
+}
+
+/// A tile: a small card on a page or inside another card (a file, a
+/// folder, an attachment, an invitation, a mail service to pick). Level 1
+/// like [`card`], on `th.surface` with corners of [`radius::MD`], and its
+/// edge and shadow at full strength, so it lifts off what is under it.
+/// A tile that can be clicked adds [`tile_hover`] first among its
+/// children.
+pub fn tile<E: Styled + ParentElement>(tile: E, th: &Theme) -> E {
+    card(tile, th, th.surface, radius::MD, 1.0)
+}
+
+/// A [`tile`]'s shadow `t` of the way from level 1, where it rests, to
+/// level 2 ([`elevation::FLOAT`](katna_ui::tokens::elevation::FLOAT)),
+/// where it rises under the pointer.
+pub fn tile_lift(th: &Theme, t: f32) -> Vec<BoxShadow> {
+    let mut shadows = card_shadow(th, 1.0);
+    shadows.extend(elevation(th, katna_ui::tokens::elevation::FLOAT * t));
+    shadows
+}
+
+/// The hover tint of a [`tile`], easing in and out. Its parent needs an
+/// id and `relative()`.
+pub fn tile_hover(th: &Theme) -> Glow {
+    hover_fade("tile-hover", Some(radius::MD), th)
 }
 
 /// How much more of the way to solid a dialog's tint goes than a menu's.
@@ -740,9 +1380,28 @@ pub fn frosted<E: Styled + ParentElement>(panel: E, th: &Theme, fill: u32, radiu
     glass(panel, fill, radius, tint, blur)
 }
 
+/// The surface of a dialog: `fill` (frosted when [`Theme::frost`] is on),
+/// corners of [`radius::LG`] that clip its content, and a menu's depth.
+/// Call it before adding the dialog's children, which must draw over the
+/// glass (`docs/DESIGN.md`).
+pub fn dialog<E: Styled + ParentElement>(panel: E, th: &Theme, fill: u32) -> E {
+    frosted(
+        panel.overflow_hidden().rounded(px(radius::LG)),
+        th,
+        fill,
+        radius::LG,
+    )
+    .shadow(elevation(th, katna_ui::tokens::elevation::MENU))
+}
+
 /// A dialog's tint opacity and blur for a menu's.
 fn dialog_frost(tint: f32, blur: f32) -> (f32, f32) {
-    (tint + (1.0 - tint) * DIALOG_TINT, blur * DIALOG_BLUR)
+    (dialog_tint(tint), blur * DIALOG_BLUR)
+}
+
+/// A dialog's tint opacity for a menu's `tint`: further towards solid.
+pub fn dialog_tint(tint: f32) -> f32 {
+    tint + (1.0 - tint) * DIALOG_TINT
 }
 
 /// A strip along the top of a card, frosted as [`frosted`] is when
@@ -900,49 +1559,52 @@ fn check_box(id: ElementId, state: Check, fill: u32, rest: u32, th: &Theme) -> A
         .flex()
         .items_center()
         .justify_center()
-        .child(div().size(px(CHECK_BOX)).flex_none().with_spring(
-            id,
-            gpui::SpringAnimation::new(katna_ui::motion::SMOOTH).to(target),
-            move |d, v: f32| {
-                // How far the edge has taken its colour, and how far the box
-                // has filled and the tick has drawn.
-                let edge = v.clamp(0.0, 1.0);
-                let full = (v - 1.0).clamp(0.0, 1.0);
-                // Partly checked is a smaller square inside the edge, with a
-                // gap between them; checking grows it to fill the box. The
-                // square is inset by the same length on every side rather
-                // than sized and centred: at scales like 175% a sized square
-                // and the box inside the edge differ by an odd number of
-                // pixels, which left the gap thinner on the top and right.
-                let half = (CHECK_BOX - 4.0) / 2.0;
-                let gap = half - (half - lerp(PARTIAL_GAP, 0.0, full)) * edge;
-                d.rounded(px(3.0))
-                    .border_px(2.0)
-                    .border_color(rgba(crate::theme::mix(rest, fill, edge)))
-                    .relative()
-                    .when(gap < half - 0.05, |d| {
-                        d.child(
+        .child(
+            div().size(px(CHECK_BOX)).flex_none().with_spring(
+                id,
+                gpui::SpringAnimation::new(katna_ui::motion::scaled(katna_ui::motion::SMOOTH))
+                    .to(target),
+                move |d, v: f32| {
+                    // How far the edge has taken its colour, and how far the box
+                    // has filled and the tick has drawn.
+                    let edge = v.clamp(0.0, 1.0);
+                    let full = (v - 1.0).clamp(0.0, 1.0);
+                    // Partly checked is a smaller square inside the edge, with a
+                    // gap between them; checking grows it to fill the box. The
+                    // square is inset by the same length on every side rather
+                    // than sized and centred: at scales like 175% a sized square
+                    // and the box inside the edge differ by an odd number of
+                    // pixels, which left the gap thinner on the top and right.
+                    let half = (CHECK_BOX - 4.0) / 2.0;
+                    let gap = half - (half - lerp(PARTIAL_GAP, 0.0, full)) * edge;
+                    d.rounded(px(3.0))
+                        .border_px(2.0)
+                        .border_color(rgba(crate::theme::mix(rest, fill, edge)))
+                        .relative()
+                        .when(gap < half - 0.05, |d| {
+                            d.child(
+                                div()
+                                    .absolute()
+                                    .top(px(gap))
+                                    .left(px(gap))
+                                    .bottom(px(gap))
+                                    .right(px(gap))
+                                    .rounded(px(lerp(1.0, 0.0, full)))
+                                    .bg(rgba(fill)),
+                            )
+                        })
+                        .when(full > 0.001, |d| d.bg(rgba(fade(fill, full))))
+                        .child(
                             div()
                                 .absolute()
-                                .top(px(gap))
-                                .left(px(gap))
-                                .bottom(px(gap))
-                                .right(px(gap))
-                                .rounded(px(lerp(1.0, 0.0, full)))
-                                .bg(rgba(fill)),
+                                .top_0()
+                                .left_0()
+                                .size_full()
+                                .child(check_mark(full, tick)),
                         )
-                    })
-                    .when(full > 0.001, |d| d.bg(rgba(fade(fill, full))))
-                    .child(
-                        div()
-                            .absolute()
-                            .top_0()
-                            .left_0()
-                            .size_full()
-                            .child(check_mark(full, tick)),
-                    )
-            },
-        ))
+                },
+            ),
+        )
         .into_any_element()
 }
 

@@ -5,6 +5,7 @@
 ## Side list and search
 
 notes-view-notes = Madokezo
+notes-view-reminders = Vikumbusho
 notes-view-archive = Kumbukumbu
 notes-view-trash = Tupio
 notes-edit-labels = Hariri lebo
@@ -23,12 +24,19 @@ notes-archive-empty = Madokezo yako yaliyohifadhiwa kwenye kumbukumbu yataonekan
 notes-trash-empty = Hakuna madokezo kwenye Tupio
 notes-none-found = Hakuna madokezo yanayolingana
 notes-label-empty = Bado hakuna madokezo yenye lebo hii
+notes-reminders-empty = Madokezo yenye vikumbusho vijavyo huonekana hapa
 notes-trash-note = Madokezo yaliyo kwenye Tupio hufutwa baada ya siku 7.
 notes-empty-trash = Safisha Tupio
 notes-ticked = { $count ->
     [one] + kipengee { $count } kilichotiwa alama
    *[other] + vipengee { $count } vilivyotiwa alama
 }
+notes-select = Chagua dokezo
+notes-selected = { $count ->
+    [one] { $count } limechaguliwa
+   *[other] { $count } yamechaguliwa
+}
+notes-select-clear = Futa uteuzi
 
 ## A note's buttons
 
@@ -43,6 +51,15 @@ notes-color = Chaguo za mandharinyuma
 notes-checkboxes = Onyesha au ficha visanduku vya kuteua
 notes-labels = Lebo
 notes-close = Funga
+notes-more = Zaidi
+notes-make-copy = Tengeneza nakala
+notes-remind = Nikumbushe
+notes-add-picture = Ongeza picha
+notes-history = Historia ya matoleo
+notes-ai = Nisaidie kuandika
+notes-send-as-mail = Tuma kama barua
+notes-save-markdown = Hifadhi kama Markdown
+notes-save-pdf = Hifadhi kama PDF
 
 ## The open note
 
@@ -50,6 +67,60 @@ notes-title = Kichwa
 notes-edited = Ilihaririwa { $date }
 notes-on-this-computer = Kwenye kompyuta hii
 notes-where = Mahali dokezo hili linapohifadhiwa
+notes-untitled = Dokezo lisilo na kichwa
+
+## Pictures
+
+notes-picture-choose = Ongeza picha
+notes-picture-remove = Ondoa picha
+notes-picture-too-big = Picha hadi { $size } zinaweza kuwekwa kwenye dokezo
+notes-picture-kind = Faili hilo si picha ambayo Katna inaweza kuonyesha
+notes-picture-unreadable = Imeshindwa kusoma { $name }: { $error }
+
+## Reminders
+
+notes-remind-me = Nikumbushe
+notes-remind-off = Ondoa kikumbusho
+notes-remind-in-the-past = Chagua wakati ambao bado haujapita
+notes-remind-today = Leo, { $time }
+notes-remind-tomorrow = Kesho, { $time }
+notes-remind-weekday = { $day }, { $time }
+notes-reminder-set = Kikumbusho kimewekwa { $when }
+notes-reminder-off = Kikumbusho kimeondolewa
+
+## Links between notes
+
+notes-link-note = Unganisha dokezo
+notes-link-new = Dokezo jipya “{ $title }”
+notes-linked-from = Limeunganishwa kutoka
+notes-link-gone = Dokezo hilo halipo hapa tena
+
+## Version history
+
+notes-versions = Matoleo
+notes-version-now = Sasa
+notes-version-here = Wewe, kwenye kompyuta hii
+notes-version-yesterday = Jana, { $time }
+notes-version-changes = { $count ->
+    [one] Badiliko { $count }
+   *[other] Mabadiliko { $count }
+}
+notes-version-from = Kutoka { $device }
+notes-version-elsewhere = Kutoka kifaa kingine
+notes-version-created = Limeundwa
+notes-version-restore = Rejesha toleo hili
+notes-version-restored = Toleo limerejeshwa
+notes-history-none = Bado hakuna matoleo ya awali
+
+## AI help
+
+notes-ai-tidy = Nadhifisha maandishi
+notes-ai-checklist = Igeuze kuwa orodha ya kukagua
+notes-ai-summarise = Fupisha
+notes-ai-empty = Andika kitu kwanza
+notes-ai-tidied = Maandishi yamenadhifishwa. Ctrl+Z huyarudisha.
+notes-ai-listed = Imegeuzwa kuwa orodha ya kukagua. Ctrl+Z huirudisha.
+notes-ai-summarised = Muhtasari umeongezwa juu
 
 ## Labels
 
@@ -88,6 +159,9 @@ notes-format-normal = Maandishi ya kawaida
 notes-format-bold = Herufi nzito
 notes-format-italic = Italiki
 notes-format-underline = Pigia mstari
+notes-format-quote = Nukuu
+notes-format-code = Msimbo
+notes-format-divider = Kitenganishi
 notes-format-clear = Futa uumbizaji
 
 ## Tasks
@@ -115,6 +189,39 @@ notes-archived = Dokezo limewekwa kwenye kumbukumbu
 notes-unarchived = Dokezo limetolewa kwenye kumbukumbu
 notes-trashed = Dokezo limehamishiwa kwenye Tupio
 notes-restored = Dokezo limerejeshwa
+notes-saved = Dokezo limehifadhiwa
+notes-pinned-count = { $count ->
+    [one] Dokezo limebandikwa
+   *[other] Madokezo { $count } yamebandikwa
+}
+notes-unpinned-count = { $count ->
+    [one] Dokezo limebanduliwa
+   *[other] Madokezo { $count } yamebanduliwa
+}
+notes-colored-count = { $count ->
+    [one] Rangi imebadilishwa
+   *[other] Rangi imebadilishwa kwenye madokezo { $count }
+}
+notes-archived-count = { $count ->
+    [one] Dokezo limewekwa kwenye kumbukumbu
+   *[other] Madokezo { $count } yamewekwa kwenye kumbukumbu
+}
+notes-unarchived-count = { $count ->
+    [one] Dokezo limetolewa kwenye kumbukumbu
+   *[other] Madokezo { $count } yametolewa kwenye kumbukumbu
+}
+notes-trashed-count = { $count ->
+    [one] Dokezo limehamishiwa kwenye Tupio
+   *[other] Madokezo { $count } yamehamishiwa kwenye Tupio
+}
+notes-restored-count = { $count ->
+    [one] Dokezo limerejeshwa
+   *[other] Madokezo { $count } yamerejeshwa
+}
+notes-copied-count = { $count ->
+    [one] Nakala imetengenezwa
+   *[other] Nakala { $count } zimetengenezwa
+}
 notes-empty-discarded = Dokezo tupu limetupwa
 notes-mail-gone = Barua hiyo haipo hapa tena
 notes-deleted-forever = { $count ->

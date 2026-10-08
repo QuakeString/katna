@@ -321,6 +321,28 @@ macro_rules! pim_interface {
                 Ok(self.daemon.set_follow_up(id, after)?)
             }
 
+            async fn set_follow_up_mail(
+                &self,
+                id: i64,
+                after: i64,
+                again: i64,
+                mail: Vec<u8>,
+            ) -> fdo::Result<()> {
+                Ok(self.daemon.set_follow_up_mail(id, after, again, &mail)?)
+            }
+
+            async fn send_follow_up_now(&self, id: i64) -> fdo::Result<()> {
+                Ok(self.daemon.send_follow_up_now(id)?)
+            }
+
+            async fn move_follow_up(&self, id: i64, at: i64) -> fdo::Result<()> {
+                Ok(self.daemon.move_follow_up(id, at)?)
+            }
+
+            async fn dismiss_nudge(&self, id: i64) -> fdo::Result<()> {
+                Ok(self.daemon.dismiss_nudge(id)?)
+            }
+
             async fn queue_send(
                 &self,
                 account: i64,
@@ -464,6 +486,10 @@ macro_rules! pim_interface {
                 Ok(self.daemon.undo_send(id)?)
             }
 
+            async fn retry_send(&self, id: i64) -> fdo::Result<bool> {
+                Ok(self.daemon.retry_send(id)?)
+            }
+
             async fn discard_send(&self, id: i64) -> fdo::Result<bool> {
                 Ok(self.daemon.discard_send(id)?)
             }
@@ -479,6 +505,11 @@ macro_rules! pim_interface {
             /// Reads the settings file again (after Katna Mail saved it).
             async fn reload_config(&self) -> fdo::Result<()> {
                 Ok(self.daemon.reload_config()?)
+            }
+
+            /// Deletes the local copy of an app turned off.
+            async fn forget_app(&self, app: String) -> fdo::Result<()> {
+                Ok(self.daemon.forget_app(&app)?)
             }
 
             /// Whether the daemon saves data as on a metered network: from
@@ -694,6 +725,13 @@ macro_rules! pim_interface {
 
             async fn company_of(&self, address: String, website: String) -> fdo::Result<String> {
                 Ok(self.daemon.company_of(&address, &website).await?)
+            }
+
+            async fn gmail_signatures(
+                &self,
+                account: i64,
+            ) -> fdo::Result<Vec<(String, String, String)>> {
+                Ok(self.daemon.gmail_signatures(AccountId(account)).await?)
             }
 
             async fn translate(
@@ -914,6 +952,15 @@ macro_rules! pim_interface {
             async fn mail_changed(emitter: &SignalEmitter<'_>, account: i64) -> zbus::Result<()>;
 
             #[zbus(signal)]
+            async fn changes_refused(
+                emitter: &SignalEmitter<'_>,
+                account: i64,
+                change: &str,
+                count: u32,
+                reason: &str,
+            ) -> zbus::Result<()>;
+
+            #[zbus(signal)]
             async fn outbox_changed(emitter: &SignalEmitter<'_>, id: i64) -> zbus::Result<()>;
 
             #[zbus(signal)]
@@ -1022,6 +1069,12 @@ pub async fn emit_signals(connection: zbus::Connection, notices: Receiver<Notice
             Notice::ContactsChanged => PimService::contacts_changed(&emitter).await,
             Notice::TasksChanged => crate::agenda::AgendaService::changed(&agenda).await,
             Notice::RulesChanged => PimService::rules_changed(&emitter).await,
+            Notice::ChangesRefused {
+                account,
+                change,
+                count,
+                ref reason,
+            } => PimService::changes_refused(&emitter, account.0, change, count, reason).await,
         };
         if let Err(err) = sent {
             tracing::warn!(%err, ?notice, "could not send a signal");

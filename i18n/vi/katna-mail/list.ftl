@@ -189,6 +189,8 @@ list-empty-tab = Không có thư nào trong { $tab }.
 list-empty-tab-unknown = Không có thư nào trong tab này.
 list-empty-folder = Không có thư nào trong { $folder }.
 list-empty-folder-unknown = Không có thư nào trong thư mục này.
+list-empty-waiting = Không có thư nào đang chờ trả lời.
+list-empty-reminders = Không có lời nhắc. Nhấn H trên một thư để thêm.
 list-first-sync = Đang tải thư của bạn…
 list-first-sync-detail = Thư sẽ hiện ở đây khi được tải về.
 
@@ -208,6 +210,14 @@ row-tracking-clicked = { $opened } trên { $recipients } người đã mở, { $
 row-pin = Ghim lên đầu
 row-unpin = Bỏ ghim
 row-snoozed-until = Tạm ẩn đến { $when }
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = Hôm nay
+snoozed-group-tomorrow = Ngày mai
+snoozed-group-this-week = Tuần này
+snoozed-group-later = Sau này
+row-follow-up-step = Thư theo dõi { $step }/{ $steps } · { $date }
+row-follow-up-waiting = Thư theo dõi đang chờ
+row-reminder = Nhắc { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -230,6 +240,7 @@ menu-not-important = Đánh dấu là không quan trọng
 menu-pin = Ghim lên đầu
 menu-unpin = Bỏ ghim
 menu-snooze = Tạm ẩn
+menu-remind = Nhắc tôi
 menu-unsnooze = Bỏ tạm ẩn
 menu-add-to-tasks = Thêm vào Việc cần làm
 menu-schedule-meeting = Lên lịch cuộc họp
@@ -241,7 +252,20 @@ menu-move-to = Di chuyển tới
 menu-follow-up = Theo dõi
 menu-more = Thêm
 menu-move-to-heading = Di chuyển tới:
+menu-move-to-search = Di chuyển tới…
+menu-label-as = Gắn nhãn
+menu-label-as-search = Gắn nhãn…
+menu-no-folder = Không có thư mục nào tên “{ $name }”
+menu-no-label = Không có nhãn nào tên “{ $name }”
+menu-create-folder = Tạo “{ $name }”
+menu-always-move = Luôn chuyển thư từ { $name } vào đây
+toast-always-move-failed = Đã di chuyển thư, nhưng chưa tạo được quy tắc: { $error }
+drag-mail = { $kind ->
+    [conversation] { $count } cuộc hội thoại
+   *[message] { $count } thư
+}
 menu-find-from = Tìm email từ { $name }
+menu-make-rule = Tạo quy tắc…
 
 ## Snackbar after an action on mail in the list
 
@@ -257,6 +281,8 @@ toast-moved = { $kind ->
     [conversation] Đã di chuyển { $count } cuộc hội thoại.
    *[message] Đã di chuyển { $count } thư.
 }
+toast-label-added = Đã thêm nhãn “{ $label }”.
+toast-label-removed = Đã gỡ nhãn “{ $label }”.
 toast-starred = { $kind ->
     [conversation] Đã gắn dấu sao cho { $count } cuộc hội thoại.
    *[message] Đã gắn dấu sao cho { $count } thư.

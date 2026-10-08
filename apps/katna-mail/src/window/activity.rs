@@ -11,19 +11,20 @@ use std::time::Duration;
 
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, Entity, Focusable, FontWeight, MouseButton,
-    MouseDownEvent, Task, Window, anchored, canvas, deferred, div, point, prelude::*, rgba,
+    MouseDownEvent, Task, Window, canvas, deferred, div, point, prelude::*, rgba,
 };
 use jiff::civil::Date;
 use katna_core::{Account, AccountId};
 use katna_i18n::tr;
 use katna_store::{ActivityItem, Insights, MessageActivity};
+use katna_ui::anchored;
 use katna_ui::{TextInput, px, unpx};
 
 use super::MailWindow;
 use crate::data::{Entry, Mail};
 use crate::format;
 use crate::theme::{Theme, fade};
-use crate::widgets::{elevation, icon, icon_button, icon_button_colored, raised, tip};
+use crate::widgets::{icon, icon_button, icon_button_colored, raised, tip};
 
 /// At most this many tracked messages are read.
 const LIMIT: u32 = 500;
@@ -264,6 +265,7 @@ pub(super) struct Report {
     counting: Option<Task<()>>,
     /// The account menu is open.
     accounts_open: bool,
+    accounts_arrow: crate::widgets::Fold,
 }
 
 impl MailWindow {
@@ -403,6 +405,7 @@ impl MailWindow {
             insights: None,
             counting: None,
             accounts_open: false,
+            accounts_arrow: crate::widgets::Fold::default(),
         });
         self.fill_report(Period::Month);
         self.count_insights(cx);
@@ -594,11 +597,12 @@ impl MailWindow {
         closed
     }
 
-    /// The Activity button beside the search box, with the number of new
+    /// The Activity button at the bar's right end, with the number of new
     /// opens and clicks.
     pub(super) fn render_activity_button(
         &self,
         th: &Theme,
+        size: f32,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
         if !self.activity_shown() {
@@ -619,6 +623,7 @@ impl MailWindow {
                         if open { th.accent } else { th.text_dim },
                         th,
                     )
+                    .size(px(size))
                     .when(open, |d| d.bg(rgba(th.hover)))
                     .tooltip(tip(tr!("folder-activity"), th))
                     .on_click(cx.listener(|this, _, window, cx| this.toggle_activity(window, cx))),
@@ -779,15 +784,17 @@ impl MailWindow {
     ) -> Option<AnyElement> {
         let menu = self.activity.as_ref()?;
         let button = self.activity_button.get()?;
-        let viewport = window.viewport_size();
-        let (vw, vh) = (unpx(viewport.width), unpx(viewport.height));
+        // Inside the window's content: with Katna's frame, not over its
+        // shadow and resize border.
+        let room = katna_ui::anchored::content_bounds(window, cx);
+        let (x0, y0) = (unpx(room.origin.x), unpx(room.origin.y));
+        let (vw, vh) = (unpx(room.size.width), unpx(room.size.height));
         let width = MENU_WIDTH.min(vw - 16.0);
-        // Under the button, its right edge on the button's, inside the
-        // window.
+        // Under the button, its right edge on the button's.
         let right = unpx(button.origin.x + button.size.width);
-        let left = (right - width).clamp(8.0, (vw - width - 8.0).max(8.0));
+        let left = (right - width).clamp(x0 + 8.0, (x0 + vw - width - 8.0).max(x0 + 8.0));
         let top = unpx(button.origin.y + button.size.height) + 6.0;
-        let height = (vh - top - 16.0).clamp(160.0, 560.0);
+        let height = (y0 + vh - top - 16.0).clamp(160.0, 560.0);
         let items: Vec<AnyElement> = menu
             .feed
             .iter()
@@ -820,8 +827,9 @@ impl MailWindow {
             .id("activity-menu")
             .occlude()
             .absolute()
-            .left(px(left))
-            .top(px(top))
+            // In the layer, which covers the content.
+            .left(px(left - x0))
+            .top(px(top - y0))
             .w(px(width))
             .max_h(px(height))
             .flex()
@@ -861,7 +869,8 @@ impl MailWindow {
                                 .font_weight(FontWeight::MEDIUM)
                                 .text_color(rgba(th.accent))
                                 .cursor_pointer()
-                                .hover(|s| s.bg(rgba(th.hover)))
+                                .relative()
+                                .child(crate::widgets::hover_fade("hover-glow", None, th))
                                 .on_click(cx.listener(|this, _, _, cx| this.clear_activity(cx)))
                                 .child(tr!("activity-clear-all")),
                         )
@@ -880,7 +889,8 @@ impl MailWindow {
                             .font_weight(FontWeight::MEDIUM)
                             .text_color(rgba(th.accent))
                             .cursor_pointer()
-                            .hover(|s| s.bg(rgba(th.hover)))
+                            .relative()
+                            .child(crate::widgets::hover_fade("hover-glow", None, th))
                             .on_click(cx.listener(|this, _, _, cx| this.open_report(cx)))
                             .child(icon("activity", th.accent, 18.0))
                             .child(tr!("activity-details")),
@@ -915,7 +925,8 @@ impl MailWindow {
             )
             .with_animation(
                 "activity-menu",
-                Animation::new(Duration::from_millis(180)).with_easing(gpui::ease_out_quint()),
+                Animation::new(katna_ui::motion::time(Duration::from_millis(180)))
+                    .with_easing(gpui::ease_out_quint()),
                 |el, t| el.opacity(t).mt(px(-8.0 * (1.0 - t))),
             );
         let close = || {
@@ -941,7 +952,7 @@ impl MailWindow {
             )
             .child(card);
         Some(
-            deferred(anchored().position(point(px(0.0), px(0.0))).child(layer))
+            deferred(anchored().position(room.origin).child(layer))
                 .with_priority(2)
                 .into_any_element(),
         )
@@ -982,7 +993,7 @@ impl MailWindow {
             )
         };
         let chip = |id: usize, label: String, on: bool| {
-            super::search_panel::chip(("activity-period", id), &label, on, th)
+            crate::widgets::choice_chip(("activity-period", id), label.clone(), on, th)
         };
         let custom = matches!(report.period, Period::Custom(..)) || report.editing;
         let periods = div()
@@ -1057,7 +1068,7 @@ impl MailWindow {
                         div()
                             .text_size(px(12.0))
                             .text_color(rgba(th.error))
-                            .child(tr!("search-dates-unreadable")),
+                            .child(self.copyable(tr!("search-dates-unreadable"), th)),
                     )
                 })
         });
@@ -1249,10 +1260,7 @@ impl MailWindow {
                         .max_h_full()
                         .flex()
                         .flex_col()
-                        .rounded(px(16.0))
-                        .overflow_hidden()
-                        .map(|d| crate::widgets::frosted(d, th, th.surface, 16.0))
-                        .shadow(elevation(th, 3.0))
+                        .map(|d| crate::widgets::dialog(d, th, th.surface))
                         .child(
                             div()
                                 .flex_none()
@@ -1363,7 +1371,8 @@ impl MailWindow {
             .text_color(rgba(th.text))
             .text_size(px(13.0))
             .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
+            .relative()
+            .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
             .when(!report.accounts_open, |d| {
                 d.tooltip(tip(tr!("activity-accounts-tip"), th))
             })
@@ -1371,12 +1380,10 @@ impl MailWindow {
                 d.child(self.person_avatar(&name(a), a.address.trim(), 20.0))
             })
             .child(div().min_w_0().truncate().child(label))
-            .child(icon(
-                if report.accounts_open {
-                    "chevron-up"
-                } else {
-                    "chevron-down"
-                },
+            .child(crate::widgets::fold_arrow(
+                "activity-accounts-arrow",
+                &report.accounts_arrow,
+                report.accounts_open,
                 th.text_dim,
                 16.0,
             ))
@@ -1522,7 +1529,7 @@ impl MailWindow {
                             .py(px(16.0))
                             .text_size(px(14.0))
                             .text_color(rgba(th.error))
-                            .child(tr!("insights-failed")),
+                            .child(self.copyable(tr!("insights-failed"), th)),
                     )
                     .into_any_element();
             }

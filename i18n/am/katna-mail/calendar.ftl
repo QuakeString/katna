@@ -53,7 +53,7 @@ calendar-account-signed-in = እንደገና ወደ { $address } ገብተዋል
 calendar-account-sign-in-refused = { $provider } Katnaን አላስገባም። እንደገና ይሞክሩ፣ እና ቀን መቁጠሪያዎችዎን እንዲደርስባቸው ይፍቀዱ።
 calendar-account-refused = አገልጋዩ የይለፍ ቃሉን አልተቀበለም። Yahoo፣ iCloud፣ Zoho እና ሌሎችም የመተግበሪያ የይለፍ ቃል ያስፈልጋቸዋል።
 calendar-account-change-password = የይለፍ ቃል ቀይር
-calendar-account-change-password-tooltip = ቅንብሮች > መለያዎች ክፈት
+calendar-account-change-password-tooltip = አዲሱን የይለፍ ቃል ይተይቡ፤ Katna ከአገልጋዩ ጋር ያረጋግጠዋል
 calendar-account-not-enabled = ለKatna የቀን መቁጠሪያ መዳረሻ ገና አልበራም።
 calendar-account-failed = ቀን መቁጠሪያዎቹን ማንበብ አልተቻለም።
 calendar-account-error = ቀን መቁጠሪያዎቹን ማንበብ አልተቻለም፦ { $reason }
@@ -69,6 +69,7 @@ calendar-account-try-again = እንደገና ሞክር
 calendar-account-try-again-tooltip = የዚህን መለያ ቀን መቁጠሪያዎች አሁን እንደገና ፈትሽ
 calendar-account-fixing = በሂደት ላይ…
 calendar-birthdays = ልደቶች
+calendar-tasks = ተግባራት
 calendar-birthday-of = የ{ $name } ልደት
 calendar-empty-title = እስካሁን ምንም ቀን መቁጠሪያ የለም
 calendar-empty-text = የGoogle እና የMicrosoft መለያዎችዎ ቀን መቁጠሪያዎች ከተመሳሰሉ በኋላ እዚህ ይታያሉ፤ CalDAV የሚደግፉ ሌሎች አገልጋዮችም እንዲሁ።
@@ -127,6 +128,7 @@ calendar-event-details = የክስተት ዝርዝሮች
 # Right-click menus on the calendar: on a free time or day, an event and
 # a task.
 calendar-menu-new-event = አዲስ ክስተት
+calendar-event-window-title = አዲስ ክስተት
 # Shows the day right-clicked on its own, in the Day view.
 calendar-menu-open-day = ቀኑን ክፈት
 calendar-menu-duplicate = አባዛ

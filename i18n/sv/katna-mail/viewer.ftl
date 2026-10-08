@@ -20,12 +20,20 @@ viewer-page-count = av { $count }
 viewer-go-to-page-tip = Skriv ett sidnummer och tryck på Retur (Ctrl+G)
 viewer-rotate-clockwise-tip = Rotera medurs (Ctrl+R)
 viewer-rotate-anticlockwise-tip = Rotera moturs (Ctrl+Shift+R)
+viewer-dark-pages-tip = Mörka sidor
+viewer-light-pages-tip = Visa sidorna som de är
 viewer-fit-page-tip = Anpassa till sidan
 viewer-fit-picture-tip = Anpassa till fönstret
 viewer-fit-width-tip = Anpassa till bredden
 viewer-real-size-tip = Verklig storlek (1:1)
 viewer-page-back-tip = Föregående sida
 viewer-page-on-tip = Nästa sida
+viewer-more-tip = Mer
+viewer-zoom-in = Zooma in
+viewer-zoom-out = Zooma ut
+viewer-real-size = Verklig storlek
+viewer-rotate-anticlockwise = Rotera moturs
+viewer-rotate-clockwise = Rotera medurs
 
 ## Marking up a PDF
 

@@ -9,6 +9,13 @@ shortcut-group-actions = কাৰ্য
 shortcut-group-go-to = ইয়ালৈ যাওক
 shortcut-group-app = এপ্লিকেশ্বন
 
+## Help > Keyboard shortcuts: every shortcut in a dialog over the window
+
+shortcuts-dialog-title = কীবৰ্ড শ্বৰ্টকাট
+shortcuts-dialog-search = শ্বৰ্টকাট বিচাৰক
+shortcuts-dialog-none = কোনো শ্বৰ্টকাট নিমিলে
+shortcuts-dialog-close = বন্ধ কৰক
+
 ## Settings > Keyboard shortcuts: what each shortcut does
 
 shortcut-next = পৰৱৰ্তী কথোপকথন
@@ -37,6 +44,8 @@ shortcut-mark-read = পঢ়া বুলি চিহ্নিত কৰক
 shortcut-mark-unread = নপঢ়া বুলি চিহ্নিত কৰক
 shortcut-star = তৰাচিহ্ন যোগ কৰক বা আঁতৰাওক
 shortcut-add-to-tasks = কাৰ্যত যোগ কৰক
+shortcut-snooze = স্নুজ কৰক
+shortcut-remind = মোক সোঁৱৰাওক
 shortcut-important = গুৰুত্বপূৰ্ণ বুলি চিহ্নিত কৰক
 shortcut-not-important = গুৰুত্বপূৰ্ণ নহয় বুলি চিহ্নিত কৰক
 shortcut-mute = কথোপকথন মিউট বা আনমিউট কৰক

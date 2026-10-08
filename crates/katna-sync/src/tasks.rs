@@ -11,14 +11,18 @@
 //! [`sync_account`] runs one round for an account: list changes made in
 //! Katna go out, the service's lists come in, then for each list the task
 //! changes made in Katna go out and the service's changes come in. A
-//! change made in Katna and not yet sent wins over the service's.
+//! change made in Katna and not yet sent wins over the service's. Files on
+//! tasks follow their tasks ([`push_files`]): To Do keeps them as
+//! attachments and CalDAV inside the to-do; Google Tasks and Zoho keep
+//! none, so there they stay on this computer.
 
+use std::collections::BTreeMap;
 use std::sync::Mutex;
 
 use katna_core::AccountId;
 use katna_store::{
     Store,
-    tasks::{PendingTask, Place, RemoteTask, RemoteTaskList, Task},
+    tasks::{PendingFile, PendingTask, Place, RemoteFile, RemoteTask, RemoteTaskList, Task},
 };
 
 use crate::{Error, Result, autoconfig::http::Reply};
@@ -145,6 +149,15 @@ impl TaskService {
         }
     }
 
+    /// The content of file `file` of task `task`, for a service that
+    /// lists files without it (To Do); `None` when it is gone.
+    async fn file_data(&self, list: &str, task: &str, file: &str) -> Result<Option<Vec<u8>>> {
+        match self {
+            Self::Microsoft(service) => service.file_data(list, task, file).await,
+            Self::Google(_) | Self::CalDav(_) | Self::Zoho(_) => Ok(None),
+        }
+    }
+
     async fn delete(&self, list: &str, id: &str) -> Result<()> {
         match self {
             Self::Google(service) => service.delete(list, id).await,
@@ -215,14 +228,173 @@ pub async fn sync_account(
         for task in pending {
             push(service, store, &remote, task).await?;
         }
+        push_files(service, store, list, &remote).await?;
         let state = store.lock().unwrap().task_list_sync_state(list)?;
         let pull = service.pull(&remote, state.as_deref()).await?;
-        let mut store = store.lock().unwrap();
-        changed |= store.drop_unlisted_steps(list, &pull.steps_of, &pull.tasks)?;
-        changed |= store.sync_tasks(list, &pull.tasks, pull.all)?;
-        store.set_task_list_sync_state(list, pull.state.as_deref())?;
+        {
+            let mut store = store.lock().unwrap();
+            changed |= store.drop_unlisted_steps(list, &pull.steps_of, &pull.tasks)?;
+            changed |= store.sync_tasks(list, &pull.tasks, pull.all)?;
+            store.set_task_list_sync_state(list, pull.state.as_deref())?;
+        }
+        for task in pull.tasks.iter().filter(|t| !t.deleted) {
+            let Some(files) = &task.files else { continue };
+            changed |= pull_files(service, store, list, &remote, &task.remote_id, files).await?;
+        }
     }
     Ok(changed)
+}
+
+/// Takes the service's files of task `task` (its ID there): those Katna
+/// lacks come in, reading their content when the list came without it,
+/// and those gone from the service go. Returns whether any changed.
+async fn pull_files(
+    service: &TaskService,
+    store: &Mutex<Store>,
+    list: i64,
+    remote_list: &str,
+    task: &str,
+    files: &[RemoteFile],
+) -> Result<bool> {
+    let synced = store.lock().unwrap().sync_task_files(list, task, files)?;
+    let mut changed = synced.changed;
+    for file in synced.wanted {
+        let Some(data) = service
+            .file_data(remote_list, task, &file.remote_id)
+            .await?
+        else {
+            continue;
+        };
+        let file = RemoteFile {
+            data: Some(data),
+            ..file
+        };
+        changed |= store
+            .lock()
+            .unwrap()
+            .add_remote_task_file(list, task, &file)?;
+    }
+    Ok(changed)
+}
+
+/// Sends the files added to and removed from the tasks of list `list`
+/// here. One the service can't keep (too large, refused, or a service
+/// without files) stays on this computer.
+async fn push_files(
+    service: &TaskService,
+    store: &Mutex<Store>,
+    list: i64,
+    remote_list: &str,
+) -> Result<()> {
+    let pending = store.lock().unwrap().pending_task_files(list)?;
+    if pending.is_empty() {
+        return Ok(());
+    }
+    match service {
+        TaskService::Microsoft(todo) => {
+            for change in pending {
+                let PendingFile {
+                    file,
+                    task_remote,
+                    deleted,
+                } = change;
+                if deleted {
+                    if let Some(remote) = &file.remote_id {
+                        todo.delete_file(remote_list, &task_remote, remote).await?;
+                    }
+                    store.lock().unwrap().forget_task_file(file.id)?;
+                    continue;
+                }
+                let data = store.lock().unwrap().task_file_data(file.id)?;
+                let Some(data) = data else { continue };
+                let sent = todo
+                    .add_file(remote_list, &task_remote, &file.name, &file.mime, &data)
+                    .await;
+                let remote = match sent {
+                    Ok(remote) => remote,
+                    Err(Error::Rejected(err)) => {
+                        tracing::warn!(file = file.id, %err, "To Do refused a file");
+                        None
+                    }
+                    Err(err) => return Err(err),
+                };
+                store
+                    .lock()
+                    .unwrap()
+                    .task_file_pushed(file.id, remote.as_deref())?;
+            }
+        }
+        TaskService::CalDav(dav) => {
+            // The files go inside the to-do: all of a task's at once.
+            let mut by_task: BTreeMap<String, Vec<PendingFile>> = BTreeMap::new();
+            for change in pending {
+                by_task
+                    .entry(change.task_remote.clone())
+                    .or_default()
+                    .push(change);
+            }
+            for (task_remote, changes) in by_task {
+                let task = changes[0].file.task;
+                let mut inline = Vec::new();
+                let mut sending = Vec::new();
+                {
+                    let mut store = store.lock().unwrap();
+                    for file in store.files_of_task(task)? {
+                        let new = file.remote_id.is_none();
+                        if file.local_only || (new && file.size > caldav::MAX_FILE) {
+                            if new && !file.local_only {
+                                store.task_file_pushed(file.id, None)?;
+                            }
+                            continue;
+                        }
+                        let Some(data) = store.task_file_data(file.id)? else {
+                            continue;
+                        };
+                        sending.push((file.id, new.then(|| caldav::inline_id(&data))));
+                        inline.push(katna_dav::todo::TodoFile {
+                            name: file.name,
+                            mime: file.mime,
+                            data,
+                        });
+                    }
+                }
+                let kept = dav.set_files(remote_list, &task_remote, &inline).await?;
+                let mut store = store.lock().unwrap();
+                for change in changes.iter().filter(|c| c.deleted) {
+                    store.forget_task_file(change.file.id)?;
+                }
+                match kept {
+                    Some(true) => {
+                        for (id, remote) in sending {
+                            if let Some(remote) = remote {
+                                store.task_file_pushed(id, Some(&remote))?;
+                            }
+                        }
+                    }
+                    // Refused or dropped: all of the task's files stay
+                    // here, also those the server had before.
+                    Some(false) => {
+                        for (id, _) in sending {
+                            store.task_file_pushed(id, None)?;
+                        }
+                    }
+                    // The to-do went meanwhile; the next pull says so.
+                    None => {}
+                }
+            }
+        }
+        TaskService::Google(_) | TaskService::Zoho(_) => {
+            let mut store = store.lock().unwrap();
+            for change in pending {
+                if change.deleted {
+                    store.forget_task_file(change.file.id)?;
+                } else {
+                    store.task_file_pushed(change.file.id, None)?;
+                }
+            }
+        }
+    }
+    Ok(())
 }
 
 /// Sends one change to the service. A change the service refuses is
@@ -246,7 +418,21 @@ async fn push(
             // Its task is not on the service yet; next round.
             return Ok(());
         }
-        let insert = || service.insert(list, &pending.task, pending.parent_remote.as_deref());
+        // A new task on the service: its ID is saved at once, before
+        // anything else can fail, or the next round would send it again
+        // and the pull would bring the first copy in beside it.
+        let insert = || async {
+            let remote = service
+                .insert(list, &pending.task, pending.parent_remote.as_deref())
+                .await?;
+            store.lock().unwrap().task_pushed(
+                id,
+                pending.stamp,
+                &remote,
+                pending.place.is_none(),
+            )?;
+            Ok::<_, Error>(remote)
+        };
         let mut remote = match &pending.remote_id {
             // Only its place changed: nothing else to send.
             Some(remote) if !pending.edited => RemoteTask {

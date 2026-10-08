@@ -368,6 +368,8 @@ list-empty-tab-unknown = No mail in this tab.
 # $folder: the folder's name.
 list-empty-folder = No messages in { $folder }.
 list-empty-folder-unknown = No messages in this folder.
+list-empty-waiting = Nothing is waiting for a reply.
+list-empty-reminders = No reminders. Press H on a mail to add one.
 # While the first sync of a new account downloads its mail.
 list-first-sync = Getting your mail…
 list-first-sync-detail = It shows up here as it arrives.
@@ -399,6 +401,21 @@ row-pin = Pin to top
 row-unpin = Unpin
 # Tooltip of the time on a snoozed line. $when: date and time it comes back.
 row-snoozed-until = Snoozed until { $when }
+# The time on a snoozed line coming back this week. $day: short weekday, such as "Thu". $time: such as "8:00 AM".
+row-snoozed-day-time = { $day } { $time }
+# The Snoozed folder groups its lines by when they come back.
+snoozed-group-today = Today
+snoozed-group-tomorrow = Tomorrow
+snoozed-group-this-week = This week
+snoozed-group-later = Later
+# On a line of sent mail Katna follows up on twice: which one is next, and
+# when it goes out.
+row-follow-up-step = Follow-up { $step } of { $steps } · { $date }
+# A follow-up that fell due while the computer was off and was not sent
+# late.
+row-follow-up-waiting = Follow-up waiting
+# The chip on a mail with a reminder (Remind me). $date: "Oct 9, 8:00 AM".
+row-reminder = Reminder { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -426,6 +443,7 @@ menu-pin = Pin to top
 menu-unpin = Unpin
 # Opens the snooze times.
 menu-snooze = Snooze
+menu-remind = Remind me
 # In the Snoozed folder: brings the mail back to the inbox now.
 menu-unsnooze = Unsnooze
 # Makes a task from the mail, as Gmail's "Add to Tasks".

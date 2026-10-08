@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A longer search box"
+text = """
+On a wide window, the search box now reaches the buttons at the right
+instead of stopping partway. Search options open centred under it and stay
+a comfortable width.
+"""

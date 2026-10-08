@@ -141,7 +141,13 @@ fn term(condition: &Condition) -> Result<String, RunsNote> {
         Field::Cc => &["cc"],
         Field::AnyRecipient => &["to", "cc", "bcc"],
         Field::Subject => &["subject"],
-        Field::ReplyTo | Field::Body | Field::AttachmentName | Field::HasAttachment => {
+        // Katna's inbox tabs and Gmail's categories may differ.
+        Field::ReplyTo
+        | Field::Body
+        | Field::AttachmentName
+        | Field::HasAttachment
+        | Field::Tab
+        | Field::MailingList => {
             return Err(cant());
         }
     };
@@ -303,6 +309,23 @@ struct Made {
     id: String,
 }
 
+#[derive(Deserialize)]
+struct SendAsList {
+    #[serde(rename = "sendAs", default)]
+    send_as: Vec<SendAs>,
+}
+
+/// One address Gmail sends as, with the signature Gmail adds for it.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Deserialize)]
+#[serde(rename_all = "camelCase", default)]
+pub struct SendAs {
+    pub send_as_email: String,
+    pub display_name: String,
+    /// The signature, as HTML; empty when it has none.
+    pub signature: String,
+    pub is_default: bool,
+}
+
 impl GmailSettings {
     /// Google's, or the server under test in `KATNA_GOOGLE_API_URL`.
     pub fn new(tokens: Arc<TokenSource>, tls: Tls) -> Self {
@@ -363,6 +386,21 @@ impl GmailSettings {
             .filter(|a| a.status == "accepted")
             .map(|a| a.email.to_lowercase())
             .collect())
+    }
+
+    /// The addresses Gmail sends as and their signatures, the default
+    /// first. Gmail's mail scope ([`crate::oauth::GOOGLE_MAIL`]) allows it,
+    /// as does [`GOOGLE_GMAIL_SETTINGS`]; a token with neither is refused
+    /// as [`Error::Auth`].
+    pub async fn send_as(&self) -> Result<Vec<SendAs>> {
+        let reply = self.call("GET", "settings/sendAs", None).await?;
+        if reply.status == 403 && String::from_utf8_lossy(&reply.body).contains("scope") {
+            return Err(Error::Auth("Gmail's signatures need a new sign-in".into()));
+        }
+        let list: SendAsList = parse(&reply, "reading the signatures")?;
+        let mut all = list.send_as;
+        all.sort_by_key(|s| !s.is_default);
+        Ok(all)
     }
 
     /// Makes `filter`; returns its ID.

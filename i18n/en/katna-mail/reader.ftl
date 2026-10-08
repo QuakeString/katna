@@ -9,6 +9,8 @@ reader-close = Close
 reader-back = Back
 reader-mark-unread = Mark as unread
 reader-move-to = Move to
+reader-snooze = Snooze
+reader-remind = Remind me
 # The ⋮ button that opens more actions.
 reader-more = More
 # In a dark theme: shows the open mail in its sender's own colors…
@@ -52,6 +54,8 @@ reader-tick-read = Read { $when } (read receipt)
 reader-tick-opened = Opened, last { $when } (open tracking)
 # Tooltip of the star button on a starred message.
 reader-starred = Starred
+# The × on a label chip under the subject.
+reader-chip-remove = Remove { $label }
 # Tooltip of the star button on a message that is not starred.
 reader-not-starred = Not starred
 reader-too-long = The message is too long to show in full.
@@ -70,6 +74,7 @@ reader-details-subject = subject:
 
 reader-downloading = Downloading this message from the server…
 reader-download-failed = Could not download this message.
+reader-download-offline = This account is offline. Go online to download this message.
 reader-try-again = Try again
 
 ## Reply row
@@ -139,6 +144,8 @@ tracking-maybe-opened = { $who } may have opened it (Apple Mail loads pictures f
 tracking-seen-none = No one has opened it or followed a link yet
 # A read receipt came back from $who.
 tracking-receipt = { $who } sent a read receipt
+# A read receipt came back from $who; $when as above.
+tracking-receipt-read = { $who } read it (read receipt), { $when }
 # On a read receipt itself.
 tracking-receipt-displayed = Read receipt: { $who } opened your message
 tracking-receipt-other = Read receipt: { $who } deleted or handled your message without opening it

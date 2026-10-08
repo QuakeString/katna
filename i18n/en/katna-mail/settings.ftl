@@ -27,10 +27,19 @@ settings-tab-compose = Compose
 settings-tab-mcp-server = MCP server
 settings-tab-feedback = User feedback
 settings-tab-experimental = Experimental
+settings-tab-apps = Apps
+settings-tab-ai = AI
+settings-tab-reading = Reading
+settings-tab-desktop = Desktop
+settings-tab-calendar = Calendar
+settings-tab-files = Files
+# The groups of Settings' list of pages: the settings every Katna app
+# shares, then each app's own.
+settings-group-all-apps = All apps
+settings-group-apps = Apps
 
 ## Settings page: tabs still to come
 
-settings-tab-mcp-server-coming = Let AI assistants on this computer search, read and draft your mail, with your say.
 
 ## Settings > General
 # The Language row uses language-setting and language-setting-detail.
@@ -103,7 +112,7 @@ settings-general-new-mail-detail = With Reply all, Mark as read and Archive
 # The Sounds row of Settings > Notifications: a line per event, with a
 # sound to pick, a button that plays it and a switch.
 settings-notifications-sounds = Sounds
-settings-notifications-sounds-detail = From your desktop's sound theme. Muted folders, conversations and senders stay silent, and so does everything during Do not disturb.
+settings-notifications-sounds-detail = A set of sounds for everything, and a sound of its own for any event. Muted folders, conversations and senders stay silent, and so does everything during Do not disturb.
 sounds-new-mail = New mail
 sounds-new-mail-detail = In the folders that notify
 sounds-reminders = Reminders
@@ -116,8 +125,73 @@ sounds-not-sent = Mail not sent
 sounds-not-sent-detail = When sending fails
 # Tooltip of the button that plays a sound.
 sounds-play = Play
-# The sounds to pick from (the desktop's own).
+# The sets of sounds, shown as tiles: a name, and under it what the set
+# holds. System is the desktop's own sounds.
+sound-set-system = System
+sound-set-system-detail = Your desktop's own
+sound-set-katna = Katna
+sound-set-katna-detail = Soft bells
+sound-set-nature = Nature
+sound-set-nature-detail = Drops and chimes
+sound-set-birds = Birds
+sound-set-birds-detail = Robin, wren, finch
+sound-set-animals = Animals
+sound-set-animals-detail = Frog, owl, cat
+sound-set-insects = Insects
+sound-set-insects-detail = Crickets, cicadas
+sound-set-electronic = Electronic
+sound-set-electronic-detail = Blips and tones
+sound-set-morning = Morning
+sound-set-morning-detail = Kalimba, marimba
+# First in the menu of an event's sounds: whatever sound the picked set
+# has for it, changing with the set.
+sounds-set-sound = The set's sound
+# Last in that menu: opens a file chooser for a sound file of the user's own.
+sounds-choose-file = Choose a file…
+# The file chooser's title.
+sounds-choose-file-title = Choose a sound
+# When the chosen file is not a sound Katna can play.
+sounds-file-kind = Choose a WAV, OGG, FLAC or MP3 file
+# When the chosen file is too big for a notification sound.
+sounds-file-too-big = That file is too big for a notification sound. Choose one under 10 MB.
+# When the file could not be read or kept. $error: what went wrong.
+sounds-file-failed = Couldn't use that file: { $error }
+# The sounds to pick from: Katna's own sets, then the desktop's own.
 sound-katna-chime = Katna chime
+sound-katna-twin-bells = Twin bells
+sound-katna-soft-bell = Soft bell
+sound-katna-rising = Rising
+sound-katna-falling = Falling
+sound-nature-water-drop = Water drop
+sound-nature-wind-chimes = Wind chimes
+sound-nature-ripple = Ripple
+sound-nature-breeze = Breeze
+sound-nature-pebble = Pebble
+sound-birds-robin = Robin
+sound-birds-wren-trill = Wren trill
+sound-birds-finch = Finch
+sound-birds-swallow = Swallow
+sound-birds-cuckoo = Cuckoo
+sound-animals-tree-frog = Tree frog
+sound-animals-owl = Owl
+sound-animals-cat = Cat
+sound-animals-dolphin = Dolphin
+sound-animals-bullfrog = Bullfrog
+sound-insects-cricket = Cricket
+sound-insects-cicada = Cicada
+sound-insects-katydid = Katydid
+sound-insects-bee = Bee
+sound-insects-fly = Fly
+sound-electronic-blip = Blip
+sound-electronic-beacon = Beacon
+sound-electronic-arcade = Arcade
+sound-electronic-whoosh = Whoosh
+sound-electronic-buzz = Buzz
+sound-morning-kalimba = Kalimba
+sound-morning-sunrise = Sunrise
+sound-morning-marimba = Marimba
+sound-morning-glockenspiel = Glockenspiel
+sound-morning-low-marimba = Low marimba
 sound-new-email = New email
 sound-new-message = New message
 sound-sent = Sent
@@ -190,6 +264,12 @@ settings-inbox-tabs-show-detail = Off shows one list for every account
 settings-inbox-no-accounts = Add an account to choose its tabs.
 settings-inbox-unified = Unified inbox
 settings-inbox-unified-detail = Tabs shared by every account. Each mail shows in the tab of its kind; mail of a tab an account turns off stays in its first tab.
+# A switch per mail account: whether All Accounts in the folder pane shows it.
+settings-unified-accounts = In the unified inbox
+settings-unified-accounts-detail = An account switched off is left out of All Accounts and its lists. Pick it in the account menu to see its mail.
+# Under an account's name in that list, as its switch stands.
+settings-unified-account-in = Shown in All Accounts
+settings-unified-account-out = Only in the account menu
 # $tabs: the tabs of that style, such as "Focused and Other". $provider: the mail provider, such as "Gmail".
 settings-inbox-tabs-automatic = Automatic: { $tabs } ({ $provider })
 settings-inbox-tabs-off = No tabs
@@ -198,6 +278,21 @@ settings-inbox-tabs-focused = Focused and Other
 settings-inbox-tabs-zoho = Inbox, Newsletters and Notifications
 # $tab: the first tab, such as "Primary".
 settings-inbox-tabs-shown = Tabs shown. Mail of a tab you turn off stays in { $tab }.
+# What the snooze menu's suggested times mean.
+settings-snooze-times = Snooze times
+settings-snooze-times-detail = What the times in the snooze menu mean. Remind me uses them too.
+settings-snooze-morning = Mornings
+settings-snooze-morning-detail = Tomorrow, This weekend and Next week
+# One more snooze time, typed by the user.
+settings-snooze-own = Your own
+settings-snooze-own-detail = Shown in the menu while it is still to come
+settings-snooze-own-placeholder = Like “monday 10:00”
+# $date: when the user's own time comes next, such as "Mon, Oct 12, 2026, 10:00 AM".
+settings-snooze-own-next = Next: { $date }
+# Gmail-style nudges: questions the user sent that nobody answered.
+settings-nudges = Nudges
+settings-nudges-on = Bring back questions nobody answered
+settings-nudges-on-detail = Mail you sent that asked something and got no reply in 3 days goes back to the top of the Inbox
 
 ## Settings > Appearance
 
@@ -213,6 +308,26 @@ settings-appearance-density-default = Default
 settings-appearance-density-compact = Compact
 settings-appearance-scaling = Scaling
 settings-appearance-scaling-detail = Makes everything in Katna Mail bigger or smaller, on top of the desktop's own scale: text, icons, spacing and dividers. Mail you send keeps its own font size. Very small sizes can make icons hard to click.
+settings-appearance-motion-speed = Animation speed
+settings-appearance-motion-speed-detail = How long folds, slides and fades take.
+# The desktop's own animation speed setting (KDE: System Settings > Animation speed).
+# $speed is the desktop's speed, one of the speeds below, such as "Normal".
+settings-appearance-motion-speed-desktop = Follow the desktop: { $speed }
+settings-appearance-motion-speed-katna = Katna's own speed
+# Speeds: how long animations take, from much shorter to much longer than normal.
+settings-appearance-motion-speed-faster = Faster
+settings-appearance-motion-speed-fast = Fast
+settings-appearance-motion-speed-normal = Normal
+settings-appearance-motion-speed-slow = Slow
+settings-appearance-motion-speed-slower = Slower
+settings-appearance-reduce-motion = Reduce motion
+settings-appearance-reduce-motion-detail = With motion reduced, things appear and move at once instead of animating.
+# $state says whether the desktop's animations are on.
+settings-appearance-reduce-motion-desktop = Follow the desktop: { $state }
+settings-appearance-reduce-motion-desktop-animating = animations on
+settings-appearance-reduce-motion-desktop-still = animations off
+settings-appearance-reduce-motion-on = Always reduce
+settings-appearance-reduce-motion-off = Never reduce
 # Light or dark, apart from the color scheme.
 settings-appearance-theme = Mode
 # A mode choice: light or dark, following the desktop.
@@ -350,8 +465,37 @@ settings-default-apps-ask = Ask which app each time
 settings-default-apps-after-saving = After saving
 settings-default-apps-show-folder = Show saved files in their folder
 settings-default-apps-show-folder-detail = Opens the file manager with the saved attachments picked
+settings-calendar-density = Hour height
+settings-calendar-density-detail = How tall the hours of Day and Week are
+settings-calendar-custom-days = Custom view
+settings-calendar-custom-days-detail = How many days the custom view shows
+settings-calendar-birthdays = Birthdays
+settings-calendar-birthdays-show = Show birthdays
+settings-calendar-birthdays-show-detail = Your contacts' birthdays, as a calendar of their own
 settings-files-page = Files page
 settings-files-page-detail = Which attachments the Files page shows
+
+## Settings > Contacts, Tasks, Notes, Files: leaving an account out of the app
+# { $app } is the app's name, as on the rail (Tasks, Notes, …).
+
+# Settings > Apps: a switch for each app.
+settings-apps = Apps you use
+settings-apps-detail = Turn off the apps you don't use. Katna stops syncing them and takes them out of everywhere. Nothing changes on your accounts. Mail is always on.
+settings-apps-mail = Mail from all your accounts
+settings-apps-calendar = Events, invitations and reminders
+settings-apps-contacts = People from your accounts
+settings-apps-tasks = To-do lists and reminders
+settings-apps-notes = Notes kept in your mail accounts
+settings-apps-files = Every attachment, and your drives
+settings-apps-off = Off · nothing changed on your accounts
+settings-apps-mail-always = Mail is always on
+# The switch heading each app's own page. $app: its name, such as "Calendar".
+settings-app-on = Use { $app }
+settings-app-on-detail = Turn off to take { $app } out of Katna and stop syncing it
+settings-app-accounts = Accounts shown
+settings-app-accounts-detail = Turn an account off to leave it out of { $app }. Its items keep syncing and come back when you turn it on. Its mail is not affected.
+settings-app-account-shown = Shown in { $app }
+settings-app-account-hidden = Left out of { $app }
 settings-files-leave-out-small = Leave out small pictures
 settings-files-leave-out-small-detail = Logos and icons in signatures, which come with many mails
 settings-files-smaller-than = Smaller than
@@ -392,6 +536,12 @@ settings-compose-signature-delete = Delete
 settings-compose-signature-deleted = Signature deleted
 # The button that makes a new signature.
 settings-compose-signature-new = Create new
+# The button that opens a box to paste a signature designed elsewhere, as HTML.
+settings-compose-signature-paste-html = Paste HTML
+# The button that brings in signatures from Gmail and from the mail apps on this computer.
+settings-compose-signature-import = Import
+# The button that opens a designed signature's HTML to edit by hand.
+settings-compose-signature-edit-html = Edit HTML
 settings-compose-no-signatures = No signatures yet.
 settings-compose-no-signature = No signature
 settings-compose-for-new-mail = For new mail
@@ -508,6 +658,8 @@ settings-notifications-muted-summary = Unmute folders, accounts, conversations a
 settings-accounts-accounts-summary = Add or remove an account, or change its picture
 settings-appearance-density-summary = Default or compact lines in the list
 settings-appearance-scaling-summary = Make everything bigger or smaller: text, icons, spacing and dividers
+settings-appearance-motion-speed-summary = How long folds, slides and fades take: the desktop's speed or Katna's own
+settings-appearance-reduce-motion-summary = Turn animations off, or follow the desktop
 settings-appearance-theme-summary = System, light or dark
 settings-appearance-colors-summary = Color schemes: the desktop's, Katna's or a built-in one such as Nord or Solarized
 settings-appearance-accent-summary = The color of the selected folder, Compose and counts
@@ -523,7 +675,12 @@ settings-default-apps-text-summary = Where plain text, logs and code open
 settings-default-apps-sheets-summary = Where Excel, OpenDocument and CSV files open
 settings-default-apps-documents-summary = Where Word and OpenDocument text and slides open
 settings-default-apps-after-saving-summary = Show saved attachments in their folder
+settings-calendar-density-summary = Make the hours of Day and Week taller or more compact
+settings-calendar-custom-days-summary = Pick how many days the custom view shows
+settings-calendar-birthdays-summary = Show your contacts' birthdays in the calendar
 settings-files-page-summary = Leave small pictures, like signature logos, off the Files page, and pick which drives it shows
+settings-apps-summary = Turn Calendar, Contacts, Tasks, Notes or Files off, or keep just Mail
+settings-app-accounts-summary = Leave an account out of this app, while its items keep syncing
 settings-compose-send-from-summary = The account new mail goes out from: the first one, another one, or the one you are in
 settings-compose-send-on-replies-summary = Send, or Send and archive the conversation, on replies and forwards
 settings-compose-signatures-summary = Added below your message, after a “--” line
@@ -553,6 +710,9 @@ settings-search-results = Settings that match “{ $query }”
 
 # $error: the system's error, in English.
 settings-open-at-login-failed = Could not change starting at login: { $error }
+# The error in settings-open-at-login-failed when Katna from the Microsoft
+# Store asks to start at sign-in after the user turned that off in Windows.
+settings-open-at-login-off-in-windows = it is turned off in Windows Settings > Apps > Startup
 
 ## Settings > General > Time
 

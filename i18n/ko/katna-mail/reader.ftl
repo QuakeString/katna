@@ -8,6 +8,8 @@ reader-close = 닫기
 reader-back = 뒤로
 reader-mark-unread = 읽지 않음으로 표시
 reader-move-to = 이동
+reader-snooze = 다시 알림
+reader-remind = 알림 받기
 reader-more = 더보기
 reader-original-colors = 원래 색상으로 보기
 reader-dark-colors = 어두운 색상으로 보기
@@ -35,6 +37,7 @@ reader-tick-bounced = 전달 실패: { $when } 반송됨
 reader-tick-read = 읽음 { $when }(읽음 확인)
 reader-tick-opened = 열람, 마지막: { $when }(열람 추적)
 reader-starred = 별표 있음
+reader-chip-remove = { $label } 삭제
 reader-not-starred = 별표 없음
 reader-too-long = 메일이 너무 길어 전체를 표시할 수 없습니다.
 reader-encrypted-images = 암호화된 메일에서는 웹 이미지를 불러오지 않습니다.
@@ -52,6 +55,7 @@ reader-details-subject = 제목:
 
 reader-downloading = 서버에서 이 메일을 다운로드하는 중…
 reader-download-failed = 이 메일을 다운로드할 수 없습니다.
+reader-download-offline = 이 계정은 오프라인 상태입니다. 이 메일을 다운로드하려면 온라인으로 전환하세요.
 reader-try-again = 다시 시도
 
 ## Reply row
@@ -96,6 +100,7 @@ tracking-clicked = { $who }님이 링크를 { $clicks }번 클릭했습니다. �
 tracking-maybe-opened = { $who }님이 열었을 수 있습니다(Apple Mail은 개인정보 보호를 위해 이미지를 불러옵니다)
 tracking-seen-none = 아직 아무도 열거나 링크를 클릭하지 않았습니다
 tracking-receipt = { $who }님이 읽음 확인을 보냈습니다
+tracking-receipt-read = { $who }님이 읽음(수신 확인), { $when }
 tracking-receipt-displayed = 읽음 확인: { $who }님이 메일을 열었습니다
 tracking-receipt-other = 읽음 확인: { $who }님이 메일을 열지 않고 삭제하거나 처리했습니다
 

@@ -20,6 +20,7 @@ search-has-attachment = Has attachment
 # After "Has attachment": the last of the file-type choices (PDF, XLSX, …),
 # which opens a field for other file extensions.
 search-attachment-custom = Custom
+search-attachment-image = Image
 # In the empty field of other file extensions.
 search-attachment-custom-hint = Type an extension, like png, then Space
 # The tooltip of the x on a typed extension, which takes it out.

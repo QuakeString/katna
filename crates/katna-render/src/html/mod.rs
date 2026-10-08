@@ -21,6 +21,7 @@
 //! the quote, signature and forward a chat-style view folds away.
 
 mod build;
+mod clean;
 mod css;
 mod cut;
 mod dom;
@@ -30,6 +31,7 @@ use std::sync::Arc;
 
 use crate::trim::{Forwarded, Trimmed};
 
+pub use clean::{Cleaned, LeftOut, clean, web_pictures};
 pub use css::{Color, Length};
 pub use katna_core::image::ImageKind;
 
@@ -105,6 +107,10 @@ pub struct BoxStyle {
     /// `border-bottom`), as dividers are drawn; `border` wins over them.
     pub border_top: Option<(f32, Color)>,
     pub border_bottom: Option<(f32, Color)>,
+    /// A line along the left or right edge (a signature's divider between
+    /// its logo and its text).
+    pub border_left: Option<(f32, Color)>,
+    pub border_right: Option<(f32, Color)>,
     pub radius: f32,
     /// As wide as its content, like an `inline-block` button, placed by
     /// `align` in its own line.

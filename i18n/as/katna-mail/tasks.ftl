@@ -7,8 +7,11 @@
 tasks-create = নতুন কাৰ্য
 tasks-all = সকলো কাৰ্য
 tasks-today = আজি
+tasks-upcoming = আগন্তুক
 tasks-starred = তৰাচিহ্নিত
+tasks-completed-view = সম্পূৰ্ণ হোৱা
 tasks-new-list = নতুন তালিকা সৃষ্টি কৰক
+tasks-labels-heading = লেবেল
 tasks-on-this-computer = এই কমপিউটাৰত
 tasks-my-tasks = মোৰ কাৰ্য
 # The line under an account in the side list whose task lists could not
@@ -18,7 +21,7 @@ tasks-account-signed-in = { $address }ত পুনৰ ছাইন ইন ক�
 tasks-account-sign-in-refused = { $provider }এ Katnaক সোমাবলৈ নিদিলে। পুনৰ চেষ্টা কৰক, আৰু আপোনাৰ কাৰ্যসমূহলৈ প্ৰৱেশৰ অনুমতি দিয়ক।
 tasks-account-refused = ছাৰ্ভাৰে পাছৱৰ্ডটো গ্ৰহণ নকৰিলে। Yahoo, iCloud, Zoho আৰু আনবোৰক এটা এপ পাছৱৰ্ড লাগে।
 tasks-account-change-password = পাছৱৰ্ড সলনি কৰক
-tasks-account-change-password-tooltip = ছেটিংছ > একাউণ্টসমূহ খোলক
+tasks-account-change-password-tooltip = নতুন পাছৱৰ্ড লিখক; Katnaই ছাৰ্ভাৰৰ সৈতে পৰীক্ষা কৰে
 tasks-account-not-enabled = Katnaৰ বাবে কাৰ্য প্ৰৱেশ এতিয়াও অন কৰা হোৱা নাই।
 tasks-account-failed = কাৰ্য তালিকাবোৰ পঢ়িব পৰা নগ'ল।
 # $reason is the server's own words, in English.
@@ -47,7 +50,14 @@ tasks-title-placeholder = শিৰোনাম
 tasks-add-step = উপ-কাৰ্য যোগ কৰক
 tasks-empty = এতিয়াও কোনো কাৰ্য নাই। ওপৰত এটা যোগ কৰক।
 tasks-starred-empty = ইয়াত চাবলৈ কোনো কাৰ্যত তৰাচিহ্ন যোগ কৰক।
+tasks-label-empty = এই লেবেলৰ কোনো খোলা কাৰ্য নাই।
 tasks-today-empty = আজিৰ বাবে একো নাই।
+tasks-completed-empty = আপুনি সম্পূৰ্ণ কৰা কাৰ্যসমূহ ইয়াত দেখা যায়।
+tasks-upcoming-add = { $day }ৰ বাবে কাৰ্য যোগ কৰক
+tasks-upcoming-overdue-day = { $weekday } { $day }
+tasks-from-mail-quiet = মেইলৰ পৰা
+tasks-from-note-quiet = টোকাৰ পৰা
+tasks-steps-done = { $done }/{ $count }
 tasks-today-date = { $weekday }, { $day }
 tasks-overdue = ম্যাদ পাৰ হোৱা
 tasks-completed = { $count ->
@@ -55,6 +65,11 @@ tasks-completed = { $count ->
    *[other] সম্পূৰ্ণ ({ $count })
 }
 tasks-list-options = তালিকাৰ বিকল্প
+tasks-sort-by = ইয়াৰ দ্বাৰা সজাওক
+tasks-sort-my-order = মোৰ ক্ৰম
+tasks-sort-date = তাৰিখ
+tasks-sort-starred = শেহতীয়াকৈ তৰাচিহ্নিত
+tasks-sort-title = শিৰোনাম
 tasks-rename-list = তালিকাৰ নাম সলনি কৰক
 tasks-delete-list = তালিকা মচক
 tasks-mark-done = সম্পূৰ্ণ বুলি চিহ্নিত কৰক
@@ -71,6 +86,17 @@ tasks-from-note = টোকা
 tasks-open-note = টোকা খোলক
 tasks-note-gone = সেই টোকা আৰু ইয়াত নাই।
 tasks-no-subject = (কোনো বিষয় নাই)
+
+## Several tasks selected (Ctrl+click, Shift+click)
+
+tasks-selected = { $count ->
+    [one] { $count }টা বাছনি কৰা হৈছে
+   *[other] { $count }টা বাছনি কৰা হৈছে
+}
+tasks-select-clear = বাছনি মচক
+tasks-select-move = তালিকালৈ স্থানান্তৰ কৰক
+tasks-select-date = তাৰিখ ছেট কৰক
+tasks-next-week = অহা সপ্তাহ
 
 ## The details dialog
 
@@ -91,6 +117,13 @@ tasks-remind-on-time = ঠিক সময়তে
 tasks-remind-morning = সেইদিনা, { $time }
 tasks-remind-hour-before = এঘণ্টা আগতে
 tasks-remind-day-before = এদিন আগতে
+tasks-label-add = লেবেল যোগ কৰক
+tasks-label-task = কাৰ্যত লেবেল দিয়ক
+tasks-files-attach = ফাইল সংলগ্ন কৰক
+tasks-files-pick = সংলগ্ন কৰক
+tasks-file-open = খোলক
+tasks-file-remove = ফাইল আঁতৰাওক
+tasks-file-here = কেৱল এই কম্পিউটাৰত
 tasks-cancel = বাতিল কৰক
 tasks-save = ছেভ কৰক
 tasks-not-a-time = “{ $text }” সময় নহয়, যেনে { $example }।
@@ -107,6 +140,13 @@ tasks-due-at = { $day }, { $time }
 tasks-toast-done = কাৰ্য সম্পূৰ্ণ হ’ল
 tasks-toast-next = হ’ল। পৰৱৰ্তীটো { $date } তাৰিখে
 tasks-toast-deleted = কাৰ্য মচি পেলোৱা হ’ল
+tasks-files-added = { $count ->
+    [one] ফাইল সংলগ্ন কৰা হ'ল
+   *[other] { $count }টা ফাইল সংলগ্ন কৰা হ'ল
+}
+tasks-file-removed = “{ $name }” আঁতৰোৱা হ'ল
+tasks-files-left-out = সংলগ্ন কৰা নহ'ল: { $names }। এটা কাৰ্যই { $limit }লৈকে ফাইল লয়, ফ'ল্ডাৰ নলয়।
+tasks-file-missing = সেই ফাইলটো আৰু ইয়াত নাই।
 tasks-toast-added = { $count ->
     [one] কাৰ্যত যোগ কৰা হ’ল
    *[other] { $count }টা কাৰ্য যোগ কৰা হ’ল
@@ -117,3 +157,27 @@ tasks-toast-moved = { $list }লৈ স্থানান্তৰ কৰা হ
 # A task dragged to another place in its own list.
 tasks-toast-placed = কাৰ্য স্থানান্তৰ কৰা হ’ল
 tasks-toast-rescheduled = কামৰ সময় সলনি কৰা হ’ল
+tasks-toast-rescheduled-several = { $count ->
+    [one] কাৰ্যৰ সময় সলনি কৰা হ'ল
+   *[other] { $count }টা কাৰ্যৰ সময় সলনি কৰা হ'ল
+}
+tasks-toast-done-several = { $count ->
+    [one] কাৰ্য সম্পূৰ্ণ হ'ল
+   *[other] { $count }টা কাৰ্য সম্পূৰ্ণ হ'ল
+}
+tasks-toast-open-several = { $count ->
+    [one] কাৰ্য অসম্পূৰ্ণ বুলি চিহ্নিত কৰা হ'ল
+   *[other] { $count }টা কাৰ্য অসম্পূৰ্ণ বুলি চিহ্নিত কৰা হ'ল
+}
+tasks-toast-starred = { $count ->
+    [one] কাৰ্য তৰাচিহ্নিত কৰা হ'ল
+   *[other] { $count }টা কাৰ্য তৰাচিহ্নিত কৰা হ'ল
+}
+tasks-toast-unstarred = { $count ->
+    [one] তৰাচিহ্ন আঁতৰোৱা হ'ল
+   *[other] { $count }টা কাৰ্যৰ পৰা তৰাচিহ্ন আঁতৰোৱা হ'ল
+}
+tasks-toast-deleted-several = { $count ->
+    [one] কাৰ্য মচা হ'ল
+   *[other] { $count }টা কাৰ্য মচা হ'ল
+}

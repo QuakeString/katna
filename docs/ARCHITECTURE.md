@@ -339,6 +339,28 @@ One worker per account inside the daemon:
   `ReloadConfig`, and the daemon answers `Metered` and signals
   `MeteredChanged`. Not built yet: the portal network monitor (for
   Flatpak).
+- **Taking an account offline:** the user can take one account offline
+  (its right-click menu, the account card, Settings > Accounts >
+  Connected), for an hour, until 8 tomorrow morning or until brought back;
+  "Work offline" in the account card takes every account at once. It is
+  kept in the settings (`[offline]`: lower-case address = Unix seconds it
+  ends, 0 for never), so it survives restarts, and Katna Mail calls
+  `ReloadConfig`. The daemon (`daemon/offline.rs`) stops the account's
+  worker and its connection for opened messages, and connects for nothing
+  of that account: mail, calendars, contacts, tasks, notes and rules on
+  the server; its status is `paused`. Changes wait where they always do:
+  the op queue, the outbox (sending fails like a lost network and stays
+  queued), unsent tasks and notes in the store, and event changes held in
+  memory (dropped on restart, as unsent event changes always are).
+  Contacts save on their service straight away, so they cannot be edited
+  while offline. Back online (by hand, or when its time ends, which the
+  daemon times itself), the worker starts and replays the queue first,
+  waiting mail is sent at once, and every other sync runs. Katna Mail
+  shows a crossed cloud before the account's count in the folder pane (a
+  click brings it back), on the account picture in the top bar while any
+  account is offline, in the account card with what waits, and an
+  "Offline" tag and a note in Compose's From; a message not downloaded
+  says so instead of trying.
 
 ### 6.2 Sync levels (per account)
 
@@ -515,7 +537,11 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   - A refused operation is retried after 60 s. After three refusals it is
     marked failed (kept for inspection) and undone locally: moves at once,
     flags by forgetting the folder's HIGHESTMODSEQ so the next sync reads
-    them again. A broken connection keeps the operation queued.
+    them again. A move whose message a sync meanwhile listed again in its
+    old folder only drops the moved copy, so it never shows twice. The
+    replay reports each refused change by kind (`ops::Change`) with the
+    server's words, and the daemon signals `ChangesRefused` once per
+    account and replay. A broken connection keeps the operation queued.
   - Imported (`local`) accounts only change in the store.
 - **POP3** (task 1.10, `katna_sync::pop3`): our own small client (RFC 1939
   with CAPA and STLS; USER/PASS login). POP3 mail is always fully local and
@@ -562,8 +588,8 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   refresh tokens Microsoft replaces. IMAP and SMTP log in with SASL XOAUTH2,
   which both providers take; a refused access token is dropped and a fresh
   one tried once. A refused refresh token (`invalid_grant`) is an auth
-  failure: the account stops syncing and Katna Mail shows "Sign in again",
-  which runs `SignIn` for that account. Network trouble while refreshing is
+  failure: the account stops syncing and Katna Mail shows "Sign in" on its
+  line at the top of the mail list, which runs `SignIn` for that account. Network trouble while refreshing is
   not, and retries like any other. The client IDs live in
   `katna_core::ids` (`GOOGLE_OAUTH_CLIENT_ID`, with Google's non-secret
   desktop `GOOGLE_OAUTH_CLIENT_SECRET`, and `MICROSOFT_OAUTH_CLIENT_ID`),
@@ -1119,6 +1145,21 @@ KRunner and GNOME search suggest saved people too, with their saved names
 - User settings: "Keep running in background" (default on), optional tray
   icon, and a real "Quit" (stops the daemon until next login or activation).
 - Single instance, enforced by owning the D-Bus name.
+- Katna Mail keeps it running: when its window opens without the daemon,
+  or the daemon's name goes away for more than 10 s (an update or systemd
+  restarts it sooner by itself), the window starts it
+  (`katna_dbus::start_daemon`: where the systemd user unit exists, clears
+  a failure with `ResetFailedUnit` and starts it with `StartUnit`, never a
+  copy outside systemd, which would keep the unit from starting; elsewhere
+  D-Bus activation, or the binary beside it, also when activation fails)
+  and
+  tries again for 20 s. A grey line shows after 10 s, an amber line with
+  Start again and Details (the report scrolls inside a dialog that fits
+  the window) if it never starts, and a note if it had stopped
+  while the window was open (`apps/katna-mail/src/window/service.rs`). The
+  unit restarts it after a crash 5 s later (`RestartSec=5`), which never
+  reaches systemd's start limit. A daemon that finds another one running
+  exits cleanly (status 0), so systemd doesn't keep starting it.
 - Graceful shutdown: finish in-flight sends, flush the index, close IMAP sessions.
 - Updates: a package update replaces the binary while the old one runs.
   Every 30 s the daemon checks `/proc/self/exe`; once the file was replaced
@@ -1173,17 +1214,31 @@ account kind. `runs_on` (`katna`, `gmail`, `sieve`) says which.
 - **Model** (`katna_store::rules`, `mail_rule` in `pim.db`, schema v13):
   name, on/off, position (rules run in list order), match all or any,
   conditions, actions, "stop" (later rules don't run on mail this one
-  matched), one or more accounts, `runs_on`, and the last error. Conditions
+  matched), one or more accounts, `runs_on`, the last error, and the
+  starter it was made from (`mail_rule_starter`, pim.db v15). Conditions
   and actions are JSON columns. A condition is a field (from, to, cc, any
-  recipient, reply-to, subject, body, attachment name, has attachment), a
+  recipient, reply-to, subject, body, attachment name, has attachment,
+  from a mailing list (a `List-Id`), inbox tab (`message.category`,
+  Katna's own sorting, so it never runs on the service)), a
   comparator (contains, doesn't contain, begins with, ends with, equals,
   matches regex) and a value; text compares without case, and addresses
   match on both the name and the address. Actions: move to a folder, skip
   the inbox (archive), move to the trash, mark read, star, mark important,
-  add a Gmail label (as Label as does, through `SetLabels`, so Gmail
-  accounts only), forward (as an
+  add a label (on Gmail as Label as does, through `SetLabels`; in other
+  accounts a copy in the folder), forward (as an
   attachment), don't notify, mark read after N days (a `read-after` value
-  of §10 on the message).
+  of §10 on the message). A rule for several accounts may move to a
+  folder in each (one per account); on an account's mail, the folders of
+  its other accounts are left out (`katna_sync::rules::for_account`).
+- **Starter rules** (Katna Mail, `settings_page/starter_rules.rs`): ten
+  rules offered under the user's own, switched off: quiet promotions,
+  newsletters to Reading, receipts, deliveries, train and flight tickets
+  (Indian Railways' IRCTC and the airlines and travel sites flying in
+  India), one-time codes, security alerts, social mail, calendar invites.
+  Turning one on makes its folders (labels, on Gmail) in every mail
+  account that lacks them (`CreateFolder`), then saves it for all of them
+  with its key in `mail_rule_starter`; the list stops offering it until
+  that rule is deleted. Its pencil opens the editor on it instead.
 - **Matching** is a pure function of a compiled rule (`Matcher`, regular
   expressions compiled once) and a message's facts, so Katna Mail previews
   a rule on the read-only store exactly as the daemon runs it
@@ -1294,7 +1349,7 @@ this is local; Katna Server only adds opened/clicked events (§16).
   while the computer sleeps and the wall clock does not; resuming also
   wakes it. Values are in `pim.db`, so they survive restarts; one that fell
   due while the computer was off fires when the daemon starts.
-- **Snooze** (`message`/`snooze`: `{until, back_to, snoozed_in}`): the
+- **Snooze** (`message`/`snooze`: `{until, back_to, snoozed_in, newest}`): the
   messages of the conversation in the folder it was snoozed from (the
   Inbox, a label or Archive, never Sent, Drafts, Trash, Spam or All Mail)
   move to the account's `Snoozed` folder, made on the server the first
@@ -1305,6 +1360,38 @@ this is local; Katna Server only adds opened/clicked events (§16).
   moves them back at once without marking them unread. Gmail, Outlook.com,
   Zoho and Yahoo do not share their own snooze over IMAP, so a snooze set
   on their websites stays there.
+  - **Back early on a reply**: `newest` is the newest message row when it
+    was snoozed. After each sync, a message of the conversation stored
+    later and in an Inbox (not an automatic reply) brings it back at once;
+    the new mail notifies as usual.
+  - **From a notification**: a new mail's peek (and a Windows toast) has
+    Snooze 1 hour and Tomorrow (8:00), which snooze the conversation's
+    messages in the same folder.
+  - **Typed times**: Pick date & time reads "tue 3pm", "tomorrow" or "in 2
+    hours" (`quick_add::moment`) into its day and time.
+  - **In place**: Pick date & time slides into the menu where it was
+    opened (Snooze, Remind me, follow-ups, Schedule send and compose's
+    Follow up if no reply; mail and chat view), never a dialog in the
+    middle of the window: one shared picker (`window/date_pick.rs`). Its
+    back arrow or Esc slides back to the times.
+  - **Own times** (`mail.snooze` in the config): the hour of Later today,
+    the morning hour of Tomorrow, This weekend and Next week (also the
+    notification's Tomorrow), the weekend's and the week's day, and one
+    typed time of the user's own, offered while it is still to come.
+  - **The Snoozed folder** lists the soonest back first, under Today,
+    Tomorrow, This week and Later, each line with its return time. In a
+    chat, a snoozed conversation ends with a line with Change and
+    Unsnooze. On a phone a sideways swipe on a line opens Snooze.
+- **Remind me** (no meta of its own): a task in Tasks made from the mail
+  (its `mail` is the newest message's `Message-ID`), due and with
+  `remind_at` at the time, titled with the optional note or the subject;
+  the task alarms (`alarms.rs`) notify. The mail stays where it is. The
+  app opens Snooze and Remind me as one menu (B and H, and Snooze and
+  Remind me on the open mail's toolbar), offers "Before it's due" when
+  the mail says something is due by a day (`quick_add::due_in`), shows a
+  "Reminder" chip on the line, lists the mail under **Reminders** in the
+  folder pane, and in a chat shows a line at the end with Edit and Done.
+  A second reminder on the same conversation moves its task.
 - **Follow-up** (`outbox`/`follow-up`: `{account, message_id, subject,
   remind_at, after}`): set on an outbox entry right after `QueueSend`,
   `after` seconds from when it is sent (1, 3, 7 days or custom). When due,
@@ -1312,6 +1399,45 @@ this is local; Katna Server only adds opened/clicked events (§16).
   newer (a reply, or another message of the user's), it is dropped.
   Otherwise the message is copied into the Inbox too (a label on Gmail),
   marked unread and notified. `UndoSend` drops it.
+- **Follow-up mail** (October 2026, the owner's picks in the follow-up
+  study): the same value with `mail` (the follow-up the app wrote,
+  RFC 5322, `In-Reply-To` and `References` set, no `Date` or
+  `Message-ID`), `again` (seconds to a second follow-up, 0 for once; never
+  more than two), `sent` (their `Message-ID`s) and `waiting`
+  (`SetFollowUpMail(x outbox, x after, x again, ay mail)`). When due and
+  unanswered, it goes out through the outbox in working hours (weekdays
+  9:00 to 17:00 local; later a setting) and is notified. One due more than
+  a day before (the computer was off) is not sent late: it waits, with no
+  expiry, the conversation back in the Inbox, for `SendFollowUpNow(x
+  outbox)`, `MoveFollowUp(x outbox, x at)` or `SetFollowUp(outbox, 0)`. Not replies: Katna's own
+  follow-ups, mail sorted into Updates (it has `Auto-Submitted`) and
+  subjects of automatic answers (out of office, bounces). Encrypted mail
+  gets reminders only, as a follow-up would quote it in the clear. Kept on
+  this computer; sending from another device of the same Katna account
+  while this one is off is planned, not built.
+  The app shows them in **Waiting** (under Sent while there are any;
+  replied ones are left out at once, as the app checks the conversation
+  with `katna_meta::replied`), as a chip on every line of the sent
+  message in any list, and as a card on the open conversation with Edit
+  (`MoveFollowUp`), Send now and Stop. In Chat View the card is a faint
+  dashed bubble at the end of the chat, with the follow-up's text (a
+  reminder is a small line, like the day labels), and the reply box's
+  Send opens its menu on right-click or a long press (Send now, Schedule
+  send, Follow up if no reply). The daemon signals `MailChanged` whenever
+  a follow-up changes.
+- **Nudges** (`message`/`nudge`: `{sent, asks, dismissed}`; October 2026,
+  step 5 of the follow-up study): after each sync (and at start) the
+  daemon looks once at each message in Sent from the last 14 days and
+  keeps whether the user's own words ask something (a `?` before the
+  quote or signature; the preview counts until the body is downloaded).
+  Mailing lists and mail with a follow-up set are left out. The app puts
+  the ones 3 to 14 days old that nobody answered (`waiting_nudges`, the
+  same test as follow-ups) on top of the Inbox's Primary tab, above all
+  but pinned mail, with "Sent 3 days ago. Follow up?" (reply to all) and
+  an x (`DismissNudge(x message)`); the open conversation shows a card,
+  and a chat a small line like the day labels whose Follow up goes to the
+  reply box. Settings > Inbox > Nudges (`mail.nudges`) turns them off.
+  Local only; nothing changes on the server.
 - **Surfaced** (`message`/`surfaced`: `{at}`, expires after 14 days): mail
   back from snooze or a reminder is listed as if it arrived at `at`, so it
   sits on top of the Inbox like new mail.
@@ -1349,10 +1475,14 @@ this is local; Katna Server only adds opened/clicked events (§16).
   `To`, `Cc` and `Bcc` address once; the `Bcc` header is removed from the
   copy on the wire and kept in the sender's copy.
 - Network and TLS failures requeue the entry after 30 s without counting
-  a try, so mail waits in the outbox while offline. A refused message or
-  login counts; after three the entry is `failed`, with the server's reply
-  in `Outbox()`'s detail. Entries left `sending` by a crash are queued
-  again at start: sending twice beats losing mail.
+  a try, so mail waits in the outbox while offline. A refused login does
+  not count either: the entry waits (detail `sign-in: …`, retried every
+  15 minutes) and goes out as soon as `SignIn` or `SetPassword` lets the
+  account in again. A refused message counts; after three the entry is
+  `failed`, with the server's reply in `Outbox()`'s detail, and
+  `RetrySend` queues it again with its tries counted afresh. Entries left
+  `sending` by a crash are queued again at start: sending twice beats
+  losing mail.
 - Once sent, the copy is filed in the account's Sent folder by an `Append`
   operation in the op queue (flag `\Seen`), which the account's worker
   replays at once; then the local copy is forgotten and the next sync
@@ -1436,7 +1566,10 @@ their `href`, whatever their text says, so while the pointer is on a link
 its real address shows at the foot of the reading pane, as in a browser:
 the host stands out (an internationalized one as the punycode the network
 sees, a name and password before it left out), the rest is quieter
-(`rich::link_status`).
+(`rich::link_status`). Plain text and the chat view's bubbles link too
+(`rich::find_links`): web and mail addresses written out, and in a
+bubble the words of the mail's own HTML links (http, https, mailto and
+tel only), found in its text in order, with the same foot.
 In a light theme a message that sets its own colors is drawn on its own
 page; one that does not follows the app's colors. In a dark theme the
 message's colors are remapped (`window/dark.rs`): white becomes the reading
@@ -1478,6 +1611,21 @@ to a place in the text; the selection is drawn as a highlight on those runs.
 Drag, double- and triple-click, Shift+click, Ctrl+A and Ctrl+C (once the
 text was clicked) and a right-click Copy work in plain and HTML mail; the
 selection also goes to the primary selection for middle-click paste.
+
+GPUI draws text that cannot be selected unless a view wires it up, so the
+rule is: text that reads as content or information (About, What's new,
+dialogs, descriptions, contact cards, details, error messages) is drawn
+with `Pieces::words` inside `select::selectable`, or simply
+`MailWindow::copyable` (one run) and `MailWindow::placeholder`, and controls
+(buttons, menu items, tabs, list rows, rows that open a page, setting rows
+that toggle) stay click-only. Everything outside the conversation shares
+one selection, `MailWindow::ui_text`, so selecting there leaves the
+conversation's selection as it was. Each window (main, Settings, a
+detached app) starts its own frame of it (`TextSelection::begin_window`)
+and draws its own parts, so pieces of two windows never mix; About and
+What's new keep fixed slots (`slot_pieces`). Ctrl+C is bound in the window
+context too, so it copies whatever was selected wherever focus sits, and
+does what it did before when nothing is.
 
 Sender pictures load without asking. Looking one up does reach the
 network (a DNS query and HTTPS requests from this computer to the
@@ -1654,7 +1802,12 @@ GPUI global):
   background* (`frosted_chat`) makes the open mail's card 5 points
   clearer while it shows a chat (70 % with solid panes), bubbles staying
   solid; *Frosted search box* (`frosted_search`) keeps the focused search
-  field 62 % opaque, clearing the bar's tint under it as it opens. The theme carries them (`Theme::frosted_panes`,
+  field 62 % opaque, clearing the bar's tint under it as it opens. Nothing
+  scrolls under a card's bars: the mail list's rows, the open mail and a
+  chat's bubbles start below their toolbar and header, which stay solid
+  (a frosted slide-under header was tried in October 2026 and dropped,
+  since GPUI doesn't clip what passes under a bar to the card's rounded
+  corners). The theme carries them (`Theme::frosted_panes`,
   `pane`, `chat_pane`, `on_pane`): rows and chips that match the card
   draw nothing, others go as see-through as the card. Over see-through
   cards dim and faint text move closer to the text colour (a fifth and
@@ -1672,10 +1825,15 @@ GPUI global):
   filter, so Katna's copy of its renderer (`vendor/gpui-pre-wgpu`) adds
   one: a quad marked through its border color is drawn over a dual Kawase
   blur of the frame under it, clamped to the quad (as CSS
-  `backdrop-filter`). The same renderer draws every drop shadow only
-  outside its element, as CSS does, so a translucent panel or frame keeps
-  one plain box shadow that follows its rounded corners. Where the
-  window's surface cannot be copied from, panels stay opaque.
+  `backdrop-filter`). On Windows, where GPUI draws with Direct3D 11,
+  Katna's copy of its Windows backend (`vendor/gpui-pre-windows`) draws
+  the same blur from the same markers (`backdrop_blur.rs`,
+  `backdrop_blur.hlsl`), so frost looks the same on both. The same
+  renderers draw every drop shadow only outside its element, as CSS
+  does, so a translucent panel or frame keeps one plain box shadow that
+  follows its rounded corners. Where the window's surface cannot be
+  copied from, or the blur's shaders cannot be made, panels stay
+  opaque.
 
 **Settings > Experimental > Reading** (config `[experimental] chat_view`,
 off by default): conversations between people show as a group chat
@@ -1900,7 +2058,12 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   one after another. The account card switches the shown account (it marks
   it and gives each account's unread count, under an icon row of
   Settings (the General page), the language button and the ☰ application
-  menu, with "Add another account" as the last row); the choice is kept in
+  menu, with "Add another account" as the last row). The ☰ menu and the
+  language list open as pages of the card: the new page slides in 48 px
+  from the right while it fades in (from the left going back, as Snooze's
+  date picker does), the card's height eases to the page's, and each page
+  has its name on the left and a back button on the right where ☰ sits
+  (Escape goes back too); the choice is kept in
   `mail.current_account`. The list, search results, Go to, compose's From
   and the top-bar picture follow the shown account, and opening a message
   of another account (from a notification) switches to it. The taskbar
@@ -2024,7 +2187,7 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   new window sit right of the actions and move to the More menu when the
   reading pane is under 600 px. The More menus open right under their
   button, with an icon beside each item.
-- **Reading options.** Settings > General > Reading, taken from
+- **Reading options.** Settings > Mail > Reading, taken from
   Mailspring: *Newest message first* shows a conversation's latest reply on
   top, with a reply written above it (`mail.newest_first`); *Show full
   headers* opens the from, to, cc, date and subject box on every message,
@@ -2043,9 +2206,9 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
 - **Motion.** Springs (`katna_ui::motion::Spring`, on GPUI's spring
   solver) drive values that shape several elements: the navigation width,
   the search box turning white with a shadow when focused, the snackbar.
-  Per-element motion uses GPUI's `with_spring` (row lift on hover, the
-  list cursor bar growing from the middle, the selected folder's pill
-  fading in) and `with_animation` (the card fading between list and
+  Per-element motion uses GPUI's `with_spring` (the flat accent tint on
+  a hovered row, the list cursor bar growing from the middle, the
+  selected folder's pill fading in) and `with_animation` (the card fading between list and
   message, the message sliding up as it opens). `katna_ui::Ripple` draws
   the Material ink ripple from the pointer on buttons, folders and rows.
   Everything honors the desktop's reduce-motion setting.
@@ -2059,6 +2222,11 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   light edge (`Theme::rim`) to every shadow. A dialog draws its contents
   with `Theme::lifted`, so fields and chips inside it keep their contrast.
   Light colors keep the white card and its shadow (the owner, 2026-09-30).
+  A white card on the near-white page has no edge of its own, so in light
+  colors `widgets::card_shadow` draws a 1 px hairline ring
+  (`Theme::card_edge`, the shadow's ink at 10%, about 8% at rest) and a
+  tight 2 px shadow instead of the soft 3 px one: "Tight", the owner's
+  pick on 2026-10-03, and elevation level 1 of the design system.
 
 The owner then asked for the rest of Gmail's pattern, with Katna's own
 icons and name and without Google-only features (no Chat, Meet, Drive,
@@ -2141,37 +2309,56 @@ Gemini or confidential mode):
   while dragged and applies when let go, so it doesn't grow under the
   pointer. Mail you send keeps its own font size.
 - **Settings page.** "See all settings", the rail's gear or `?` open it in
-  place of the list (`window/settings_page.rs`). Its tabs, in the owner's
-  order: General (language, 12- or 24-hour time, conversation view,
-  reading order and headers, when mail
-  is marked read, what the reply button does, images from the web, undo
-  send, offline mail, starting at login, tray and badge), Notifications
-  (new-mail notifications, Sounds, taskbar count, which folders notify
-  and count, muted list), Inbox, Accounts, Subscription, Appearance (reading pane,
-  density, scaling, theme, desktop colors, app names, sender pictures,
-  Important markers, message width, dark colors for HTML mail, attachment
-  previews), Shortcuts, Default apps (where each kind of attachment
-  opens, and showing saved files in their folder), Folders & rules (the
+  place of the app's page (`window/settings_page.rs`), on the page of the
+  app on show (Mail's Reading, Calendar, Files; General from an app
+  without settings of its own). Layout A of the Settings layout study
+  (2026-10-03): one list beside the open page, sorted by scope
+  (`settings_page/nav.rs`). **All apps** holds what every app shares:
+  General (language, 12- or 24-hour time, video calls, offline mail,
+  updates, the cache, starting at login, tray and badge), Appearance
+  (density, scaling, theme, desktop colors, accent, app names),
+  Accounts, Notifications (new-mail notifications, Sounds, taskbar
+  count, which folders notify and count, muted list), Shortcuts,
+  Subscription, AI (writing help with Katna AI or the user's own
+  service), Default apps (where each kind of attachment opens, and
+  showing saved files in their folder), MCP server, then User feedback
+  and Experimental at the end under a faint line. Under **Apps**, Mail
+  folds open to its pages (its arrow turning, the pages gliding in):
+  Reading
+  (conversation view, reading order and headers, translation, when mail
+  is marked read, what opens next, asking before deleting, images from
+  the web, reading pane, sender pictures, Important markers, message
+  width, dark colors for HTML mail, attachment previews), Inbox, Compose
+  (the reply button, undo send, sending, signatures, plain text, spelling
+  and its language, templates), Folders & rules (the
   mail rules of §9.4 in the order they run, for every account or one:
   each with a handle to drag it to another place, a switch, a line saying
   what it does, a dot per account, where it runs, and a pencil that opens
   the rule editor; a rule the daemon switched off says why in red; and an
-  unread count on every folder or on the inbox only),
-  Compose (signatures, plain text, spelling and its language,
-  templates), MCP server, User feedback (turning crash reports and feedback off at any
-  time) and Experimental, always last. Subscription and
-  MCP server are still to come: their tabs are fainter and each shows a
-  "Coming soon" page saying what it will do. The rule editor
+  unread count on every folder or on the inbox only) and Desktop (email
+  links, the desktop's search words). Calendar holds the hours' height,
+  the custom view's days and the Birthdays calendar; Files the Files
+  page's small pictures and drives. An app joins the list once it has
+  settings of its own. On a phone the list of the scope's pages
+  fills the page until one is picked, and the back arrow comes back to
+  it. The MCP server itself is built: `katnactl mcp` (#756) speaks
+  the Model Context Protocol on stdio to AI assistants on the same
+  computer, with tools to list accounts and folders, search and read mail
+  and save plain-text drafts, and never sends, deletes, moves or flags
+  mail. Its Settings page (#759) lets assistants use the mail only once
+  turned on, with a drafts switch, a switch per account (hidden accounts'
+  mail is left out of every answer), Connect an assistant (Claude Desktop,
+  Claude Code, LM Studio, Other) with the text to paste and Copy, and
+  Recently, what assistants did, kept on this computer
+  (`state/mcp-activity.jsonl`, last 50 lines) with Clear; `katnactl mcp`
+  reads `[mcp]` on every call. The rule editor
   (`window/rule_editor.rs`), a dialog, also opens from a mail's
   right-click menu (Make a rule…, filled in with its sender). It counts
   the inbox mail of the last 30 days the rule matches as it changes
   (`Store::rule_preview` on the read-only store, with each message's
   stored text), offers a search for them when the search language can say
   it, and "Also apply to these" (`ApplyRule`) on Save; the daemon's
-  reasons for refusing a rule show in it. The tabs always stay on one line (`window/tab_strip.rs`): when
-  they don't fit, the row scrolls sideways by wheel or touchpad, arrows
-  show at an edge with more tabs past it (not on a phone, where the row is
-  swiped), and the arrows and picking a half-hidden tab glide the row. A
+  reasons for refusing a rule show in it. A
   setting's line that would take more than one line under its name (over
   about 40 characters) sits behind an (i) button beside the name: its
   tooltip on hover, and shown under the name after a click, Enter or a tap.
@@ -2185,14 +2372,27 @@ Gemini or confidential mode):
   marking read after 1 or 3 seconds only happens if the conversation is
   still open then; with "Always show images" off, each message's images
   still wait to be asked for. Sounds (`[sounds]`, `window/sounds.rs`)
-  has a line per event: new mail, event and task reminders, mail back in
-  the inbox (snooze, no reply), mail sent and mail not sent, each with a
-  sound to pick (a menu that plays each as it is picked), a play button
-  and a switch. New mail's usual sound on Linux is Katna's own chime
-  (`sound/chime.rs`: three bell notes rising, G5, C6, E6, 1.5 s, peak at
-  -1 dB), made in code and written once to `cache/sounds/`, because the
-  sound themes' new-mail sounds can be too faint to hear. The other sounds
-  are the desktop's own (`katna_platform::sound`):
+  starts with the sets of sounds as tiles, two to a row (an icon, the
+  set's name and what it holds, a play button; the picked one ringed in
+  the accent with a check): System (the desktop's own), Katna (the chime
+  and four bells), Nature, Birds, Animals, Insects, Electronic and
+  Morning, each with a sound for every event (`katna_platform::sound::SETS`;
+  `sounds.set`, empty for Birds, the usual set). Then a line per event:
+  new mail, event and task reminders, mail back in the inbox (snooze, no
+  reply), mail sent and mail not sent, each with a sound to pick, a play
+  button and a switch. The menu plays each sound as it is picked: "The
+  set's sound" (stored empty, so it follows a change of set), each set's
+  sounds under its name, and Choose a file…, which takes a WAV, OGG,
+  FLAC or MP3 file up to 10 MB, copies it to `data/sounds/<event>-<time>/`
+  (the original may move; the copy goes when another sound replaces it)
+  and stores `file:<path>`; such a file plays for at most 5 s, and a
+  missing one falls back to the set's sound. Every set but System is
+  made in code (`sound/synth.rs`, the chime in `sound/chime.rs`: bells,
+  struck bars, bird syllables that sweep and warble, filtered noise,
+  buzzes; at most 1.5 s, peak at -1 dB, quieter for noise and buzzes) and
+  written once to `cache/sounds/<id>-<version>.wav`, so the sets add no
+  files and need no licence. Recordings (CC0) could replace Birds and
+  Animals later. The System sounds (`katna_platform::sound`) are:
   on Linux freedesktop names found in the KDE sound theme, Ocean or
   freedesktop (with fallbacks, e.g. New email falls back to
   `message-new-instant`), played with `pw-play`, `paplay` or
@@ -2201,8 +2401,9 @@ Gemini or confidential mode):
   toast. Katna plays a notification's sound itself on Linux, because
   servers such as Plasma's leave `sound-name` unplayed, and sends
   `suppress-sound`; it stays silent while the server's `Inhibited` (Do not
-  disturb) is true. On Windows the toast plays it, so Focus Assist
-  silences it. Muted folders, conversations and senders never notify, so
+  disturb) is true. On Windows a toast plays only the Windows sounds, so
+  Focus Assist silences those; for any other sound the toast is silent
+  and Katna plays it. Muted folders, conversations and senders never notify, so
   they make no sound. Older `notifications.sound` and `sending.sent_sound`
   switches carry over when off. Open and click
   tracking is not a setting: it, a read receipt and a delivery receipt
@@ -2271,6 +2472,51 @@ Gemini or confidential mode):
   user signed their newest message in the conversation with, found by
   comparing the text after its `-- ` line (`signatures.rs`); otherwise the
   reply default. The single signature of older versions becomes the first.
+  A **designed signature** (pasted as HTML in Settings → Compose →
+  Paste HTML, and later imported or made from a layout) is one fixed block
+  in the editor (`rich::Block::Html`): the compose window draws it with the
+  mail renderer, as it will be sent, and never rewrites it, since the
+  editor's own model cannot hold layout tables. Its HTML is cleaned first
+  (`katna_render::html::clean`: allow-listed elements and attributes,
+  inline styles without `url()` or positioning, web/mail/phone links only,
+  no scripts, frames, forms, style sheets or tracking pixels). Pictures on
+  the web are downloaded once through the daemon (`FetchImage`) and stored
+  inside as `data:` URIs, so nothing is hosted and readers load nothing:
+  in a message they travel as `cid:` parts like any inline picture. Stored
+  and in drafts it sits between `<!--katna-html-->` comments, so it reads
+  back as the same block; its plain text (a line per table cell) is what
+  plain text mail carries. Edit HTML opens it again with its pictures as
+  `cid:katna-N`.
+  **Import** (Settings → Compose → Signatures) lists the signatures Gmail
+  adds, for accounts signed in with Google (the daemon's
+  `GmailSignatures`: the Gmail API's `sendAs`, which Gmail's mail scope
+  allows), and those Thunderbird (`prefs.js` of each profile, inline or
+  from a file), Evolution (`sources/*.source` and `signatures/`) and KMail
+  (`emailidentities`) keep on this computer, usual and Flatpak installs
+  (`signatures/import.rs`). Their files are only read; signatures that run
+  a program (KMail's command, Evolution's script) are never run and are
+  left out. Pictures on this computer go inside as `data:` URIs, pictures
+  on the web are downloaded through the daemon, and each is cleaned as
+  pasted HTML is; ones already in Katna are shown but not ticked. Other
+  apps' signatures come in by Paste HTML.
+  **Layouts.** A signature can instead be made from one of twelve layouts
+  (Classic, Logo left, Photo, Colour band, One line, Centred, With banner,
+  Underline, Side bar, Card, Monogram, Plain text): its fields (name,
+  title, company, numbers, email, website, address, pages, logo, photo,
+  banner, colour) are kept in the settings (`Signature::layout`) and the
+  signature is written again from them on every change
+  (`signatures/layout.rs`), as a designed block of mail-safe HTML (tables
+  and inline styles, which Outlook's Word engine also draws) and a plain
+  text twin whose numbers are labelled "M:" and "O:", which the person card
+  reads. Pictures are made small at twice their shown size
+  (`katna_preview::signature`: a logo at most 256 × 128 px, a dark logo on
+  nothing put on a soft white card, a photo cut round, 136 px), and the
+  page marks (Simple Icons), monogram and underline bar are drawn as PNGs
+  in the layout's colour, so they look the same in every reader. The page
+  shows the result in a light or dark reader or as plain text. Picking a
+  layout for a signature written by hand fills the fields in from it (as
+  the person card reads it, and its first picture as the logo); Edit by
+  hand turns a layout signature back into one, and both ask first.
 - **Grammar.** Harper (`harper-core`, Apache-2.0) checks English drafts,
   text and subject, on this computer as you write (`grammar.rs`), on by default, under
   Settings → Compose → Grammar. Paragraphs are checked off the UI thread
@@ -2401,8 +2647,15 @@ Gemini or confidential mode):
   builds an RFC 5322 message (`outgoing.rs`) and hands it to the
   daemon's outbox (`QueueSend`) with the undo-send delay; the snackbar's
   Undo takes it back (`UndoSend`, then `DiscardSend`) and opens it again. A
-  message the server refuses for good raises a snackbar
-  (`OutboxChanged`).
+  message the server refuses for good raises a snackbar in plain words
+  ("… wasn't sent because an address it's sent to doesn't exist") with an
+  Outbox button. **Outbox** (`window/compose/outbox.rs`) shows under the
+  first Sent folder, like Scheduled, only while some mail has not gone
+  out: refused (Try again, `RetrySend`), waiting for a sign-in or a new
+  password (the account's fix), waiting for a connection, or refused and
+  being tried again. Each says why in plain words, with the server's
+  own reply on hover, and has Edit (taken back and opened, from its
+  account) and Delete. Its count is amber while one needs the user.
 - **Adding an account.** A dialog in steps (`window/add_account.rs`),
   shaped after Mailspring's and Thunderbird's. First a grid of provider
   tiles (`window/mail_providers.rs`): Google, Microsoft (only when this
@@ -2423,8 +2676,21 @@ Gemini or confidential mode):
   set up (receiving and sending servers, and for POP3 what stays on the
   server) with "Add another account"; a Zoho account is offered "Sign in
   with Zoho" there for its tasks and calendars. An
-  OAuth2 account whose sign-in stopped working shows a note at the bottom
-  of the window with "Sign in" (`window/sign_in_again.rs`). It opens from the first-start pages
+  account that needs the user shows a line at the top of the mail list
+  (`window/problems.rs`), in the band of "All 50 conversations are
+  selected": an OAuth2 account signed out offers "Sign in"; a refused
+  password offers "New password", a small card at the click that checks
+  the password with `SetPassword` before keeping it. Each line has "Later"
+  (a day); three or more fold into one. These show in the theme's amber
+  `warning` colour, with the same sign on the account's heading in the
+  folder pane, on the account picture's corner and in the account menu.
+  An account the server has not answered for 30 minutes gets a grey line
+  with "Try again"; when every account is unreachable one grey line says
+  you're offline instead. Settings › Accounts shows the same sentence and fix
+  under the account, with the sign on its picture. A change the server
+  refused three times (`ChangesRefused`) is put back and said as what the
+  user did, "The mail server of … didn't accept moving a message, so it's
+  back where it was.", with Details showing the server's own words. It opens from the first-start pages
   (no account yet), the account card above the rail's account picture ("Add
   another account", which also lists the accounts and opens their
   inboxes), and Send without an account. The daemon signals `MailChanged`
@@ -2489,7 +2755,10 @@ Gemini or confidential mode):
   `cargo metadata` together with CREDITS.md. A short "A personal project"
   note says where Katna's ideas come from (Gmail, Mailspring,
   Thunderbird) and that LLMs made it possible. On a phone it fills the
-  window.
+  window. Its header (the wordmark, Katna, the tagline and the version)
+  shrinks with the scroll: the wordmark slides to the top left with the
+  three lines beside it, then the header stays, frosted, while the rest
+  scrolls under it.
 - **After the first real install.** The owner's first run on KDE brought
   these changes. The account picture moved
   to the top right, beside the settings gear, with its card below it; the
@@ -2675,6 +2944,20 @@ Gemini or confidential mode):
   it goes (hidden, the mail closed, or the window grown wide enough for
   both); a pane folded by hand stays folded, and one opened by hand beside
   it wins until the panel is next shown (`fold_nav_for_contact`).
+  Where it has no room (a tablet, a narrow window, a conversation window),
+  a click on a person's name or picture opens a summary of the same card
+  (name, round buttons, details) as a popover whose notch points at the
+  name or picture clicked, from the bounds each one records as it paints
+  (`ContactPanel::spots`; the click spot only when none was recorded)
+  (`contact/peek.rs`). Resting the pointer on a name or picture starts
+  reading that person's details, and the popover is laid out once unseen
+  before it fades in, so it never shows at a guessed height or place.
+  While a person's details are still being read the first time, faint
+  breathing lines stand where they will go, and the popover then eases to
+  its new height as they fill in. Once
+  the window has room again the popover
+  closes and the panel shows instead. A phone shows the full card as a
+  bottom sheet.
 - **Day's agenda.** A Calendar button on the top bar, beside Settings
   (the Mail page of a desktop window only), opens a card at the
   right of the mail with one day's events, as Gmail's side panel has it
@@ -2904,7 +3187,9 @@ desktop's own app stays one click away.
   on release; the wheel over the chip moves the days, keeping their
   length, whole months by months) and the order; the top bar's search box matches names, subjects
   and senders. A click opens a file as the list's chips do (downloading
-  its mail first); the hover panel, the right-click menu and the viewer
+  its mail first); under the pointer a card lifts and shows its size and
+  round buttons on its top corners, on frosted glass, its preview left as
+  it is; those buttons, the right-click menu and the viewer
   (opened from this page) offer **Show the mail**, and the menu also
   opens the mail in a new window, forwards the file in a new mail, and
   shows the sender's files. Thumbnails are made in the background only
@@ -2986,7 +3271,7 @@ one of three layouts by the width inside the window frame
 |---------|---------------|--------------|
 | Desktop | 1080 px and up | §13.6 as is. |
 | Tablet  | 600–1080 px   | The folders fold into a drawer the menu button opens over a dimmed list; Compose is a square at the top of the app rail, and the top bar shows the Katna mark and the app's name beside the menu button, the name folding away below 760 px; the reading pane (three-pane setting) stays beside the list from 840 px, and narrower the conversation slides in over the list. |
-| Phone   | under 600 px  | No app rail: the apps sit in a bar along the bottom. The search box is a pill across the top bar with the menu button and account picture inside it (settings move to the drawer). The list is edge to edge, three lines a message with the sender's picture, which ticks the line when tapped; the inbox tabs move to the drawer. Compose floats at the bottom right; it folds to its pencil as the list scrolls down and grows back after a few steps up (or at the top). The search row and the list toolbar slide up out of sight once the list has scrolled past them, and come back as soon as it turns back up (or at the top); the list keeps still on screen while they move. An open conversation slides in over the list and the bottom bar sinks away; its messages use the room under the sender's picture, from the picture's left edge, and Reply, Reply all and Forward share the width equally. Composing takes a sheet over the whole window (below the top bar with Katna's own frame, whose window buttons sit there). Quick settings and the Settings page each fill the window between the top bar and the bottom bar, with no Compose button over them; the Settings page's section tabs stay on one line that scrolls sideways. |
+| Phone   | under 600 px  | No app rail: the apps sit in a bar along the bottom. The search box is a pill across the top bar with the menu button and account picture inside it (settings move to the drawer). The list is edge to edge, three lines a message with the sender's picture, which ticks the line when tapped; the inbox tabs move to the drawer. Compose floats at the bottom right; it folds to its pencil as the list scrolls down and grows back after a few steps up (or at the top). The search row and the list toolbar slide up out of sight once the list has scrolled past them, and come back as soon as it turns back up (or at the top); the list keeps still on screen while they move. An open conversation slides in over the list and the bottom bar sinks away; its messages use the room under the sender's picture, from the picture's left edge, and Reply, Reply all and Forward share the width equally. Composing takes a sheet over the whole window (below the top bar with Katna's own frame, whose window buttons sit there). Quick settings and the Settings page each fill the window between the top bar and the bottom bar, with no Compose button over them; the Settings page shows its list of pages until one is picked. |
 
 The other apps' pages (Calendar, Contacts, Tasks, Notes) fold the same
 way: on a tablet or phone their side column (calendars, labels, lists)
@@ -2996,7 +3281,8 @@ the address under it when the list is narrower than 640 px; Notes lays two
 narrower cards across a phone; Tasks' cards and Calendar's event cards
 never grow wider than the window. The ☰ application menu opens each menu
 to the left of its card where the window has room, and otherwise (a
-phone) in the card itself under a Back row (Left or Escape goes back).
+phone) as a page of its own under the menu's name and a back button on
+the right (Left or Escape goes back).
 
 Settings rows put the name beside the controls and wrap on width alone,
 not on the layout: where the controls would get less than 300 px beside
@@ -3127,7 +3413,8 @@ building Katna.
   the owner asked, which keeps the top bar to Settings and the picture. It
   shows the current language's flag and a small chevron; its tooltip names
   the language ("Language: বাংলা, following the system" with System
-  default). The popover opens under the account picture.
+  default). The list opens as a page of the account card, in its place
+  (Escape or the back button returns to the card).
 - **Settings > General > Language**, a row with the same choices.
 
 The button opens a popover (the popover rules of §13.6: closes on Esc and
@@ -3408,7 +3695,92 @@ away; he can still change them.
   folder copy carries that HTML after the title line, and formatting from
   another app (an iPhone's bold or headings) is kept when read. Cards draw
   the formatting when the HTML's paragraphs line up with `body`.
-- **Later.** Pictures.
+- **Second round** (study 2026-10-03,
+  `/mnt/project-files/research/notes-tasks/notes-tasks-study.html`; the
+  owner took every recommended option). Store changes are pim.db v16.
+  - **Pictures.** As Keep: a note's pictures sit on top of it (a strip in
+    the open note, the first as the card's cover), apart from its text.
+    `note_picture` holds them (`cid`, order, name, MIME type, size, bytes;
+    at most 50 of 20 MB each); pasting or dropping a picture into the
+    text lifts it out to the strip. The Notes-folder copy is
+    `multipart/related` with each picture an inline part named
+    `cid:<fnv-hash>@katna` by an `<img>` after the title, which Apple
+    Notes shows; Apple's `<object data="cid:…">` reads back as a picture.
+  - **Reminders.** The bell (open note, card hover, selection bar) opens
+    the Snooze menu's times and picker; `note_reminder` keeps the time and
+    `X-Katna-Remind` carries it. The daemon's alarms show a "Katna Notes"
+    notification with Open and Snooze at that time, app closed or not. A
+    card shows "🔔 Tomorrow, 09:00" (struck through once past), and the
+    side list has Reminders with a count between Notes and the labels.
+  - **Select several.** Ctrl+click or right-click ticks a card (check
+    badge, accent ring), Shift+click a range. The "Take a note" bar turns
+    into a bar with the count, Pin, Remind, Colour, Label, Archive and ⋮
+    (Make a copy, Delete); Esc clears it. Dragging a ticked card carries
+    the others along. Every change is one Undo (`Command::Several`).
+  - **Links.** Typing `[[` opens "Link a note" at the cursor: notes whose
+    title matches, or a new note of that name; ⋮ > Link a note does the
+    same. The link is `katna-note:<UUID>` in the note's HTML and opens
+    that note. A note shows the notes linking to it as "LINKED FROM"
+    chips. Sent as mail, links become plain text.
+  - **History.** `note_version` keeps earlier text for 30 days on this
+    computer: saves here less than 10 minutes apart make one version,
+    and a version from sync names the device from `X-Mailer` when it
+    says one. The clock button shows the chosen version beside VERSIONS
+    ("Now", "Today, 11:40 · 2 changes", "From iPhone", "Created"),
+    removed lines struck in red and added ones tinted green; Restore this
+    version saves it as a new change, with Undo.
+  - **More formatting.** Quote, Code and Divider in Formatting, and Tab
+    indents a checklist line, all plain HTML (`blockquote`, monospace,
+    `<hr>`, margins).
+  - **⋮ on a note.** Show checkboxes, Make it a task, Link a note, Send
+    as mail (Compose with the title as subject, text and pictures as the
+    body), Save as Markdown, Save as PDF (laid out as Print lays out
+    mail), Make a copy, Archive, Delete.
+  - **AI.** With AI on, the sparkle offers Tidy, Make a checklist and
+    Summarise through the user's AI service; the change is one editor
+    Undo. With AI off there is no sparkle.
+  - **For Tasks.** The label picker (`notes::labels::LabelPicker`,
+    `render_label_choices`), the list of labels and `create_note` are
+    shared with Tasks' quick capture (Meta+Alt+N/T, tray, KRunner).
+
+### 13.12 Turning apps off
+
+Any app beside Mail can be turned off (Settings › Apps; study artifact
+Pwvq1VzDLXk7ikbLDPym9n, decided Oct 4 2026). Mail cannot.
+
+- **Switch.** `Config.apps: AppsOn` (`[apps]`, every app on by default),
+  read through `Config::app_on(AppKind)`. The window's `MailWindow::apps()`
+  lists only the apps that are on; `open_app` and `show_page` refuse an
+  app that is off with a snackbar "X is off · Turn on".
+- **Turning off.** Settings › Apps (Mail locked), a "Use X" switch on top
+  of each app's page, and Turn off X… on the rail's right-click menu. A
+  sheet lists what goes away, then a snackbar with Undo. Nothing changes
+  on the accounts. The sheet keeps the local copy unless "Remove the copy"
+  is picked: `katna_store::forget` deletes what came from the accounts
+  (the next sync downloads it again, and nothing is sent as a delete),
+  keeping what is on this computer only or not sent yet (local calendars,
+  books, lists and notes; calendars with held or pending changes; lists
+  with unsent tasks, files or mail links; unsent and trashed notes;
+  `note_gone`). Files only has the drives' opened files. In first-run
+  setup, the last page has a row of app chips.
+- **Sign-in.** `Provider::only_for` asks for the calendars, contacts, task
+  lists or whole Drive only while their app is on; Mail's scopes and the
+  large-attachment files always. Turning an app on later shows its "sign
+  in again" row where the permission is missing.
+- **Only Mail.** With every other app off, the rail goes while the
+  folders are docked open, and the phone's bottom bar goes.
+- **Ways in from Mail.** Add to Tasks (and Shift+T), Add a note, Schedule
+  meeting, the agenda card, Open in Calendar on invitations (the card
+  still answers by mail), the contact card's Add to contacts and tasks,
+  Birthdays, tasks and meeting notes in the Calendar, the Files panel on
+  the paperclip (the system's file picker instead), the Go menu and the
+  shortcut lists all follow the switch. With Contacts off, Compose
+  suggests only people mailed. A What's new highlight can name its
+  `apps`, and waits while they are all off.
+- **Daemon.** The calendar, contacts, tasks and notes loops skip an app
+  that is off; `reload_config` wakes the one turned back on. Reminders,
+  the tray's New task / New note, Meta+Alt+T/N, Agenda1 (the desktop
+  clock) and KRunner leave it out too.
 
 ## 14. D-Bus API (`katna-dbus`)
 
@@ -3446,9 +3818,11 @@ their body, bytes deleted; see Settings above), `SyncNow(id)` (0 for every accou
 on)` (local only; more than ten pinned conversations is an error),
 `MoveMessages(ax, folder)`,
 `Snooze(ax messages, x until)`, `Unsnooze(ax messages)` and
-`SetFollowUp(x outbox, x after)` (§10.1),
+`SetFollowUp(x outbox, x after)`, `SetFollowUpMail(x outbox, x after, x
+again, ay mail)`, `SendFollowUpNow(x outbox)` and `MoveFollowUp(x outbox,
+x at)` (§10.1),
 `DeleteMessages(ax)`, `ArchiveMessages(ax)`, `QueueSend(x account, ay
-message, u delay) → id`, `UndoSend(id) → b`, `DiscardSend(id) → b`,
+message, u delay) → id`, `UndoSend(id) → b`, `RetrySend(id) → b`, `DiscardSend(id) → b`,
 `Outbox() → a(xxxsxss)` (id, account, message, subject, send at, state,
 detail; states in `katna_dbus::send_state`), `SaveTemplate((xssssa(ssay)))
 → x`, `RenameTemplate(id, name) → b`, `DeleteTemplate(id) → b` (mail
@@ -3466,7 +3840,9 @@ changed, or 0; `InvalidArgs` for a calendar that can't be changed; §18),
 and the
 signals
 `AccountsChanged`, `SyncStatusChanged(id)`, `MailChanged(id)`,
-`OutboxChanged(id)` and `CalendarChanged()`. `MailChanged` carries the
+`OutboxChanged(id)`, `ChangesRefused(x account, s change, u count, s
+reason)` (`change` is `flags`, `move`, `label`, `delete` or `other` when
+mixed) and `CalendarChanged()`. `MailChanged` carries the
 account, not message IDs: clients read the change journal. Errors use the
 standard names `org.freedesktop.DBus.Error.AuthFailed`, `InvalidArgs`,
 `UnknownObject` and `Failed`. zbus needs the interface name as a literal, so
@@ -3494,10 +3870,12 @@ Implemented by the daemon on `org.freedesktop.Notifications` (`zbus`).
 | **Peek** | One message only, not on Windows: the same notification (`replaces_id`, `resident` so the server keeps it after the button) shows the subject and the mail's text, up to 1200 characters with its paragraphs, with Reply, Reply all and Archive, and stays until closed (timeout 0). |
 | **Reply** | One message only. Where `GetCapabilities` lists `inline-reply` (Plasma; Katna's own toasts on Windows): action id `inline-reply` with hints `x-kde-reply-placeholder-text` ("Reply to Bob…"), `x-kde-reply-submit-button-text` ("Send") and `x-kde-reply-submit-button-icon-name`. The `NotificationReplied(id, text)` signal gives the text; the daemon builds a plain-text reply to the sender (§15.1.2), queues it with the undo delay, marks the mail read and shows "Reply sent to Bob" with Undo and Open in Katna. Elsewhere: a Reply button that opens Katna Mail's reply (`ActivateAction("reply", [id])`). Reply all (in Peek) opens Katna Mail's reply to all. |
 | **Archive / Mark read** | Buttons handled by the daemon without opening the app. |
+| **Copy code / Verify on …** | One message only, when it carries a one-time code or a verify, confirm or activate link (§15.1.3). |
 
 Content and behavior:
 
-- Hints: `desktop-entry`, `category=email.arrived`, `image-data` (sender
+- Hints: `desktop-entry` (the hidden `<mail app ID>.Notifications`
+  entry, below), `category=email.arrived`, `image-data` (sender
   avatar or organization logo), the Sounds setting's sound (§13 Settings;
   Katna plays it itself on Linux and sends `suppress-sound`),
   `x-kde-origin-name` (account name).
@@ -3593,6 +3971,16 @@ notified).
   which drops timed mutes when they end. A muted conversation follows
   thread merges.
 
+Notifications name a hidden desktop entry,
+`packaging/desktop/<mail app ID>.Notifications.desktop` (`NoDisplay`,
+`StartupNotify=false`), not Katna Mail's own. Plasma asks KWin for an
+activation token for every button, with the notification's desktop entry
+as the app; KWin starts launch feedback (the bouncing icon by the cursor)
+for an app whose entry allows it, and ends it only when a window of that
+app activates. Peek, Mark as read and Archive open no window, so with
+Katna Mail's entry the icon bounced for half a minute. The token still
+focuses the windows that Open and Reply do open.
+
 #### 15.1.2 Replies typed into a notification
 
 `katna_sync::quick_reply` reads the answered message from its stored body
@@ -3621,6 +4009,53 @@ from Windows' toast XML: an `inline-reply` action becomes a text box
 `katna`), so a replacing notification replaces its toast and
 `CloseNotification` removes it from the notification center. A toast
 cannot grow, so Windows gets no Peek.
+
+#### 15.1.3 Codes and verify links
+
+`katna_sync::mail_actions` reads a lone new message's stored body for
+one shortcut. The mail must say what it is about in its subject or first
+4000 characters (the starter "One-time codes" rule's words "OTP",
+"verification code", "one-time password", and others such as "passcode",
+"sign in", "verify", "confirm", "activate").
+
+- **Code:** on a line (the subject first) with the word "code", "OTP",
+  "passcode" or "PIN", and not "promo", "coupon", "discount" and the
+  like, or on one of the three short lines after it: 4 to 8 digits (also
+  as `123 456` or `123-456`, copied without the gap), or 5 to 8 capitals
+  and digits with both. Not years, times, amounts, phone-like groups or
+  parts of links. The button reads "Copy 482913"; the daemon puts the
+  code on the clipboard (Klipper over D-Bus, else `wl-copy` or `xclip`;
+  `clip` on Windows) and says "Code copied" for 4 s, or shows the code to
+  copy by hand when nothing could take it.
+- **Link** (when there is no code): the first `<a href>` whose text says
+  verify, confirm or activate (not "unsubscribe", "not you", "report"),
+  else one whose address says so; in plain text, an address after a line
+  that says so. The button names where it goes, from the address's real
+  host ("Verify on accounts.example.com"; `https://bank.com@evil.example`
+  reads evil.example), so a link that only looks like a company's shows
+  it. It opens in the browser only on that click, through the OpenURI
+  portal with the notification's activation token.
+
+Neither closes the notification or marks the mail read. The button takes
+Reply's place in the short notification where Peek offers Reply (Linux),
+and Reply all's in a peek, so four buttons stay four; Windows, without
+Peek, keeps Reply beside it.
+
+#### 15.1.4 Something needs the user
+
+What only the user can fix gets one notification each, with the window
+open or closed (`katna-daemon` `needs_you`, error-handling study
+2026-10-04): a password the server refused ("Password refused", New
+password), a Google or Microsoft sign-in that ended ("Sign in again", Sign
+in), and a message the server refused for good ("“Subject” wasn't sent",
+Open Outbox). The click or the button opens Katna Mail on the fix
+(`open-page` `mail:fix-<account>`: the New password card at the problem's
+line, or the sign-in page; `mail:outbox`: the Outbox). Each is told once
+while it lasts, recomputed on `SyncStatusChanged`, `OutboxChanged` and
+`AccountsChanged`; once fixed its notification closes, and it is told
+again only if it comes back (or after the daemon restarts). They make no
+sound. What Katna waits out by itself (offline, a server not answering)
+gets no notification. On Windows they are toasts like the others (§27.1).
 
 ### 15.2 Taskbar, tray and global menu
 
@@ -3655,11 +4090,18 @@ is closed; the protocol code is in `katna-platform` (`launcher`, `tray`,
   scheme's window text, white on GNOME and other panels, and on Windows
   from `SystemUsesLightTheme`; it is read again on the Settings portal's
   `SettingChanged`, every second (Windows, or `kdeglobals` written after
-  the signal) and with each count, so the icon follows a light/dark switch
-  at once. Left click raises the
+  the signal), so the icon follows a light/dark switch at once. Plasma
+  counts when `XDG_CURRENT_DESKTOP` says KDE or `org.kde.plasmashell` is on
+  the session bus: systemd starts the daemon at login before Plasma sets
+  the variable. Left click raises the
   app, middle click starts a new message. The right-click menu
-  (`com.canonical.dbusmenu`) has Open Inbox, New Message, Preferences and
-  Quit. Quit closes the app and stops the daemon until the next login or
+  (`com.canonical.dbusmenu`) has Open Inbox, New Message, New task, New
+  note, Preferences and Quit; New task and New note open quick capture
+  (§18.1), on Windows too. The tooltip says "Katna Mail" over the unread
+  count, then a line for each thing that needs the user (§15.1.4): "New
+  password needed for …", "Sign in again to …" (three or more accounts
+  fold to "3 accounts need you") and "2 messages weren't sent". The icon
+  itself stays as it is. Quit closes the app and stops the daemon until the next login or
   until the app starts it again (D-Bus activation). Setting
   `general.show_in_tray` (default on; the older `tray_icon` key is ignored
   because versions without a tray saved it as `false`). Both switches are
@@ -3668,8 +4110,15 @@ is closed; the protocol code is in `katna-platform` (`launcher`, `tray`,
 - **Single instance and actions**: Katna Mail owns `in.invenia.katna.Mail`
   and serves `org.freedesktop.Application` at `/in/invenia/katna/Mail` with
   the actions `open-inbox`, `compose`, `preferences`, `open-message` and
-  `reply-all` (a message ID) and `quit` (`katna_dbus::app_action`). A second `katna-mail`
-  hands its request to the first and exits. The tray, notifications and
+  `reply-all` (a message ID), `capture` (`task` or `note`, optionally
+  `task:TEXT`; `katna-mail --capture KIND`) and `quit`
+  (`katna_dbus::app_action`). A second `katna-mail`
+  hands its request to the first and exits, printing one line when it was
+  started in a terminal. Each method answers only once the first app's
+  window thread answers a ping (within 3 s), so a stuck app reads as an
+  error: the new launch then ends it (`SIGTERM`, only a `katna-mail` older
+  than 30 s, so one still starting is left alone), takes the name and opens
+  its window; the tray, which waits 5 s, starts a new one the same way. The tray, notifications and
   the desktop file use this: its actions New Message, Open Inbox and
   Preferences (right-click on the taskbar icon in Plasma and GNOME) run
   `katna-mail --compose`, `--inbox` and `--settings`. With `--data-dir` the
@@ -3755,6 +4204,15 @@ Today, Tomorrow, In 3 days; the service formats no dates) and the place,
 or else the calendar. Enter opens the Calendar on that day
 (`calendar:YYYY-MM-DD`, as the clock does).
 
+`task: …` and `note: …` (any case) are quick capture (§18.1) in
+KRunner: one result, "Add task “Call the plumber”" with what the parser
+found under it (Fri 9 Oct, 18:00 · My Tasks) or "Add note “…”" with where
+it goes. Enter adds it at once, as the card would, without opening Katna
+Mail (`apps/katna-daemon/src/capture.rs`); the result's button "Change
+before adding" opens the card with the text in it instead, and a bare
+`task:` or `note:` offers "New task" / "New note", which opens the empty
+card. GNOME Shell's search shows the same result; activating it adds.
+
 Flatpak: KRunner D-Bus runners are designed to work with sandboxed apps;
 verify that Flatpak exports the `krunner/dbusplugins` file. Distro
 packages install it directly.
@@ -3774,8 +4232,11 @@ read again. Events are those of the calendars Katna syncs; tasks are
 those of every task list, synced with each account's own service
 (§18.1), and a task added in the clock goes to the first account's
 default list. `Open` shows an event (the Calendar on its day) or a task
-(the Tasks page) in Katna Mail, and `NewEvent` starts an event on a day
-there, both through `katna-mail --page` (`calendar:YYYY-MM-DD[:new]`).
+(the Tasks page) in Katna Mail through `katna-mail --page`
+(`calendar:YYYY-MM-DD`), and `NewEvent` opens a small New event window on
+a day, without the mail window, through `katna-mail --capture`
+(`event:YYYY-MM-DD`); its More options opens the whole editor there
+(`calendar:YYYY-MM-DD:new[:title]`).
 `integrations/README.md` has the details.
 
 **A. Calendar-events plugin (planned, `integrations/plasma-calendar-plugin`)**
@@ -3810,8 +4271,15 @@ there, both through `katna-mail --page` (`calendar:YYYY-MM-DD[:new]`).
     picked, when that isn't today), tick one off;
   - click a Katna event to open Katna's Calendar on its day; a Join
     button for its video call;
-  - **"Add…"** starts a new event in Katna's Calendar on the day picked,
-    without needing a `text/calendar` app;
+  - **"Add…"** opens Katna's small New event window on the day picked
+    (the Calendar's quick card on its own), without needing a
+    `text/calendar` app;
+  - the time zone and its time sit beside the date, a menu of the other
+    zones and Switch… under it, in place of the Time Zones section under
+    the lists, which the popup's height cut off;
+  - the Tasks heading folds the list to its heading and count, kept
+    between openings (`katnaTasksFolded`); open, the list takes the room
+    the day's events leave and scrolls inside it;
   - right-click a day in the month (`KatnaDayMenu.qml`): Add a Task for
     that day, Add an Event on it;
   - later: right-click edit, delete, drag to reschedule, organization
@@ -3840,7 +4308,19 @@ knows it; after that turning it off is the user's choice.
 ### 15.5 Other integration
 
 - Default handler for `mailto:` and `text/calendar` (`.ics`).
-- Global shortcut "Compose new email" via the GlobalShortcuts portal.
+- Global shortcuts (`katna_platform::shortcuts`, served by the daemon):
+  Meta+Alt+T opens quick capture on Task and Meta+Alt+N on Note (§18.1).
+  On Plasma they are registered with KDE's global shortcuts service
+  (`org.kde.kglobalaccel`: `doRegister`, `setShortcutKeys` with the
+  default key, `getComponent`; presses arrive as the component's
+  `globalShortcutPressed`) under the component `in.invenia.katna.Mail`,
+  named Katna Mail, so they can be changed in System Settings >
+  Shortcuts; registered again whenever the service restarts. On Windows
+  the `global-hotkey` crate (`RegisterHotKey`, no unsafe code of ours) on
+  the tray's thread. GNOME has none yet: that needs the GlobalShortcuts
+  portal (and "Compose new email" could join it then). On Wayland a
+  press carries no activation token, so the compositor may not give the
+  card focus.
 - Dolphin service menu "Send as email attachment with Katna"
   (`share/kio/servicemenus/`, no code).
 - Portal file chooser, color scheme, accent color (§13.2).
@@ -3930,14 +4410,31 @@ Plan: `IMPLEMENTATION_PLAN.md` Phase 7.
   warning once it bounced. An eye left of the message's star (accent once
   anyone has opened it) opens, on hover or click, a popover with a notch
   pointing at it that lists only who opened the message or followed a
-  link, and read receipts; with none, it says so. Where no delivery
+  link, and read receipts; with none, it says so. In the chat view the
+  same popover opens from a sent bubble's time and ticks, its notch on
+  the ticks, which turn the eye's colour once anyone has opened it.
+  Seen more than once, or a link followed, a faint pill before the time
+  counts both: a small eye with the opens, a small link with the clicks.
+  Where no delivery
   receipt comes (Gmail sends
   none), the grey tick appears half an hour after sending if no bounce
   came back, and its tooltip says that is what it means: only the sending
   server knows whether mail arrived, and relaying through Katna Server
   would fail SPF and DKIM and need the mail login. Receipt mail
-  (`multipart/report`) stays in the mailbox, under Updates, so it raises
-  no notification. Legal
+  (`multipart/report`) stays in the mailbox and in search, under Updates.
+  A read receipt (known by its header, and matched by `In-Reply-To` or
+  `References` too, as Outlook names the message only there) or a
+  delivery report without a bounce that answers a message stored here is
+  marked read as it arrives, so it neither counts as unread nor notifies;
+  bounces are left as news. The reading view and the chat view leave out
+  a read receipt that answers one of the user's messages in the
+  conversation: that message shows a line "Bea read it (read receipt),
+  10:04 AM" instead (decided 5 October 2026). Such receipts are kept in
+  `mail.db`'s `receipt_mail` table (v14), and the mail lists leave them
+  out, so a receipt never becomes a conversation's newest message, its
+  subject or its preview, and a conversation with nothing else in a folder
+  doesn't show there; the daemon finds receipts stored before v14 among
+  downloaded mail once at start. Legal
   review is needed before selling in the EU (GDPR/ePrivacy). Read receipts
   (MDN) are offered as a consent-based alternative.
 - Tracking events arrive at the daemon over the server's event stream and
@@ -4446,6 +4943,11 @@ most useful reason is shown. Changes go back the way their calendar came
   daemon as the Tasks page's Add does. With no calendar to add events to
   but task lists, the card opens on Task.
 - Alarms fire from the daemon as notifications (§15.1).
+- Settings > Calendar's Accounts shown switches (`[hidden_accounts]
+  calendar`) leave an account out: its calendars, events and dated tasks
+  leave every view, the side list, search, the day's agenda and shared
+  free times, and the daemon's reminders skip its events. It keeps
+  syncing.
 - Views: Day, Week (the default), Month, Year (Y or 5: twelve small
   months with a dot under days with events or tasks; a day opens Day, a
   month's name opens Month; resting the pointer on a dotted day, or
@@ -4535,6 +5037,37 @@ server error is not.
   to-do with `RELATED-TO;RELTYPE=PARENT`. A change is written over the
   server's own text of the to-do (`katna_dav::todo`), so categories,
   attachments, other alarms and a client's own fields stay.
+- **The star, labels and files** (`pim.db` v17: `task_labels`, a JSON
+  array per task in a side table, and `task_file`, whose bytes are in the blob store and never
+  dropped by a cache reset). Where each is kept:
+
+  | | Star | Labels | Files |
+  |---|---|---|---|
+  | To Do | `importance` high | `categories` | attachments up to 3 MB (Graph's small upload) |
+  | CalDAV | `PRIORITY:1` | `CATEGORIES` | inline `ATTACH` (base64) up to 1 MB, if the server keeps it |
+  | Zoho | `priority` high / none | here | here |
+  | Google | here | here | here |
+
+  Each is mapped back on every pull. Unstarring clears CalDAV's
+  `PRIORITY`; a server's other priority stays while the task is
+  unstarred. Katna rewrites `CATEGORIES` only when the labels changed,
+  and `ATTACH` lines with a URL always stay. A CalDAV `PUT` with files
+  is read back: a server that refuses it (4xx, often 413) or drops the
+  `ATTACH` lines gets the to-do without them, and that task's files stay
+  on this computer (`task_file.local_only`; their details row says "Only
+  on this computer"); a larger file stays here too. A file removed in
+  Katna is a tombstone until the service deleted it. Labels are the same
+  set as Notes' (`Store::labels_in_use`): the details dialog uses Notes'
+  label picker (`notes::labels::LabelPicker`), the side list's Labels show
+  every open task with one, and `#home` in a new task's title is a label
+  (`katna_dav::quick_task`, as quick capture reads it). Files come from a drop
+  on a task's row or its details, the details' paper clip, or the mail
+  a task is made from (Add to Tasks keeps its attachments, not pictures
+  shown in its text, when its body is stored); `AddTaskFile` takes up to
+  25 MB. A row shows a paper clip with their count and the labels in one
+  quiet line under the title; a file opens in Katna's viewer or the app
+  Default apps names, as a mail's attachment does. Deleting a task and
+  removing a file both undo with the files' bytes.
 - **Zoho** (`katna_sync::tasks::zoho`, `https://mail.zoho.<dc>/api/tasks`,
   header `Zoho-oauthtoken`) goes through the Zoho sign-in linked to the
   password account (`AccountSettings::linked`, `daemon/linked.rs`); the
@@ -4617,7 +5150,12 @@ server error is not.
   and Schedule list them with the events. Its circle ticks it off, a
   click opens it over the Calendar, and dragging it to another day, time
   or the whole-day row moves its due day and time (a quarter hour at a
-  time, with Undo), blocking that time for it. A reminder moves with it.
+  time, with Undo), blocking that time for it. In Month view dragging it
+  to another day moves its due day and keeps its time; it shows in that
+  day's cell as it goes, even a full one. A reminder moves with it. A
+  Tasks row under the calendars in the side list, a box in the tasks'
+  colour like a calendar's, hides them from every view; it is remembered
+  on this computer (`[calendar] hide_tasks`), as Birthdays is.
 - **Reminders**: the task's details offer Don't remind, At the time (on
   the day at 9 AM for a task without a time), An hour before (with a
   time) and The day before; a time set elsewhere (To Do) shows as itself
@@ -4634,6 +5172,29 @@ server error is not.
   plants every Monday 8am"); a repeat without a day starts on its first
   day from today. Tasks have no place, so "at …" stays in the title, and
   a title that is only such words ("tomorrow") stays as typed.
+- **Quick capture** (`window/capture.rs`), "catch a thought from
+  anywhere": a small frosted card with Task and Note tabs over whatever is
+  on screen, in its own undecorated window of Katna Mail (430 px, a
+  quarter down the screen, the window as wide as the screen on a phone,
+  fitted to the card's height as chips wrap). Opened by Meta+Alt+T /
+  Meta+Alt+N (§15.5), the tray's New task / New note (§15.2), KRunner's
+  `task:` / `note:` (§15.3), or the `capture` app action; without a
+  running app `katna-mail --capture task` starts one that shows only the
+  card and quits when it closes. The text is read as it is typed
+  (`katna_dav::quick_task`, `quick_add` plus `#label` words, shared with
+  the KRunner path) and what was understood shows as chips: day and time,
+  label, list · account and reminder (at the time when a time was typed)
+  on Task; label and where (an account's Notes, or this computer) on Note.
+  Clicking a chip offers its choices in the same row (Today, Tomorrow,
+  Next week, No date; the lists; the labels notes and tasks use; the reminders; the
+  places), with a back arrow. Tab switches Task and Note, Enter saves and
+  closes, Esc closes (or leaves a chip's choices). A task goes to the
+  default list (above) or the one picked, over `Agenda1`
+  (`AddTaskTo` then `EditTask` for time, reminder, repeat and labels); a
+  note goes through the daemon's existing `Pim1.SaveNote`, to the first
+  mail account's Notes, its labels matched to existing ones by case.
+  Labels on tasks are kept once the store has them (the `labels` field of
+  `EditTask`; a daemon without it ignores the field).
 - **Search**: on the Tasks page the top bar's box says "Search tasks"
   and shows only tasks whose title or notes hold every word typed, with
   a step's task and a task's matching steps; lists with none found hide
@@ -4665,6 +5226,44 @@ server error is not.
     for tasks), so the order is kept in `pim.db` only: the list's tasks
     are numbered anew and nothing is sent. A service's answer or pull
     without a position leaves the one here.
+- **Upcoming and Completed** (`tasks_page/views.rs`, side list rows under
+  Today and after Starred, from the notes and tasks study): built from
+  what already syncs, so nothing new is stored. Upcoming shows the open
+  tasks (steps too) that are overdue, under a red "Overdue" with a count,
+  then each of the next 14 days after today, every one with its heading
+  ("Tomorrow Sunday 4 October", "Monday 5 October", in the language's
+  long formats, `katna_i18n::format::weekday_long` and kin) and an "Add a
+  task for Monday" row that adds to the default list, due that day. A
+  quiet line under each title says where it came from, its time (an
+  overdue one's day too), its steps done ("2/5") and its list. A task
+  dragged onto a day's heading or tasks is due that day, its time and a
+  reminder kept as with the Calendar's drag, with Undo. Today has its own
+  view, so Upcoming starts tomorrow, as Things does. Completed lists every
+  ticked task from every list, latest first, under the day it was ticked
+  ("TODAY", "FRIDAY 2 OCTOBER"), with its list and time; its tick unticks
+  it back into its list. At most the latest 500 show.
+- **Sort a list**, as Google Tasks' ⋮ menu offers: My order, Date (due
+  day and time, undated last), Starred recently (starred first) and
+  Title (A to Z), with a tick on the one in use; a task's steps stay under
+  it in their own order (`tasks_page/sort.rs`). The choice is kept on this
+  computer per list in `config.toml` (`[tasks.sort]`, by the list's row
+  ID); the service keeps My order. No star time is stored, so Starred
+  recently keeps My order among the starred. In a sorted list a task
+  can't be dragged to another place: let go there it goes back, and a
+  task dragged in from another list goes last there, shown where the sort
+  puts it, with no gap opening.
+- **Select several** (`tasks_page/several.rs`), as the mail list does:
+  Ctrl+click selects or lets go of a task (the task picked before is
+  selected with it), Shift+click selects every task shown from the last
+  one clicked, Esc lets go, Delete deletes them. While some are selected
+  a bar slides over the top of the list (across the board on All tasks)
+  with how many and Complete (or Mark uncompleted when all are ticked),
+  Move to list, Set date (Today, Tomorrow, Next week, No date or a day on
+  a month grid), Star (or take the stars) and Delete. Each sends its
+  commands as one `Command::Several` with one toast and one Undo. A drag
+  of a selected task takes the others with it, in the order shown (a
+  badge counts them): into a list they land one after another where the
+  gap is, and on Upcoming they all move to the day.
 - **Repeating tasks**: ticking one off moves it to its next day after
   both its due day and today, and it stays open (Google Tasks, CalDAV and
   lists on this computer; `katna_dav::todo::next_due`, done by the
@@ -5083,7 +5682,12 @@ installed and tried on its own platform (Fedora, Nix, Ubuntu with FUSE,
 snapd, Flatpak, Debian): D-Bus must start the daemon for `katnactl`, and
 Katna Mail must open a window, whose screenshot is published with the
 files on the `linux-latest` pre-release. `packaging/linux/stage.sh` lays out
-the same files the PKGBUILD installs for all of them. None of these
+the same files the PKGBUILD installs for all of them. Since 4 October 2026
+there is also a Debian package (`katna_amd64.deb`, `packaging/deb/`) for
+Ubuntu 22.04+ and Debian 12+: the tarball's files under `/usr`, with a
+`Depends` line naming the libraries the programs load, so
+`apt install ./katna_amd64.deb` brings them in; it is tried with apt on
+Ubuntu 22.04, Ubuntu 24.04 and Debian 12. None of these
 updates itself yet (`Package::Other`): their own tools, or a new download,
 update them. They are unsigned and in no store; Flathub, the Snap Store,
 Copr and nixpkgs are later steps. The Flatpak's ID is the ID prefix
@@ -5099,7 +5703,8 @@ activated, Katna Mail and `katnactl` start the `katna-daemon` beside them
 ### 21.2 Update channels and safe updates (partly built)
 
 Planned 26 September 2026. Built so far (28 September 2026): **in-app
-updates** for the Arch package, below; the rest is still planned. Today the only update path is the `arch-latest`
+updates** for the Arch package, below, and for Katna Setup on Windows
+(3 October 2026); the rest is still planned. Today the only update path is the `arch-latest`
 pre-release (§21.1): every push to `main` replaces it, with no gate beyond
 the pull request's CI. That is fine for testers, not for people who rely
 on Katna for their mail. The work is in `IMPLEMENTATION_PLAN.md`,
@@ -5142,7 +5747,7 @@ it gets the most care.
   installed version stays until the new channel catches up, because an older
   version may not read the newer database (§5.3, `SchemaTooNew`).
 
-#### In-app updates (built for the Arch package)
+#### In-app updates (built for the Arch package and Windows)
 
 The owner asked for Katna to update itself from the app on every package
 it ships: check, download, ask for the password, install and restart.
@@ -5154,7 +5759,50 @@ Arch is the first, Windows and the others follow the same flow.
   PKGBUILD sets `arch`), the release its newest build is published in,
   and in Katna Mail (`updater.rs`) how a downloaded file is installed.
   Builds from source and packages without a plug (`Package::Other`) show
-  no updates and are never checked.
+  no updates and are never checked; the Update dialog says such a copy
+  does not update itself (it said "updated by your package manager",
+  wrong for a Windows Setup install before Windows had its plug).
+- **Windows** (`Package::Windows`, owner's ask, 3 October 2026):
+  `ci/windows-package.ps1` sets `windows`, and the Windows package
+  workflow's publish job writes the same manifest for `KatnaSetup.exe`
+  on `windows-latest` (Setup uploaded first, the manifest last). The
+  daemon checks it on the same schedule as Arch and downloads the full
+  Setup (no patches, no signature yet: the SHA-256 is checked). Update
+  starts a hidden PowerShell outside the install folder that runs the
+  new Setup with `--quiet --update` (plus `--all-users` and the
+  administrator prompt for a Katna installed for everyone), waits, and
+  opens Katna Mail again; Setup itself closes the running Katna. A failed
+  Setup reopens the old Katna, which offers the update again.
+- **Measured against what is installed** (7 October 2026): a daemon
+  still running the build before an update offered that update again,
+  and pacman refused it. Updates are now measured against the newest of
+  the running build and the installed package (`update::installed`, from
+  pacman's records for Arch); the daemon restarts when pacman says a
+  newer build is installed even if its own file looks unchanged, and
+  Katna Mail shows "up to date" for an offer of what it already runs.
+- **Linux packages from `linux-latest`** (owner's ask, 3 October 2026):
+  one portable build goes into the tarball, AppImage, Flatpak, Snap and
+  .deb,
+  so it is built with `linux` and tells them apart at run time
+  (`/.flatpak-info` or `$FLATPAK_ID`, `$SNAP`, `$APPIMAGE`, else the
+  tarball, or the **Debian package** when the program is `/usr/bin`'s and
+  dpkg lists `katna` as installed); the Fedora spec sets `rpm` and the Nix
+  package `nix`. CI's
+  publish job writes `katna-update.json` on `linux-latest` with each
+  package's own file under `files` (`Manifest::for_package`). The
+  **AppImage** puts the new image beside `$APPIMAGE` and renames it over
+  it; the daemon notices the image changed and restarts from it. The
+  **tarball** runs the new tarball's `install.sh` for the same folder
+  (which now copies each file beside the old one and renames it, so a
+  running Katna keeps its program); installed where only an
+  administrator writes, it shows the command instead. The **RPM, .deb,
+  Snap and Flatpak** have no repository yet: Katna downloads the new file and
+  shows the one command that installs it, with Copy. **Nix** downloads
+  nothing: Katna shows `nix profile upgrade katna`; a flake build from
+  GitHub has no commit count (`r0`), so it counts as older when its
+  commit is among the newest build's earlier ones. A dnf or apt
+  repository and a Flatpak remote would let those update with the system; they need
+  hosting and a signing key, the owner's to decide.
 - **Manifest.** CI writes `katna-update.json` beside the package on every
   build of `main`: version, file name, SHA-256 and size, and for the
   Update dialog the commit, when it was made, the What's new highlights
@@ -5832,3 +6480,17 @@ pre-release. The Windows package workflow can also be run by hand
 what breaks there. Without a code-signing
 certificate Windows SmartScreen warns on first run; the certificate is the
 owner's and goes into GitHub secrets.
+
+### 27.3 Microsoft Store package
+
+The Store is how Windows users get Katna without a SmartScreen warning:
+the Store signs the MSIX it accepts. `KatnaMail.msix` holds the same
+programs as Setup (`ci/windows-store-package.ps1`,
+`packaging/windows/store`) and goes on `windows-latest` beside Setup,
+which stays for testers. Katna knows it runs from the package by the
+`AppxManifest.xml` beside its programs (`update::Package::MsStore`):
+the Store updates it, so Katna never checks for updates; the package's
+startup task starts it at sign-in, since a package's registry writes
+(the `Run` key) stay inside the package; and its toasts use the package's
+app ID. The manifest's identity values come from Partner Center and the
+submission is the owner's.

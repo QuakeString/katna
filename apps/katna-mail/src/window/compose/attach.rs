@@ -81,7 +81,7 @@ impl Attachment {
 }
 
 /// The MIME type of a file, from its name.
-pub(super) fn mime_of(name: &str) -> String {
+pub(in crate::window) fn mime_of(name: &str) -> String {
     if let Some(image) = katna_ui::rich::image_mime(name) {
         return image.to_owned();
     }
@@ -460,7 +460,8 @@ impl MailWindow {
                         .justify_center()
                         .rounded_full()
                         .cursor_pointer()
-                        .hover(|s| s.bg(rgba(th.hover)))
+                        .relative()
+                        .child(crate::widgets::hover_fade("hover-glow", None, th))
                         .tooltip(tip(tr!("compose-remove-attachment"), th))
                         .on_click(cx.listener(move |this, _, _, cx| {
                             cx.stop_propagation();

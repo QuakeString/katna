@@ -8,6 +8,8 @@ reader-close = Rufe
 reader-back = Koma baya
 reader-mark-unread = Yi alama ba a karanta ba
 reader-move-to = Matsar zuwa
+reader-snooze = Jinkirta
+reader-remind = Tunatar da ni
 reader-more = Ƙari
 reader-original-colors = Nuna ainihin launuka
 reader-dark-colors = Nuna da launuka masu duhu
@@ -35,6 +37,7 @@ reader-tick-bounced = Ba a isar ba: ta dawo { $when }
 reader-tick-read = An karanta { $when } (rasidin karantawa)
 reader-tick-opened = An buɗe, na ƙarshe { $when } (bibiyar buɗewa)
 reader-starred = Mai tauraro
+reader-chip-remove = Cire { $label }
 reader-not-starred = Babu tauraro
 reader-too-long = Saƙon ya yi tsayi da yawa don a nuna shi gaba ɗaya.
 reader-encrypted-images = Ba a taɓa loda hotuna daga yanar gizo a cikin wasiƙar da aka ɓoye.
@@ -52,6 +55,7 @@ reader-details-subject = jigo:
 
 reader-downloading = Ana sauke wannan saƙo daga sabar…
 reader-download-failed = Ba a iya sauke wannan saƙo ba.
+reader-download-offline = Wannan asusun ba a haɗe yake ba. Ku sake haɗawa don sauke wannan saƙo.
 reader-try-again = Sake gwadawa
 
 ## Reply row
@@ -104,6 +108,7 @@ tracking-clicked = { $who } ya bi mahaɗi { $clicks ->
 tracking-maybe-opened = Wataƙila { $who } ya buɗe shi (Apple Mail yana loda hotuna don sirri)
 tracking-seen-none = Har yanzu babu wanda ya buɗe shi ko ya bi mahaɗi
 tracking-receipt = { $who } ya aiko da rasidin karantawa
+tracking-receipt-read = { $who } ya karanta shi (rasidin karantawa), { $when }
 tracking-receipt-displayed = Rasidin karantawa: { $who } ya buɗe saƙonku
 tracking-receipt-other = Rasidin karantawa: { $who } ya share ko ya sarrafa saƙonku ba tare da ya buɗe shi ba
 

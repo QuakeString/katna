@@ -16,27 +16,29 @@ use gpui::{
     Animation, AnimationExt, AnyElement, Context, FontWeight, MouseButton, SharedString, div,
     ease_out_quint, prelude::*, rgba,
 };
+use katna_core::MailCategory;
 use katna_i18n::tr;
 use katna_render::MessageView;
 use katna_render::html::Document;
-use katna_store::{MessageFlags, MessageId};
+use katna_store::{FolderId, MessageFlags, MessageId};
 use katna_ui::motion::lerp;
 use katna_ui::px;
+use katna_ui::tokens::{radius, space};
 use katna_ui::unpx;
 
 use super::compose::{Kind, SentCard};
 use super::list::separator;
 use super::rich::{self, Painter};
-use super::{MailWindow, Menu, READER_CONTEXT, SelectNext, SelectPrevious};
+use super::{Act, MailWindow, Menu, READER_CONTEXT, SelectNext, SelectPrevious};
 use crate::daemon::Command;
 use crate::data::{self, EntryKey, Mail, Row};
 use crate::format;
+use crate::sidebar::Role;
 use crate::theme::{Theme, fade};
-use crate::widgets::{
-    card_outline, card_shadow, icon, icon_button, icon_button_colored, placeholder, tip, toolbar,
-};
+use crate::widgets::{card_outline, icon, icon_button, icon_button_colored, tip, toolbar};
 
 mod chat;
+pub(in crate::window) use chat::{LONG_PRESS, PRESS_SLOP};
 mod invite;
 mod security;
 mod summary;
@@ -94,6 +96,24 @@ pub(super) struct Conversation {
     /// is drawn (with the frames waited).
     tops: Rc<std::cell::RefCell<std::collections::HashMap<MessageId, f32>>>,
     jump: Option<(MessageId, u8)>,
+    /// Every folder or label its messages are in, for the chips under
+    /// the subject, and the inbox tab of its newest message.
+    folders: Vec<FolderId>,
+    category: Option<MailCategory>,
+}
+
+/// A chip under the subject: a folder, label, tab or mark.
+struct HeaderChip {
+    text: String,
+    /// What its × does; none where the service can't take it off.
+    remove: Option<ChipRemove>,
+}
+
+/// What a chip's × does, with an Undo like the toolbar's.
+enum ChipRemove {
+    Act(Act),
+    /// Takes a Gmail label off.
+    Label(FolderId, String),
 }
 
 /// One message of the conversation.
@@ -217,6 +237,11 @@ impl Body {
 }
 
 impl Conversation {
+    /// The newest message, at the conversation's end.
+    pub(super) fn newest(&self) -> Option<MessageId> {
+        self.parts.last().map(|p| p.id)
+    }
+
     /// The ids of its messages.
     pub(super) fn message_ids(&self) -> HashSet<MessageId> {
         self.parts.iter().map(|p| p.id).collect()
@@ -225,7 +250,10 @@ impl Conversation {
     /// Its subject, a message of it, and the sender of its newest
     /// message, for muting it or its sender.
     pub(super) fn mute_info(&self) -> Option<(String, MessageId, String)> {
-        let last = self.parts.iter().rev().find(|p| p.pending.is_none())?;
+        let last = (0..self.parts.len())
+            .rev()
+            .find(|&ix| self.parts[ix].pending.is_none() && !self.hidden(ix))
+            .map(|ix| &self.parts[ix])?;
         let sender = last
             .row
             .as_ref()
@@ -397,10 +425,60 @@ impl Conversation {
             came_unread,
             tops: Rc::default(),
             jump: None,
+            folders: Vec::new(),
+            category: None,
         };
         conversation.read_tracking(mail);
+        conversation.read_labels(mail);
         conversation.read_drafts(mail);
+        // A read receipt last: the message it answers opens instead.
+        if let Some(ix) = conversation.last_shown()
+            && let Some(part) = conversation.parts.get_mut(ix)
+            && !part.expanded
+        {
+            part.set_expanded(true, mail);
+        }
         conversation
+    }
+
+    /// Whether message `ix` is a read receipt for one of the user's
+    /// messages here: not shown, as it shows as ticks on that message.
+    pub(super) fn hidden(&self, ix: usize) -> bool {
+        let Some(Some(Some(receipt))) = self.parts.get(ix).map(|p| p.receipt.as_ref()) else {
+            return false;
+        };
+        receipt.original.is_some()
+            && self
+                .parts
+                .iter()
+                .any(|p| p.message_id.is_some() && p.message_id == receipt.original)
+    }
+
+    /// The newest message shown.
+    pub(super) fn last_shown(&self) -> Option<usize> {
+        (0..self.parts.len()).rev().find(|&ix| !self.hidden(ix))
+    }
+
+    /// How many messages show.
+    pub(super) fn shown_count(&self) -> usize {
+        (0..self.parts.len()).filter(|&ix| !self.hidden(ix)).count()
+    }
+
+    /// Reads where its messages are and the inbox tab of the newest.
+    fn read_labels(&mut self, mail: &Mail) {
+        let mut folders = Vec::new();
+        for part in self.parts.iter().filter(|p| p.pending.is_none()) {
+            for folder in mail.message_folders(part.id) {
+                if !folders.contains(&folder) {
+                    folders.push(folder);
+                }
+            }
+        }
+        self.folders = folders;
+        self.category = (0..self.parts.len())
+            .rev()
+            .find(|&ix| self.parts[ix].pending.is_none() && !self.hidden(ix))
+            .and_then(|ix| mail.message_category(self.parts[ix].id));
     }
 
     /// Notes which of its messages are drafts.
@@ -455,14 +533,15 @@ impl Conversation {
     }
 
     /// The read receipts in the conversation for `part`.
-    fn receipts_for(&self, part: &Part) -> Vec<&crate::receipts::Receipt> {
+    /// With when each came (Unix seconds).
+    fn receipts_for(&self, part: &Part) -> Vec<(&crate::receipts::Receipt, Option<i64>)> {
         let Some(id) = &part.message_id else {
             return Vec::new();
         };
         self.parts
             .iter()
-            .filter_map(|p| p.receipt.as_ref()?.as_ref())
-            .filter(|r| r.original.as_ref() == Some(id))
+            .filter_map(|p| Some((p.receipt.as_ref()?.as_ref()?, p.row.as_ref()?.date)))
+            .filter(|(r, _)| r.original.as_ref() == Some(id))
             .collect()
     }
 
@@ -493,6 +572,7 @@ impl Conversation {
         // Replies just sent stay until the store has them.
         self.parts
             .extend(old.into_iter().filter(|p| p.pending.is_some()));
+        self.read_labels(mail);
         self.read_tracking(mail);
         self.read_drafts(mail);
         self.chat.pins.forget();
@@ -566,15 +646,15 @@ impl Conversation {
     }
 
     fn set_all(&mut self, expanded: bool, mail: &Mail) {
-        let last = self.parts.len().saturating_sub(1);
+        let last = self.last_shown();
         for (ix, part) in self.parts.iter_mut().enumerate() {
-            part.set_expanded(expanded || ix == last, mail);
+            part.set_expanded(expanded || Some(ix) == last, mail);
         }
         self.show_all = expanded;
     }
 
     fn all_expanded(&self) -> bool {
-        self.parts.iter().all(|p| p.expanded)
+        (0..self.parts.len()).all(|ix| self.parts[ix].expanded || self.hidden(ix))
     }
 
     /// Each open message's remote images, with what decides whether they
@@ -660,6 +740,8 @@ pub(super) struct Squeeze {
     pub move_to: bool,
     /// The bell that mutes the conversation.
     pub mute: bool,
+    /// Snooze and Remind me.
+    pub snooze: bool,
     pub unread: bool,
     pub spam: bool,
     /// The lines between the groups of buttons.
@@ -689,6 +771,7 @@ impl Squeeze {
         contact: false,
         move_to: false,
         mute: false,
+        snooze: false,
         unread: false,
         spam: false,
         separators: false,
@@ -706,6 +789,7 @@ impl Squeeze {
         contact: true,
         move_to: true,
         mute: true,
+        snooze: true,
         unread: true,
         spam: true,
         separators: true,
@@ -722,7 +806,7 @@ impl Squeeze {
         })
     }
 
-    const DROP_ORDER: [fn(&mut Self); 12] = [
+    const DROP_ORDER: [fn(&mut Self); 13] = [
         |s| s.new_window = true,
         |s| s.print = true,
         |s| s.mute = true,
@@ -731,6 +815,9 @@ impl Squeeze {
         |s| s.move_to = true,
         |s| s.summary = true,
         |s| s.unread = true,
+        // The study put Snooze and Remind me on the toolbar: they stay
+        // longer than Mark as unread.
+        |s| s.snooze = true,
         |s| s.spam = true,
         |s| s.separators = true,
         |s| s.delete = true,
@@ -768,6 +855,7 @@ impl Toolbar {
         add(!squeeze.unread, 1.0);
         add(!squeeze.move_to, 1.0);
         add(!squeeze.mute, 1.0);
+        add(!squeeze.snooze, 2.0);
         add(self.contact && !squeeze.contact, 1.0);
         add(self.colors && !squeeze.colors, 1.0);
         add(self.summary && !squeeze.summary, 1.0);
@@ -795,6 +883,19 @@ enum Shown {
 }
 
 impl MailWindow {
+    /// The id of the open conversation's `ix`th message.
+    pub(super) fn part_id(&self, ix: usize) -> Option<MessageId> {
+        self.reader.as_ref()?.parts.get(ix).map(|p| p.id)
+    }
+
+    /// The plain text of message `id` in the open conversation, unless it
+    /// is encrypted or empty.
+    pub(super) fn plain_text_of(&self, id: MessageId) -> Option<String> {
+        let part = self.reader.as_ref()?.parts.iter().find(|p| p.id == id)?;
+        let body = part.body.as_ref().filter(|b| !b.encrypted())?;
+        Some(body.view.as_ref()?.body.clone()).filter(|text| !text.trim().is_empty())
+    }
+
     /// Whether the open conversation can switch between its own colors
     /// and dark ones.
     /// Not in a chat, whose bubbles show text, not the mail's own look.
@@ -839,7 +940,8 @@ impl MailWindow {
                 .child(toggle)
                 .with_animation(
                     ("reader-colors-slot", flips),
-                    Animation::new(Duration::from_millis(220)).with_easing(ease_out_quint()),
+                    Animation::new(katna_ui::motion::time(Duration::from_millis(220)))
+                        .with_easing(ease_out_quint()),
                     move |d, t| {
                         let shown = if chat { 1.0 - t } else { t };
                         // Out of sight it takes no room, its gap neither.
@@ -905,7 +1007,6 @@ impl MailWindow {
             .flex()
             .flex_col()
             .relative()
-            .rounded(px(radius))
             .overflow_hidden()
             .map(|d| {
                 let fill = if self.chat_shown() {
@@ -913,9 +1014,8 @@ impl MailWindow {
                 } else {
                     th.pane()
                 };
-                crate::widgets::pane(d, fill, th.surface, radius)
+                crate::widgets::card(d, th, fill, radius, shadow)
             })
-            .shadow(card_shadow(th, shadow))
             .p(px(outline))
             .on_action(cx.listener(Self::reader_back))
             .on_action(cx.listener(Self::select_next))
@@ -931,12 +1031,13 @@ impl MailWindow {
             .on_action(cx.listener(Self::mark_unread))
             .on_action(cx.listener(Self::toggle_star))
             .on_action(cx.listener(Self::add_to_tasks))
+            .on_action(cx.listener(Self::snooze_key))
+            .on_action(cx.listener(Self::remind_key))
             .on_action(cx.listener(Self::mark_important))
             .on_action(cx.listener(Self::toggle_mute))
             .on_action(cx.listener(Self::mark_not_important))
             .on_action(cx.listener(Self::summarize_key))
-            .child(self.render_reader_toolbar(th, cx))
-            .child(div().flex_1().min_h_0().child(self.render_reader(th, cx)))
+            .child(self.render_reader_with_toolbar(th, cx))
             .children(card_outline(th, radius, edge))
             // Which pane has the keys: a faint accent edge on this one.
             .when(keys, |d| {
@@ -1002,6 +1103,7 @@ impl MailWindow {
             new_window: phone,
             move_to: phone,
             mute: phone,
+            snooze: phone,
             ..Squeeze::NONE
         };
         Squeeze::fit(self.reader_width(), &shown, start)
@@ -1101,6 +1203,28 @@ impl MailWindow {
                     d.child(self.with_menu(label_as, Menu::LabelAs, th, cx))
                 })
             })
+            .when(!squeeze.snooze, |d| {
+                let key = self.reader.as_ref().map(|r| r.key);
+                d.child(
+                    icon_button("reader-snooze", "snooze", 20.0, th)
+                        .tooltip(tip(tr!("reader-snooze"), th))
+                        .on_click(cx.listener(move |this, e: &gpui::ClickEvent, _, cx| {
+                            this.open_mail_times(
+                                key.into_iter().collect(),
+                                false,
+                                e.position(),
+                                cx,
+                            );
+                        })),
+                )
+                .child(
+                    icon_button("reader-remind", "bell-plus", 20.0, th)
+                        .tooltip(tip(tr!("reader-remind"), th))
+                        .on_click(cx.listener(move |this, e: &gpui::ClickEvent, _, cx| {
+                            this.open_mail_times(key.into_iter().collect(), true, e.position(), cx);
+                        })),
+                )
+            })
             .when(!squeeze.mute, |d| d.child(self.reader_mute_button(th, cx)))
             .when(!squeeze.summary && !self.chat_shown(), |d| {
                 d.children(self.summary_button("reader-summary", th, cx))
@@ -1169,6 +1293,24 @@ impl MailWindow {
             .into_any_element()
     }
 
+    /// The open mail under its toolbar.
+    pub(super) fn render_reader_with_toolbar(
+        &mut self,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        let toolbar = self.render_reader_toolbar(th, cx);
+        let reader = self.render_reader(th, cx);
+        div()
+            .flex_1()
+            .min_h_0()
+            .flex()
+            .flex_col()
+            .child(toolbar)
+            .child(div().flex_1().min_h_0().child(reader))
+            .into_any_element()
+    }
+
     pub(super) fn render_reader(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         self.open_sealed(cx);
         self.fetch_remote(cx);
@@ -1201,15 +1343,24 @@ impl MailWindow {
                 self.render_mail_notes(&headers, self.reader_indent(), th, cx)
             });
         let muted = self.render_muted_strip(th, cx);
+        let follow_up = self.render_follow_up_card(th, cx);
+        let nudge = self.render_nudge_card(th, cx);
         self.settle_summary_jump(cx);
         let summary = self.render_summary_card(th, cx);
         let Some(reader) = &self.reader else {
-            return placeholder("", th);
+            return self.placeholder("", th);
         };
         if reader.parts.is_empty() {
-            return placeholder(&tr!("reader-removed"), th);
+            return self.placeholder(tr!("reader-removed"), th);
         }
         let all_expanded = reader.all_expanded();
+        let key = reader.key;
+        let chips: Vec<AnyElement> = self
+            .header_chips(reader)
+            .into_iter()
+            .enumerate()
+            .map(|(ix, chip)| self.render_header_chip(ix, chip, key, th, cx))
+            .collect();
         let title = div()
             .flex()
             .flex_row()
@@ -1242,16 +1393,14 @@ impl MailWindow {
                             .text_color(rgba(th.text))
                             .child(reader.subject.clone()),
                     )
-                    .when_some(self.folder_name(), |d, folder| {
+                    .when(!chips.is_empty(), |d| {
                         d.child(
                             div()
-                                .px(px(6.0))
-                                .py(px(1.0))
-                                .rounded(px(4.0))
-                                .bg(rgba(th.chip))
-                                .text_size(px(12.0))
-                                .text_color(rgba(th.text_dim))
-                                .child(folder),
+                                .flex()
+                                .flex_row()
+                                .flex_wrap()
+                                .gap(px(space::S2))
+                                .children(chips),
                         )
                     }),
             )
@@ -1259,7 +1408,7 @@ impl MailWindow {
             .when(self.config.experimental.chat_view, |d| {
                 d.child(self.chat_switch(false, th, cx))
             })
-            .when(reader.parts.len() > 1, |d| {
+            .when(reader.shown_count() > 1, |d| {
                 d.child(
                     icon_button_colored(
                         "expand-all",
@@ -1289,11 +1438,13 @@ impl MailWindow {
         // messages as shown: oldest first, or newest first by the setting.
         let newest_first = self.config.mail.newest_first;
         let n = reader.parts.len();
+        // Read receipts for the user's mail show as ticks on it instead.
         let order: Vec<usize> = if newest_first {
-            (0..n).rev().collect()
+            (0..n).rev().filter(|&ix| !reader.hidden(ix)).collect()
         } else {
-            (0..n).collect()
+            (0..n).filter(|&ix| !reader.hidden(ix)).collect()
         };
+        let n = order.len();
         let mut shown = Vec::new();
         let mut at = 0;
         while at < n {
@@ -1359,14 +1510,18 @@ impl MailWindow {
                                         .child(title)
                                         .children(summary)
                                         .children(muted)
+                                        .children(follow_up)
+                                        .children(nudge)
                                         .children(notes)
                                         .children(parts)
                                         .children(reply)
                                         .map(|d| self.text_area(d, cx))
                                         .with_animation(
                                             ("open-conversation", key_number(key)),
-                                            Animation::new(Duration::from_millis(280))
-                                                .with_easing(ease_out_quint()),
+                                            Animation::new(katna_ui::motion::time(
+                                                Duration::from_millis(280),
+                                            ))
+                                            .with_easing(ease_out_quint()),
                                             |el, t| el.opacity(t).mt(px(14.0 * (1.0 - t))),
                                         ),
                                 ),
@@ -1394,7 +1549,7 @@ impl MailWindow {
         };
         let part = &reader.parts[ix];
         let turn = part_turn(reader.key, ix, part.turns);
-        let last = ix + 1 == reader.parts.len();
+        let last = reader.last_shown() == Some(ix);
         let row = part.row.clone();
         let view = part.body.as_ref().and_then(|b| b.view.as_ref());
         let (name, email) = match (view.and_then(|v| v.from.first()), &row) {
@@ -1713,8 +1868,8 @@ impl MailWindow {
                 _ => ix,
             };
             let mut pieces = self.text.pieces(super::select::DETAILS_PART + slot, th);
-            // Where the contact panel has no room, a click only selects.
-            let panel = self.contact_offered();
+            // Where the contact panel has no room, the card pops over.
+            let panel = !self.layout.shape.is_phone();
             let line = |label: String, value: AnyElement| {
                 div()
                     .flex()
@@ -1746,6 +1901,8 @@ impl MailWindow {
                         let (styled, holder) = pieces.piece(shown.into(), Vec::new());
                         let email = a.email.to_lowercase();
                         let copied = a.email.clone();
+                        let spot = SharedString::from(format!("details-{ix}-{field}-{i}"));
+                        let spot_id = spot.clone();
                         // A long address wraps in a narrow pane.
                         div()
                             .min_w_0()
@@ -1755,16 +1912,29 @@ impl MailWindow {
                             .child(
                                 holder
                                     .min_w_0()
-                                    .id(SharedString::from(format!("details-{ix}-{field}-{i}")))
+                                    .relative()
+                                    .id(spot.clone())
                                     .when(panel, |d| {
                                         d.cursor_pointer().hover(|s| s.text_color(rgba(th.text)))
                                     })
-                                    .on_click(cx.listener(move |this, _, _, cx| {
-                                        // A drag that selected text is not a click.
-                                        if this.text.is_empty() {
-                                            this.show_person(&email, cx);
-                                        }
-                                    }))
+                                    .on_hover({
+                                        let email = email.clone();
+                                        cx.listener(move |this, hovered: &bool, _, cx| {
+                                            if *hovered {
+                                                this.read_person_ahead(&email, cx);
+                                            }
+                                        })
+                                    })
+                                    .on_click(cx.listener(
+                                        move |this, e: &gpui::ClickEvent, _, cx| {
+                                            // A drag that selected text is not a click.
+                                            if this.text.is_empty() {
+                                                let at = this.person_at(spot.clone(), e.position());
+                                                this.show_person(&email, at, cx);
+                                            }
+                                        },
+                                    ))
+                                    .child(self.person_spot(spot_id))
                                     .on_mouse_down(
                                         MouseButton::Right,
                                         cx.listener(move |this, _, _, _| {
@@ -1809,7 +1979,8 @@ impl MailWindow {
             self.selectable_body(super::select::DETAILS_PART + slot, details, cx)
                 .with_animation(
                     ("details", ix),
-                    Animation::new(Duration::from_millis(180)).with_easing(ease_out_quint()),
+                    Animation::new(katna_ui::motion::time(Duration::from_millis(180)))
+                        .with_easing(ease_out_quint()),
                     |el, t| el.opacity(t),
                 )
         });
@@ -1855,7 +2026,7 @@ impl MailWindow {
                 let translation = if pending {
                     None
                 } else {
-                    self.translation_bar(ix, id, &view.body, encrypted, th, cx)
+                    self.translation_bar(ix, id, &view.body, encrypted, false, th, cx)
                 };
                 let translated = self.translated_blocks(id);
                 let invite = part
@@ -1920,17 +2091,28 @@ impl MailWindow {
                                 )
                                 .document(doc),
                             ),
-                            None => div().children(blocks.iter().map(|(quoted, text)| {
-                                let (styled, holder) = pieces.piece(text.clone(), Vec::new());
-                                holder
-                                    .when(*quoted, |d| {
-                                        d.pl(px(12.0))
-                                            .border_l_2()
-                                            .border_color(rgba(th.outline))
-                                            .text_color(rgba(th.text_faint))
-                                    })
-                                    .child(styled)
-                            })),
+                            // Addresses written out in plain text open as
+                            // links do.
+                            None => div().children(blocks.iter().enumerate().map(
+                                |(n, (quoted, text))| {
+                                    rich::linked_piece(
+                                        &mut pieces,
+                                        text.clone(),
+                                        &[],
+                                        |d| {
+                                            d.when(*quoted, |d| {
+                                                d.pl(px(12.0))
+                                                    .border_l_2()
+                                                    .border_color(rgba(th.outline))
+                                                    .text_color(rgba(th.text_faint))
+                                            })
+                                        },
+                                        n,
+                                        links.clone(),
+                                        th,
+                                    )
+                                },
+                            )),
                         };
                         self.selectable_body(slot, text, cx)
                     })
@@ -1956,7 +2138,29 @@ impl MailWindow {
                     .flex_none()
                     .flex()
                     .justify_center()
-                    .child(self.person_avatar(&name, &email, 40.0)),
+                    // Their card: in the panel, else popping over here.
+                    .child({
+                        let pick = email.clone();
+                        div()
+                            .id(("part-picture", ix))
+                            .relative()
+                            .cursor_pointer()
+                            .tooltip(crate::widgets::tip(tr!("chat-show-card"), th))
+                            .on_hover({
+                                let pick = pick.clone();
+                                cx.listener(move |this, hovered: &bool, _, cx| {
+                                    if *hovered {
+                                        this.read_person_ahead(&pick, cx);
+                                    }
+                                })
+                            })
+                            .on_click(cx.listener(move |this, e: &gpui::ClickEvent, _, cx| {
+                                let at = this.person_at(("part-picture", ix), e.position());
+                                this.show_person(&pick, at, cx);
+                            }))
+                            .child(self.person_spot(("part-picture", ix)))
+                            .child(self.person_avatar(&name, &email, 40.0))
+                    }),
             )
             .child(turn_fade(
                 div()
@@ -2011,7 +2215,7 @@ impl MailWindow {
             Some(id) => content
                 .with_animation(
                     id,
-                    Animation::new(TURN).with_easing(ease_out_cubic),
+                    Animation::new(katna_ui::motion::time(TURN)).with_easing(ease_out_cubic),
                     move |el, t| {
                         if t >= 1.0 {
                             el
@@ -2025,6 +2229,161 @@ impl MailWindow {
     }
 
     /// Stars or unstars one message of the open conversation.
+    /// The chips under the subject, in Gmail's order: Inbox, Important,
+    /// the inbox tab, Starred, the other special folders, then the
+    /// user's own folders and labels. Each says what its × takes off,
+    /// where the service can.
+    fn header_chips(&self, reader: &Conversation) -> Vec<HeaderChip> {
+        let rows: Vec<&Row> = reader
+            .parts
+            .iter()
+            .filter_map(|p| p.row.as_deref())
+            .collect();
+        let gmail = rows.first().is_some_and(|r| self.tree.is_gmail(r.account));
+        let nodes: Vec<(FolderId, Role, String)> = reader
+            .folders
+            .iter()
+            .filter_map(|f| {
+                let node = self.tree.node(*f)?;
+                let name = if node.role == Role::Other {
+                    node.path.clone()
+                } else {
+                    node.label()
+                };
+                Some((*f, node.role, name))
+            })
+            .collect();
+        let has = |role: Role| nodes.iter().any(|(_, r, _)| *r == role);
+        let mut chips = Vec::new();
+        if let Some((_, _, name)) = nodes.iter().find(|(_, r, _)| *r == Role::Inbox) {
+            chips.push(HeaderChip {
+                text: name.clone(),
+                // Taking Gmail's Inbox label off archives.
+                remove: gmail.then_some(ChipRemove::Act(Act::Archive)),
+            });
+        }
+        if rows.iter().any(|r| r.important) {
+            chips.push(HeaderChip {
+                text: tr!("folder-important"),
+                remove: Some(ChipRemove::Act(Act::Important(false))),
+            });
+        }
+        if has(Role::Inbox)
+            && let Some(category) = reader.category.filter(|c| *c != MailCategory::Primary)
+        {
+            chips.push(HeaderChip {
+                text: super::rule_editor::tab_label(category),
+                remove: None,
+            });
+        }
+        if rows.iter().any(|r| r.flagged) {
+            chips.push(HeaderChip {
+                text: tr!("folder-starred"),
+                remove: Some(ChipRemove::Act(Act::Star(false))),
+            });
+        }
+        for role in [Role::Sent, Role::Drafts, Role::Junk, Role::Trash] {
+            if let Some((_, _, name)) = nodes.iter().find(|(_, r, _)| *r == role) {
+                chips.push(HeaderChip {
+                    text: name.clone(),
+                    remove: None,
+                });
+            }
+        }
+        let mut own: Vec<&(FolderId, Role, String)> =
+            nodes.iter().filter(|(_, r, _)| *r == Role::Other).collect();
+        own.sort_by_key(|(_, _, name)| name.to_lowercase());
+        for (id, _, name) in own {
+            chips.push(HeaderChip {
+                text: name.clone(),
+                // Only a Gmail label comes off; a folder holds the mail.
+                remove: gmail.then(|| ChipRemove::Label(*id, name.clone())),
+            });
+        }
+        // Mail the store doesn't place yet shows the list's folder.
+        if chips.is_empty()
+            && let Some(folder) = self.folder_name()
+        {
+            chips.push(HeaderChip {
+                text: folder,
+                remove: None,
+            });
+        }
+        chips
+    }
+
+    /// One chip under the subject; its × shows on hover.
+    fn render_header_chip(
+        &self,
+        ix: usize,
+        chip: HeaderChip,
+        key: EntryKey,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        let group = SharedString::from(format!("header-chip-{ix}"));
+        div()
+            .id(("header-chip", ix))
+            .group(group.clone())
+            .relative()
+            .px(px(6.0))
+            .py(px(1.0))
+            .rounded(px(radius::XS))
+            .bg(rgba(th.chip))
+            .text_size(px(12.0))
+            .text_color(rgba(th.text_dim))
+            .child(chip.text.clone())
+            // The × keeps no room at rest, so every chip's text sits
+            // evenly; on hover it covers the chip's end on a solid patch.
+            .when_some(chip.remove, |d, remove| {
+                d.child(
+                    div()
+                        .id(("header-chip-remove", ix))
+                        .absolute()
+                        .top_0()
+                        .bottom_0()
+                        .right_0()
+                        .rounded_r(px(radius::XS))
+                        .bg(rgba(th.surface))
+                        .opacity(0.0)
+                        .group_hover(group, |s| s.opacity(1.0))
+                        .child(
+                            // The chip's own fill over the solid patch, so
+                            // the end keeps its colour and corners.
+                            div()
+                                .size_full()
+                                .flex()
+                                .items_center()
+                                .pr(px(space::S1))
+                                .rounded_r(px(radius::XS))
+                                .bg(rgba(th.chip))
+                                .child(
+                                    div()
+                                        .size(px(16.0))
+                                        .flex()
+                                        .items_center()
+                                        .justify_center()
+                                        .rounded(px(radius::inner(4.0, space::S1)))
+                                        .cursor_pointer()
+                                        .hover(|s| s.bg(rgba(th.hover)))
+                                        .child(icon("close", th.text_dim, 12.0)),
+                                ),
+                        )
+                        .tooltip(tip(
+                            tr!("reader-chip-remove", label = chip.text.as_str()),
+                            th,
+                        ))
+                        .on_click(cx.listener(move |this, _, _, cx| match &remove {
+                            ChipRemove::Act(act) => this.act(*act, vec![key], cx),
+                            ChipRemove::Label(label, name) => {
+                                this.toggle_label(vec![key], *label, name, false, cx)
+                            }
+                        })),
+                )
+            })
+            .into_any_element()
+    }
+
     fn star_message(&mut self, ix: usize, id: MessageId, on: bool, cx: &mut Context<Self>) {
         if let Some(part) = self.reader.as_mut().and_then(|r| r.parts.get_mut(ix))
             && let Some(row) = &part.row
@@ -2175,7 +2534,7 @@ fn turn_fade(el: gpui::Div, turn: Option<SharedString>) -> AnyElement {
         Some(id) => el
             .with_animation(
                 SharedString::from(format!("{id}-text")),
-                Animation::new(TURN).with_easing(ease_out_cubic),
+                Animation::new(katna_ui::motion::time(TURN)).with_easing(ease_out_cubic),
                 |el, t| el.opacity(0.3 + 0.7 * t),
             )
             .into_any_element(),

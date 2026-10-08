@@ -20,12 +20,20 @@ viewer-page-count = trên { $count }
 viewer-go-to-page-tip = Nhập số trang rồi nhấn Enter (Ctrl+G)
 viewer-rotate-clockwise-tip = Xoay theo chiều kim đồng hồ (Ctrl+R)
 viewer-rotate-anticlockwise-tip = Xoay ngược chiều kim đồng hồ (Ctrl+Shift+R)
+viewer-dark-pages-tip = Trang tối
+viewer-light-pages-tip = Hiện trang như bản gốc
 viewer-fit-page-tip = Vừa trang
 viewer-fit-picture-tip = Vừa cửa sổ
 viewer-fit-width-tip = Vừa chiều rộng
 viewer-real-size-tip = Kích thước thật (1:1)
 viewer-page-back-tip = Trang trước
 viewer-page-on-tip = Trang sau
+viewer-more-tip = Thêm
+viewer-zoom-in = Phóng to
+viewer-zoom-out = Thu nhỏ
+viewer-real-size = Kích thước thực
+viewer-rotate-anticlockwise = Xoay ngược chiều kim đồng hồ
+viewer-rotate-clockwise = Xoay theo chiều kim đồng hồ
 
 ## Marking up a PDF
 

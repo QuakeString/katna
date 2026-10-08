@@ -294,8 +294,12 @@ fn header(app: &str, kind: &str, when: SystemTime) -> String {
     text
 }
 
-/// "Arch Linux, KDE on wayland", from `/etc/os-release` and the session.
-fn system() -> String {
+/// "Arch Linux, KDE on wayland", from `/etc/os-release` and the session;
+/// "Windows" on Windows.
+pub fn system() -> String {
+    if cfg!(windows) {
+        return "Windows".into();
+    }
     let os = fs::read_to_string("/etc/os-release")
         .ok()
         .and_then(|text| {

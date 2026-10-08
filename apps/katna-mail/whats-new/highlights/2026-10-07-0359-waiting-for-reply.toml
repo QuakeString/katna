@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "See what's waiting for a reply"
+text = """
+Mail you sent with a follow-up or a reminder is listed under Waiting,
+below Sent. Its lines show a chip with what happens next and when, in
+Waiting and in your Inbox too. Open one to move the follow-up to another
+time, send it now, or stop it.
+"""
