@@ -20,6 +20,13 @@ compose-show-trimmed = Показати приховану частину
 compose-hide-trimmed = Згорнути приховану частину
 compose-remove-trimmed = Вилучити цитований текст
 compose-trimmed-removed = Цитований текст вилучено
+compose-quote-header = { $date } { $from } пише:
+compose-forward-header = ---------- Пересланий лист ---------
+compose-forward-from = Від: { $from }
+compose-forward-date = Дата: { $date }
+compose-forward-subject = Тема: { $subject }
+compose-forward-to = Кому: { $to }
+compose-forward-cc = Копія: { $cc }
 
 ## Recipients and subject
 

@@ -27,6 +27,13 @@ compose-show-trimmed = عرض المحتوى المقتطع
 compose-hide-trimmed = إخفاء المحتوى المقتطع
 compose-remove-trimmed = إزالة النص المقتبس
 compose-trimmed-removed = تمت إزالة النص المقتبس
+compose-quote-header = في { $date }، كتب { $from }:
+compose-forward-header = ---------- الرسالة المُعاد توجيهها ---------
+compose-forward-from = من: { $from }
+compose-forward-date = التاريخ: { $date }
+compose-forward-subject = الموضوع: { $subject }
+compose-forward-to = إلى: { $to }
+compose-forward-cc = نسخة: { $cc }
 
 ## Recipients and subject
 
