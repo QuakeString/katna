@@ -4526,3 +4526,11 @@ själv till den nya versionen så snart den inte skickar e-post. Ett litet
 piller längst ner i e-postlistan erbjuder då Starta om, som öppnar nya
 Katna Mail i dess ställe. × döljer det till nästa uppdatering.
 """
+
+["2026-10-08-0813-calmer-mail-open"]
+title = "Att öppna ett mejl är lugnare"
+text = """
+Ett klick på ett mejl i listan skickar inte längre en krusning över det
+medan mejlet öppnas. Krusningen visas fortfarande när du klickar på mejlet
+som redan är öppet.
+"""

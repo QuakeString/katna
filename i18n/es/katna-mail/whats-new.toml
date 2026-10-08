@@ -4661,3 +4661,11 @@ pequeña píldora al final de la lista de correos te ofrece Reiniciar, que
 abre la nueva versión de Katna Mail en su lugar. × la oculta hasta la
 próxima actualización.
 """
+
+["2026-10-08-0813-calmer-mail-open"]
+title = "Abrir un correo es más tranquilo"
+text = """
+Al hacer clic en un correo de la lista ya no aparece una onda mientras se
+abre. La onda sigue apareciendo cuando haces clic en el correo que ya está
+abierto.
+"""

@@ -4616,3 +4616,11 @@ verstuurt. Een kleine pil onderaan de berichtenlijst biedt dan Herstarten
 aan, dat de nieuwe Katna Mail op zijn plek opent. × verbergt hem tot de
 volgende update.
 """
+
+["2026-10-08-0813-calmer-mail-open"]
+title = "Een mail openen is rustiger"
+text = """
+Klikken op een mail in de lijst stuurt er geen golf meer overheen terwijl
+de mail opent. De golf verschijnt nog wel als je klikt op de mail die al
+open is.
+"""

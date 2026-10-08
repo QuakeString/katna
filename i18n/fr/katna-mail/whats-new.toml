@@ -4817,3 +4817,11 @@ plus de courriel. Une petite pastille en bas de la liste propose alors
 Redémarrer, qui ouvre la nouvelle version de Katna Mail à sa place.
 × la masque jusqu’à la prochaine mise à jour.
 """
+
+["2026-10-08-0813-calmer-mail-open"]
+title = "Ouvrir un courriel est plus calme"
+text = """
+Cliquer sur un courriel dans la liste n’y fait plus passer d’onde pendant
+qu’il s’ouvre. L’onde apparaît toujours quand vous cliquez sur le courriel
+déjà ouvert.
+"""

@@ -4550,3 +4550,11 @@ sama przechodzi na nową wersję, gdy tylko nie wysyła poczty. Mała pigułka
 na dole listy wiadomości proponuje wtedy Uruchom ponownie, co otwiera nową
 wersję Katna Mail w miejsce starej. × ukrywa ją do następnej aktualizacji.
 """
+
+["2026-10-08-0813-calmer-mail-open"]
+title = "Otwieranie wiadomości jest spokojniejsze"
+text = """
+Kliknięcie wiadomości na liście nie wywołuje już fali podczas jej
+otwierania. Fala nadal pojawia się, gdy klikniesz wiadomość, która jest
+już otwarta.
+"""

@@ -4644,3 +4644,10 @@ posta. Una piccola pillola in fondo all’elenco dei messaggi offre allora
 Riavvia, che apre la nuova versione di Katna Mail al suo posto. × la
 nasconde fino al prossimo aggiornamento.
 """
+
+["2026-10-08-0813-calmer-mail-open"]
+title = "Aprire un messaggio è più tranquillo"
+text = """
+Facendo clic su un messaggio nell’elenco non parte più un’onda mentre si
+apre. L’onda compare ancora quando fai clic sul messaggio già aperto.
+"""
