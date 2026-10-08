@@ -1080,6 +1080,34 @@ impl MailWindow {
         cx.notify();
     }
 
+    /// Works out, while a More menu is open or fading, which of each pair
+    /// of actions it offers for the lines it acts on.
+    pub(super) fn track_more_pairs(&mut self) {
+        let shown = |m: Option<Menu>| matches!(m, Some(Menu::ListMore | Menu::ReaderMore));
+        if !shown(self.menu) && !shown(self.menu_fade.map(|(m, _)| m)) {
+            return;
+        }
+        let keys: std::collections::HashSet<EntryKey> = self.target_keys().into_iter().collect();
+        let entries: Vec<_> = self
+            .entries
+            .iter()
+            .filter(|e| keys.contains(&e.key))
+            .take(500)
+            .copied()
+            .collect();
+        let folder = self.listed_folder();
+        let rows: Vec<Rc<Row>> = match &mut self.mail {
+            Ok(mail) => mail
+                .rows(&entries, folder, self.show_recipients)
+                .into_iter()
+                .flatten()
+                .map(|r| self.with_pending(r))
+                .collect(),
+            Err(_) => Vec::new(),
+        };
+        self.more_pairs = Pairs::of(&rows);
+    }
+
     /// Notes a popup menu that closed since the last frame, however it
     /// closed, so `with_menu` fades it out (`motion` FAST), and forgets
     /// it once faded. Move to and Label as are left out: their folder
@@ -1195,6 +1223,7 @@ impl MailWindow {
     }
 
     fn menu_items(&self, which: Menu, th: &Theme, cx: &mut Context<Self>) -> Div {
+        let pairs = self.more_pairs;
         match which {
             Menu::CalendarOptions => self.calendar_options_menu(th, cx),
             Menu::CalendarZones => self.calendar_zones_menu(th, cx),
@@ -1339,13 +1368,12 @@ impl MailWindow {
                                 )
                             },
                         )
-                        .child(
+                        .child(if pairs.read {
                             menu_item_icon("more-read", "mark-read", &tr!("menu-mark-read"), th)
                                 .on_click(cx.listener(|this, _, _, cx| {
                                     this.act_on_targets(Act::Read(true), cx)
-                                })),
-                        )
-                        .child(
+                                }))
+                        } else {
                             menu_item_icon(
                                 "more-unread",
                                 "mark-unread",
@@ -1356,22 +1384,21 @@ impl MailWindow {
                                 |this, _, window, cx| {
                                     this.mark_unread(&super::MarkUnread, window, cx)
                                 },
-                            )),
-                        )
-                        .child(
+                            ))
+                        })
+                        .child(if pairs.star {
                             menu_item_icon("more-star", "star", &tr!("menu-star"), th).on_click(
                                 cx.listener(|this, _, _, cx| {
                                     this.act_on_targets(Act::Star(true), cx)
                                 }),
-                            ),
-                        )
-                        .child(
+                            )
+                        } else {
                             menu_item_icon("more-unstar", "star-filled", &tr!("menu-unstar"), th)
                                 .on_click(cx.listener(|this, _, _, cx| {
                                     this.act_on_targets(Act::Star(false), cx)
-                                })),
-                        )
-                        .child(
+                                }))
+                        })
+                        .child(if pairs.important {
                             menu_item_icon(
                                 "more-important",
                                 "important",
@@ -1380,9 +1407,8 @@ impl MailWindow {
                             )
                             .on_click(cx.listener(|this, _, _, cx| {
                                 this.act_on_targets(Act::Important(true), cx)
-                            })),
-                        )
-                        .child(
+                            }))
+                        } else {
                             menu_item_icon(
                                 "more-not-important",
                                 "important-filled",
@@ -1391,8 +1417,8 @@ impl MailWindow {
                             )
                             .on_click(cx.listener(|this, _, _, cx| {
                                 this.act_on_targets(Act::Important(false), cx)
-                            })),
-                        )
+                            }))
+                        })
                         .when(self.app_on(App::Tasks), |d| {
                             d.child(
                                 menu_item_icon(
@@ -1445,19 +1471,18 @@ impl MailWindow {
                                     })),
                             )
                         })
-                        .child(
+                        .child(if pairs.pin {
                             menu_item_icon("more-pin", "pin", &tr!("menu-pin"), th).on_click(
                                 cx.listener(|this, _, _, cx| {
                                     this.act_on_targets(Act::Pin(true), cx)
                                 }),
-                            ),
-                        )
-                        .child(
+                            )
+                        } else {
                             menu_item_icon("more-unpin", "pin-filled", &tr!("menu-unpin"), th)
                                 .on_click(cx.listener(|this, _, _, cx| {
                                     this.act_on_targets(Act::Pin(false), cx)
-                                })),
-                        )
+                                }))
+                        })
                         .child(self.mute_menu_items(
                             which != Menu::ReaderMore || squeeze.is_some_and(|s| s.mute),
                             which == Menu::ReaderMore,
@@ -1655,7 +1680,7 @@ impl MailWindow {
     }
 
     /// Rows of the ticked lines that are loaded.
-    fn checked_rows(&mut self) -> Vec<Rc<Row>> {
+    pub(super) fn checked_rows(&mut self) -> Vec<Rc<Row>> {
         let entries: Vec<_> = self
             .entries
             .iter()
@@ -3543,4 +3568,45 @@ fn snoozed_group_label(group: SnoozedGroup, first: bool, th: &Theme) -> AnyEleme
         .border_color(rgba(row_line(th)))
         .child(group.label())
         .into_any_element()
+}
+
+/// Which of each pair of actions a menu offers for the lines it acts on:
+/// only the one that changes something, and for lines that differ, the
+/// one that makes them all alike.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) struct Pairs {
+    /// Mark as read, else Mark as unread.
+    pub read: bool,
+    /// Add star, else Remove star.
+    pub star: bool,
+    /// Mark as important, else Mark as not important.
+    pub important: bool,
+    /// Pin to top, else Unpin.
+    pub pin: bool,
+}
+
+impl Default for Pairs {
+    /// Lines not known: an open mail is read, and the rest are unset.
+    fn default() -> Self {
+        Self {
+            read: false,
+            star: true,
+            important: true,
+            pin: true,
+        }
+    }
+}
+
+impl Pairs {
+    pub(super) fn of(rows: &[Rc<Row>]) -> Self {
+        if rows.is_empty() {
+            return Self::default();
+        }
+        Self {
+            read: rows.iter().any(|r| r.unread),
+            star: rows.iter().any(|r| !r.flagged),
+            important: rows.iter().any(|r| !r.important),
+            pin: rows.iter().any(|r| !r.pinned),
+        }
+    }
 }

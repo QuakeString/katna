@@ -45,6 +45,7 @@ mod contacts_share;
 mod context_menu;
 mod crash_notice;
 mod dark;
+mod date_pick;
 mod delete_ask;
 mod desktop;
 mod detached;
@@ -673,6 +674,9 @@ pub struct MailWindow {
     /// since it closed (`list::track_menu_fade`).
     menu_was: Option<Menu>,
     menu_fade: Option<(Menu, Instant)>,
+    /// Which of each paired action the More menus offer, for the lines
+    /// they act on (`list::track_more_pairs`).
+    more_pairs: list::Pairs,
     /// The right-click menu of the list.
     context_menu: Option<context_menu::ContextMenu>,
     /// Conversations summed up by AI, and the card beside a line.
@@ -1072,6 +1076,7 @@ impl MailWindow {
             menu: None,
             menu_was: None,
             menu_fade: None,
+            more_pairs: list::Pairs::default(),
             context_menu: None,
             summaries: reader::Summaries::default(),
             nav_menu: None,
@@ -3635,6 +3640,7 @@ impl Render for MailWindow {
         self.ui_text.begin_window(window);
         self.chrome.sync_look(window, cx);
         self.track_menu_fade(cx);
+        self.track_more_pairs();
         if self.detached {
             let detached = self.render_detached(window, cx);
             self.fetch_pictures(cx);
@@ -4331,7 +4337,7 @@ fn page_card(th: &Theme) -> gpui::Div {
         .items_center()
         .justify_center()
         .gap(px(12.0))
-        .map(|d| crate::widgets::card(d, th, th.pane(), PANEL_RADIUS, 0.0))
+        .map(|d| crate::widgets::card(d, th, th.pane(), PANEL_RADIUS, SHADOW_REST))
 }
 
 /// The undo-send countdown: a ring `size` wide in `color` on `track`,

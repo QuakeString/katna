@@ -1370,9 +1370,10 @@ this is local; Katna Server only adds opened/clicked events (§16).
   - **Typed times**: Pick date & time reads "tue 3pm", "tomorrow" or "in 2
     hours" (`quick_add::moment`) into its day and time.
   - **In place**: Pick date & time slides into the menu where it was
-    opened (Snooze, Remind me, follow-ups; mail and chat view), never a
-    dialog in the middle of the window. Its back arrow or Esc slides back
-    to the times.
+    opened (Snooze, Remind me, follow-ups, Schedule send and compose's
+    Follow up if no reply; mail and chat view), never a dialog in the
+    middle of the window: one shared picker (`window/date_pick.rs`). Its
+    back arrow or Esc slides back to the times.
   - **Own times** (`mail.snooze` in the config): the hour of Later today,
     the morning hour of Tomorrow, This weekend and Next week (also the
     notification's Tomorrow), the weekend's and the week's day, and one
@@ -4089,8 +4090,10 @@ is closed; the protocol code is in `katna-platform` (`launcher`, `tray`,
   scheme's window text, white on GNOME and other panels, and on Windows
   from `SystemUsesLightTheme`; it is read again on the Settings portal's
   `SettingChanged`, every second (Windows, or `kdeglobals` written after
-  the signal) and with each count, so the icon follows a light/dark switch
-  at once. Left click raises the
+  the signal), so the icon follows a light/dark switch at once. Plasma
+  counts when `XDG_CURRENT_DESKTOP` says KDE or `org.kde.plasmashell` is on
+  the session bus: systemd starts the daemon at login before Plasma sets
+  the variable. Left click raises the
   app, middle click starts a new message. The right-click menu
   (`com.canonical.dbusmenu`) has Open Inbox, New Message, New task, New
   note, Preferences and Quit; New task and New note open quick capture

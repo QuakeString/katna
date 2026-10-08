@@ -146,9 +146,19 @@ impl MailWindow {
                 .flatten(),
             Err(_) => None,
         };
-        let Some(row) = row.map(|r| self.with_pending(r)) else {
+        let Some(mut row) = row.map(|r| self.with_pending(r)) else {
             return;
         };
+        // Several ticked lines: each pair offers what makes them all alike.
+        if self.checked.contains(&key) && self.checked.len() > 1 {
+            let pairs = super::list::Pairs::of(&self.checked_rows());
+            let mut all = (*row).clone();
+            all.unread = pairs.read;
+            all.flagged = !pairs.star;
+            all.important = !pairs.important;
+            all.pinned = !pairs.pin;
+            row = Rc::new(all);
+        }
         self.menu = None;
         self.selected = Some(ix);
         self.context_menu = Some(ContextMenu::new(MenuFor::Mail { ix, key, row }, at));

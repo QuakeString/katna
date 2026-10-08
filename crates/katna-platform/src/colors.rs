@@ -248,9 +248,17 @@ pub fn read(desktop: DesktopKind, config_home: &Path, portal_accent: Option<u32>
 /// window text, GNOME's top bar and most other panels are dark, and
 /// Windows says whether its taskbar is light.
 pub fn panel_text() -> u32 {
+    panel_text_for(false)
+}
+
+/// [`panel_text`], taking Plasma's colors also when `plasma` says Plasma's
+/// shell is running though `XDG_CURRENT_DESKTOP` doesn't (a user service
+/// started at login before the session set it). Ignored on Windows.
+pub fn panel_text_for(plasma: bool) -> u32 {
     #[cfg(windows)]
     {
         use winreg::RegKey;
+        let _ = plasma;
         use winreg::enums::HKEY_CURRENT_USER;
         let light = RegKey::predef(HKEY_CURRENT_USER)
             .open_subkey("Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize")
@@ -260,7 +268,10 @@ pub fn panel_text() -> u32 {
     }
     #[cfg(not(windows))]
     {
-        let desktop = std::env::var("XDG_CURRENT_DESKTOP").unwrap_or_default();
+        let mut desktop = std::env::var("XDG_CURRENT_DESKTOP").unwrap_or_default();
+        if plasma {
+            desktop = "KDE".to_owned();
+        }
         let kdeglobals =
             config_home().and_then(|home| std::fs::read_to_string(home.join("kdeglobals")).ok());
         panel_text_on(&desktop, kdeglobals.as_deref())
