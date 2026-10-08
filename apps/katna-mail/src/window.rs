@@ -3437,7 +3437,9 @@ impl MailWindow {
             return;
         }
         let width = (self.cards_width - SPLIT_GAP).max(1.0);
+        // The reader is at the end: toward it is smaller.
         let dx = unpx(event.position.x) - start_x;
+        let dx = if self.layout.shape.rtl { -dx } else { dx };
         let share = (start_share - dx / width).clamp(0.25, 0.75);
         self.config.mail.reading_pane_share = share;
         cx.notify();

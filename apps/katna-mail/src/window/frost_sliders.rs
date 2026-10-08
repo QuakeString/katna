@@ -114,10 +114,10 @@ impl Amount {
     }
 
     /// The value at `x` on `track`, on a step.
-    fn value_at(self, track: Bounds<Pixels>, x: Pixels) -> u8 {
+    fn value_at(self, track: Bounds<Pixels>, x: Pixels, rtl: bool) -> u8 {
         let (min, max, step) = self.range();
         let t = if track.size.width > px(0.0) {
-            ((x - track.left()) / track.size.width).clamp(0.0, 1.0)
+            (katna_ui::direction::from_start(x, track, rtl) / track.size.width).clamp(0.0, 1.0)
         } else {
             0.0
         };
@@ -410,9 +410,12 @@ impl MailWindow {
             .px(px(KNOB / 2.0 + 4.0))
             .rounded(px(8.0))
             .cursor_pointer()
-            .on_key_down(cx.listener(move |this, event: &KeyDownEvent, _, cx| {
+            .on_key_down(cx.listener(move |this, event: &KeyDownEvent, window, cx| {
                 let (min, max, _) = amount.range();
-                match event.keystroke.key.as_str() {
+                match katna_ui::direction::arrow(
+                    &event.keystroke.key,
+                    katna_ui::direction::is_rtl(window),
+                ) {
                     "left" | "down" => this.step_amount(amount, -1, cx),
                     "right" | "up" => this.step_amount(amount, 1, cx),
                     "home" => this.apply(amount.change(min), cx),
@@ -434,13 +437,19 @@ impl MailWindow {
             }))
             .on_mouse_down(
                 MouseButton::Left,
-                cx.listener(move |this, event: &MouseDownEvent, _, cx| {
+                cx.listener(move |this, event: &MouseDownEvent, window, cx| {
                     let Some(track) = down_track.get() else {
                         return;
                     };
                     if let Some(page) = this.settings_page.as_mut() {
-                        page.frost.dragging =
-                            Some((amount, amount.value_at(track, event.position.x)));
+                        page.frost.dragging = Some((
+                            amount,
+                            amount.value_at(
+                                track,
+                                event.position.x,
+                                katna_ui::direction::is_rtl(window),
+                            ),
+                        ));
                         cx.notify();
                     }
                 }),
@@ -504,14 +513,18 @@ impl MailWindow {
                                 let (moved, released) = (entity.clone(), entity.clone());
                                 let track = paint_track.clone();
                                 window.on_mouse_event(
-                                    move |event: &MouseMoveEvent, phase, _, cx| {
+                                    move |event: &MouseMoveEvent, phase, window, cx| {
                                         let Some(bounds) = track.get() else {
                                             return;
                                         };
                                         if phase != DispatchPhase::Bubble {
                                             return;
                                         }
-                                        let value = amount.value_at(bounds, event.position.x);
+                                        let value = amount.value_at(
+                                            bounds,
+                                            event.position.x,
+                                            katna_ui::direction::is_rtl(window),
+                                        );
                                         moved
                                             .update(cx, |this, cx| {
                                                 let Some(page) = this.settings_page.as_mut() else {
@@ -598,14 +611,14 @@ mod tests {
         ] {
             let (min, max, step) = amount.range();
             assert_eq!((max - min) % step, 0);
-            assert_eq!(amount.value_at(track, px(0.0)), min);
-            assert_eq!(amount.value_at(track, px(400.0)), max);
+            assert_eq!(amount.value_at(track, px(0.0), false), min);
+            assert_eq!(amount.value_at(track, px(400.0), false), max);
             let Some(default) = amount.default() else {
                 continue;
             };
             assert_eq!((default - min) % step, 0);
             let x = px(100.0 + 220.0 * amount.fraction(default));
-            assert_eq!(amount.value_at(track, x), default);
+            assert_eq!(amount.value_at(track, x, false), default);
         }
     }
 }

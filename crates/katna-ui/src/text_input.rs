@@ -446,7 +446,29 @@ impl TextInput {
         self.accent = accent;
     }
 
-    fn left(&mut self, _: &Left, _: &mut Window, cx: &mut Context<Self>) {
+    /// Whether Left goes forward: the text, or else the window, reads
+    /// right to left.
+    fn left_goes_on(&self, window: &Window) -> bool {
+        crate::direction::text_rtl(&self.content).unwrap_or(crate::direction::is_rtl(window))
+    }
+
+    fn left(&mut self, _: &Left, window: &mut Window, cx: &mut Context<Self>) {
+        if self.left_goes_on(window) {
+            self.forward(cx)
+        } else {
+            self.back(cx)
+        }
+    }
+
+    fn right(&mut self, _: &Right, window: &mut Window, cx: &mut Context<Self>) {
+        if self.left_goes_on(window) {
+            self.back(cx)
+        } else {
+            self.forward(cx)
+        }
+    }
+
+    fn back(&mut self, cx: &mut Context<Self>) {
         if self.selected_range.is_empty() {
             self.move_to(self.previous_boundary(self.cursor_offset()), cx);
         } else {
@@ -454,7 +476,7 @@ impl TextInput {
         }
     }
 
-    fn right(&mut self, _: &Right, _: &mut Window, cx: &mut Context<Self>) {
+    fn forward(&mut self, cx: &mut Context<Self>) {
         if self.selected_range.is_empty() {
             self.move_to(self.next_boundary(self.selected_range.end), cx);
         } else {
@@ -462,12 +484,22 @@ impl TextInput {
         }
     }
 
-    fn select_left(&mut self, _: &SelectLeft, _: &mut Window, cx: &mut Context<Self>) {
-        self.select_to(self.previous_boundary(self.cursor_offset()), cx);
+    fn select_left(&mut self, _: &SelectLeft, window: &mut Window, cx: &mut Context<Self>) {
+        let to = if self.left_goes_on(window) {
+            self.next_boundary(self.cursor_offset())
+        } else {
+            self.previous_boundary(self.cursor_offset())
+        };
+        self.select_to(to, cx);
     }
 
-    fn select_right(&mut self, _: &SelectRight, _: &mut Window, cx: &mut Context<Self>) {
-        self.select_to(self.next_boundary(self.cursor_offset()), cx);
+    fn select_right(&mut self, _: &SelectRight, window: &mut Window, cx: &mut Context<Self>) {
+        let to = if self.left_goes_on(window) {
+            self.previous_boundary(self.cursor_offset())
+        } else {
+            self.next_boundary(self.cursor_offset())
+        };
+        self.select_to(to, cx);
     }
 
     fn select_all(&mut self, _: &SelectAll, _: &mut Window, cx: &mut Context<Self>) {

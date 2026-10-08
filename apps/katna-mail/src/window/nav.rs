@@ -2209,7 +2209,7 @@ impl MailWindow {
             }) => Some(*expanded),
             _ => None,
         };
-        match stroke.key.as_str() {
+        match katna_ui::direction::arrow(&stroke.key, katna_ui::direction::is_rtl(window)) {
             "down" => self.nav_move(at, 1, window, cx),
             "up" => self.nav_move(at, -1, window, cx),
             "home" => self.nav_move(0, 0, window, cx),

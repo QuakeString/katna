@@ -224,44 +224,94 @@ impl TextArea {
 
     // Movement.
 
-    fn left(&mut self, _: &Left, _: &mut Window, cx: &mut Context<Self>) {
-        if self.selected_range.is_empty() {
-            self.move_to(prev_grapheme(&self.content, self.cursor_offset()), cx);
-        } else {
-            self.move_to(self.selected_range.start, cx)
+    /// Whether Left goes forward on the caret's line: the line, or else
+    /// the window, reads right to left.
+    fn left_goes_on(&self, window: &Window) -> bool {
+        let at = clamp_to_char_boundary(&self.content, self.cursor_offset());
+        let start = self.content[..at].rfind('\n').map_or(0, |ix| ix + 1);
+        let end = self.content[at..]
+            .find('\n')
+            .map_or(self.content.len(), |ix| at + ix);
+        crate::direction::text_rtl(&self.content[start..end])
+            .unwrap_or(crate::direction::is_rtl(window))
+    }
+
+    fn left(&mut self, _: &Left, window: &mut Window, cx: &mut Context<Self>) {
+        let on = self.left_goes_on(window);
+        self.step(on, cx);
+    }
+
+    fn right(&mut self, _: &Right, window: &mut Window, cx: &mut Context<Self>) {
+        let on = !self.left_goes_on(window);
+        self.step(on, cx);
+    }
+
+    /// Moves the caret a letter on (or back), or to that end of the
+    /// selection.
+    fn step(&mut self, on: bool, cx: &mut Context<Self>) {
+        let at = self.cursor_offset();
+        match (self.selected_range.is_empty(), on) {
+            (true, true) => self.move_to(next_grapheme(&self.content, at), cx),
+            (true, false) => self.move_to(prev_grapheme(&self.content, at), cx),
+            (false, true) => self.move_to(self.selected_range.end, cx),
+            (false, false) => self.move_to(self.selected_range.start, cx),
         }
     }
 
-    fn right(&mut self, _: &Right, _: &mut Window, cx: &mut Context<Self>) {
-        if self.selected_range.is_empty() {
-            self.move_to(next_grapheme(&self.content, self.cursor_offset()), cx);
+    fn select_left(&mut self, _: &SelectLeft, window: &mut Window, cx: &mut Context<Self>) {
+        let at = self.cursor_offset();
+        let to = if self.left_goes_on(window) {
+            next_grapheme(&self.content, at)
         } else {
-            self.move_to(self.selected_range.end, cx)
+            prev_grapheme(&self.content, at)
+        };
+        self.select_to(to, cx);
+    }
+
+    fn select_right(&mut self, _: &SelectRight, window: &mut Window, cx: &mut Context<Self>) {
+        let at = self.cursor_offset();
+        let to = if self.left_goes_on(window) {
+            prev_grapheme(&self.content, at)
+        } else {
+            next_grapheme(&self.content, at)
+        };
+        self.select_to(to, cx);
+    }
+
+    /// The word a Ctrl+Left (`left`) or Ctrl+Right takes the caret to.
+    fn word_toward(&self, left: bool, window: &Window) -> usize {
+        let at = self.cursor_offset();
+        if left != self.left_goes_on(window) {
+            word_left(&self.content, at)
+        } else {
+            word_right(&self.content, at)
         }
     }
 
-    fn select_left(&mut self, _: &SelectLeft, _: &mut Window, cx: &mut Context<Self>) {
-        self.select_to(prev_grapheme(&self.content, self.cursor_offset()), cx);
+    fn word_left(&mut self, _: &WordLeft, window: &mut Window, cx: &mut Context<Self>) {
+        self.move_to(self.word_toward(true, window), cx);
     }
 
-    fn select_right(&mut self, _: &SelectRight, _: &mut Window, cx: &mut Context<Self>) {
-        self.select_to(next_grapheme(&self.content, self.cursor_offset()), cx);
+    fn word_right(&mut self, _: &WordRight, window: &mut Window, cx: &mut Context<Self>) {
+        self.move_to(self.word_toward(false, window), cx);
     }
 
-    fn word_left(&mut self, _: &WordLeft, _: &mut Window, cx: &mut Context<Self>) {
-        self.move_to(word_left(&self.content, self.cursor_offset()), cx);
+    fn select_word_left(
+        &mut self,
+        _: &SelectWordLeft,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        self.select_to(self.word_toward(true, window), cx);
     }
 
-    fn word_right(&mut self, _: &WordRight, _: &mut Window, cx: &mut Context<Self>) {
-        self.move_to(word_right(&self.content, self.cursor_offset()), cx);
-    }
-
-    fn select_word_left(&mut self, _: &SelectWordLeft, _: &mut Window, cx: &mut Context<Self>) {
-        self.select_to(word_left(&self.content, self.cursor_offset()), cx);
-    }
-
-    fn select_word_right(&mut self, _: &SelectWordRight, _: &mut Window, cx: &mut Context<Self>) {
-        self.select_to(word_right(&self.content, self.cursor_offset()), cx);
+    fn select_word_right(
+        &mut self,
+        _: &SelectWordRight,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        self.select_to(self.word_toward(false, window), cx);
     }
 
     fn up(&mut self, _: &Up, _: &mut Window, cx: &mut Context<Self>) {

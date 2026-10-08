@@ -1047,7 +1047,13 @@ impl MailWindow {
             return;
         }
         if self.library.cloud.view.is_some() {
-            if !m.shift && self.on_drive_key(keys.key.as_str(), window, cx) {
+            if !m.shift
+                && self.on_drive_key(
+                    katna_ui::direction::arrow(&keys.key, katna_ui::direction::is_rtl(window)),
+                    window,
+                    cx,
+                )
+            {
                 cx.stop_propagation();
             }
             return;
@@ -1061,7 +1067,10 @@ impl MailWindow {
             .cursor
             .and_then(|ix| self.library.shown.iter().position(|&s| s == ix));
         let last = count - 1;
-        let to = match (keys.key.as_str(), place) {
+        let to = match (
+            katna_ui::direction::arrow(&keys.key, katna_ui::direction::is_rtl(window)),
+            place,
+        ) {
             ("enter" | "space", Some(place)) => {
                 let file = self
                     .library

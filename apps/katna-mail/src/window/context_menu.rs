@@ -512,7 +512,10 @@ impl MailWindow {
                                 .on_key_down(cx.listener(
                                     |this, event: &KeyDownEvent, window, cx| {
                                         if !event.keystroke.modifiers.modified()
-                                            && event.keystroke.key == "left"
+                                            && katna_ui::direction::arrow(
+                                                &event.keystroke.key,
+                                                katna_ui::direction::is_rtl(window),
+                                            ) == "left"
                                             && !this.folder_pick_typing(window, cx)
                                             && this.context_menu_back(cx)
                                         {
@@ -897,8 +900,13 @@ impl MailWindow {
                     .is_some_and(|m| m.open != Some(sub));
                 this.open_context_sub(on.then_some(sub), cx);
             }))
-            .on_key_down(cx.listener(move |this, event: &KeyDownEvent, _, cx| {
-                if !event.keystroke.modifiers.modified() && event.keystroke.key == "right" {
+            .on_key_down(cx.listener(move |this, event: &KeyDownEvent, window, cx| {
+                if !event.keystroke.modifiers.modified()
+                    && katna_ui::direction::arrow(
+                        &event.keystroke.key,
+                        katna_ui::direction::is_rtl(window),
+                    ) == "right"
+                {
                     this.open_context_sub(Some(sub), cx);
                     cx.stop_propagation();
                 }

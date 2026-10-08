@@ -112,7 +112,7 @@ impl MailWindow {
                 .gap(px(2.0))
                 // Left goes back from a menu open in the card; Right opens
                 // the one whose row has the keys.
-                .on_key_down(cx.listener(move |this, event: &KeyDownEvent, _, cx| {
+                .on_key_down(cx.listener(move |this, event: &KeyDownEvent, window, cx| {
                     if event.keystroke.modifiers.modified() {
                         return;
                     }
@@ -121,7 +121,10 @@ impl MailWindow {
                     } else {
                         "right"
                     };
-                    if event.keystroke.key == back
+                    if katna_ui::direction::arrow(
+                        &event.keystroke.key,
+                        katna_ui::direction::is_rtl(window),
+                    ) == back
                         && this.app_menu.as_ref().is_some_and(|m| m.open.is_some())
                     {
                         this.open_app_submenu(None, cx);
@@ -202,13 +205,18 @@ impl MailWindow {
                         }
                     }))
                 })
-                .on_key_down(cx.listener(move |this, event: &KeyDownEvent, _, cx| {
+                .on_key_down(cx.listener(move |this, event: &KeyDownEvent, window, cx| {
                     let open = if this.app_menu_drills() {
                         "right"
                     } else {
                         "left"
                     };
-                    if !event.keystroke.modifiers.modified() && event.keystroke.key == open {
+                    if !event.keystroke.modifiers.modified()
+                        && katna_ui::direction::arrow(
+                            &event.keystroke.key,
+                            katna_ui::direction::is_rtl(window),
+                        ) == open
+                    {
                         this.open_app_submenu(Some(ix), cx);
                         cx.stop_propagation();
                     }
