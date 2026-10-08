@@ -53,17 +53,32 @@ fn within_label(age: &str) -> String {
 const CUSTOM: usize = WITHIN.len();
 
 /// Attachment types offered after "Has attachment", each with the
-/// extensions it stands for; the label is the first, in capitals. "ODF"
-/// is an OpenDocument text file.
+/// extensions it stands for; the label is the first, in capitals, except
+/// for [`IMAGE`]. "ODF" is an OpenDocument text file, and a chip stands
+/// for the old format along with the new one (XLSX for .xls too).
 const TYPES: [&[&str]; 7] = [
     &["pdf"],
-    &["xlsx"],
+    &["xlsx", "xls"],
     &["odf", "odt"],
-    &["xls"],
     &["ods"],
-    &["ppt"],
-    &["pptx"],
+    &["pptx", "ppt"],
+    &["dwg", "dxf"],
+    &[
+        "jpg", "jpeg", "png", "gif", "webp", "heic", "bmp", "tif", "tiff", "svg",
+    ],
 ];
+
+/// The picture types in [`TYPES`], labeled "Image".
+const IMAGE: usize = 6;
+
+/// What an attachment type chip says.
+fn type_label(ix: usize) -> String {
+    if ix == IMAGE {
+        tr!("search-attachment-image")
+    } else {
+        TYPES[ix][0].to_uppercase()
+    }
+}
 
 /// A typed extension as searched: lowercase letters and digits, the part
 /// after the last dot. Empty when there is nothing of the sort.
@@ -557,10 +572,10 @@ impl MailWindow {
         let mut chips: Vec<AnyElement> = TYPES
             .iter()
             .enumerate()
-            .map(|(ix, exts)| {
+            .map(|(ix, _)| {
                 choice_chip(
                     ("attachment-type", ix),
-                    exts[0].to_uppercase(),
+                    type_label(ix),
                     types.chosen[ix],
                     th,
                 )
@@ -980,6 +995,17 @@ mod tests {
             filename_query(&types.extensions()),
             "filename:(pdf OR odf OR odt)"
         );
+        // One chip asks for the old format with the new one.
+        let mut types = Types::default();
+        types.chosen[1] = true;
+        types.chosen[4] = true;
+        assert_eq!(
+            filename_query(&types.extensions()),
+            "filename:(xlsx OR xls OR pptx OR ppt)"
+        );
+        assert_eq!(type_label(1), "XLSX");
+        assert_eq!(type_label(5), "DWG");
+        assert_eq!(type_label(IMAGE), "Image");
         assert_eq!(extension(" .AVIF "), "avif");
         assert_eq!(extension("tar.gz"), "gz");
         assert_eq!(extension("..."), "");
