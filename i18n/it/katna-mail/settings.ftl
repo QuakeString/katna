@@ -181,6 +181,7 @@ settings-general-start-at-login = Avvia Katna all’accesso
 settings-general-start-at-login-detail = Sincronizza la posta e mostra le notifiche di nuova posta e l’icona nell’area di notifica, senza aprire la finestra
 settings-general-login-window = Apri anche la finestra di Katna Mail
 settings-general-login-window-detail = All’accesso si apre anche la finestra
+settings-general-login-entry = Avviato all’accesso (Impostazioni > Generali > Desktop)
 settings-general-tray = Mostra Katna nell’area di notifica
 settings-general-tray-detail = Con il numero di messaggi da leggere e un menu
 settings-general-tray-color = Icona dell’area di notifica a colori

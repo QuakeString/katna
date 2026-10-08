@@ -55,6 +55,7 @@ reader-details-subject = විෂය:
 
 reader-downloading = මෙම පණිවිඩය සේවාදායකයෙන් බාගනිමින්…
 reader-download-failed = මෙම පණිවිඩය බාගත කළ නොහැකි විය.
+reader-download-failed-reason = මෙම පණිවිඩය බාගත කළ නොහැකි විය. { $reason }
 reader-download-offline = මෙම ගිණුම නොබැඳියි. මෙම පණිවිඩය බාගත කිරීමට සබැඳි වන්න.
 reader-try-again = නැවත උත්සාහ කරන්න
 
@@ -90,6 +91,86 @@ security-missing-key = ඔබ සතු නැති යතුරකින් �
 security-missing-key-id = ඔබ සතු නැති යතුරකින් ({ $key }) අත්සන් කර ඇති නිසා පරීක්ෂා කළ නොහැක
 security-signature-unavailable = අත්සන් කර ඇත; අත්සන පරීක්ෂා කිරීමට { $tool } ස්ථාපනය කරන්න
 security-signature-error = අත්සන පරීක්ෂා කළ නොහැකි විය.
+security-look-up-key = යතුර සොයන්න
+
+## a key to import (looked up, or attached to the message)
+
+key-card-verified = තහවුරු කළ අත්සන
+key-card-verified-detail = අත්සන නිවැරදියි, ඔබ මෙම යතුර විශ්වාස කරයි.
+key-card-unverified = අත්සන තහවුරු කර නැත
+key-card-unverified-detail = අත්සන නිවැරදියි, නමුත් යතුර ඔවුන්ගේ බව කිසිවක් තහවුරු නොකරයි. ඇඟිලි සලකුණ ඔවුන් සමඟ සසඳා බලන්න, ඉන්පසු GnuPG හි (Kleopatra හෝ gpg --edit-key) යතුර විශ්වාස කරන්න.
+key-card-not-sender = වෙනත් අයෙකු විසින් අත්සන් කළ
+key-card-not-sender-detail = අත්සන නිවැරදියි, නමුත් යතුර යවන්නාගේ නොවේ.
+key-card-untrusted = යතුර විශ්වාස කර නැත
+key-card-untrusted-detail = ඔබ GnuPG හි මෙම යතුර විශ්වාස නොකරන ලෙස සලකුණු කළා.
+key-card-signature-expired = අත්සන කල් ඉකුත් වී ඇත
+key-card-signature-expired-detail = අත්සන නිවැරදි වූ නමුත් එය කල් ඉකුත් වී ඇත.
+key-card-key-expired = යතුර කල් ඉකුත් වී ඇත
+key-card-key-expired-detail = අත්සන නිවැරදියි, නමුත් එතැන් සිට යතුර කල් ඉකුත් වී ඇත.
+key-card-key-revoked = යතුර අවලංගු කර ඇත
+key-card-key-revoked-detail = එහි හිමිකරු මෙම යතුර අවලංගු කළ නිසා අත්සන විශ්වාස කළ නොහැක.
+key-card-bad = නරක අත්සනක්
+key-card-bad-detail = මෙම පණිවිඩය අත්සන් කිරීමෙන් පසු වෙනස් කර ඇත, නැතහොත් අත්සන ව්‍යාජය.
+key-card-signed-by = අත්සන් කළේ
+key-card-belongs-to = අයිති
+key-card-fingerprint = ඇඟිලි සලකුණ
+key-card-signed = අත්සන් කළ වේලාව
+key-card-key = යතුර
+key-card-kind = { $standard }, { $algorithm }
+key-card-created = සෑදූ දිනය
+key-card-expires = කල් ඉකුත් වන්නේ
+key-card-never = කිසි විටෙක නැත
+key-card-issued-by = නිකුත් කළේ
+key-card-found-in = හමු වූයේ
+key-card-keyring = ඔබගේ GnuPG යතුරු පුවරුව
+key-card-copy = ඇඟිලි සලකුණ පිටපත් කරන්න
+key-card-import-title = මෙම යතුර ආයාත කරන්නද?
+key-card-from-directory = { $domain } හි යතුරු නාමාවලියෙන් හමු විය.
+key-card-from-attachment = { $name } ඇමුණුමෙන්.
+key-card-import-note = එවිට Katna හට මෙම පුද්ගලයාගේ අත්සන් පරීක්ෂා කිරීමට සහ ඔවුන්ට යවන තැපැල් සංකේතනය කිරීමට හැකි වේ. යතුර සම්පූර්ණයෙන් විශ්වාස කිරීමට, ඇඟිලි සලකුණ ඔවුන් සමඟ සසඳා බලන්න.
+key-card-cancel = අවලංගු කරන්න
+key-card-import = යතුර ආයාත කරන්න
+key-card-looking-up = යතුර සොයමින්…
+key-card-looking-up-detail = { $domain } හි යතුරු නාමාවලියෙන් විමසමින්.
+key-card-not-found = යතුරක් හමු නොවීය
+key-card-not-found-detail = { $domain } මෙම ලිපිනය සඳහා යතුරක් ප්‍රකාශ නොකරයි. ඔවුන්ගේ යතුර ඔබට එවන ලෙස යවන්නාගෙන් ඉල්ලන්න.
+key-card-not-kept = හමු වූ යතුර භාවිත කළ නොහැක.
+key-card-failed = යතුර ලබා ගත නොහැකි විය
+
+## of a sender nothing confirmed
+
+sender-failed-title = මෙය { $domain } වෙතින් නොවිය හැක
+sender-failed-body = මෙය { $provider } හි යවන්නා පරීක්ෂා කිරීම් අසමත් විය. සබැඳි, ඇමුණුම් සහ පිළිතුරු සමඟ ප්‍රවේශම් වන්න.
+sender-provider-unknown = ඔබගේ තැපැල් සේවා සපයන්නා
+sender-details = විස්තර
+sender-details-hide = විස්තර සඟවන්න
+sender-looks-safe = ආරක්ෂිත බව පෙනේ
+sender-move-to-spam = අයාචිත තැපැල් වෙත ගෙන යන්න
+sender-checked-by = { $provider } විසින් පරීක්ෂා කළා
+sender-checked-by-server = { $provider } විසින් පරීක්ෂා කළා ({ $server })
+sender-dmarc = යවන්නාගේ වසම (DMARC)
+sender-dkim = අත්සන (DKIM)
+sender-spf = යවන සේවාදායකය (SPF)
+sender-result-pass = සමත්
+sender-result-fail = අසමත්
+sender-result-unsure = විශ්වාස නැත
+sender-result-none = කිසිවක් නැත
+sender-result-missing = පරීක්ෂා කර නැත
+sender-dmarc-pass = { $domain } මෙම යවන්නා තහවුරු කරයි.
+sender-dmarc-fail = { $domain } තම තැපැල් යවන බව පවසන ආකාරයට මෙම තැපෑල නොගැළපේ.
+sender-dmarc-none = { $domain } තම තැපැල් සඳහා කිසිදු නීතියක් ප්‍රකාශ නොකරයි.
+sender-dkim-pass = { $domain } විසින් අත්සන් කළ.
+sender-dkim-fail = { $domain } වෙතින් ලැබුණු අත්සන තැපෑලට නොගැළපේ.
+sender-dkim-none = පණිවිඩය අත්සන් කර නැත.
+sender-spf-pass = { $domain } ලැයිස්තුගත කරන සේවාදායකයකින් යවා ඇත.
+sender-spf-fail = { $domain } ලැයිස්තුගත නොකරන සේවාදායකයකින් යවා ඇත.
+sender-spf-none = { $domain } තම සේවාදායක ලැයිස්තුගත නොකරයි.
+sender-check-unsure = පරීක්ෂාවට පැහැදිලි පිළිතුරක් දිය නොහැකි විය.
+sender-unconfirmed = මෙය { $domain } වෙතින් පැමිණි බව { $provider } හට තහවුරු කළ නොහැකි විය. ඕනෑම අයෙකුට ඕනෑම යවන්නෙකු ලිවිය හැක.
+sender-link-title = මෙම සබැඳිය විවෘත කරන්නද?
+sender-link-body = මෙම තැපෑල එහි යවන්නා පරීක්ෂා කිරීම් අසමත් විය. සබැඳිය යන්නේ { $host } වෙතයි:
+sender-link-cancel = අවලංගු කරන්න
+sender-link-open = විවෘත කරන්න
 
 ## sent message's star, and the line above a read receipt)
 
@@ -119,6 +200,7 @@ tracking-receipt-other = කියවූ බවට රිසිට්පත: { $
 
 remote-hidden = මෙම පණිවිඩයේ රූප සඟවා ඇත.
 remote-hidden-unconfirmed = රූප සඟවා ඇත: යවන්නා තහවුරු කළ නොහැකි විය.
+remote-hidden-failed = රූප සඟවා ඇත: මෙම තැපෑල එහි යවන්නා පරීක්ෂා කිරීම් අසමත් විය.
 remote-show = රූප පෙන්වන්න
 remote-always-show = මෙම යවන්නාගෙන් සැමවිටම පෙන්වන්න
 remote-picture-use = භාවිත කරන්න

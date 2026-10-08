@@ -179,6 +179,7 @@ settings-general-start-at-login = පිවිසීමේදී Katna ආරම
 settings-general-start-at-login-detail = කවුළුව විවෘත නොකර තැපැල් සමමුහුර්ත කර නව තැපැල් දැනුම්දීම් සහ තැටි අයිකනය පෙන්වයි
 settings-general-login-window = Katna Mail කවුළුවද විවෘත කරන්න
 settings-general-login-window-detail = පිවිසීමේදී කවුළුවද විවෘත වේ
+settings-general-login-entry = පිවිසෙන විට ආරම්භ විය (සැකසීම් > සාමාන්‍ය > ඩෙස්ක්ටොප්)
 settings-general-tray = පද්ධති තැටියේ Katna පෙන්වන්න
 settings-general-tray-detail = නොකියවූ ගණන සහ මෙනුවක් සමඟ
 settings-general-tray-color = වර්ණවත් තැටි අයිකනය

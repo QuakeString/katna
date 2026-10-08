@@ -38,6 +38,8 @@ list-range-about = लगभग { $total } मध्ये { $first }–{ $last 
 list-results = “{ $query }” का लागि नतिजाहरू
 list-results-corrected = “{ $query }” का लागि नतिजाहरू देखाउँदै
 list-search-instead = यसको सट्टा “{ $query }” खोज्नुहोस्
+list-search-no-index = खोज तयार छैन: अनुक्रमणिका अझै बनाइएको छैन।
+list-search-not-ready = खोज तयार छैन: { $error }
 list-files-more = +{ $count }
 list-replied = तपाईंले जवाफ दिनुभयो
 
@@ -343,6 +345,14 @@ list-empty-waiting = जवाफको पर्खाइमा केही �
 list-empty-reminders = कुनै रिमाइन्डर छैन। थप्न कुनै मेलमा H थिच्नुहोस्।
 list-first-sync = तपाईंको मेल ल्याउँदै…
 list-first-sync-detail = मेल आइपुग्दै गर्दा यहाँ देखिन्छ।
+list-store-unreadable = मेल भण्डार खोल्न सकिएन
+
+## Mail list: lines
+
+row-no-subject = (विषय छैन)
+row-unknown-sender = (अज्ञात प्रेषक)
+row-to = प्रापक:
+row-no-recipients = (प्रापक छैनन्)
 
 ## Mail list: lines
 

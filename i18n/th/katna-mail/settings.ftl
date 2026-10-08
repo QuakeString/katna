@@ -173,6 +173,7 @@ settings-general-start-at-login = เริ่ม Katna เมื่อเข้
 settings-general-start-at-login-detail = ซิงค์อีเมล แสดงการแจ้งเตือนอีเมลใหม่และไอคอนในถาด โดยไม่เปิดหน้าต่าง
 settings-general-login-window = เปิดหน้าต่าง Katna Mail ด้วย
 settings-general-login-window-detail = หน้าต่างจะเปิดขึ้นเมื่อเข้าสู่ระบบด้วย
+settings-general-login-entry = เริ่มเมื่อเข้าสู่ระบบ (การตั้งค่า > ทั่วไป > เดสก์ท็อป)
 settings-general-tray = แสดง Katna ในถาดระบบ
 settings-general-tray-detail = พร้อมจำนวนที่ยังไม่อ่านและเมนู
 settings-general-tray-color = ไอคอนในถาดแบบสี

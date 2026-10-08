@@ -4512,3 +4512,154 @@ Il menu ☰ e l'elenco delle lingue ora scorrono dentro la scheda
 dell'account invece di comparire di scatto, con un pulsante Indietro a
 destra per tornare.
 """
+
+["2026-10-08-0618-app-card-edges"]
+title = "Ogni app sulla stessa scheda"
+text = """
+Calendario, Contatti, Attività, Note e File ora poggiano su una scheda
+con lo stesso bordo sottile e la stessa ombra morbida di Posta e
+Impostazioni.
+"""
+
+["2026-10-08-0621-capture-keys-on-gnome"]
+title = "Tasti di acquisizione rapida su GNOME"
+text = """
+Meta+Alt+T per un'attività e Meta+Alt+N per una nota ora funzionano anche
+su GNOME. La prima volta GNOME chiede se Katna può usarli, e puoi cambiare
+i tasti nelle sue Impostazioni.
+"""
+
+["2026-10-08-0629-movable-markup-tools"]
+title = "Sposta gli strumenti di annotazione"
+text = """
+Quando annoti un PDF, trascina i puntini all'estremità degli strumenti per
+spostarli ovunque sulla pagina, così non coprono mai ciò che stai
+annotando. Fai doppio clic sui puntini per riportarli a posto.
+"""
+
+["2026-10-08-0641-screen-readers"]
+title = "Funziona con i lettori di schermo"
+text = """
+Orca e altri lettori di schermo ora possono leggere Katna Mail: l'elenco
+della posta, le cartelle, l'email aperta, i pulsanti, i menu, gli
+interruttori e le finestre di dialogo.
+"""
+
+["2026-10-08-0641-send-feedback"]
+title = "Invia feedback"
+text = """
+Aiuto > Invia feedback, presente anche in Impostazioni rapide e in
+Impostazioni > Feedback degli utenti, invia un problema o un'idea
+direttamente a Katna. Cosa viene inviato mostra il testo esatto prima che
+parta, e l'email per una risposta è facoltativa.
+"""
+
+["2026-10-08-0641-usage-statistics"]
+title = "Statistiche d'uso anonime, se vuoi"
+text = """
+Impostazioni > Feedback degli utenti ha un nuovo interruttore, disattivato
+finché non lo attivi: una volta a settimana invia quali funzioni hai
+usato, sì o no, così quelle più usate ricevono più cure. La pagina elenca
+tutto ciò che viene contato e mostra il rapporto di questa settimana.
+"""
+
+["2026-10-08-0655-more-results-on-server"]
+title = "La ricerca trova la posta più vecchia sul server"
+text = """
+La posta più vecchia non viene scaricata per intero, quindi la ricerca non
+può leggerne le parole qui. Ora, dopo una breve pausa nella digitazione o
+quando premi Invio, Katna chiede anche al tuo server di posta ed elenca
+ciò che trova sotto Altri risultati sul server.
+"""
+
+["2026-10-08-0657-search-unspaced-scripts"]
+title = "Ricerca in thai, lao, khmer e birmano"
+text = """
+La ricerca trova una parola nella posta in thai, lao, khmer o birmano
+anche dove la frase non ha spazi tra le parole.
+"""
+
+["2026-10-08-0704-wrap-between-words"]
+title = "Le righe lunghe vanno a capo tra le parole"
+text = """
+Il testo in arabo, hindi e altre scritture indiane, thai, lao, khmer e
+birmano ora va a capo tra le parole invece di spezzare una parola a metà,
+e le righe in cinese e giapponese non iniziano più con un segno di
+chiusura.
+"""
+
+["2026-10-08-0755-press-fills-buttons"]
+title = "La pressione riempie tutto il pulsante"
+text = """
+Fare clic su un chip o su un pulsante con contorno ora lo riempie fino ai
+suoi bordi e angoli, invece di mostrare una pillola più piccola al suo
+interno.
+"""
+
+["2026-10-08-0802-command-palette"]
+title = "Tavolozza dei comandi"
+text = """
+Premi Ctrl+Shift+P e digita per trovare qualsiasi azione o impostazione,
+poi premi Invio per eseguirla. Ogni azione mostra la sua scorciatoia da
+tastiera, e ciò che hai usato per ultimo è in cima.
+"""
+
+["2026-10-08-0641-encryption-finds-keys"]
+title = "La posta crittografata trova le chiavi"
+text = """
+Con Crittografa attivo, quando invii, la chiave di un destinatario che non
+hai viene cercata nella directory delle chiavi del suo dominio. La posta
+che invii porta con sé la tua chiave pubblica (Autocrypt) quando GnuPG ne
+ha una per il tuo indirizzo, e le chiavi che arrivano allo stesso modo
+vengono usate per crittografare le tue risposte. La posta OpenPGP
+crittografata ora nasconde l'oggetto finché non viene aperta.
+"""
+
+["2026-10-08-0737-key-details"]
+title = "Scopri chi ha firmato un messaggio"
+text = """
+Fai clic sulla riga della firma di un messaggio firmato o crittografato
+per vedere la chiave del firmatario: nome, indirizzo, impronta e date, con
+Copia impronta. Un messaggio firmato con una chiave che non possiedi offre
+Cerca la chiave, e una chiave allegata da qualcuno si apre come Importare
+questa chiave?, con Annulla subito dopo.
+"""
+
+["2026-10-08-0759-sender-check-banners"]
+title = "Avvisi sulla posta contraffatta"
+text = """
+Quando un messaggio non supera i controlli sul mittente del tuo provider
+di posta, un banner rosso avvisa che potrebbe non provenire da chi dice,
+con Dettagli, Sembra sicuro e Sposta nello spam. Le sue immagini restano
+nascoste e i suoi link chiedono conferma prima di aprirsi. Un mittente
+non confermato da nulla riceve un piccolo «?» sulla sua immagine.
+"""
+
+["2026-10-08-0810-restart-after-update"]
+title = "Riavvia quando Katna viene aggiornato"
+text = """
+Quando Katna viene aggiornato mentre Katna Mail è aperto, il servizio in
+background passa da solo alla nuova versione appena non sta inviando
+posta. Una piccola pillola in fondo all’elenco dei messaggi offre allora
+Riavvia, che apre la nuova versione di Katna Mail al suo posto. × la
+nasconde fino al prossimo aggiornamento.
+"""
+
+["2026-10-08-0813-calmer-mail-open"]
+title = "Aprire un messaggio è più tranquillo"
+text = """
+Facendo clic su un messaggio nell’elenco non parte più un’onda mentre si
+apre. L’onda compare ancora quando fai clic sul messaggio già aperto.
+"""
+
+["2026-10-08-0824-safe-mode"]
+title = "Modalità provvisoria se un aggiornamento va storto"
+text = """
+Katna copia i tuoi dati prima che un aggiornamento li modifichi. Se dopo
+l’aggiornamento Katna non riesce ad avviarsi, si apre in modalità
+provvisoria: la tua posta resta leggibile e una riga sopra di essa ti
+permette di riprovare o di tornare alla copia di prima dell’aggiornamento.
+Ciò che c’è ora viene prima conservato in una cartella, così non si perde
+nulla. Copia rapporto di debug, presente anche in Informazioni su Katna,
+raccoglie ciò che serve per una segnalazione di bug.
+"""

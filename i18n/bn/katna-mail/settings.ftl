@@ -181,6 +181,7 @@ settings-general-start-at-login = লগ ইন করলে Katna চালু 
 settings-general-start-at-login-detail = উইন্ডো না খুলেই মেল সিঙ্ক করে এবং নতুন মেলের বিজ্ঞপ্তি ও সিস্টেম ট্রে আইকন দেখায়
 settings-general-login-window = Katna Mail-এর উইন্ডোও খুলুন
 settings-general-login-window-detail = লগ ইন করলে উইন্ডোটিও খুলে যায়
+settings-general-login-entry = লগ ইন করলে চালু হয় (সেটিংস > সাধারণ > ডেস্কটপ)
 settings-general-tray = সিস্টেম ট্রে-তে Katna দেখান
 settings-general-tray-detail = অপঠিত সংখ্যা ও একটি মেনু সহ
 settings-general-tray-color = রঙিন ট্রে আইকন

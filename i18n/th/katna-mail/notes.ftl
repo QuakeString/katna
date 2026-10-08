@@ -92,6 +92,7 @@ notes-link-note = ลิงก์โน้ต
 notes-link-new = โน้ตใหม่ “{ $title }”
 notes-linked-from = ลิงก์มาจาก
 notes-link-gone = โน้ตนั้นไม่อยู่แล้ว
+notes-new-note-gone = โน้ตใหม่หายไปแล้ว
 
 ## Version history
 

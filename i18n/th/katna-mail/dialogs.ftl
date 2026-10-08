@@ -6,6 +6,7 @@
 
 about-tooltip = เกี่ยวกับ Katna
 about-tagline = อีเมลและปฏิทินสำหรับเดสก์ท็อป Linux
+about-version = Katna Mail { $version }
 about-copy-version = คัดลอกรายละเอียดเวอร์ชัน
 about-version-copied = คัดลอกแล้ว
 about-version-built = สร้างเมื่อ: { $date }

@@ -96,6 +96,7 @@ notes-link-note = Enlazar una nota
 notes-link-new = Nueva nota «{ $title }»
 notes-linked-from = Enlazada desde
 notes-link-gone = Esa nota ya no está aquí
+notes-new-note-gone = La nota nueva ya no existe.
 
 ## Version history
 

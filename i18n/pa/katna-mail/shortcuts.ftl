@@ -70,6 +70,7 @@ shortcut-navigation = ਮੀਨੂ ਦਿਖਾਓ ਜਾਂ ਸਮੇਟੋ
 shortcut-quick-settings = ਤਤਕਾਲ ਸੈਟਿੰਗਾਂ
 shortcut-settings = ਸਾਰੀਆਂ ਸੈਟਿੰਗਾਂ
 shortcut-shortcuts = ਕੀਬੋਰਡ ਸ਼ਾਰਟਕੱਟ
+shortcut-palette = ਕਮਾਂਡ ਪੈਲੇਟ
 shortcut-reload = ਨਵੀਂ ਮੇਲ ਲਈ ਜਾਂਚ ਕਰੋ
 shortcut-quit = ਬਾਹਰ ਜਾਓ
 

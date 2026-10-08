@@ -38,6 +38,8 @@ list-range-about = { $first }–{ $last } av cirka { $total }
 list-results = Resultat för ”{ $query }”
 list-results-corrected = Visar resultat för ”{ $query }”
 list-search-instead = Sök i stället efter ”{ $query }”
+list-search-no-index = Sökningen är inte redo: indexet har inte byggts än.
+list-search-not-ready = Sökningen är inte redo: { $error }
 list-files-more = +{ $count }
 list-replied = Du har svarat
 
@@ -343,9 +345,14 @@ list-empty-waiting = Inget väntar på svar.
 list-empty-reminders = Inga påminnelser. Tryck H på ett meddelande för att lägga till en.
 list-first-sync = Hämtar din e-post…
 list-first-sync-detail = Den visas här allt eftersom den kommer in.
+list-store-unreadable = E-postlagret kunde inte öppnas
 
 ## Mail list: lines
 
+row-no-subject = (inget ämne)
+row-unknown-sender = (okänd avsändare)
+row-to = Till:
+row-no-recipients = (inga mottagare)
 row-removed = Meddelandet har tagits bort.
 row-starred = Stjärnmärkt
 row-not-starred = Inte stjärnmärkt
@@ -429,6 +436,11 @@ menu-make-rule = Skapa en regel…
 
 ## Snackbar after an action on mail in the list
 
+toast-key-imported = Nyckeln har importerats
+toast-key-updated = Du hade redan den här nyckeln; nu är den uppdaterad
+toast-key-removed = Nyckeln har tagits bort
+toast-key-not-removed = Nyckeln kunde inte tas bort
+toast-fingerprint-copied = Fingeravtrycket har kopierats
 toast-archived = { $kind ->
     [conversation] { $count ->
         [one] Konversationen har arkiverats.

@@ -92,6 +92,7 @@ mod rich;
 mod row_reorder;
 mod row_swipe;
 mod rule_editor;
+mod safe_mode;
 mod scale_slider;
 mod scheme_color;
 mod scheme_editor;
@@ -760,6 +761,7 @@ pub struct MailWindow {
     /// Katna's background service, started again when it isn't running.
     service: service::Service,
     restart: restart::Restart,
+    safe: safe_mode::SafeMode,
     /// Settings > User feedback's list of crash reports, as last read.
     saved_reports: Option<feedback_page::SavedReports>,
     /// Settings > User feedback shows this week's usage report.
@@ -1145,6 +1147,7 @@ impl MailWindow {
             problems: problems::Problems::default(),
             service: service::Service::default(),
             restart: restart::Restart::default(),
+            safe: safe_mode::SafeMode::default(),
             saved_reports: None,
             usage_report_open: false,
             usage_noted: (0, Default::default()),
@@ -3331,6 +3334,10 @@ impl MailWindow {
             self.show_snackbar_for(details, None, FAILURE_TIME, cx);
             return;
         }
+        if let Command::RevealPath(path) = &undo {
+            safe_mode::reveal(path, cx);
+            return;
+        }
         if undo == Command::OpenOutbox {
             self.leave_settings(window, cx);
             self.open_outbox(cx);
@@ -3805,6 +3812,7 @@ impl Render for MailWindow {
             && self.delete_ask.is_none()
             && self.app_off_ask.is_none()
             && !self.service_details_open()
+            && !self.restore_open()
             && self.new_label.is_none()
             && self.rule_editor.is_none()
             && self.add_account.is_none()
@@ -4140,6 +4148,7 @@ impl Render for MailWindow {
         let delete_ask = self.render_delete_ask(&th, window, reduce, cx);
         let app_off_ask = self.render_app_off_ask(&th, window, reduce, cx);
         let service_details = self.render_service_details(&th, window, reduce, cx);
+        let restore = self.render_restore(&th, window, reduce, cx);
         let rail_menu = self.render_rail_menu(&th, cx);
         let new_label = self.render_new_label(&th, window, reduce, cx);
         let rule_editor = self.render_rule_editor(&th, window, reduce, cx);
@@ -4242,6 +4251,7 @@ impl Render for MailWindow {
             .children(delete_ask)
             .children(app_off_ask)
             .children(service_details)
+            .children(restore)
             .children(new_label)
             .children(rule_editor)
             .children(contact_label)

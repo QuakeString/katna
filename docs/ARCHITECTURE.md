@@ -6114,10 +6114,19 @@ old and new daemon and app must keep working:
   a rebuild, the Secret Service answers, D-Bus names are owned. The result
   and the version are written to `$XDG_STATE_HOME/katna/health.toml`.
 - If the daemon fails to reach "healthy" three times within ten minutes, it
-  starts in **safe mode**: no sync and no writes except the outbox, and a
-  notification with "Restore previous data" (from the backup above) and
-  "Copy debug report". Local-only data (outbox, `op_queue`, organizations,
-  metadata) is exported to a file before any restore.
+  starts in **safe mode**: no account, calendar, contacts, tasks, notes or
+  rules sync; the outbox still sends mail the user already sent, and updates
+  still arrive. Katna Mail reads `health.toml` (so it knows even when the
+  daemon can't start) and shows an amber line above the mail with Try
+  again, Restore and Details (the debug report). Only the daemon writes the
+  databases, so Try again and Restore leave
+  `$XDG_STATE_HOME/katna/safe-mode-request.toml` and restart the daemon
+  (D-Bus `Restart`), which runs the request before opening anything.
+  Restore offers the copies of the last two updates (copies made within ten
+  minutes of each other form one point); it first moves the databases as
+  they are, local-only data included, into
+  `before-restore-<unix time>/` beside them, so nothing is lost, and a note
+  offers Show folder. Copy debug report is also in About.
 - A **downgrade** (the user installs an older package after a bad update)
   meets `SchemaTooNew` only if the newer release broke the expand-then-contract
   rule; the older daemon then offers the same restore.

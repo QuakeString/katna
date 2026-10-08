@@ -72,3 +72,28 @@ service-details-title = Pourquoi le service ne démarre pas
 service-details-body = Copiez ceci et envoyez-le avec votre rapport. Il ne contient ni messages ni mots de passe.
 service-details-copy = Copier
 service-details-close = Fermer
+service-not-running = Le service d’arrière-plan de Katna n’est pas en cours d’exécution.
+service-no-answer = Le service d’arrière-plan de Katna n’a pas répondu : { $error }
+service-no-session = Aucune session D-Bus : { $error }
+
+## Safe mode: an update left Katna's background service unable to start
+
+safe-line = Katna est en mode sans échec après un problème lors de la mise à jour : le courrier ne se synchronise pas.
+safe-try-again = Réessayer
+safe-restore = Restaurer
+safe-restoring = Restauration de vos données du { $when }…
+safe-restored = Vos données du { $when } ont été restaurées. Ce qui s’y trouvait auparavant est conservé dans un dossier.
+safe-show-folder = Afficher le dossier
+safe-restore-failed = Impossible de restaurer vos données : { $error }
+safe-restore-title = Restaurer vos données d’avant une mise à jour ?
+safe-restore-body = Katna revient à la copie que vous choisissez. Le courrier arrivé après est de nouveau téléchargé depuis vos comptes.
+safe-restore-none = Il n’y a pas encore de copie. Katna en fait une avant que chaque mise à jour ne modifie vos données.
+safe-restore-keep = Ce qui s’y trouve maintenant, y compris le courrier non envoyé, les brouillons et les modifications pas encore synchronisées, est d’abord conservé dans un dossier : rien n’est perdu.
+safe-restore-cancel = Annuler
+safe-restore-mail = Courrier
+safe-restore-pim = Comptes et contacts
+safe-restore-blobs = Pièces jointes
+safe-report-title = Rapport de débogage
+safe-report-body = Copiez-le et joignez-le à votre signalement de bug. Il ne contient ni courriels, ni adresses, ni mots de passe.
+safe-report-restore = Restaurer…
+safe-report-copied = Rapport de débogage copié

@@ -66,3 +66,6 @@ service-details-title = সেৱাটো কিয় আৰম্ভ হো�
 service-details-body = এইখিনি কপি কৰি আপোনাৰ ৰিপৰ্টৰ সৈতে পঠিয়াওক। ইয়াত কোনো মেইল বা পাছৱৰ্ড নাই।
 service-details-copy = কপি কৰক
 service-details-close = বন্ধ কৰক
+service-not-running = Katnaৰ নেপথ্য সেৱা চলি থকা নাই।
+service-no-answer = Katnaৰ নেপথ্য সেৱাই উত্তৰ নিদিলে: { $error }
+service-no-session = কোনো D-Bus ছেছন নাই: { $error }

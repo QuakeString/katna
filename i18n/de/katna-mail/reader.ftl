@@ -55,6 +55,7 @@ reader-details-subject = Betreff:
 
 reader-downloading = Diese Nachricht wird vom Server heruntergeladen…
 reader-download-failed = Diese Nachricht konnte nicht heruntergeladen werden.
+reader-download-failed-reason = Diese Nachricht konnte nicht heruntergeladen werden. { $reason }
 reader-download-offline = Dieses Konto ist offline. Gehen Sie online, um diese Nachricht herunterzuladen.
 reader-try-again = Erneut versuchen
 
@@ -90,6 +91,89 @@ security-missing-key = Mit einem Schlüssel signiert, den Sie nicht haben, daher
 security-missing-key-id = Mit einem Schlüssel signiert, den Sie nicht haben ({ $key }), daher nicht prüfbar
 security-signature-unavailable = Signiert; installieren Sie { $tool }, um die Signatur zu prüfen
 security-signature-error = Die Signatur konnte nicht geprüft werden.
+security-look-up-key = Schlüssel suchen
+
+## The key popover: the details of the key a message was signed with, and
+## a key to import (looked up, or attached to the message)
+
+key-card-verified = Verifizierte Signatur
+key-card-verified-detail = Die Signatur ist gültig, und Sie vertrauen diesem Schlüssel.
+key-card-unverified = Signatur nicht verifiziert
+key-card-unverified-detail = Die Signatur ist gültig, aber nichts bestätigt, dass der Schlüssel dieser Person gehört. Vergleichen Sie den Fingerabdruck mit ihr und vertrauen Sie dem Schlüssel dann in GnuPG (Kleopatra oder gpg --edit-key).
+key-card-not-sender = Von jemand anderem signiert
+key-card-not-sender-detail = Die Signatur ist gültig, aber der Schlüssel gehört nicht dem Absender.
+key-card-untrusted = Schlüssel nicht vertrauenswürdig
+key-card-untrusted-detail = Sie haben diesen Schlüssel in GnuPG als nicht vertrauenswürdig markiert.
+key-card-signature-expired = Signatur abgelaufen
+key-card-signature-expired-detail = Die Signatur war gültig, ist aber abgelaufen.
+key-card-key-expired = Schlüssel abgelaufen
+key-card-key-expired-detail = Die Signatur ist gültig, aber der Schlüssel ist inzwischen abgelaufen.
+key-card-key-revoked = Schlüssel widerrufen
+key-card-key-revoked-detail = Der Besitzer hat diesen Schlüssel widerrufen, daher ist der Signatur nicht zu trauen.
+key-card-bad = Ungültige Signatur
+key-card-bad-detail = Diese Nachricht wurde nach dem Signieren verändert oder die Signatur ist gefälscht.
+key-card-signed-by = Signiert von
+key-card-belongs-to = Gehört zu
+key-card-fingerprint = Fingerabdruck
+key-card-signed = Signiert
+key-card-key = Schlüssel
+key-card-kind = { $standard }, { $algorithm }
+key-card-created = Erstellt
+key-card-expires = Läuft ab
+key-card-never = Nie
+key-card-issued-by = Ausgestellt von
+key-card-found-in = Gefunden in
+key-card-keyring = Ihr GnuPG-Schlüsselbund
+key-card-copy = Fingerabdruck kopieren
+key-card-import-title = Diesen Schlüssel importieren?
+key-card-from-directory = Im Schlüsselverzeichnis von { $domain } gefunden.
+key-card-from-attachment = Aus dem Anhang { $name }.
+key-card-import-note = Katna kann dann die Signaturen dieser Person prüfen und E-Mails an sie verschlüsseln. Um dem Schlüssel voll zu vertrauen, vergleichen Sie den Fingerabdruck mit ihr.
+key-card-cancel = Abbrechen
+key-card-import = Schlüssel importieren
+key-card-looking-up = Schlüssel wird gesucht…
+key-card-looking-up-detail = Das Schlüsselverzeichnis von { $domain } wird gefragt.
+key-card-not-found = Kein Schlüssel gefunden
+key-card-not-found-detail = { $domain } veröffentlicht keinen Schlüssel für diese Adresse. Bitten Sie den Absender, Ihnen seinen Schlüssel zu senden.
+key-card-not-kept = Der gefundene Schlüssel kann nicht verwendet werden.
+key-card-failed = Schlüssel konnte nicht abgerufen werden
+
+## Sender checks: the banner on mail that failed the checks the user's mail
+## provider ran on its sender (DMARC, DKIM, SPF), and the "?" on the picture
+## of a sender nothing confirmed
+
+sender-failed-title = Dies stammt möglicherweise nicht von { $domain }
+sender-failed-body = Diese E-Mail hat die Absenderprüfungen bei { $provider } nicht bestanden. Seien Sie vorsichtig mit Links, Anhängen und Antworten.
+sender-provider-unknown = Ihrem E-Mail-Anbieter
+sender-details = Details
+sender-details-hide = Details ausblenden
+sender-looks-safe = Sieht sicher aus
+sender-move-to-spam = In Spam verschieben
+sender-checked-by = Geprüft von { $provider }
+sender-checked-by-server = Geprüft von { $provider } ({ $server })
+sender-dmarc = Absenderdomain (DMARC)
+sender-dkim = Signatur (DKIM)
+sender-spf = Sendeserver (SPF)
+sender-result-pass = Bestanden
+sender-result-fail = Nicht bestanden
+sender-result-unsure = Unklar
+sender-result-none = Keine
+sender-result-missing = Nicht geprüft
+sender-dmarc-pass = { $domain } bestätigt diesen Absender.
+sender-dmarc-fail = Die E-Mail wurde nicht so versendet, wie { $domain } es für eigene E-Mails vorgibt.
+sender-dmarc-none = { $domain } veröffentlicht keine Regeln für eigene E-Mails.
+sender-dkim-pass = Signiert von { $domain }.
+sender-dkim-fail = Die Signatur von { $domain } passt nicht zur E-Mail.
+sender-dkim-none = Die Nachricht wurde nicht signiert.
+sender-spf-pass = Von einem Server gesendet, den { $domain } aufführt.
+sender-spf-fail = Von einem Server gesendet, den { $domain } nicht aufführt.
+sender-spf-none = { $domain } nennt keine eigenen Server.
+sender-check-unsure = Die Prüfung ergab kein eindeutiges Ergebnis.
+sender-unconfirmed = Bei { $provider } ließ sich nicht bestätigen, dass dies von { $domain } stammt. Jeder kann einen beliebigen Absender angeben.
+sender-link-title = Diesen Link öffnen?
+sender-link-body = Diese E-Mail hat ihre Absenderprüfungen nicht bestanden. Der Link führt zu { $host }:
+sender-link-cancel = Abbrechen
+sender-link-open = Öffnen
 
 ## Open and click tracking and read receipts (the eye's popover beside a
 ## sent message's star, and the line above a read receipt)
@@ -120,6 +204,7 @@ tracking-receipt-other = Lesebestätigung: { $who } hat Ihre Nachricht gelöscht
 
 remote-hidden = Bilder in dieser Nachricht sind ausgeblendet.
 remote-hidden-unconfirmed = Bilder ausgeblendet: Der Absender konnte nicht bestätigt werden.
+remote-hidden-failed = Bilder ausgeblendet: Diese E-Mail hat ihre Absenderprüfungen nicht bestanden.
 remote-show = Bilder anzeigen
 remote-always-show = Von diesem Absender immer anzeigen
 remote-picture-use = Verwenden

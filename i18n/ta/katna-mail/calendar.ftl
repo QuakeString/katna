@@ -112,6 +112,7 @@ calendar-add-meet = Google Meet வீடியோ அழைப்பைச் �
 calendar-add-teams = Teams சந்திப்பைச் சேர்
 calendar-has-call = வீடியோ அழைப்பு சேர்க்கப்பட்டது
 calendar-weekday-day = { $weekday }, { $day }
+calendar-schedule-day = { $weekday }, { $month }
 calendar-all-day-box = நாள் முழுவதும்
 calendar-more-options = மேலும் விருப்பங்கள்
 calendar-save = சேமி

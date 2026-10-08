@@ -49,4 +49,5 @@ quick-help = Ayuda
 quick-tour = Hacer el recorrido
 quick-whats-new = Novedades
 quick-check-updates = Buscar actualizaciones
+quick-send-feedback = Enviar comentarios
 quick-about = Acerca de Katna

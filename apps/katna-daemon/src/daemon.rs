@@ -280,6 +280,12 @@ pub struct Daemon {
     /// Asks the [`crate::Instance`] to delete the files and exit; it
     /// answers on the sender inside.
     delete_requests: (Sender<DeleteDone>, Receiver<DeleteDone>),
+    /// Asks the [`crate::Instance`] to stop, so the next start runs what
+    /// Katna Mail asked of safe mode.
+    restart_requests: (Sender<()>, Receiver<()>),
+    /// This start is in safe mode (`docs/ARCHITECTURE.md` §21.2): nothing
+    /// syncs; mail already in the outbox still goes out.
+    safe_mode: bool,
     /// Tells the crash report sender that settings changed.
     crash_uploads: (Sender<()>, Receiver<()>),
     /// Access tokens of the accounts that sign in with OAuth2, shared by
@@ -357,6 +363,7 @@ impl Daemon {
         let sync = saved.sync;
         let setting = sync.metered;
         let (notices, receiver) = async_channel::unbounded();
+        let safe_mode = katna_core::health::Health::load(&paths.health_file()).safe_mode;
         let daemon = Arc::new(Self {
             paths,
             store: Mutex::new(store),
@@ -387,6 +394,8 @@ impl Daemon {
             resetting: AtomicBool::new(false),
             indexer: OnceLock::new(),
             delete_requests: async_channel::bounded(1),
+            restart_requests: async_channel::bounded(1),
+            safe_mode,
             crash_uploads: async_channel::bounded(1),
             tokens: Mutex::default(),
             linked: Mutex::default(),
@@ -466,6 +475,18 @@ impl Daemon {
         // and nothing else waits for that answer.
         // Before any worker starts: an offline account never connects.
         self.apply_offline_at_start();
+        if self.safe_mode {
+            // Nothing syncs or changes; mail the user already sent goes.
+            tracing::warn!("safe mode: only the outbox runs");
+            self.start_outbox()?;
+            smol::spawn(sign_in::save_rotated(
+                Arc::downgrade(self),
+                self.rotated.1.clone(),
+            ))
+            .detach();
+            smol::spawn(crate::updates::run(Arc::downgrade(self))).detach();
+            return Ok(());
+        }
         smol::spawn(offline::run(
             Arc::downgrade(self),
             self.offline_wake.1.clone(),
@@ -1298,6 +1319,22 @@ impl Daemon {
             let _ = self.notices.try_send(Notice::MailChanged(account.id));
         }
         forgotten
+    }
+
+    /// Stops the daemon, so the next start runs a safe mode request.
+    pub fn restart(&self) {
+        tracing::info!("stopping for a safe mode request");
+        let _ = self.restart_requests.0.try_send(());
+    }
+
+    /// Requests from [`Daemon::restart`].
+    pub(crate) fn restart_requests(&self) -> Receiver<()> {
+        self.restart_requests.1.clone()
+    }
+
+    /// Whether this start is in safe mode.
+    pub fn safe_mode(&self) -> bool {
+        self.safe_mode
     }
 
     /// Requests from [`Daemon::delete_all_data`].

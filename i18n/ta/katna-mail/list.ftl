@@ -38,6 +38,8 @@ list-range-about = சுமார் { $total } இல் { $first }–{ $last 
 list-results = “{ $query }” க்கான முடிவுகள்
 list-results-corrected = “{ $query }” க்கான முடிவுகள் காட்டப்படுகின்றன
 list-search-instead = அதற்குப் பதிலாக “{ $query }” என்று தேடு
+list-search-no-index = தேடல் தயாராக இல்லை: அட்டவணை இன்னும் உருவாக்கப்படவில்லை.
+list-search-not-ready = தேடல் தயாராக இல்லை: { $error }
 list-files-more = +{ $count }
 list-replied = நீங்கள் பதிலளித்தீர்கள்
 
@@ -343,9 +345,14 @@ list-empty-waiting = பதிலுக்காக எதுவும் கா
 list-empty-reminders = நினைவூட்டல்கள் இல்லை. ஒன்றைச் சேர்க்க அஞ்சலில் H ஐ அழுத்துங்கள்.
 list-first-sync = உங்கள் அஞ்சலைப் பெறுகிறது…
 list-first-sync-detail = அஞ்சல் வர வர இங்கே காட்டப்படும்.
+list-store-unreadable = அஞ்சல் சேமிப்பகத்தைத் திறக்க முடியவில்லை
 
 ## Mail list: lines
 
+row-no-subject = (பொருள் இல்லை)
+row-unknown-sender = (தெரியாத அனுப்புநர்)
+row-to = பெறுநர்:
+row-no-recipients = (பெறுநர்கள் இல்லை)
 row-removed = இந்த மெசேஜ் அகற்றப்பட்டது.
 row-starred = நட்சத்திரமிட்டது
 row-not-starred = நட்சத்திரமிடவில்லை
@@ -425,6 +432,11 @@ menu-make-rule = விதியை உருவாக்கு…
 
 ## Snackbar after an action on mail in the list
 
+toast-key-imported = கீ இறக்குமதி செய்யப்பட்டது
+toast-key-updated = இந்தக் கீ ஏற்கனவே உங்களிடம் இருந்தது; இப்போது அது புதுப்பிக்கப்பட்டுள்ளது
+toast-key-removed = கீ அகற்றப்பட்டது
+toast-key-not-removed = கீயை அகற்ற முடியவில்லை
+toast-fingerprint-copied = ஃபிங்கர்பிரிண்ட் நகலெடுக்கப்பட்டது
 toast-archived = { $kind ->
     [conversation] { $count ->
         [one] உரையாடல் காப்பகப்படுத்தப்பட்டது.

@@ -33,3 +33,7 @@ update-dialog-compare = GitHub-ൽ താരതമ്യം ചെയ്യു�
 update-dialog-no-service = Katna ബാക്ക്ഗ്രൗണ്ട് സേവനം പ്രവർത്തിക്കുന്നില്ല.
 update-dialog-later = പിന്നീട്
 update-dialog-close = അടയ്ക്കുക
+restart-updated = Katna അപ്‌ഡേറ്റ് ചെയ്തു
+restart-button = റീസ്റ്റാർട്ട് ചെയ്യുക
+restart-close = ഇപ്പോൾ വേണ്ട
+restart-failed = പുതിയ Katna Mail ആരംഭിക്കാനായില്ല: { $error }

@@ -38,6 +38,8 @@ list-range-about = ආසන්න වශයෙන් { $total } න් { $first
 list-results = “{ $query }” සඳහා ප්‍රතිඵල
 list-results-corrected = “{ $query }” සඳහා ප්‍රතිඵල පෙන්වමින්
 list-search-instead = ඒ වෙනුවට “{ $query }” සොයන්න
+list-search-no-index = සෙවීම සූදානම් නැත: සුචිය තවම ගොඩනගා නැත.
+list-search-not-ready = සෙවීම සූදානම් නැත: { $error }
 list-files-more = +{ $count }
 list-replied = ඔබ පිළිතුරු දුන්නා
 
@@ -343,9 +345,14 @@ list-empty-waiting = පිළිතුරක් බලාපොරොත්ත�
 list-empty-reminders = සිහිකැඳවීම් නැත. එකක් එක් කිරීමට තැපැලක් මත H ඔබන්න.
 list-first-sync = ඔබේ තැපැල් ලබා ගනිමින්…
 list-first-sync-detail = ඒවා ලැබෙන විට මෙහි පෙන්වයි.
+list-store-unreadable = තැපැල් ගබඩාව විවෘත කළ නොහැකි විය
 
 ## Mail list: lines
 
+row-no-subject = (විෂයයක් නැත)
+row-unknown-sender = (නොදන්නා යවන්නා)
+row-to = වෙත:
+row-no-recipients = (ලබන්නන් නැත)
 row-removed = මෙම පණිවිඩය ඉවත් කරන ලදී.
 row-starred = තරු යෙදූ
 row-not-starred = තරු නොයෙදූ
@@ -425,6 +432,11 @@ menu-make-rule = නීතියක් සාදන්න…
 
 ## Snackbar after an action on mail in the list
 
+toast-key-imported = යතුර ආයාත කළා
+toast-key-updated = මෙම යතුර ඔබ සතුව දැනටමත් තිබුණා; දැන් එය යාවත්කාලීනයි
+toast-key-removed = යතුර ඉවත් කළා
+toast-key-not-removed = යතුර ඉවත් කළ නොහැකි විය
+toast-fingerprint-copied = ඇඟිලි සලකුණ පිටපත් කළා
 toast-archived = { $kind ->
     [conversation] { $count ->
         [one] සංවාදය සංරක්ෂණය කරන ලදී.

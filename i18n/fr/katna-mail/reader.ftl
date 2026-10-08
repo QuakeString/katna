@@ -55,6 +55,7 @@ reader-details-subject = objet :
 
 reader-downloading = Téléchargement de ce message depuis le serveur…
 reader-download-failed = Impossible de télécharger ce message.
+reader-download-failed-reason = Impossible de télécharger ce message. { $reason }
 reader-download-offline = Ce compte est hors ligne. Repassez en ligne pour télécharger ce message.
 reader-try-again = Réessayer
 
@@ -90,6 +91,89 @@ security-missing-key = Signé avec une clé que vous n’avez pas ; la signatur
 security-missing-key-id = Signé avec une clé que vous n’avez pas ({ $key }) ; la signature ne peut donc pas être vérifiée
 security-signature-unavailable = Signé ; installez { $tool } pour vérifier la signature
 security-signature-error = La signature n’a pas pu être vérifiée.
+security-look-up-key = Rechercher la clé
+
+## The key popover: the details of the key a message was signed with, and
+## a key to import (looked up, or attached to the message)
+
+key-card-verified = Signature vérifiée
+key-card-verified-detail = La signature est valide et vous faites confiance à cette clé.
+key-card-unverified = Signature non vérifiée
+key-card-unverified-detail = La signature est valide, mais rien ne confirme que la clé appartient à cette personne. Comparez l’empreinte avec elle, puis accordez votre confiance à la clé dans GnuPG (Kleopatra ou gpg --edit-key).
+key-card-not-sender = Signé par quelqu’un d’autre
+key-card-not-sender-detail = La signature est valide, mais la clé n’est pas celle de l’expéditeur.
+key-card-untrusted = Clé non fiable
+key-card-untrusted-detail = Vous avez marqué cette clé comme non fiable dans GnuPG.
+key-card-signature-expired = Signature expirée
+key-card-signature-expired-detail = La signature était valide, mais elle a expiré.
+key-card-key-expired = Clé expirée
+key-card-key-expired-detail = La signature est valide, mais la clé a expiré depuis.
+key-card-key-revoked = Clé révoquée
+key-card-key-revoked-detail = Son propriétaire a révoqué cette clé ; la signature n’est donc pas digne de confiance.
+key-card-bad = Signature non valide
+key-card-bad-detail = Ce message a été modifié après avoir été signé, ou la signature est falsifiée.
+key-card-signed-by = Signé par
+key-card-belongs-to = Appartient à
+key-card-fingerprint = Empreinte
+key-card-signed = Signé le
+key-card-key = Clé
+key-card-kind = { $standard }, { $algorithm }
+key-card-created = Créée le
+key-card-expires = Expire le
+key-card-never = Jamais
+key-card-issued-by = Émis par
+key-card-found-in = Trouvée dans
+key-card-keyring = Votre trousseau GnuPG
+key-card-copy = Copier l’empreinte
+key-card-import-title = Importer cette clé ?
+key-card-from-directory = Trouvée dans l’annuaire de clés de { $domain }.
+key-card-from-attachment = Provenant de la pièce jointe { $name }.
+key-card-import-note = Katna pourra alors vérifier les signatures de cette personne et lui envoyer des messages chiffrés. Pour faire pleinement confiance à la clé, comparez l’empreinte avec elle.
+key-card-cancel = Annuler
+key-card-import = Importer la clé
+key-card-looking-up = Recherche de la clé…
+key-card-looking-up-detail = Interrogation de l’annuaire de clés de { $domain }.
+key-card-not-found = Aucune clé trouvée
+key-card-not-found-detail = { $domain } ne publie aucune clé pour cette adresse. Demandez à l’expéditeur de vous envoyer la sienne.
+key-card-not-kept = La clé trouvée ne peut pas être utilisée.
+key-card-failed = Impossible d’obtenir la clé
+
+## Sender checks: the banner on mail that failed the checks the user's mail
+## provider ran on its sender (DMARC, DKIM, SPF), and the "?" on the picture
+## of a sender nothing confirmed
+
+sender-failed-title = Ce message ne vient peut-être pas de { $domain }
+sender-failed-body = Il n’a pas passé les vérifications d’expéditeur de { $provider }. Méfiez-vous des liens, des pièces jointes et des réponses.
+sender-provider-unknown = votre fournisseur de messagerie
+sender-details = Détails
+sender-details-hide = Masquer les détails
+sender-looks-safe = Semble sûr
+sender-move-to-spam = Déplacer dans les spams
+sender-checked-by = Vérifié par { $provider }
+sender-checked-by-server = Vérifié par { $provider } ({ $server })
+sender-dmarc = Domaine de l’expéditeur (DMARC)
+sender-dkim = Signature (DKIM)
+sender-spf = Serveur d’envoi (SPF)
+sender-result-pass = Réussi
+sender-result-fail = Échoué
+sender-result-unsure = Incertain
+sender-result-none = Aucun
+sender-result-missing = Non vérifié
+sender-dmarc-pass = { $domain } confirme cet expéditeur.
+sender-dmarc-fail = Le message ne correspond pas à la façon dont { $domain } déclare envoyer ses messages.
+sender-dmarc-none = { $domain } ne publie aucune règle pour ses messages.
+sender-dkim-pass = Signé par { $domain }.
+sender-dkim-fail = La signature de { $domain } ne correspond pas au message.
+sender-dkim-none = Le message n’était pas signé.
+sender-spf-pass = Envoyé depuis un serveur listé par { $domain }.
+sender-spf-fail = Envoyé depuis un serveur que { $domain } ne liste pas.
+sender-spf-none = { $domain } ne liste pas ses serveurs.
+sender-check-unsure = La vérification n’a pas pu donner de réponse claire.
+sender-unconfirmed = { $provider } n’a pas pu confirmer que ce message vient de { $domain }. N’importe qui peut indiquer n’importe quel expéditeur.
+sender-link-title = Ouvrir ce lien ?
+sender-link-body = Ce message n’a pas passé les vérifications d’expéditeur. Le lien mène à { $host } :
+sender-link-cancel = Annuler
+sender-link-open = Ouvrir
 
 ## Open and click tracking and read receipts (the eye's popover beside a
 ## sent message's star, and the line above a read receipt)
@@ -124,6 +208,7 @@ tracking-receipt-other = Accusé de lecture : { $who } a supprimé ou traité vo
 
 remote-hidden = Les images de ce message sont masquées.
 remote-hidden-unconfirmed = Images masquées : l’expéditeur n’a pas pu être confirmé.
+remote-hidden-failed = Images masquées : ce message n’a pas passé les vérifications d’expéditeur.
 remote-show = Afficher les images
 remote-always-show = Toujours afficher pour cet expéditeur
 remote-picture-use = Utiliser

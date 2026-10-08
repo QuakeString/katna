@@ -181,6 +181,7 @@ settings-general-start-at-login = લૉગિન વખતે Katna શરૂ �
 settings-general-start-at-login-detail = વિન્ડો ખોલ્યા વિના મેઇલ સિંક કરે છે અને નવા મેઇલનાં નોટિફિકેશન અને સિસ્ટમ ટ્રે આઇકન બતાવે છે
 settings-general-login-window = Katna Mailની વિન્ડો પણ ખોલો
 settings-general-login-window-detail = લૉગિન વખતે વિન્ડો પણ ખૂલે છે
+settings-general-login-entry = લૉગિન વખતે શરૂ થયું (સેટિંગ > સામાન્ય > ડેસ્કટૉપ)
 settings-general-tray = સિસ્ટમ ટ્રેમાં Katna બતાવો
 settings-general-tray-detail = નહીં વાંચેલાની સંખ્યા અને મેનૂ સાથે
 settings-general-tray-color = રંગીન ટ્રે આઇકન

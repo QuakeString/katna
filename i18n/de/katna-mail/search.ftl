@@ -61,3 +61,13 @@ search-dates-month-back = Vorheriger Monat
 search-dates-month-on = Nächster Monat
 search-dates-year-back = Vorheriges Jahr
 search-dates-year-on = Nächstes Jahr
+
+## More results on server: under the results, mail found by asking the
+## mail server, for mail that is not downloaded to this computer yet.
+
+search-server-more = Weitere Ergebnisse auf dem Server
+search-server-searching = E-Mails auf dem Server werden durchsucht…
+search-server-empty-searching = Noch nichts gefunden. E-Mails auf dem Server werden durchsucht…
+search-server-nothing = Keine weiteren Ergebnisse auf dem Server
+search-server-failed = Der Server konnte nicht durchsucht werden.
+search-server-again = Erneut versuchen

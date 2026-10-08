@@ -31,3 +31,58 @@ feedback-deleted-all = ಕ್ರ್ಯಾಶ್ ವರದಿಗಳನ್ನು �
 feedback-read-failed = ಕ್ರ್ಯಾಶ್ ವರದಿಯನ್ನು ಓದಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: { $error }
 feedback-delete-failed = ಕ್ರ್ಯಾಶ್ ವರದಿಯನ್ನು ಅಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: { $error }
 feedback-delete-all-failed = ಕ್ರ್ಯಾಶ್ ವರದಿಗಳನ್ನು ಅಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: { $error }
+
+## Settings > User feedback (usage statistics)
+
+feedback-usage = ಅನಾಮಧೇಯ ಬಳಕೆಯ ಅಂಕಿಅಂಶಗಳನ್ನು ಕಳುಹಿಸಿ
+feedback-usage-detail = ವಾರಕ್ಕೊಮ್ಮೆ: ನೀವು ಯಾವ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಬಳಸಿದಿರಿ, ಹೌದು ಅಥವಾ ಇಲ್ಲ. ಎಣಿಕೆಗಳು, ವಿಳಾಸಗಳು, ಹೆಸರುಗಳು ಅಥವಾ ಹುಡುಕಾಟದ ಪದಗಳು ಎಂದಿಗೂ ಇಲ್ಲ
+feedback-intro-sending-usage = ಕ್ರ್ಯಾಶ್ ವರದಿಗಳು ಮತ್ತು ವಾರದ ಬಳಕೆಯ ಅಂಕಿಅಂಶಗಳನ್ನು ಕಳುಹಿಸಲಾಗುತ್ತದೆ. ಬೇರೆ ಏನೂ ಈ ಕಂಪ್ಯೂಟರ್‌ನಿಂದ ಹೊರಹೋಗುವುದಿಲ್ಲ.
+feedback-intro-usage-only = ವಾರದ ಬಳಕೆಯ ಅಂಕಿಅಂಶಗಳನ್ನು ಕಳುಹಿಸಲಾಗುತ್ತದೆ. ಕ್ರ್ಯಾಶ್ ವರದಿಗಳು ಈ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲೇ ಉಳಿಯುತ್ತವೆ.
+feedback-counted = ಏನನ್ನು ಎಣಿಸಲಾಗುತ್ತದೆ
+feedback-counted-detail = ಪ್ರತಿಯೊಂದೂ ಆ ವಾರಕ್ಕೆ ಹೌದು ಅಥವಾ ಇಲ್ಲ.
+feedback-counted-also = ಜೊತೆಗೆ: Katna ದ ಆವೃತ್ತಿ, Linux ಕುಟುಂಬ, ಡೆಸ್ಕ್‌ಟಾಪ್, ಪರದೆಯ ಸ್ಕೇಲ್ ಮತ್ತು ಎಷ್ಟು ಖಾತೆಗಳು (1, 2–3, 4+)
+feedback-see-report = ಈ ವಾರದ ವರದಿಯನ್ನು ನೋಡಿ
+feedback-hide-report = ಈ ವಾರದ ವರದಿಯನ್ನು ಮರೆಮಾಡಿ
+feedback-report-goes = ವಾರ ಮುಗಿದ ನಂತರ, { $date } ರಂದು, ಬಳಕೆಯ ಅಂಕಿಅಂಶಗಳು ಇನ್ನೂ ಆನ್ ಆಗಿದ್ದರೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ.
+feedback-install-id = ಇನ್‌ಸ್ಟಾಲ್ ID { $id }
+feedback-install-id-tooltip = ಯಾದೃಚ್ಛಿಕ, ಆದ್ದರಿಂದ ಒಂದು ಕಂಪ್ಯೂಟರ್ ಅನ್ನು ವಾರದಲ್ಲಿ ಎರಡು ಬಾರಿ ಎಣಿಸಲಾಗುವುದಿಲ್ಲ. ಇದು ಪ್ರತಿ 90 ದಿನಗಳಿಗೊಮ್ಮೆ ಬದಲಾಗುತ್ತದೆ ಮತ್ತು ಕ್ರ್ಯಾಶ್ ವರದಿಗಳು ಅಥವಾ ಪ್ರತಿಕ್ರಿಯೆಯೊಂದಿಗೆ ಎಂದಿಗೂ ಕಳುಹಿಸಲಾಗುವುದಿಲ್ಲ
+feedback-install-id-reset = ಮರುಹೊಂದಿಸಿ
+feedback-install-id-new = ಹೊಸ ಇನ್‌ಸ್ಟಾಲ್ ID ರಚಿಸಲಾಗಿದೆ.
+feedback-report-copied = ವರದಿಯನ್ನು ನಕಲಿಸಲಾಗಿದೆ.
+feedback-send-feedback = ಪ್ರತಿಕ್ರಿಯೆ
+feedback-send-feedback-detail = ಒಂದು ಸಮಸ್ಯೆ, ಒಂದು ಆಲೋಚನೆ, ಏನಾದರೂ.
+feedback-send-feedback-button = ಪ್ರತಿಕ್ರಿಯೆ ಕಳುಹಿಸಿ…
+usage-feature-search-options = ಹುಡುಕಾಟ ಆಯ್ಕೆಗಳು
+usage-feature-pins = ಪಿನ್ ಮಾಡಿದ ಮೇಲ್
+usage-feature-labels = ಲೇಬಲ್‌ಗಳು
+usage-feature-scheduled-send = ನಿಗದಿತ ಕಳುಹಿಸುವಿಕೆ
+usage-feature-snooze = ಸ್ನೂಜ್ ಮತ್ತು ಜ್ಞಾಪನೆಗಳು
+usage-feature-encrypted = ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಿದ ಮೇಲ್
+usage-feature-viewers = ಅಂತರ್ನಿರ್ಮಿತ ವೀಕ್ಷಕಗಳು
+usage-feature-calendar = ಕ್ಯಾಲೆಂಡರ್
+usage-feature-contacts = ಸಂಪರ್ಕಗಳು
+usage-feature-tasks-notes = ಕಾರ್ಯಗಳು ಮತ್ತು ಟಿಪ್ಪಣಿಗಳು
+usage-feature-phone-layout = ಫೋನ್-ಅಗಲದ ವಿನ್ಯಾಸ
+usage-feature-own-frame = Katna ದ ಸ್ವಂತ ವಿಂಡೋ ಫ್ರೇಮ್
+
+## Help > Send feedback
+
+send-feedback-title = ಪ್ರತಿಕ್ರಿಯೆ ಕಳುಹಿಸಿ
+send-feedback-about = ಯಾವುದರ ಕುರಿತು
+send-feedback-problem = ಸಮಸ್ಯೆ
+send-feedback-idea = ಆಲೋಚನೆ
+send-feedback-other = ಬೇರೆ ಏನಾದರೂ
+send-feedback-message = ನಿಮ್ಮ ಸಂದೇಶ
+send-feedback-message-placeholder = ಏನಾಯಿತು, ಅಥವಾ ನಿಮಗೆ ಏನು ಬೇಕು?
+send-feedback-reply = ಪ್ರತ್ಯುತ್ತರಕ್ಕಾಗಿ ಇಮೇಲ್ (ಐಚ್ಛಿಕ)
+send-feedback-reply-placeholder = you@example.org
+send-feedback-system = Katna ದ ಆವೃತ್ತಿ ಮತ್ತು ನಿಮ್ಮ ಸಿಸ್ಟಂ ಅನ್ನು ಸೇರಿಸಿ
+send-feedback-what-is-sent = ಏನನ್ನು ಕಳುಹಿಸಲಾಗುತ್ತದೆ
+send-feedback-show = ತೋರಿಸಿ
+send-feedback-hide = ಮರೆಮಾಡಿ
+send-feedback-where = Sentry (EU) ನಲ್ಲಿರುವ Katna ದ ಪ್ರತಿಕ್ರಿಯೆ ಇನ್‌ಬಾಕ್ಸ್‌ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ. IP ವಿಳಾಸ, ಖಾತೆಗಳು, ಸಂದೇಶಗಳು ಅಥವಾ ಇನ್‌ಸ್ಟಾಲ್ ID ಇಲ್ಲ.
+send-feedback-cancel = ರದ್ದುಮಾಡಿ
+send-feedback-send = ಕಳುಹಿಸಿ
+send-feedback-sending = ಕಳುಹಿಸಲಾಗುತ್ತಿದೆ…
+send-feedback-sent = ಪ್ರತಿಕ್ರಿಯೆ ಕಳುಹಿಸಲಾಗಿದೆ. ಧನ್ಯವಾದಗಳು
+send-feedback-failed = ಪ್ರತಿಕ್ರಿಯೆ ಕಳುಹಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: { $error }

@@ -4485,3 +4485,153 @@ Het ☰-menu en de taallijst schuiven nu binnen de accountkaart in in
 plaats van ineens te verschijnen, met rechts een knop terug om terug te
 gaan.
 """
+
+["2026-10-08-0618-app-card-edges"]
+title = "Elke app staat op dezelfde kaart"
+text = """
+Agenda, Contacten, Taken, Notities en Bestanden liggen nu op een kaart met
+dezelfde dunne rand en zachte schaduw als E-mail en Instellingen.
+"""
+
+["2026-10-08-0621-capture-keys-on-gnome"]
+title = "Sneltoetsen voor snel vastleggen op GNOME"
+text = """
+Meta+Alt+T voor een taak en Meta+Alt+N voor een notitie werken nu ook op
+GNOME. De eerste keer vraagt GNOME of Katna ze mag gebruiken, en je kunt
+de toetsen wijzigen in de instellingen van GNOME.
+"""
+
+["2026-10-08-0629-movable-markup-tools"]
+title = "Verplaats de annotatiehulpmiddelen"
+text = """
+Als je aantekeningen maakt op een pdf, sleep je de puntjes aan het einde
+van de hulpmiddelen om ze overal boven de pagina te zetten, zodat ze nooit
+bedekken waar je aan werkt. Dubbelklik op de puntjes om ze terug te zetten.
+"""
+
+["2026-10-08-0641-screen-readers"]
+title = "Werkt met schermlezers"
+text = """
+Orca en andere schermlezers kunnen Katna Mail nu voorlezen: de
+e-maillijst, de mappen, de geopende e-mail, knoppen, menu's, schakelaars
+en dialoogvensters.
+"""
+
+["2026-10-08-0641-send-feedback"]
+title = "Feedback versturen"
+text = """
+Help > Feedback versturen, ook in Snelle instellingen en Instellingen >
+Feedback, stuurt een probleem of idee rechtstreeks naar Katna. Wat er
+wordt verstuurd toont de exacte tekst voordat hij vertrekt, en een
+e-mailadres voor een antwoord is optioneel.
+"""
+
+["2026-10-08-0641-usage-statistics"]
+title = "Anonieme gebruiksstatistieken, als je wilt"
+text = """
+Instellingen > Feedback heeft een nieuwe schakelaar, uit tot je hem
+aanzet: één keer per week verstuurt hij welke functies je hebt gebruikt,
+ja of nee, zodat de meestgebruikte de meeste aandacht krijgen. De pagina
+toont alles wat er wordt geteld en het rapport van deze week.
+"""
+
+["2026-10-08-0655-more-results-on-server"]
+title = "Zoeken vindt oudere e-mail op de server"
+text = """
+Oudere e-mail wordt niet helemaal gedownload, dus zoeken kan de woorden
+ervan hier niet lezen. Na een korte pauze in het typen, of als je op Enter
+drukt, vraagt Katna het nu ook aan je mailserver en toont wat die vindt
+onder Meer resultaten op de server.
+"""
+
+["2026-10-08-0657-search-unspaced-scripts"]
+title = "Zoeken in het Thai, Lao, Khmer en Birmaans"
+text = """
+Zoeken vindt een woord in Thaise, Laotiaanse, Khmer- of Birmaanse e-mail,
+ook als de zin geen spaties tussen de woorden heeft.
+"""
+
+["2026-10-08-0704-wrap-between-words"]
+title = "Lange regels breken af tussen woorden"
+text = """
+Tekst in het Arabisch, Hindi en andere Indiase schriften, Thai, Lao,
+Khmer en Birmaans breekt nu af tussen woorden in plaats van midden in
+een woord, en Chinese en Japanse regels beginnen niet meer met een
+sluitteken.
+"""
+
+["2026-10-08-0755-press-fills-buttons"]
+title = "Klikken vult de hele knop"
+text = """
+Klikken op een chip of een omlijnde knop vult die nu tot aan de eigen
+rand en hoeken, in plaats van een kleinere pil erbinnen te tonen.
+"""
+
+["2026-10-08-0802-command-palette"]
+title = "Opdrachtpalet"
+text = """
+Druk op Ctrl+Shift+P en typ om een actie of instelling te vinden, en druk
+dan op Enter om hem uit te voeren. Elke actie toont haar sneltoets, en wat
+je het laatst gebruikte staat bovenaan.
+"""
+
+["2026-10-08-0641-encryption-finds-keys"]
+title = "Versleutelde e-mail vindt sleutels"
+text = """
+Met Versleutelen aan wordt een ontvanger zonder sleutel bij het versturen
+opgezocht in de sleutelmap van zijn eigen domein. E-mail die je verstuurt
+bevat je publieke sleutel (Autocrypt) als GnuPG er een voor je adres
+heeft, en sleutels die op dezelfde manier binnenkomen worden gebruikt om
+je antwoorden te versleutelen. Versleutelde OpenPGP-e-mail verbergt nu
+het onderwerp totdat hij wordt geopend.
+"""
+
+["2026-10-08-0737-key-details"]
+title = "Zie wie een bericht heeft ondertekend"
+text = """
+Klik op de handtekeningregel van een ondertekend of versleuteld bericht om
+de sleutel van de ondertekenaar te zien: naam, adres, vingerafdruk en
+datums, met Vingerafdruk kopiëren. Een bericht dat is ondertekend met een
+sleutel die je niet hebt, biedt Sleutel opzoeken, en een sleutel die
+iemand bijvoegt opent als Deze sleutel importeren?, met daarna Ongedaan
+maken.
+"""
+
+["2026-10-08-0759-sender-check-banners"]
+title = "Waarschuwingen bij vervalste e-mail"
+text = """
+Als een bericht niet door de afzendercontroles van je e-mailprovider komt,
+zegt een rode balk dat het mogelijk niet komt van wie het beweert, met
+Details, Lijkt veilig en Naar spam verplaatsen. De afbeeldingen blijven
+verborgen en links vragen het eerst voordat ze openen. Een afzender die
+door niets is bevestigd, krijgt een klein „?” op zijn afbeelding.
+"""
+
+["2026-10-08-0810-restart-after-update"]
+title = "Herstarten als Katna is bijgewerkt"
+text = """
+Wordt Katna bijgewerkt terwijl Katna Mail open is, dan stapt de
+achtergronddienst vanzelf over op de nieuwe versie zodra hij geen mail
+verstuurt. Een kleine pil onderaan de berichtenlijst biedt dan Herstarten
+aan, dat de nieuwe Katna Mail op zijn plek opent. × verbergt hem tot de
+volgende update.
+"""
+
+["2026-10-08-0813-calmer-mail-open"]
+title = "Een mail openen is rustiger"
+text = """
+Klikken op een mail in de lijst stuurt er geen golf meer overheen terwijl
+de mail opent. De golf verschijnt nog wel als je klikt op de mail die al
+open is.
+"""
+
+["2026-10-08-0824-safe-mode"]
+title = "Veilige modus als een update misgaat"
+text = """
+Katna kopieert je gegevens voordat een update ze wijzigt. Kan Katna na de
+update niet starten, dan opent het in de veilige modus: je e-mail blijft
+leesbaar, en een regel erboven laat je het opnieuw proberen of teruggaan
+naar de kopie van vóór de update. Wat er nu staat, wordt eerst in een map
+bewaard, dus er gaat niets verloren. Foutopsporingsrapport kopiëren, ook
+in Over Katna, verzamelt wat een foutmelding nodig heeft.
+"""

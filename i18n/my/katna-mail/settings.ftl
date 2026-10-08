@@ -173,6 +173,7 @@ settings-general-start-at-login = ဝင်ရောက်သည့်အခါ 
 settings-general-start-at-login-detail = ဝင်းဒိုးကို မဖွင့်ဘဲ မေးလ်ကို စင့်ခ်လုပ်ပြီး မေးလ်အသစ် အကြောင်းကြားချက်များနှင့် ဗန်း အိုင်ကွန်ကို ပြသည်
 settings-general-login-window = Katna Mail ဝင်းဒိုးကိုလည်း ဖွင့်ရန်
 settings-general-login-window-detail = ဝင်ရောက်သည့်အခါ ဝင်းဒိုးလည်း ပွင့်လာသည်
+settings-general-login-entry = ဝင်ရောက်သည့်အခါ စတင်သည် (ဆက်တင်များ > အထွေထွေ > ဒက်စ်တော့)
 settings-general-tray = Katna ကို စနစ်ဗန်းတွင် ပြရန်
 settings-general-tray-detail = မဖတ်ရသေး အရေအတွက်နှင့် မီနူးဖြင့်
 settings-general-tray-color = ဗန်း အိုင်ကွန်ကို အရောင်ဖြင့်

@@ -4529,3 +4529,155 @@ El menú ☰ y la lista de idiomas se deslizan ahora dentro de la tarjeta de
 la cuenta en lugar de aparecer de golpe, con un botón atrás a la derecha
 para volver.
 """
+
+["2026-10-08-0618-app-card-edges"]
+title = "Todas las aplicaciones van sobre la misma tarjeta"
+text = """
+Calendario, Contactos, Tareas, Notas y Archivos descansan ahora sobre una
+tarjeta con el mismo borde fino y la misma sombra suave que Correo y
+Ajustes.
+"""
+
+["2026-10-08-0621-capture-keys-on-gnome"]
+title = "Teclas de captura rápida en GNOME"
+text = """
+Meta+Alt+T para una tarea y Meta+Alt+N para una nota funcionan ahora
+también en GNOME. La primera vez, GNOME pregunta si Katna puede usarlas, y
+puedes cambiar las teclas en su Configuración.
+"""
+
+["2026-10-08-0629-movable-markup-tools"]
+title = "Mueve las herramientas de marcado"
+text = """
+Al marcar un PDF, arrastra los puntos del extremo de las herramientas para
+moverlas a cualquier lugar sobre la página, de modo que nunca tapen lo que
+estás marcando. Haz doble clic en los puntos para devolverlas a su sitio.
+"""
+
+["2026-10-08-0641-screen-readers"]
+title = "Funciona con lectores de pantalla"
+text = """
+Orca y otros lectores de pantalla pueden leer ahora Katna Mail: la lista
+de correo, las carpetas, el correo abierto, los botones, los menús, los
+interruptores y los cuadros de diálogo.
+"""
+
+["2026-10-08-0641-send-feedback"]
+title = "Enviar comentarios"
+text = """
+Ayuda > Enviar comentarios, también en Ajustes rápidos y en Ajustes >
+Comentarios de usuarios, envía un problema o una idea directamente a
+Katna. Qué se envía muestra el texto exacto antes de que salga, y el
+correo para una respuesta es opcional.
+"""
+
+["2026-10-08-0641-usage-statistics"]
+title = "Estadísticas de uso anónimas, si quieres"
+text = """
+Ajustes > Comentarios de usuarios tiene un interruptor nuevo, desactivado
+hasta que lo actives: una vez a la semana envía qué funciones usaste, sí o
+no, para que las más usadas reciban más atención. La página enumera todo
+lo que se cuenta y muestra el informe de esta semana.
+"""
+
+["2026-10-08-0655-more-results-on-server"]
+title = "La búsqueda encuentra correo antiguo en el servidor"
+text = """
+El correo antiguo no se descarga entero, así que la búsqueda no puede leer
+sus palabras aquí. Ahora, tras una breve pausa al escribir o al pulsar
+Intro, Katna pregunta también a tu servidor de correo y muestra lo que
+encuentra en Más resultados en el servidor.
+"""
+
+["2026-10-08-0657-search-unspaced-scripts"]
+title = "Búsqueda en tailandés, lao, jemer y birmano"
+text = """
+La búsqueda encuentra una palabra en correo en tailandés, lao, jemer o
+birmano aunque la frase no tenga espacios entre palabras.
+"""
+
+["2026-10-08-0704-wrap-between-words"]
+title = "Las líneas largas se cortan entre palabras"
+text = """
+El texto en árabe, hindi y otras escrituras de la India, tailandés, lao,
+jemer y birmano se ajusta ahora entre palabras en lugar de partir una
+palabra por la mitad, y las líneas en chino y japonés ya no empiezan con
+un signo de cierre.
+"""
+
+["2026-10-08-0755-press-fills-buttons"]
+title = "Las pulsaciones llenan todo el botón"
+text = """
+Al hacer clic en una etiqueta o en un botón con contorno, ahora se rellena
+hasta su propio borde y sus esquinas, en lugar de mostrar una píldora más
+pequeña dentro.
+"""
+
+["2026-10-08-0802-command-palette"]
+title = "Paleta de comandos"
+text = """
+Pulsa Ctrl+Shift+P y escribe para encontrar cualquier acción o ajuste, y
+luego pulsa Intro para ejecutarlo. Cada acción muestra su combinación de
+teclas, y lo último que usaste aparece arriba.
+"""
+
+["2026-10-08-0641-encryption-finds-keys"]
+title = "El correo cifrado encuentra las claves"
+text = """
+Con Cifrar activado, al enviar se busca la clave de cada destinatario que
+no la tenga en el directorio de claves de su propio dominio. El correo que
+envías lleva tu clave pública (Autocrypt) cuando GnuPG tiene una para tu
+dirección, y las claves que llegan del mismo modo se usan para cifrar tus
+respuestas. El correo OpenPGP cifrado oculta ahora su asunto hasta que se
+abre.
+"""
+
+["2026-10-08-0737-key-details"]
+title = "Mira quién firmó un mensaje"
+text = """
+Haz clic en la línea de la firma de un mensaje firmado o cifrado para ver
+la clave del firmante: nombre, dirección, huella digital y fechas, con
+Copiar huella digital. Un mensaje firmado con una clave que no tienes
+ofrece Buscar la clave, y una clave que alguien adjunta se abre como
+¿Importar esta clave?, con Deshacer después.
+"""
+
+["2026-10-08-0759-sender-check-banners"]
+title = "Avisos en el correo falsificado"
+text = """
+Cuando un mensaje no supera las comprobaciones de remitente de tu
+proveedor de correo, un aviso rojo indica que puede no venir de quien
+dice, con Detalles, Parece seguro y Mover a spam. Sus imágenes siguen
+ocultas y sus enlaces piden confirmación antes de abrirse. Un remitente
+que nada ha confirmado lleva un pequeño «?» en su foto.
+"""
+
+["2026-10-08-0810-restart-after-update"]
+title = "Reinicia cuando Katna se actualice"
+text = """
+Cuando Katna se actualiza con Katna Mail abierto, el servicio en segundo
+plano pasa solo a la nueva versión en cuanto no está enviando correo. Una
+pequeña píldora al final de la lista de correos te ofrece Reiniciar, que
+abre la nueva versión de Katna Mail en su lugar. × la oculta hasta la
+próxima actualización.
+"""
+
+["2026-10-08-0813-calmer-mail-open"]
+title = "Abrir un correo es más tranquilo"
+text = """
+Al hacer clic en un correo de la lista ya no aparece una onda mientras se
+abre. La onda sigue apareciendo cuando haces clic en el correo que ya está
+abierto.
+"""
+
+["2026-10-08-0824-safe-mode"]
+title = "Modo seguro si una actualización sale mal"
+text = """
+Katna copia tus datos antes de que una actualización los cambie. Si tras
+la actualización Katna no puede iniciarse, se abre en modo seguro: tu
+correo sigue siendo legible, y una línea encima te permite reintentar o
+volver a la copia de antes de la actualización. Lo que hay ahora se guarda
+antes en una carpeta, así que no se pierde nada. Copiar informe de
+depuración, también en Acerca de, reúne lo que necesita un informe de
+errores.
+"""

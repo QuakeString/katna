@@ -53,6 +53,7 @@ folder-waiting-short = Wachtend
 folder-reminders = Herinneringen
 folder-outbox = Postvak UIT
 folder-activity = Activiteit
+folder-not-on-account = Dit account heeft zo’n map niet.
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 
