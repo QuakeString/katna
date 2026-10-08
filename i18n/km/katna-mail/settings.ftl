@@ -173,6 +173,7 @@ settings-general-start-at-login = ចាប់ផ្ដើម Katna ពេលច
 settings-general-start-at-login-detail = ធ្វើសមកាលកម្មសំបុត្រ ហើយបង្ហាញការជូនដំណឹងសំបុត្រថ្មី និងរូបតំណាងថាស ដោយមិនបើកបង្អួច
 settings-general-login-window = បើកបង្អួច Katna Mail ផងដែរ
 settings-general-login-window-detail = បង្អួចក៏បើកពេលចូលគណនីដែរ
+settings-general-login-entry = ចាប់ផ្ដើមពេលចូលគណនី (ការកំណត់ > ទូទៅ > ផ្ទៃតុ)
 settings-general-tray = បង្ហាញ Katna ក្នុងថាសប្រព័ន្ធ
 settings-general-tray-detail = ជាមួយចំនួនមិនទាន់អាន និងម៉ឺនុយ
 settings-general-tray-color = រូបតំណាងថាសជាពណ៌

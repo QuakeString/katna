@@ -110,6 +110,7 @@ calendar-add-meet = Google Meet ဗီဒီယိုကွန်ဖရင့်
 calendar-add-teams = Teams အစည်းအဝေး ထည့်ရန်
 calendar-has-call = ဗီဒီယိုခေါ်ဆိုမှု ထည့်ပြီးပါပြီ
 calendar-weekday-day = { $weekday }၊ { $day }
+calendar-schedule-day = { $weekday }၊ { $month }
 calendar-all-day-box = တစ်ရက်လုံး
 calendar-more-options = နောက်ထပ် ရွေးစရာများ
 calendar-save = သိမ်းရန်

@@ -59,3 +59,6 @@ service-details-title = สาเหตุที่บริการเริ�
 service-details-body = คัดลอกข้อความนี้แล้วส่งไปพร้อมรายงานของคุณ ไม่มีอีเมลหรือรหัสผ่านอยู่ในนี้
 service-details-copy = คัดลอก
 service-details-close = ปิด
+service-not-running = บริการเบื้องหลังของ Katna ไม่ได้ทำงานอยู่
+service-no-answer = บริการเบื้องหลังของ Katna ไม่ตอบสนอง: { $error }
+service-no-session = ไม่มีเซสชัน D-Bus: { $error }

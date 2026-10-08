@@ -6,6 +6,7 @@
 
 about-tooltip = អំពី Katna
 about-tagline = សំបុត្រ និងប្រតិទិនសម្រាប់ផ្ទៃតុ Linux
+about-version = Katna Mail { $version }
 about-copy-version = ចម្លងព័ត៌មានកំណែ
 about-version-copied = បានចម្លង
 about-version-built = បានបង្កើត៖ { $date }

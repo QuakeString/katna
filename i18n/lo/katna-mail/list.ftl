@@ -38,6 +38,8 @@ list-range-about = { $first }–{ $last } ຈາກປະມານ { $total }
 list-results = ຜົນການຊອກຫາ “{ $query }”
 list-results-corrected = ກຳລັງສະແດງຜົນການຊອກຫາ “{ $query }”
 list-search-instead = ຊອກຫາ “{ $query }” ແທນ
+list-search-no-index = ການຊອກຫາຍັງບໍ່ພ້ອມ: ດັດຊະນີຍັງບໍ່ໄດ້ຖືກສ້າງ.
+list-search-not-ready = ການຊອກຫາຍັງບໍ່ພ້ອມ: { $error }
 list-files-more = +{ $count }
 list-replied = ທ່ານຕອບກັບແລ້ວ
 
@@ -193,9 +195,14 @@ list-empty-waiting = ບໍ່ມີຫຍັງທີ່ລໍຖ້າກາ�
 list-empty-reminders = ບໍ່ມີການແຈ້ງເຕືອນ. ກົດ H ຢູ່ອີເມວເພື່ອເພີ່ມ.
 list-first-sync = ກຳລັງດຶງອີເມວຂອງທ່ານ…
 list-first-sync-detail = ອີເມວຈະສະແດງຢູ່ບ່ອນນີ້ເມື່ອມາຮອດ.
+list-store-unreadable = ບໍ່ສາມາດເປີດບ່ອນເກັບອີເມວໄດ້
 
 ## Mail list: lines
 
+row-no-subject = (ບໍ່ມີຫົວຂໍ້)
+row-unknown-sender = (ບໍ່ຮູ້ຈັກຜູ້ສົ່ງ)
+row-to = ເຖິງ:
+row-no-recipients = (ບໍ່ມີຜູ້ຮັບ)
 row-removed = ຂໍ້ຄວາມນີ້ຖືກລຶບອອກແລ້ວ.
 row-starred = ຕິດດາວແລ້ວ
 row-not-starred = ບໍ່ໄດ້ຕິດດາວ
@@ -275,6 +282,11 @@ menu-make-rule = ສ້າງກົດ…
 
 ## Snackbar after an action on mail in the list
 
+toast-key-imported = ນຳເຂົ້າກະແຈແລ້ວ
+toast-key-updated = ທ່ານມີກະແຈນີ້ຢູ່ແລ້ວ; ຕອນນີ້ມັນເປັນປັດຈຸບັນແລ້ວ
+toast-key-removed = ລຶບກະແຈແລ້ວ
+toast-key-not-removed = ບໍ່ສາມາດລຶບກະແຈໄດ້
+toast-fingerprint-copied = ສຳເນົາລາຍນິ້ວມືແລ້ວ
 toast-archived = { $kind ->
     [conversation] ຈັດເກັບການສົນທະນາ { $count } ລາຍການແລ້ວ.
    *[message] ຈັດເກັບຂໍ້ຄວາມ { $count } ລາຍການແລ້ວ.

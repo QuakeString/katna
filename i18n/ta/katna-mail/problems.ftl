@@ -65,3 +65,6 @@ service-details-title = சேவை ஏன் தொடங்கவில்ல
 service-details-body = இதை நகலெடுத்து உங்கள் புகாருடன் அனுப்புங்கள். இதில் அஞ்சலோ கடவுச்சொற்களோ இல்லை.
 service-details-copy = நகலெடு
 service-details-close = மூடு
+service-not-running = Katna பின்னணிச் சேவை இயங்கவில்லை.
+service-no-answer = Katna பின்னணிச் சேவை பதிலளிக்கவில்லை: { $error }
+service-no-session = D-Bus அமர்வு இல்லை: { $error }

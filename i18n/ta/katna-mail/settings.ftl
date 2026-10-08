@@ -179,6 +179,7 @@ settings-general-start-at-login = உள்நுழையும்போது 
 settings-general-start-at-login-detail = சாளரத்தைத் திறக்காமலேயே மெயிலை ஒத்திசைத்து, புதிய மெயில் அறிவிப்புகளையும் ட்ரே ஐகானையும் காட்டும்
 settings-general-login-window = Katna Mail சாளரத்தையும் திற
 settings-general-login-window-detail = உள்நுழையும்போது சாளரமும் திறக்கும்
+settings-general-login-entry = உள்நுழையும்போது தொடங்கப்பட்டது (அமைப்புகள் > பொது > டெஸ்க்டாப்)
 settings-general-tray = சிஸ்டம் ட்ரேயில் Katna ஐக் காட்டு
 settings-general-tray-detail = படிக்காதவற்றின் எண்ணிக்கையுடனும் ஒரு மெனுவுடனும்
 settings-general-tray-color = வண்ணத்தில் ட்ரே ஐகான்
