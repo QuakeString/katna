@@ -4674,3 +4674,13 @@ destra e Da destra a sinistra nella barra di formattazione (o Ctrl+Shift+X)
 girano un paragrafo, e una riga che inizi in arabo o in ebraico si gira da
 sola. Il messaggio parte così come l’hai scritto.
 """
+
+["2026-10-08-1014-right-to-left"]
+title = "Katna Mail si specchia per arabo, ebraico, persiano e urdu"
+text = """
+In arabo, ebraico, persiano e urdu l’intera finestra si capovolge: la barra
+delle app e le cartelle a destra, i menu che si aprono verso sinistra,
+frecce e tasti freccia nel verso della lettura. Nomi, indirizzi e
+scorciatoie in inglese mantengono il proprio ordine, e le date in persiano
+seguono il calendario egiriano solare.
+"""

@@ -4653,3 +4653,12 @@ a direita e Da direita para a esquerda da barra de formatação (ou
 Ctrl+Shift+X) viram um parágrafo, e uma linha que você começa em árabe ou
 hebraico vira sozinha. A mensagem sai do jeito que você escreveu.
 """
+
+["2026-10-08-1014-right-to-left"]
+title = "O Katna Mail se espelha para árabe, hebraico, persa e urdu"
+text = """
+Em árabe, hebraico, persa e urdu a janela inteira se inverte: a barra de
+apps e as pastas à direita, os menus abrindo para a esquerda, setas e teclas
+de seta no sentido da leitura. Nomes, endereços e atalhos em inglês mantêm
+a própria ordem, e as datas em persa seguem o calendário hegírico solar.
+"""
