@@ -4415,3 +4415,69 @@ tiga hari kembali ke bahagian atas Peti Masuk dengan “Dihantar 3 hari yang lal
 Susuli?”. Klik padanya untuk menyusuli, atau x untuk mengetepikannya.
 Tetapan > Peti Masuk mematikannya.
 """
+
+["2026-10-08-0128-settings-menu-tint"]
+title = "Tetapan mempunyai menunya sendiri"
+text = """
+Senarai halaman di sebelah kiri Tetapan mempunyai rona samar dari atas ke
+bawah, supaya ia terpisah daripada halaman yang sedang anda baca.
+"""
+
+["2026-10-08-0136-schedule-pick-in-place"]
+title = "Jadualkan penghantaran memilih tarikh di tempatnya"
+text = """
+Pilih tarikh & masa dalam Jadualkan penghantaran dan Susuli jika tiada
+balasan kini menggelongsor masuk ke dalam menu tempat anda membukanya,
+seperti Tunda, dan bukan lagi kotak di atas mesej. Anak panah kembali atau
+Esc membawa anda semula ke senarai masa.
+"""
+
+["2026-10-08-0141-tray-icon-follows-colors-after-login"]
+title = "Ikon dulang sepadan dengan panel anda sejak log masuk"
+text = """
+Pada KDE Plasma, ikon dulang satu warna kini mengambil warna panel anda
+sejurus selepas log masuk dan mengikut setiap pertukaran antara cerah dan
+gelap, tanpa perlu memulakan semula Katna.
+"""
+
+["2026-10-08-0153-search-attachment-types"]
+title = "Cari lukisan dan gambar"
+text = """
+Pilihan carian mempunyai dua jenis lampiran baharu: DWG untuk lukisan
+AutoCAD (dan DXF), dan Imej untuk foto dan gambar. XLSX kini turut menemui
+fail XLS lama, dan PPTX menemui PPT, jadi setiap satu hanya ada satu butang.
+"""
+
+["2026-10-08-0157-menus-one-of-each-pair"]
+title = "Menu hanya menunjukkan yang berkenaan"
+text = """
+Menu Lagi tidak lagi menyenaraikan kedua-dua pilihan sesuatu pasangan. Mel
+yang sudah dibaca menunjukkan Tandai sebagai belum dibaca, mel berbintang
+Alih keluar bintang, mel penting Tandai sebagai tidak penting, mel yang
+disemat Nyahsemat. Apabila beberapa mel yang berbeza dipilih, anda mendapat
+tindakan yang menjadikan semuanya sama, di sini dan dalam menu klik kanan.
+"""
+
+["2026-10-08-0210-settings-card-edge"]
+title = "Tetapan terletak pada kad"
+text = """
+Dalam warna cerah, halaman Tetapan kini mempunyai garis tepi nipis dan
+bayang lembut yang sama seperti senarai mel, supaya ia terpisah daripada
+tetingkap di belakangnya.
+"""
+
+["2026-10-08-0212-steady-app-buttons"]
+title = "Butang apl yang lebih lancar"
+text = """
+Mengklik apl pada rel kiri, atau pada bar di bahagian bawah pada telefon,
+tidak lagi bergegar: riak tekanan dimainkan hingga habis dan pil yang
+dipilih membesar dari tengah sementara saiz butang kekal sama.
+"""
+
+["2026-10-08-0232-account-card-pages"]
+title = "Menu menggelongsor dalam kad akaun"
+text = """
+Menu ☰ dan senarai bahasa kini menggelongsor masuk di dalam kad akaun dan
+bukan lagi melompat masuk, dengan butang kembali di sebelah kanan untuk
+kembali.
+"""

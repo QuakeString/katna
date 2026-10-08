@@ -4369,3 +4369,67 @@ dalam tiga hari kembali ke bagian atas Kotak Masuk dengan “Dikirim 3 hari yang
 lalu. Tindak lanjuti?”. Klik untuk menindaklanjuti, atau x untuk
 menyingkirkannya. Matikan di Setelan > Kotak Masuk.
 """
+
+["2026-10-08-0128-settings-menu-tint"]
+title = "Setelan punya menu sendiri"
+text = """
+Daftar halaman di sebelah kiri Setelan kini punya rona tipis dari atas ke
+bawah, sehingga terpisah dari halaman yang sedang Anda baca.
+"""
+
+["2026-10-08-0136-schedule-pick-in-place"]
+title = "Jadwalkan pengiriman memilih tanggal di tempat"
+text = """
+Pilih tanggal & waktu di Jadwalkan pengiriman dan Tindak lanjuti jika tidak
+ada balasan kini bergeser masuk ke menu tempat Anda membukanya, seperti
+Tunda, alih-alih kotak di atas email. Panah kembali atau Esc membawa Anda
+ke daftar waktu.
+"""
+
+["2026-10-08-0141-tray-icon-follows-colors-after-login"]
+title = "Ikon baki cocok dengan panel sejak login"
+text = """
+Di KDE Plasma, ikon baki satu warna kini mengikuti warna panel Anda tepat
+setelah login dan mengikuti setiap peralihan antara terang dan gelap, tanpa
+memulai ulang Katna.
+"""
+
+["2026-10-08-0153-search-attachment-types"]
+title = "Cari gambar teknik dan foto"
+text = """
+Opsi penelusuran punya dua jenis lampiran baru: DWG untuk gambar AutoCAD (dan
+DXF), dan Gambar untuk foto dan gambar. XLSX kini juga menemukan file XLS
+lama, dan PPTX menemukan PPT, jadi masing-masing cukup satu tombol.
+"""
+
+["2026-10-08-0157-menus-one-of-each-pair"]
+title = "Menu hanya menampilkan yang berlaku"
+text = """
+Menu Lainnya tidak lagi mencantumkan kedua bagian dari satu pasangan. Email
+yang sudah dibaca menampilkan Tandai belum dibaca, email berbintang Hapus
+bintang, email penting Tandai sebagai tidak penting, email yang disematkan
+Lepas sematan. Jika beberapa email yang dipilih berbeda, Anda mendapat
+tindakan yang membuat semuanya sama, di sini dan di menu klik kanan.
+"""
+
+["2026-10-08-0210-settings-card-edge"]
+title = "Setelan berada di atas kartu"
+text = """
+Dalam warna terang, halaman Setelan kini punya tepi tipis dan bayangan lembut
+yang sama dengan daftar email, sehingga terpisah dari jendela di belakangnya.
+"""
+
+["2026-10-08-0212-steady-app-buttons"]
+title = "Tombol aplikasi lebih mulus"
+text = """
+Mengklik aplikasi di bilah kiri, atau di bilah bawah pada ponsel, tidak lagi
+membuatnya bergetar: gelombang tekan berjalan sampai selesai dan penanda
+pilihan tumbuh dari tengah sementara tombol tetap berukuran sama.
+"""
+
+["2026-10-08-0232-account-card-pages"]
+title = "Menu bergeser di dalam kartu akun"
+text = """
+Menu ☰ dan daftar bahasa kini bergeser masuk di dalam kartu akun alih-alih
+langsung muncul, dengan tombol kembali di kanan untuk kembali.
+"""

@@ -14,6 +14,7 @@ search-without = 不包含
 search-date-within = 日期范围
 search-has-attachment = 有附件
 search-attachment-custom = 自定义
+search-attachment-image = 图片
 search-attachment-custom-hint = 输入扩展名，例如 png，然后按空格键
 search-attachment-remove = 移除
 search-clear-filter = 清除筛选
