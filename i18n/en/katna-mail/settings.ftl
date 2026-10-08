@@ -206,6 +206,14 @@ sound-default = Notification
 # The row about updates of Katna (only in packages that update themselves).
 settings-general-updates = Updates
 settings-general-updates-detail = Install a new version from About, or from the notification that it is ready.
+settings-update-stable = Stable
+settings-update-beta = Beta
+settings-update-nightly = Nightly
+settings-update-stable-detail = Tested releases, a few times a year. Best for most people.
+settings-update-beta-detail = The next release early, every few weeks. It may have bugs; please report them.
+settings-update-nightly-detail = Every change as soon as it is made. For testing; things may break.
+settings-general-check-updates = Check for updates automatically
+settings-general-check-updates-detail = Every hour and after waking. Off, Katna looks only when you press Check for Updates.
 settings-general-auto-download = Download updates automatically
 settings-general-auto-download-detail = Never on a metered connection. Nothing is installed until you press Update.
 settings-general-reset-cache = Reset cache

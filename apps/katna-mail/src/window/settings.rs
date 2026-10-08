@@ -177,6 +177,10 @@ pub(super) enum Change {
     NewMailNotices(bool),
     /// New versions of Katna downloaded as soon as the daemon finds them.
     AutoDownloadUpdates(bool),
+    /// Look for new versions every hour (`updates.check`).
+    CheckUpdates(bool),
+    /// The builds this install takes (`updates.channel`).
+    UpdateChannel(katna_core::update::Channel),
     PlainText(bool),
     SpellCheck(bool),
     /// The interface's language, a tag; empty follows the desktop.
@@ -759,6 +763,20 @@ impl MailWindow {
                     return;
                 }
                 self.config.sync.offline_days = days;
+                self.save_config();
+                self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
+                cx.notify();
+                return;
+            }
+            Change::CheckUpdates(on) => {
+                self.config.updates.check = on;
+                self.save_config();
+                self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
+                cx.notify();
+                return;
+            }
+            Change::UpdateChannel(channel) => {
+                self.config.updates.channel = Some(channel);
                 self.save_config();
                 self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
                 cx.notify();

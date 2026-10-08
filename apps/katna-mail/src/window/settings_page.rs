@@ -890,19 +890,11 @@ impl MailWindow {
                 self.offline_choice(th, cx),
                 th,
             ))
-            .when(katna_core::update::Package::current().downloads(), |d| {
+            .when(katna_core::update::Package::current().updates(), |d| {
                 d.child(self.row(
                     tr!("settings-general-updates"),
                     Some(&tr!("settings-general-updates-detail")),
-                    self.switch_row(
-                        "page-auto-download-updates",
-                        tr!("settings-general-auto-download"),
-                        tr!("settings-general-auto-download-detail"),
-                        self.config.updates.auto_download,
-                        Change::AutoDownloadUpdates(!self.config.updates.auto_download),
-                        th,
-                        cx,
-                    ),
+                    self.updates_controls(th, cx),
                     th,
                 ))
             })
@@ -1341,6 +1333,81 @@ impl MailWindow {
             .flex_wrap()
             .gap(px(6.0))
             .children(chips)
+            .into_any_element()
+    }
+
+    /// The update channel, then whether Katna looks for and downloads
+    /// new versions by itself.
+    fn updates_controls(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        use katna_core::update::{Channel, Package, VERSION};
+        let package = Package::current();
+        let now = Channel::of(package, VERSION, self.config.updates.channel);
+        let chips =
+            [
+                (
+                    Channel::Stable,
+                    "update-stable",
+                    tr!("settings-update-stable"),
+                ),
+                (Channel::Beta, "update-beta", tr!("settings-update-beta")),
+                (
+                    Channel::Nightly,
+                    "update-nightly",
+                    tr!("settings-update-nightly"),
+                ),
+            ]
+            .map(|(channel, id, text)| {
+                self.page_control(chip(id, text, channel == now, th), th, cx)
+                    .on_click(cx.listener(move |this, _, _, cx| {
+                        this.apply(Change::UpdateChannel(channel), cx)
+                    }))
+            });
+        let about = match now {
+            Channel::Stable => tr!("settings-update-stable-detail"),
+            Channel::Beta => tr!("settings-update-beta-detail"),
+            Channel::Nightly => tr!("settings-update-nightly-detail"),
+        };
+        div()
+            .flex()
+            .flex_col()
+            .gap(px(space::S2))
+            .child(
+                div()
+                    .px(px(space::S3))
+                    .flex()
+                    .flex_row()
+                    .flex_wrap()
+                    .gap(px(space::S2 + space::S1))
+                    .children(chips),
+            )
+            .child(
+                div()
+                    .px(px(space::S3))
+                    .pb(px(space::S2))
+                    .text_size(px(katna_ui::tokens::text::SMALL))
+                    .text_color(rgba(th.text_dim))
+                    .child(about),
+            )
+            .child(self.switch_row(
+                "page-check-updates",
+                tr!("settings-general-check-updates"),
+                tr!("settings-general-check-updates-detail"),
+                self.config.updates.check,
+                Change::CheckUpdates(!self.config.updates.check),
+                th,
+                cx,
+            ))
+            .when(package.downloads(), |d| {
+                d.child(self.switch_row(
+                    "page-auto-download-updates",
+                    tr!("settings-general-auto-download"),
+                    tr!("settings-general-auto-download-detail"),
+                    self.config.updates.auto_download,
+                    Change::AutoDownloadUpdates(!self.config.updates.auto_download),
+                    th,
+                    cx,
+                ))
+            })
             .into_any_element()
     }
 
