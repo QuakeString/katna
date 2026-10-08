@@ -1648,6 +1648,10 @@ pub struct Shortcuts {
     /// `reply`, ...): each a list of keystrokes such as `ctrl-shift-a` or
     /// `g i`. An empty list turns the shortcut off.
     pub keys: BTreeMap<String, Vec<String>>,
+    /// What was last run from the command palette, the latest first: a
+    /// shortcut's name or a setting's key.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub recent: Vec<String>,
 }
 
 impl Default for Shortcuts {
@@ -1656,6 +1660,7 @@ impl Default for Shortcuts {
             single_keys: true,
             set: ShortcutSet::Katna,
             keys: BTreeMap::new(),
+            recent: Vec::new(),
         }
     }
 }

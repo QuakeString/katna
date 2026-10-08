@@ -2445,6 +2445,20 @@ Gemini or confidential mode):
   letters still work there. Whenever
   the keys lose their place (a message sent, a menu or dialog gone) they
   come back to the list, or to the Settings page while it is open.
+- **Command palette.** Ctrl+Shift+P (as in VS Code and Zed; Ctrl+Alt+I,
+  KDE's Find Action, too) or Help → Command Palette opens one box under
+  the top bar that finds any action or setting by name
+  (`window/palette.rs`). Actions come from the shortcut list
+  (`keymap::SHORTCUTS`, less the keys for moving about), each with the
+  keys it has now, so the palette teaches them; settings come from the
+  Settings search's rows and tabs (`settings_search::candidates`) and open
+  their row as a Settings search result does. The whole query at a word's
+  start ranks first, then anywhere in a name, then every word, then the
+  letters in order ("mku" finds Mark as unread). Up, Down, Enter and Esc
+  work as in any picker. An action runs where the keys were before the
+  palette opened. With nothing typed it lists Recent (the last five run,
+  kept in `[shortcuts] recent`), then every action. No veil, as for the
+  other dialogs.
 - **Screen readers.** GPUI hands an AccessKit tree to AT-SPI (Orca) and
   UI Automation (NVDA, Narrator). Only elements with an id and a role
   show up, so the shared widgets set both: `widgets::Tip::tip` labels an
