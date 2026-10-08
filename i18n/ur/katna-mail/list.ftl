@@ -433,6 +433,11 @@ drag-mail = { $kind ->
 }
 menu-find-from = { $name } کی ای میلز تلاش کریں
 menu-make-rule = اصول بنائیں…
+toast-key-imported = کلید امپورٹ ہو گئی
+toast-key-updated = یہ کلید آپ کے پاس پہلے سے تھی؛ اب یہ تازہ ترین ہے
+toast-key-removed = کلید ہٹا دی گئی
+toast-key-not-removed = کلید ہٹائی نہیں جا سکی
+toast-fingerprint-copied = فنگر پرنٹ کاپی ہو گیا
 
 ## Snackbar after an action on mail in the list
 

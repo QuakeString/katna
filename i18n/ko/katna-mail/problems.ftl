@@ -62,3 +62,25 @@ service-details-close = 닫기
 service-not-running = Katna 백그라운드 서비스가 실행 중이 아닙니다.
 service-no-answer = Katna 백그라운드 서비스가 응답하지 않았습니다: { $error }
 service-no-session = D-Bus 세션이 없습니다: { $error }
+
+## Safe mode: an update left Katna's background service unable to start
+
+safe-line = 업데이트에 문제가 있어 Katna가 안전 모드로 실행 중이며, 메일이 동기화되지 않습니다.
+safe-try-again = 다시 시도
+safe-restore = 복원
+safe-restoring = { $when }의 데이터를 복원하는 중…
+safe-restored = { $when }의 데이터를 복원했습니다. 이전에 있던 데이터는 폴더에 보관되어 있습니다.
+safe-show-folder = 폴더 표시
+safe-restore-failed = 데이터를 복원할 수 없습니다: { $error }
+safe-restore-title = 업데이트 전의 데이터로 복원할까요?
+safe-restore-body = Katna가 선택한 사본으로 돌아갑니다. 그 이후에 도착한 메일은 계정에서 다시 다운로드됩니다.
+safe-restore-none = 아직 사본이 없습니다. Katna는 업데이트가 데이터를 변경하기 전마다 사본을 만듭니다.
+safe-restore-keep = 보내지 않은 메일, 임시보관 메일, 아직 동기화되지 않은 변경 사항을 포함한 현재 데이터는 먼저 폴더에 보관되므로 아무것도 잃지 않습니다.
+safe-restore-cancel = 취소
+safe-restore-mail = 메일
+safe-restore-pim = 계정 및 연락처
+safe-restore-blobs = 첨부파일
+safe-report-title = 디버그 보고서
+safe-report-body = 이 내용을 복사하여 버그 신고에 첨부하세요. 메일, 주소, 비밀번호는 포함되어 있지 않습니다.
+safe-report-restore = 복원…
+safe-report-copied = 디버그 보고서를 복사했습니다

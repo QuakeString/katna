@@ -396,8 +396,10 @@ jobs:
           dnf install -y ./katna-x86_64.rpm
           dnf install -y --setopt=install_weak_deps=False \
             dbus-daemon gnome-keyring ImageMagick xwininfo xorg-x11-server-Xvfb \
-            mesa-vulkan-drivers mesa-dri-drivers dejavu-sans-fonts procps-ng
+            mesa-vulkan-drivers mesa-dri-drivers dejavu-sans-fonts procps-ng appstream
           rpm -ql katna
+          # Katna Mail's entry in Discover and GNOME Software.
+          appstreamcli validate --no-net $(rpm -ql katna | grep "/metainfo/")
           useradd --create-home tester
           cp ci/linux-package-test.sh demo-data.tar.gz /home/tester/
           chown tester: /home/tester/*
@@ -462,6 +464,7 @@ jobs:
           apt-get update
           DEBIAN_FRONTEND=noninteractive apt-get install -y ./katna_amd64.deb
           dpkg -L katna | grep -x /usr/bin/katna-mail
+          dpkg -L katna | grep -q '^/usr/share/metainfo/.*\.metainfo\.xml$'
           # Every library the programs link to is there.
           ! ldd /usr/bin/katna-mail /usr/bin/katna-daemon /usr/bin/katnactl | grep "not found"
           DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \

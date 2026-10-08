@@ -431,6 +431,11 @@ drag-mail = { $kind ->
 }
 menu-find-from = { $name } tarafından gönderilen e-postaları bul
 menu-make-rule = Kural oluştur…
+toast-key-imported = Anahtar içe aktarıldı
+toast-key-updated = Bu anahtar sizde zaten vardı; artık güncel
+toast-key-removed = Anahtar kaldırıldı
+toast-key-not-removed = Anahtar kaldırılamadı
+toast-fingerprint-copied = Parmak izi kopyalandı
 
 ## Snackbar after an action on mail in the list
 

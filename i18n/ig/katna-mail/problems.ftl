@@ -63,3 +63,25 @@ service-details-close = Mechie
 service-not-running = Ọrụ azụ Katna anaghị arụ ọrụ.
 service-no-answer = Ọrụ azụ Katna azaghị: { $error }
 service-no-session = Enweghị nnọkọ D-Bus: { $error }
+
+## Safe mode: an update left Katna's background service unable to start
+
+safe-line = Katna nọ na ọnọdụ nchekwa mgbe nsogbu mere n'imelite ahụ, ya mere ozi anaghị emekọrịta.
+safe-try-again = Nwaa ọzọ
+safe-restore = Weghachi
+safe-restoring = Na-eweghachi data gị site na { $when }…
+safe-restored = Eweghachila data gị site na { $when }. Ihe dị na mbụ ka edobere na folda.
+safe-show-folder = Gosi folda
+safe-restore-failed = Enweghị ike iweghachi data gị: { $error }
+safe-restore-title = Weghachi data gị site na tupu imelite?
+safe-restore-body = Katna na-alaghachi na mbipụta ị họrọ. Ozi bịarutere mgbe ahụ gasịrị na-ebudata ọzọ site n'akaụntụ gị.
+safe-restore-none = Enweghị mbipụta ọ bụla ugbu a. Katna na-eme otu tupu imelite ọ bụla agbanwee data gị.
+safe-restore-keep = Ihe dị ugbu a, gụnyere ozi ezipụbeghị, ndebiri na mgbanwe ndị emekọrịtabeghị, ka a na-ebu ụzọ debe na folda, ya mere ọ dịghị ihe na-efu.
+safe-restore-cancel = Kagbuo
+safe-restore-mail = Ozi
+safe-restore-pim = Akaụntụ na kọntaktị
+safe-restore-blobs = Mgbakwunye
+safe-report-title = Akụkọ nchọpụta nsogbu
+safe-report-body = Detuo nke a ma tinye ya n'akụkọ nsogbu gị. Ọ nweghị ozi, adreesị ma ọ bụ okwuntughe n'ime ya.
+safe-report-restore = Weghachi…
+safe-report-copied = Edetuola akụkọ nchọpụta nsogbu

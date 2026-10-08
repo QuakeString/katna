@@ -137,6 +137,43 @@ key-card-not-found = Achọtaghị igodo
 key-card-not-found-detail = { $domain } anaghị ebipụta igodo maka adreesị a. Rịọ onye zitere ya ka o zitere gị nke ya.
 key-card-not-kept = Enweghị ike iji igodo achọtara.
 key-card-failed = Enweghị ike ịnweta igodo ahụ
+
+## Sender checks: the banner on mail that failed the checks the user's mail
+## provider ran on its sender (DMARC, DKIM, SPF), and the "?" on the picture
+## of a sender nothing confirmed
+
+sender-failed-title = Nke a nwere ike ọ bụghị site na { $domain }
+sender-failed-body = O dabaghị na nlele onye zitere nke { $provider }. Kpachara anya na njikọ, mgbakwunye na azịza.
+sender-provider-unknown = onye na-enye gị ozi
+sender-details = Nkọwa
+sender-details-hide = Zoo nkọwa
+sender-looks-safe = O yiri ihe dị mma
+sender-move-to-spam = Bugharịa gaa Spam
+sender-checked-by = { $provider } nyochara ya
+sender-checked-by-server = { $provider } nyochara ya ({ $server })
+sender-dmarc = Ngalaba onye zitere (DMARC)
+sender-dkim = Mbinye aka (DKIM)
+sender-spf = Sava na-ezipụ (SPF)
+sender-result-pass = Ọ gafere
+sender-result-fail = Ọ dabaghị
+sender-result-unsure = Ejighị n'aka
+sender-result-none = Ọ dịghị
+sender-result-missing = Enyochabeghị
+sender-dmarc-pass = { $domain } kwadoro onye zitere nke a.
+sender-dmarc-fail = Ozi a adabaghị n'otú { $domain } si kwuo na a na-ezipụ ozi ya.
+sender-dmarc-none = { $domain } anaghị ebipụta iwu ọ bụla maka ozi ya.
+sender-dkim-pass = { $domain } bịanyere aka na ya.
+sender-dkim-fail = Mbinye aka si na { $domain } adabaghị n'ozi ahụ.
+sender-dkim-none = E bịanyeghị aka n'ozi a.
+sender-spf-pass = E zitere ya site na sava { $domain } depụtara.
+sender-spf-fail = E zitere ya site na sava { $domain } edepụtaghị.
+sender-spf-none = { $domain } anaghị edepụta sava ya.
+sender-check-unsure = Nlele ahụ enweghị ike inye azịza doro anya.
+sender-unconfirmed = { $provider } enweghị ike ịkwado na nke a si na { $domain }. Onye ọ bụla nwere ike ide onye zitere ọ bụla.
+sender-link-title = Mepee njikọ a?
+sender-link-body = Ozi a adabaghị na nlele onye zitere ya. Njikọ ahụ na-aga { $host }:
+sender-link-cancel = Kagbuo
+sender-link-open = Mepee
 tracking-opened = { $who } mepere ya ugboro { $count }, nke ikpeazụ { $when }
 tracking-opens-clicks = { $who } mepere ya ugboro { $opens } ma soro njikọ ugboro { $clicks }, nke ikpeazụ { $when }
 tracking-clicked = { $who } soro njikọ ugboro { $clicks }, nke ikpeazụ { $when }
@@ -151,6 +188,7 @@ tracking-receipt-other = Akara na-egosi na a gụrụ ozi: { $who } hichapụr�
 
 remote-hidden = Ezochiri foto ndị dị n'ozi a.
 remote-hidden-unconfirmed = Ezochiri foto: enweghị ike ịkwado onye zitere ya.
+remote-hidden-failed = Ezochiri foto: ozi a adabaghị na nlele onye zitere ya.
 remote-show = Gosi foto
 remote-always-show = Na-egosi mgbe niile site n'aka onye zitere a
 remote-picture-use = Jiri

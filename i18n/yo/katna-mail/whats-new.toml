@@ -3570,3 +3570,27 @@ title = "Wo ẹni tó buwọ́ lu ìfiránṣẹ́ kan"
 text = """
 Tẹ ìlà ìbuwọ́lù lórí ìfiránṣẹ́ tí a buwọ́ lù tàbí tí a pa lároko láti rí kọ́kọ́rọ́ ẹni tó buwọ́ lù ú: orúkọ, àdírẹ́sì, ìtẹ̀ka àti àwọn ọjọ́, pẹ̀lú Ṣẹ̀dà ìtẹ̀ka. Ìfiránṣẹ́ tí a fi kọ́kọ́rọ́ tí o kò ní buwọ́ lù ń fún ọ ní Wá kọ́kọ́rọ́, kọ́kọ́rọ́ tí ẹnìkan bá sì so mọ́ ọn ń ṣí bí Ṣé kí a gbé kọ́kọ́rọ́ yìí wọlé? pẹ̀lú Dá padà lẹ́yìn náà.
 """
+
+["2026-10-08-0759-sender-check-banners"]
+title = "Ìkìlọ̀ lórí lẹ́tà ayédèrú"
+text = """
+Nígbà tí ìfiránṣẹ́ kan kò bá yege nínú àyẹ̀wò olùfiránṣẹ́ olùpèsè lẹ́tà rẹ, ọ̀págun pupa kan ń sọ pé ó lè máà jẹ́ láti ọ̀dọ̀ ẹni tó pe ara rẹ̀, pẹ̀lú Àlàyé, Ó dàbí ẹni pé kò léwu àti Gbé lọ sí Àwúrúju. Àwọn àwòrán rẹ̀ ń wà ní pípamọ́, àwọn ìjápọ̀ rẹ̀ sì ń béèrè kí wọ́n tó ṣí. Olùfiránṣẹ́ tí kò sí ohun tó jẹ́rìí sí ń gba "?" kékeré lórí àwòrán rẹ̀.
+"""
+
+["2026-10-08-0810-restart-after-update"]
+title = "Tún bẹ̀rẹ̀ nígbà tí a bá ṣe ìmúdójúìwọ̀n Katna"
+text = """
+Nígbà tí a bá ṣe ìmúdójúìwọ̀n Katna nígbà tí Katna Mail ṣí sílẹ̀, iṣẹ́ ẹ̀yìn ń bọ́ sí ẹ̀yà tuntun fúnra rẹ̀ ní kété tí kò bá ń fi lẹ́tà ránṣẹ́. Lẹ́yìn náà, ìkọ́nkọ́ kékeré kan nísàlẹ̀ àkójọ lẹ́tà ń fún ọ ní Tún bẹ̀rẹ̀, èyí tí ń ṣí Katna Mail tuntun ní ipò rẹ̀. × ń fi í pamọ́ títí di ìmúdójúìwọ̀n tó kàn.
+"""
+
+["2026-10-08-0813-calmer-mail-open"]
+title = "Ṣíṣí lẹ́tà ti rọlẹ̀"
+text = """
+Títẹ lẹ́tà kan nínú àkójọ kò tún ń rán ìgbì kọjá lórí rẹ̀ mọ́ nígbà tí lẹ́tà náà ń ṣí. Ìgbì náà ṣì ń hàn nígbà tí o bá tẹ lẹ́tà tó ti ṣí tẹ́lẹ̀.
+"""
+
+["2026-10-08-0824-safe-mode"]
+title = "Ipò ààbò bí ìmúdójúìwọ̀n kan bá bàjẹ́"
+text = """
+Katna ń ṣẹ̀dà dátà rẹ kí ìmúdójúìwọ̀n tó yí i padà. Bí ìmúdójúìwọ̀n náà bá jẹ́ kí Katna má lè bẹ̀rẹ̀, ó ń ṣí ní ipò ààbò: lẹ́tà rẹ ṣì ṣeé kà, ìlà kan lókè rẹ̀ sì jẹ́ kí o gbìyànjú lẹ́ẹ̀kan sí i tàbí padà sí ẹ̀dà tí a ṣe ṣáájú ìmúdójúìwọ̀n. A ó kọ́kọ́ fi ohun tó wà níbẹ̀ báyìí pamọ́ sínú fódà kan, nítorí náà kò sí ohun tó máa sọnù. Ṣẹ̀dà ìròyìn àṣìṣe, tí ó tún wà nínú Nípa Katna, ń kó ohun tí ìròyìn àṣìṣe nílò jọ.
+"""

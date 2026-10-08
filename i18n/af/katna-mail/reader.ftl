@@ -137,6 +137,43 @@ key-card-not-found = Geen sleutel gevind nie
 key-card-not-found-detail = { $domain } publiseer nie 'n sleutel vir hierdie adres nie. Vra die sender om vir jou hulle s'n te stuur.
 key-card-not-kept = Die sleutel wat gevind is, kan nie gebruik word nie.
 key-card-failed = Kon nie die sleutel kry nie
+
+## Sender checks: the banner on mail that failed the checks the user's mail
+## provider ran on its sender (DMARC, DKIM, SPF), and the "?" on the picture
+## of a sender nothing confirmed
+
+sender-failed-title = Dit is dalk nie van { $domain } nie
+sender-failed-body = Dit het { $provider } se senderkontroles gedruip. Wees versigtig met skakels, aanhegsels en antwoorde.
+sender-provider-unknown = jou e-posdiensverskaffer
+sender-details = Besonderhede
+sender-details-hide = Versteek besonderhede
+sender-looks-safe = Lyk veilig
+sender-move-to-spam = Skuif na strooipos
+sender-checked-by = Nagegaan deur { $provider }
+sender-checked-by-server = Nagegaan deur { $provider } ({ $server })
+sender-dmarc = Senderdomein (DMARC)
+sender-dkim = Handtekening (DKIM)
+sender-spf = Stuurbediener (SPF)
+sender-result-pass = Geslaag
+sender-result-fail = Gedruip
+sender-result-unsure = Nie seker nie
+sender-result-none = Geen
+sender-result-missing = Nie nagegaan nie
+sender-dmarc-pass = { $domain } bevestig hierdie sender.
+sender-dmarc-fail = Die e-pos stem nie ooreen met hoe { $domain } sê sy e-pos gestuur word nie.
+sender-dmarc-none = { $domain } publiseer geen reëls vir sy e-pos nie.
+sender-dkim-pass = Onderteken deur { $domain }.
+sender-dkim-fail = Die handtekening van { $domain } stem nie met die e-pos ooreen nie.
+sender-dkim-none = Die boodskap is nie onderteken nie.
+sender-spf-pass = Gestuur van 'n bediener wat { $domain } lys.
+sender-spf-fail = Gestuur van 'n bediener wat { $domain } nie lys nie.
+sender-spf-none = { $domain } lys nie sy bedieners nie.
+sender-check-unsure = Die kontrole kon nie 'n duidelike antwoord gee nie.
+sender-unconfirmed = { $provider } kon nie bevestig dat dit van { $domain } af kom nie. Enigiemand kan enige sender skryf.
+sender-link-title = Maak hierdie skakel oop?
+sender-link-body = Hierdie e-pos het sy senderkontroles gedruip. Die skakel gaan na { $host }:
+sender-link-cancel = Kanselleer
+sender-link-open = Maak oop
 tracking-opened = { $who } het dit { $count ->
     [one] een keer
    *[other] { $count } keer
@@ -163,6 +200,7 @@ tracking-receipt-other = Leesbewys: { $who } het jou boodskap uitgevee of hantee
 
 remote-hidden = Prente in hierdie boodskap is versteek.
 remote-hidden-unconfirmed = Prente is versteek: die sender kon nie bevestig word nie.
+remote-hidden-failed = Prente is versteek: hierdie e-pos het sy senderkontroles gedruip.
 remote-show = Wys prente
 remote-always-show = Wys altyd van hierdie sender
 remote-picture-use = Gebruik

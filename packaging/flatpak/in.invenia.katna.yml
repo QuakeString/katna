@@ -44,6 +44,13 @@ modules:
       - mkdir -p /app/share
       - cp -r share/applications share/icons share/licenses /app/share/
       - cp -r share/krunner share/gnome-shell /app/share/
+      # Discover and GNOME Software find a Flatpak's entry by its app ID.
+      - mkdir -p /app/share/metainfo
+      - |
+        for file in share/metainfo/*.metainfo.xml; do
+          sed "s|<id>[^<]*</id>|<id>$FLATPAK_ID</id>|" "$file" \
+            > "/app/share/metainfo/$FLATPAK_ID.metainfo.xml"
+        done
       - rm -r /app/share/gnome-shell/extensions
       # Flatpak checks icons with gdk-pixbuf, which only looks for <svg in the
       # first 256 bytes; the long header comments push it past that.

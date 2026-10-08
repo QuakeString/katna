@@ -122,6 +122,8 @@ package() {
     sh packaging/linux/localize-desktop.sh "$file" "$pkgdir/usr/share/$dir/${file##*/}"
     chmod 644 "$pkgdir/usr/share/$dir/${file##*/}"
   done
+  # Katna Mail's entry in Discover and GNOME Software.
+  install -Dm644 -t "$pkgdir/usr/share/metainfo" packaging/metainfo/*.metainfo.xml
   install -Dm644 -t "$pkgdir/usr/share/gnome-shell/search-providers" packaging/gnome-shell/*.ini
   # "Send with Katna Mail" on files and folders in Dolphin (above) and GNOME Files.
   install -Dm644 -t "$pkgdir/usr/share/nautilus-python/extensions" packaging/nautilus/*.py

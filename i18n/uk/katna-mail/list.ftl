@@ -537,6 +537,11 @@ drag-mail = { $kind ->
 }
 menu-find-from = Знайти листи від { $name }
 menu-make-rule = Створити правило…
+toast-key-imported = Ключ імпортовано
+toast-key-updated = Цей ключ у вас уже був; тепер він актуальний
+toast-key-removed = Ключ вилучено
+toast-key-not-removed = Не вдалося вилучити ключ
+toast-fingerprint-copied = Відбиток скопійовано
 
 ## Snackbar after an action on mail in the list
 

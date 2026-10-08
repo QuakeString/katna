@@ -68,3 +68,25 @@ service-details-close = மூடு
 service-not-running = Katna பின்னணிச் சேவை இயங்கவில்லை.
 service-no-answer = Katna பின்னணிச் சேவை பதிலளிக்கவில்லை: { $error }
 service-no-session = D-Bus அமர்வு இல்லை: { $error }
+
+## Safe mode: an update left Katna's background service unable to start
+
+safe-line = புதுப்பிப்பில் ஏற்பட்ட சிக்கலால் Katna பாதுகாப்புப் பயன்முறையில் உள்ளது, எனவே அஞ்சல் ஒத்திசைக்கப்படவில்லை.
+safe-try-again = மீண்டும் முயல்க
+safe-restore = மீட்டமை
+safe-restoring = { $when } இன் உங்கள் தரவை மீட்டமைக்கிறது…
+safe-restored = { $when } இன் உங்கள் தரவு மீட்டமைக்கப்பட்டது. முன்பு இருந்தவை ஒரு ஃபோல்டரில் வைக்கப்பட்டுள்ளன.
+safe-show-folder = ஃபோல்டரைக் காட்டு
+safe-restore-failed = உங்கள் தரவை மீட்டமைக்க முடியவில்லை: { $error }
+safe-restore-title = புதுப்பிப்புக்கு முந்தைய உங்கள் தரவை மீட்டமைக்கவா?
+safe-restore-body = நீங்கள் தேர்ந்தெடுக்கும் நகலுக்கு Katna திரும்பும். அதற்குப் பிறகு வந்த அஞ்சல் உங்கள் கணக்குகளிலிருந்து மீண்டும் பதிவிறக்கப்படும்.
+safe-restore-none = இன்னும் நகல்கள் இல்லை. ஒவ்வொரு புதுப்பிப்பும் உங்கள் தரவை மாற்றும் முன் Katna ஒரு நகலை உருவாக்கும்.
+safe-restore-keep = அனுப்பாத அஞ்சல், வரைவுகள், இன்னும் ஒத்திசைக்காத மாற்றங்கள் உட்பட இப்போது உள்ளவை முதலில் ஒரு ஃபோல்டரில் வைக்கப்படும், எனவே எதுவும் இழக்கப்படாது.
+safe-restore-cancel = ரத்துசெய்
+safe-restore-mail = அஞ்சல்
+safe-restore-pim = கணக்குகளும் தொடர்புகளும்
+safe-restore-blobs = இணைப்புகள்
+safe-report-title = பிழைத்திருத்த அறிக்கை
+safe-report-body = இதை நகலெடுத்து உங்கள் பிழை அறிக்கையில் இணைக்கவும். இதில் அஞ்சல், முகவரிகள், கடவுச்சொற்கள் எதுவும் இல்லை.
+safe-report-restore = மீட்டமை…
+safe-report-copied = பிழைத்திருத்த அறிக்கை நகலெடுக்கப்பட்டது

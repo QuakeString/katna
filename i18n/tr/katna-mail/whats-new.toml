@@ -4486,3 +4486,62 @@ Ctrl+Shift+P'ye basın ve herhangi bir işlemi ya da ayarı bulmak için
 yazın, ardından çalıştırmak için Enter'a basın. Her işlem klavye
 kısayolunu gösterir ve en son kullandıklarınız en üstte yer alır.
 """
+
+["2026-10-08-0641-encryption-finds-keys"]
+title = "Şifreli posta anahtarları kendisi bulur"
+text = """
+Şifrele açıkken, anahtarı olmayan bir alıcının anahtarı gönderdiğinizde
+kendi alan adının anahtar dizininde aranır. GnuPG'de adresiniz için bir
+anahtar varsa gönderdiğiniz postalar ortak anahtarınızı (Autocrypt) taşır
+ve aynı yolla gelen anahtarlar yanıtlarınızı şifrelemek için kullanılır.
+Şifreli OpenPGP postaları artık açılana kadar konularını gizliyor.
+"""
+
+["2026-10-08-0737-key-details"]
+title = "Bir iletiyi kimin imzaladığını görün"
+text = """
+İmzalı ya da şifreli bir iletideki imza satırına tıklayarak imzalayanın
+anahtarını görün: ad, adres, parmak izi ve tarihler, yanında Parmak izini
+kopyala ile. Sizde olmayan bir anahtarla imzalanmış bir ileti Anahtarı ara
+seçeneğini sunar; birinin eklediği bir anahtar ise Bu anahtar içe aktarılsın
+mı? olarak açılır ve ardından Geri al ile geri alınabilir.
+"""
+
+["2026-10-08-0759-sender-check-banners"]
+title = "Sahte postalarda uyarılar"
+text = """
+Bir ileti posta sağlayıcınızın gönderen denetimlerinden geçemediğinde,
+kırmızı bir şerit iletinin iddia ettiği kişiden gelmemiş olabileceğini
+söyler ve Ayrıntılar, Güvenli görünüyor ve Spam'e taşı seçeneklerini sunar.
+Resimleri gizli kalır ve bağlantıları açılmadan önce sorar. Hiçbir şeyin
+doğrulamadığı bir gönderenin resminde küçük bir \"?\" görünür.
+"""
+
+["2026-10-08-0810-restart-after-update"]
+title = "Katna güncellenince yeniden başlatın"
+text = """
+Katna Mail açıkken Katna güncellendiğinde, arka plan hizmeti posta
+göndermediği bir anda kendiliğinden yeni sürüme geçer. Ardından posta
+listesinin altındaki küçük bir hap Yeniden başlat seçeneğini sunar; bu,
+yeni Katna Mail'i eskisinin yerine açar. × onu bir sonraki güncellemeye
+kadar gizler.
+"""
+
+["2026-10-08-0813-calmer-mail-open"]
+title = "Posta açmak daha sakin"
+text = """
+Listede bir postaya tıklamak, posta açılırken artık listede bir dalga
+yaymıyor. Zaten açık olan postaya tıkladığınızda dalga yine görünür.
+"""
+
+["2026-10-08-0824-safe-mode"]
+title = "Bir güncelleme ters giderse güvenli mod"
+text = """
+Katna, bir güncelleme verilerinizi değiştirmeden önce onların bir kopyasını
+alır. Güncelleme Katna'nın başlamasını engellerse Katna güvenli modda açılır:
+postalarınız okunabilir kalır ve üstündeki bir satır yeniden denemenizi ya
+da güncellemeden önceki kopyaya geri dönmenizi sağlar. Şu anda olanlar önce
+bir klasörde saklanır, böylece hiçbir şey kaybolmaz. Hakkında bölümünde de
+bulunan Hata ayıklama raporunu kopyala, bir hata raporunun ihtiyaç duyduğu
+her şeyi toplar.
+"""

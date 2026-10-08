@@ -4041,3 +4041,40 @@ title = "Ona aliyetia sahihi ujumbe"
 text = """
 Bofya mstari wa sahihi kwenye ujumbe uliotiwa sahihi au uliosimbwa ili uone ufunguo wa mtia sahihi: jina, anwani, alama ya kidole na tarehe, pamoja na Nakili alama ya kidole. Ujumbe uliotiwa sahihi kwa ufunguo usio nao hutoa Tafuta ufunguo, na ufunguo ambao mtu ameambatisha hufunguka kama Uulete ufunguo huu? pamoja na Tendua baadaye.
 """
+
+["2026-10-08-0759-sender-check-banners"]
+title = "Maonyo kuhusu barua za kughushi"
+text = """
+Ujumbe unaposhindwa ukaguzi wa mtumaji wa huduma yako ya barua, bango jekundu
+husema huenda hautoki kwa anayedai, likiwa na Maelezo, Inaonekana salama na
+Hamishia kwenye taka. Picha zake hubaki zimefichwa na viungo vyake huuliza
+kabla ya kufunguka. Mtumaji ambaye hakuthibitishwa na chochote hupata "?" ndogo
+kwenye picha yake.
+"""
+
+["2026-10-08-0810-restart-after-update"]
+title = "Anzisha upya Katna ikisasishwa"
+text = """
+Katna inaposasishwa wakati Katna Mail iko wazi, huduma ya chinichini huhamia
+toleo jipya yenyewe pindi isipokuwa inatuma barua. Kisha kidonge kidogo chini
+ya orodha ya barua hutoa Anzisha upya, kinachofungua Katna Mail mpya mahali
+pake. × hukificha hadi sasisho lijalo.
+"""
+
+["2026-10-08-0813-calmer-mail-open"]
+title = "Kufungua barua ni kutulivu zaidi"
+text = """
+Kubofya barua kwenye orodha hakupitishi tena viwimbi juu yake wakati barua
+inafunguka. Viwimbi bado huonekana unapobofya barua ambayo tayari iko wazi.
+"""
+
+["2026-10-08-0824-safe-mode"]
+title = "Hali salama sasisho likienda kombo"
+text = """
+Katna hunakili data yako kabla sasisho halijaibadilisha. Sasisho likiifanya
+Katna ishindwe kuanza, hufunguka katika hali salama: barua zako husomeka, na
+mstari ulio juu yake hukuruhusu Jaribu tena au kurudi kwenye nakala ya kabla
+ya sasisho. Kilichopo sasa huhifadhiwa kwanza kwenye folda, kwa hivyo hakuna
+kinachopotea. Nakili ripoti ya hitilafu, pia katika Kuhusu, hukusanya kile
+ambacho ripoti ya hitilafu inahitaji.
+"""

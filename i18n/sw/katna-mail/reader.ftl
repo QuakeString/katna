@@ -137,6 +137,43 @@ key-card-not-found = Hakuna ufunguo uliopatikana
 key-card-not-found-detail = { $domain } haichapishi ufunguo wa anwani hii. Mwombe mtumaji akutumie wake.
 key-card-not-kept = Ufunguo uliopatikana hauwezi kutumika.
 key-card-failed = Haikuweza kupata ufunguo
+
+## Sender checks: the banner on mail that failed the checks the user's mail
+## provider ran on its sender (DMARC, DKIM, SPF), and the "?" on the picture
+## of a sender nothing confirmed
+
+sender-failed-title = Huenda hii haitoki kwa { $domain }
+sender-failed-body = Imeshindwa ukaguzi wa mtumaji wa { $provider }. Kuwa mwangalifu na viungo, viambatisho na majibu.
+sender-provider-unknown = huduma yako ya barua
+sender-details = Maelezo
+sender-details-hide = Ficha maelezo
+sender-looks-safe = Inaonekana salama
+sender-move-to-spam = Hamishia kwenye taka
+sender-checked-by = Imekaguliwa na { $provider }
+sender-checked-by-server = Imekaguliwa na { $provider } ({ $server })
+sender-dmarc = Kikoa cha mtumaji (DMARC)
+sender-dkim = Sahihi (DKIM)
+sender-spf = Seva inayotuma (SPF)
+sender-result-pass = Imepita
+sender-result-fail = Imeshindwa
+sender-result-unsure = Haijulikani
+sender-result-none = Hakuna
+sender-result-missing = Haijakaguliwa
+sender-dmarc-pass = { $domain } inamthibitisha mtumaji huyu.
+sender-dmarc-fail = Barua hii hailingani na jinsi { $domain } inavyosema barua zake hutumwa.
+sender-dmarc-none = { $domain } haichapishi sheria zozote za barua zake.
+sender-dkim-pass = Imetiwa sahihi na { $domain }.
+sender-dkim-fail = Sahihi kutoka { $domain } hailingani na barua hii.
+sender-dkim-none = Ujumbe haukutiwa sahihi.
+sender-spf-pass = Imetumwa kutoka kwenye seva ambayo { $domain } inaiorodhesha.
+sender-spf-fail = Imetumwa kutoka kwenye seva ambayo { $domain } haiiorodheshi.
+sender-spf-none = { $domain } haiorodheshi seva zake.
+sender-check-unsure = Ukaguzi haukuweza kutoa jibu lililo wazi.
+sender-unconfirmed = { $provider } haikuweza kuthibitisha kwamba hii ilitoka kwa { $domain }. Mtu yeyote anaweza kuandika mtumaji yeyote.
+sender-link-title = Fungua kiungo hiki?
+sender-link-body = Barua hii imeshindwa ukaguzi wa mtumaji. Kiungo kinaenda { $host }:
+sender-link-cancel = Ghairi
+sender-link-open = Fungua
 tracking-opened = { $who } ameufungua { $count ->
     [one] mara moja
    *[other] mara { $count }
@@ -163,6 +200,7 @@ tracking-receipt-other = Stakabadhi ya kusoma: { $who } amefuta au ameshughuliki
 
 remote-hidden = Picha katika ujumbe huu zimefichwa.
 remote-hidden-unconfirmed = Picha zimefichwa: mtumaji hakuweza kuthibitishwa.
+remote-hidden-failed = Picha zimefichwa: barua hii imeshindwa ukaguzi wa mtumaji.
 remote-show = Onyesha picha
 remote-always-show = Onyesha kila wakati kutoka kwa mtumaji huyu
 remote-picture-use = Tumia

@@ -4412,3 +4412,40 @@ ký: tên, địa chỉ, dấu vân tay và các ngày, kèm nút Sao chép dấ
 được ký bằng khóa mà bạn không có sẽ hiện Tra cứu khóa, và khóa ai đó đính
 kèm sẽ mở dưới dạng Nhập khóa này? và có thể Hoàn tác sau đó.
 """
+
+["2026-10-08-0759-sender-check-banners"]
+title = "Cảnh báo thư giả mạo"
+text = """
+Khi một thư không vượt qua kiểm tra người gửi của nhà cung cấp thư của bạn,
+một biểu ngữ màu đỏ cho biết thư có thể không phải từ người mà nó tự nhận,
+kèm Chi tiết, Có vẻ an toàn và Chuyển vào thư rác. Hình ảnh trong thư vẫn bị
+ẩn và các liên kết sẽ hỏi trước khi mở. Người gửi không được xác nhận sẽ có
+một dấu “?” nhỏ trên ảnh của họ.
+"""
+
+["2026-10-08-0810-restart-after-update"]
+title = "Khởi động lại khi Katna đã được cập nhật"
+text = """
+Khi Katna được cập nhật trong lúc Katna Mail đang mở, dịch vụ nền sẽ tự
+chuyển sang phiên bản mới khi không còn gửi thư. Sau đó một nút nhỏ ở cuối
+danh sách thư sẽ đề xuất Khởi động lại, để mở Katna Mail mới thay thế. ×
+ẩn nút này cho đến lần cập nhật tiếp theo.
+"""
+
+["2026-10-08-0813-calmer-mail-open"]
+title = "Mở thư nhẹ nhàng hơn"
+text = """
+Nhấp vào một thư trong danh sách không còn tạo gợn sóng lan khắp danh sách
+trong lúc thư đang mở. Gợn sóng vẫn hiện khi bạn nhấp vào thư đang được mở.
+"""
+
+["2026-10-08-0824-safe-mode"]
+title = "Chế độ an toàn khi cập nhật gặp sự cố"
+text = """
+Katna sao chép dữ liệu của bạn trước khi một bản cập nhật thay đổi nó. Nếu
+bản cập nhật khiến Katna không khởi động được, Katna sẽ mở ở chế độ an toàn:
+thư của bạn vẫn đọc được, và một dòng phía trên cho phép bạn thử lại hoặc quay
+về bản sao từ trước khi cập nhật. Những gì đang có sẽ được giữ lại trong một
+thư mục trước, nên không mất gì cả. Sao chép báo cáo gỡ lỗi, cũng có trong
+Giới thiệu về Katna, thu thập những gì một báo cáo lỗi cần.
+"""

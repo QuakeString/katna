@@ -4717,3 +4717,43 @@ ang Kopyahin ang fingerprint. Nag-aalok ng Hanapin ang key ang mensaheng
 nilagdaan gamit ang key na wala sa iyo, at bumubukas bilang I-import ang key
 na ito? ang key na ini-attach ng isang tao, na may I-undo pagkatapos.
 """
+
+["2026-10-08-0759-sender-check-banners"]
+title = "Mga babala sa pekeng mail"
+text = """
+Kapag hindi pumasa ang isang mensahe sa mga pagsusuri ng iyong mail provider
+sa nagpadala, sinasabi ng isang pulang banner na maaaring hindi ito galing sa
+inaangkin nito, kasama ang Mga detalye, Mukhang ligtas at Ilipat sa spam.
+Nananatiling nakatago ang mga larawan nito at nagtatanong muna ang mga link
+nito bago bumukas. Ang nagpadalang walang anumang nagkumpirma ay may maliit na
+“?” sa kanyang larawan.
+"""
+
+["2026-10-08-0810-restart-after-update"]
+title = "Mag-restart kapag na-update ang Katna"
+text = """
+Kapag na-update ang Katna habang bukas ang Katna Mail, kusang lilipat ang
+background service sa bagong bersyon kapag hindi na ito nagpapadala ng mail.
+Pagkatapos, nag-aalok ng I-restart ang isang maliit na pill sa ibaba ng
+listahan ng mail, na nagbubukas ng bagong Katna Mail kapalit nito. Itinatago
+ito ng × hanggang sa susunod na update.
+"""
+
+["2026-10-08-0813-calmer-mail-open"]
+title = "Mas kalmado ang pagbukas ng mail"
+text = """
+Hindi na nagpapadala ng ripple sa buong listahan ang pag-click sa isang mail
+habang bumubukas ito. Lumalabas pa rin ang ripple kapag na-click mo ang mail
+na bukas na.
+"""
+
+["2026-10-08-0824-safe-mode"]
+title = "Safe mode kapag nagkaproblema ang update"
+text = """
+Kinokopya ng Katna ang iyong data bago ito baguhin ng isang update. Kung hindi
+na makapagsimula ang Katna dahil sa update, bubukas ito sa safe mode: nababasa
+pa rin ang iyong mail, at may linya sa itaas nito para subukang muli o bumalik
+sa kopya mula bago ang update. Itinatabi muna sa isang folder ang laman ngayon,
+kaya walang mawawala. Ang Kopyahin ang debug report, na nasa Tungkol sa Katna
+rin, ay nag-iipon ng kailangan ng isang ulat ng bug.
+"""

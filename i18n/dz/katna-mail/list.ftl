@@ -367,6 +367,14 @@ menu-make-rule = ལམ་ལུགས་ཅིག་བཟོ…
 
 ## Snackbar after an action on mail in the list
 
+toast-key-imported = ལྡེ་མིག་ནང་འདྲེན་འབད་ཡི།
+toast-key-updated = ལྡེ་མིག་འདི་ ཧེ་མ་ལས་ར་ཡོདཔ་ཨིན། ད་ དུས་མཐུན་ཨིན།
+toast-key-removed = ལྡེ་མིག་ཕྱིར་བཏོན་ཡི།
+toast-key-not-removed = ལྡེ་མིག་ཕྱིར་བཏོན་མ་ཚུགས།
+toast-fingerprint-copied = མཛུབ་རིས་འདྲ་བཤུས་རྐྱབ་ཡི།
+
+## Snackbar after an action on mail in the list
+
 toast-archived = { $kind ->
     [conversation] གླེང་མོལ་ { $count } ཡིག་མཛོད་ནང་བཙུགས་ཡི།
    *[message] འཕྲིན་དོན་ { $count } ཡིག་མཛོད་ནང་བཙུགས་ཡི།

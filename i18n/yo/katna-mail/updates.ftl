@@ -33,3 +33,7 @@ update-dialog-compare = Fi wé ara wọn lórí GitHub
 update-dialog-no-service = Iṣẹ́ ẹ̀yìn Katna kò ṣiṣẹ́.
 update-dialog-later = Kì í ṣe báyìí
 update-dialog-close = Pa á dé
+restart-updated = A ti ṣe ìmúdójúìwọ̀n Katna
+restart-button = Tún bẹ̀rẹ̀
+restart-close = Kì í ṣe báyìí
+restart-failed = A kò lè bẹ̀rẹ̀ Katna Mail tuntun: { $error }

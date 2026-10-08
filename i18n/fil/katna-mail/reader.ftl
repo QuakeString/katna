@@ -138,6 +138,43 @@ key-card-not-found-detail = Hindi nagpa-publish ang { $domain } ng key para sa a
 key-card-not-kept = Hindi magagamit ang nakitang key.
 key-card-failed = Hindi makuha ang key
 
+## Sender checks: the banner on mail that failed the checks the user's mail
+## provider ran on its sender (DMARC, DKIM, SPF), and the "?" on the picture
+## of a sender nothing confirmed
+
+sender-failed-title = Maaaring hindi ito galing sa { $domain }
+sender-failed-body = Hindi ito pumasa sa mga pagsusuri ng { $provider } sa nagpadala. Mag-ingat sa mga link, attachment at pagsagot.
+sender-provider-unknown = ang iyong mail provider
+sender-details = Mga detalye
+sender-details-hide = Itago ang mga detalye
+sender-looks-safe = Mukhang ligtas
+sender-move-to-spam = Ilipat sa spam
+sender-checked-by = Sinuri ng { $provider }
+sender-checked-by-server = Sinuri ng { $provider } ({ $server })
+sender-dmarc = Domain ng nagpadala (DMARC)
+sender-dkim = Lagda (DKIM)
+sender-spf = Server na nagpadala (SPF)
+sender-result-pass = Pumasa
+sender-result-fail = Bumagsak
+sender-result-unsure = Hindi tiyak
+sender-result-none = Wala
+sender-result-missing = Hindi nasuri
+sender-dmarc-pass = Kinukumpirma ng { $domain } ang nagpadalang ito.
+sender-dmarc-fail = Hindi tugma ang mail sa sinasabi ng { $domain } kung paano ipinapadala ang mail nito.
+sender-dmarc-none = Walang inilalathalang patakaran ang { $domain } para sa mail nito.
+sender-dkim-pass = Nilagdaan ng { $domain }.
+sender-dkim-fail = Hindi tugma sa mail ang lagda mula sa { $domain }.
+sender-dkim-none = Walang lagda ang mensahe.
+sender-spf-pass = Ipinadala mula sa server na nakalista sa { $domain }.
+sender-spf-fail = Ipinadala mula sa server na hindi nakalista sa { $domain }.
+sender-spf-none = Hindi inililista ng { $domain } ang mga server nito.
+sender-check-unsure = Hindi makapagbigay ng malinaw na sagot ang pagsusuri.
+sender-unconfirmed = Hindi makumpirma ng { $provider } na galing ito sa { $domain }. Kahit sino ay puwedeng maglagay ng anumang nagpadala.
+sender-link-title = Buksan ang link na ito?
+sender-link-body = Hindi pumasa ang mail na ito sa mga pagsusuri sa nagpadala. Papunta ang link sa { $host }:
+sender-link-cancel = Kanselahin
+sender-link-open = Buksan
+
 ## Open and click tracking and read receipts (the eye's popover beside a
 ## sent message's star, and the line above a read receipt)
 
@@ -167,6 +204,7 @@ tracking-receipt-other = Read receipt: dinelete o inasikaso ni { $who } ang mens
 
 remote-hidden = Nakatago ang mga larawan sa mensaheng ito.
 remote-hidden-unconfirmed = Nakatago ang mga larawan: hindi makumpirma ang nagpadala.
+remote-hidden-failed = Nakatago ang mga larawan: hindi pumasa ang mail na ito sa mga pagsusuri sa nagpadala.
 remote-show = Ipakita ang mga larawan
 remote-always-show = Palaging ipakita mula sa nagpadalang ito
 remote-picture-use = Gamitin
