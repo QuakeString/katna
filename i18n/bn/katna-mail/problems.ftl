@@ -66,3 +66,6 @@ service-details-title = সার্ভিসটি কেন চালু হ�
 service-details-body = এটি কপি করে আপনার রিপোর্টের সাথে পাঠান। এতে কোনো মেল বা পাসওয়ার্ড নেই।
 service-details-copy = কপি করুন
 service-details-close = বন্ধ করুন
+service-not-running = Katna-র ব্যাকগ্রাউন্ড সার্ভিস চলছে না।
+service-no-answer = Katna-র ব্যাকগ্রাউন্ড সার্ভিস সাড়া দেয়নি: { $error }
+service-no-session = কোনো D-Bus সেশন নেই: { $error }

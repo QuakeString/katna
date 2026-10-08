@@ -38,6 +38,8 @@ list-range-about = { $first }–{ $last } dari sekitar { $total }
 list-results = Hasil untuk “{ $query }”
 list-results-corrected = Menampilkan hasil untuk “{ $query }”
 list-search-instead = Telusuri “{ $query }” saja
+list-search-no-index = Penelusuran belum siap: indeks belum dibuat.
+list-search-not-ready = Penelusuran belum siap: { $error }
 list-files-more = +{ $count }
 list-replied = Anda sudah membalas
 
@@ -193,9 +195,14 @@ list-empty-waiting = Tidak ada yang menunggu balasan.
 list-empty-reminders = Tidak ada pengingat. Tekan H pada email untuk menambahkannya.
 list-first-sync = Mengambil email Anda…
 list-first-sync-detail = Email akan muncul di sini saat tiba.
+list-store-unreadable = Penyimpanan email tidak dapat dibuka
 
 ## Mail list: lines
 
+row-no-subject = (tanpa subjek)
+row-unknown-sender = (pengirim tidak dikenal)
+row-to = Kepada:
+row-no-recipients = (tanpa penerima)
 row-removed = Pesan ini telah dihapus.
 row-starred = Berbintang
 row-not-starred = Tidak berbintang
@@ -269,6 +276,11 @@ menu-make-rule = Buat aturan…
 
 ## Snackbar after an action on mail in the list
 
+toast-key-imported = Kunci diimpor
+toast-key-updated = Anda sudah memiliki kunci ini; kini sudah diperbarui
+toast-key-removed = Kunci dihapus
+toast-key-not-removed = Kunci tidak dapat dihapus
+toast-fingerprint-copied = Sidik jari disalin
 toast-archived = { $kind ->
     [conversation] { $count } percakapan diarsipkan.
    *[message] { $count } pesan diarsipkan.

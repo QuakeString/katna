@@ -173,6 +173,7 @@ settings-general-start-at-login = 登录时启动 Katna
 settings-general-start-at-login-detail = 同步邮件，显示新邮件通知和托盘图标，但不打开窗口
 settings-general-login-window = 同时打开 Katna Mail 窗口
 settings-general-login-window-detail = 登录时也会打开窗口
+settings-general-login-entry = 登录时启动（设置 > 常规 > 桌面）
 settings-general-tray = 在系统托盘中显示 Katna
 settings-general-tray-detail = 显示未读数并提供菜单
 settings-general-tray-color = 彩色托盘图标

@@ -31,3 +31,58 @@ feedback-deleted-all = ক্ৰেশ্ব ৰিপৰ্ট মচা হ'�
 feedback-read-failed = ক্ৰেশ্ব ৰিপৰ্ট পঢ়িব পৰা নগ'ল: { $error }
 feedback-delete-failed = ক্ৰেশ্ব ৰিপৰ্ট মচিব পৰা নগ'ল: { $error }
 feedback-delete-all-failed = ক্ৰেশ্ব ৰিপৰ্টবোৰ মচিব পৰা নগ'ল: { $error }
+
+## Settings > User feedback (usage statistics)
+
+feedback-usage = বেনামী ব্যৱহাৰৰ পৰিসংখ্যা পঠিয়াওক
+feedback-usage-detail = সপ্তাহত এবাৰ: আপুনি কোনবোৰ সুবিধা ব্যৱহাৰ কৰিলে, হয় বা নহয়। কেতিয়াও গণনা, ঠিকনা, নাম বা সন্ধানৰ শব্দ নহয়
+feedback-intro-sending-usage = ক্ৰেশ্ব ৰিপৰ্ট আৰু সাপ্তাহিক ব্যৱহাৰৰ পৰিসংখ্যা পঠোৱা হয়। আন একোৱেই এই কম্পিউটাৰৰ বাহিৰলৈ নাযায়।
+feedback-intro-usage-only = সাপ্তাহিক ব্যৱহাৰৰ পৰিসংখ্যা পঠোৱা হয়। ক্ৰেশ্ব ৰিপৰ্ট এই কম্পিউটাৰতে থাকে।
+feedback-counted = কি গণনা কৰা হয়
+feedback-counted-detail = প্ৰতিটো সেই সপ্তাহৰ বাবে হয় বা নহয়।
+feedback-counted-also = লগতে: Katnaৰ সংস্কৰণ, Linuxৰ পৰিয়াল, ডেস্কটপ, স্ক্ৰীনৰ স্কেল আৰু কিমানটা একাউণ্ট (1, 2–3, 4+)
+feedback-see-report = এই সপ্তাহৰ ৰিপৰ্ট চাওক
+feedback-hide-report = এই সপ্তাহৰ ৰিপৰ্ট লুকুৱাওক
+feedback-report-goes = সপ্তাহ শেষ হোৱাৰ পিছত, { $date }ত পঠোৱা হ'ব, যদি ব্যৱহাৰৰ পৰিসংখ্যা তেতিয়াও অন থাকে।
+feedback-install-id = ইনষ্টল ID { $id }
+feedback-install-id-tooltip = যাদৃচ্ছিক, যাতে এটা কম্পিউটাৰ এসপ্তাহত দুবাৰ গণনা নহয়। ই প্ৰতি 90 দিনত সলনি হয় আৰু কেতিয়াও ক্ৰেশ্ব ৰিপৰ্ট বা মতামতৰ সৈতে পঠোৱা নহয়
+feedback-install-id-reset = ৰিছেট কৰক
+feedback-install-id-new = নতুন ইনষ্টল ID সৃষ্টি কৰা হ'ল।
+feedback-report-copied = ৰিপৰ্ট কপি কৰা হ'ল।
+feedback-send-feedback = মতামত
+feedback-send-feedback-detail = কোনো সমস্যা, কোনো ধাৰণা, যিকোনো কথা।
+feedback-send-feedback-button = মতামত পঠিয়াওক…
+usage-feature-search-options = সন্ধানৰ বিকল্প
+usage-feature-pins = পিন কৰা মেইল
+usage-feature-labels = লেবেলসমূহ
+usage-feature-scheduled-send = নিৰ্ধাৰিত সময়ত পঠোৱা
+usage-feature-snooze = স্নুজ আৰু ৰিমাইণ্ডাৰ
+usage-feature-encrypted = এনক্ৰিপ্ট কৰা মেইল
+usage-feature-viewers = অন্তৰ্নিৰ্মিত দৰ্শক
+usage-feature-calendar = কেলেণ্ডাৰ
+usage-feature-contacts = সম্পৰ্কসমূহ
+usage-feature-tasks-notes = কাৰ্য আৰু টোকা
+usage-feature-phone-layout = ফোনৰ প্ৰস্থৰ লেআউট
+usage-feature-own-frame = Katnaৰ নিজৰ ৱিণ্ড' ফ্ৰেম
+
+## Help > Send feedback
+
+send-feedback-title = মতামত পঠিয়াওক
+send-feedback-about = বিষয়
+send-feedback-problem = সমস্যা
+send-feedback-idea = ধাৰণা
+send-feedback-other = অন্য কিবা
+send-feedback-message = আপোনাৰ বাৰ্তা
+send-feedback-message-placeholder = কি হ'ল, বা আপুনি কি বিচাৰে?
+send-feedback-reply = উত্তৰৰ বাবে ইমেইল (ঐচ্ছিক)
+send-feedback-reply-placeholder = you@example.org
+send-feedback-system = Katnaৰ সংস্কৰণ আৰু আপোনাৰ ছিষ্টেম অন্তৰ্ভুক্ত কৰক
+send-feedback-what-is-sent = কি পঠোৱা হয়
+send-feedback-show = দেখুৱাওক
+send-feedback-hide = লুকুৱাওক
+send-feedback-where = Sentry (EU)ত থকা Katnaৰ মতামতৰ ইনবক্সলৈ পঠোৱা হয়। কোনো IP ঠিকনা, একাউণ্ট, বাৰ্তা বা ইনষ্টল ID নহয়।
+send-feedback-cancel = বাতিল কৰক
+send-feedback-send = পঠিয়াওক
+send-feedback-sending = পঠিয়াই আছে…
+send-feedback-sent = মতামত পঠোৱা হ'ল। ধন্যবাদ
+send-feedback-failed = মতামত পঠিয়াব পৰা নগ'ল: { $error }

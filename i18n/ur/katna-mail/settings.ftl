@@ -181,6 +181,7 @@ settings-general-start-at-login = لاگ ان پر Katna شروع کریں
 settings-general-start-at-login-detail = ونڈو کھولے بغیر میل سنک کرتا ہے اور نئی میل کی اطلاعات اور ٹرے آئیکن دکھاتا ہے
 settings-general-login-window = Katna Mail کی ونڈو بھی کھولیں
 settings-general-login-window-detail = لاگ ان پر ونڈو بھی کھل جاتی ہے
+settings-general-login-entry = لاگ ان پر شروع ہوا (ترتیبات > عمومی > ڈیسک ٹاپ)
 settings-general-tray = Katna کو سسٹم ٹرے میں دکھائیں
 settings-general-tray-detail = ناخواندہ تعداد اور ایک مینیو کے ساتھ
 settings-general-tray-color = رنگین ٹرے آئیکن

@@ -70,6 +70,7 @@ shortcut-navigation = ମେନୁ ଦେଖାନ୍ତୁ କିମ୍ବା �
 shortcut-quick-settings = ଦ୍ରୁତ ସେଟିଂସ
 shortcut-settings = ସମସ୍ତ ସେଟିଂସ
 shortcut-shortcuts = କିବୋର୍ଡ ସର୍ଟକଟ
+shortcut-palette = କମାଣ୍ଡ ପ୍ୟାଲେଟ
 shortcut-reload = ନୂଆ ମେଲ ପାଇଁ ଯାଞ୍ଚ କରନ୍ତୁ
 shortcut-quit = ବାହାରନ୍ତୁ
 

@@ -53,6 +53,7 @@ folder-waiting-short = በመጠበቅ ላይ
 folder-reminders = አስታዋሾች
 folder-outbox = የወጪ መልዕክት ሳጥን
 folder-activity = እንቅስቃሴ
+folder-not-on-account = ይህ መለያ እንደዚህ ያለ አቃፊ የለውም።
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

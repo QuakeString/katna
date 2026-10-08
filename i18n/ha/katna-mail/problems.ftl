@@ -66,3 +66,6 @@ service-details-title = Dalilin da sabis ɗin ya ƙi farawa
 service-details-body = Kwafi wannan ku aika shi tare da rahotonku. Babu wasiƙa ko kalmomin sirri a cikinsa.
 service-details-copy = Kwafi
 service-details-close = Rufe
+service-not-running = Sabis na bango na Katna ba ya aiki.
+service-no-answer = Sabis na bango na Katna bai amsa ba: { $error }
+service-no-session = Babu zaman D-Bus: { $error }

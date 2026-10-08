@@ -47,4 +47,5 @@ quick-help = راهنما
 quick-tour = گشتی در برنامه
 quick-whats-new = تازه‌ها
 quick-check-updates = بررسی به‌روزرسانی‌ها
+quick-send-feedback = ارسال بازخورد
 quick-about = دربارهٔ Katna

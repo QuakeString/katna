@@ -55,6 +55,7 @@ reader-details-subject = 主题：
 
 reader-downloading = 正在从服务器下载此邮件…
 reader-download-failed = 无法下载此邮件。
+reader-download-failed-reason = 无法下载此邮件。{ $reason }
 reader-download-offline = 此账号处于离线状态。请上线以下载此邮件。
 reader-try-again = 重试
 
@@ -90,6 +91,52 @@ security-missing-key = 使用您没有的密钥签名，因此无法检查
 security-missing-key-id = 使用您没有的密钥（{ $key }）签名，因此无法检查
 security-signature-unavailable = 已签名；请安装 { $tool } 以检查签名
 security-signature-error = 无法检查签名。
+security-look-up-key = 查找密钥
+
+## The key popover: the details of the key a message was signed with, and
+## a key to import (looked up, or attached to the message)
+
+key-card-verified = 签名已验证
+key-card-verified-detail = 签名有效，且您信任此密钥。
+key-card-unverified = 签名未经验证
+key-card-unverified-detail = 签名有效，但无法确认此密钥属于对方。请与对方核对指纹，然后在 GnuPG 中信任此密钥（使用 Kleopatra 或 gpg --edit-key）。
+key-card-not-sender = 由他人签名
+key-card-not-sender-detail = 签名有效，但此密钥不属于发件人。
+key-card-untrusted = 密钥不可信
+key-card-untrusted-detail = 您已在 GnuPG 中将此密钥标记为不可信。
+key-card-signature-expired = 签名已过期
+key-card-signature-expired-detail = 签名曾经有效，但已过期。
+key-card-key-expired = 密钥已过期
+key-card-key-expired-detail = 签名有效，但密钥此后已过期。
+key-card-key-revoked = 密钥已吊销
+key-card-key-revoked-detail = 此密钥已被其所有者吊销，因此该签名不可信。
+key-card-bad = 签名无效
+key-card-bad-detail = 此邮件在签名后被更改过，或签名是伪造的。
+key-card-signed-by = 签名者
+key-card-belongs-to = 所属
+key-card-fingerprint = 指纹
+key-card-signed = 签名时间
+key-card-key = 密钥
+key-card-kind = { $standard }，{ $algorithm }
+key-card-created = 创建时间
+key-card-expires = 过期时间
+key-card-never = 永不
+key-card-issued-by = 颁发者
+key-card-found-in = 来源
+key-card-keyring = 您的 GnuPG 密钥环
+key-card-copy = 复制指纹
+key-card-import-title = 导入此密钥？
+key-card-from-directory = 在 { $domain } 的密钥目录中找到。
+key-card-from-attachment = 来自附件 { $name }。
+key-card-import-note = 导入后，Katna 即可检查此人的签名，并向其发送加密邮件。要完全信任此密钥，请与对方核对指纹。
+key-card-cancel = 取消
+key-card-import = 导入密钥
+key-card-looking-up = 正在查找密钥…
+key-card-looking-up-detail = 正在查询 { $domain } 的密钥目录。
+key-card-not-found = 未找到密钥
+key-card-not-found-detail = { $domain } 没有为此地址发布密钥。请让发件人把他们的密钥发给您。
+key-card-not-kept = 找到的密钥无法使用。
+key-card-failed = 无法获取密钥
 
 ## Open and click tracking and read receipts (the eye's popover beside a
 ## sent message's star, and the line above a read receipt)

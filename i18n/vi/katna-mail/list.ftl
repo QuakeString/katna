@@ -38,6 +38,8 @@ list-range-about = { $first }–{ $last } trong số khoảng { $total }
 list-results = Kết quả cho “{ $query }”
 list-results-corrected = Đang hiển thị kết quả cho “{ $query }”
 list-search-instead = Thay vào đó, tìm “{ $query }”
+list-search-no-index = Tìm kiếm chưa sẵn sàng: chỉ mục chưa được xây dựng.
+list-search-not-ready = Tìm kiếm chưa sẵn sàng: { $error }
 list-files-more = +{ $count }
 list-replied = Bạn đã trả lời
 
@@ -193,9 +195,14 @@ list-empty-waiting = Không có thư nào đang chờ trả lời.
 list-empty-reminders = Không có lời nhắc. Nhấn H trên một thư để thêm.
 list-first-sync = Đang tải thư của bạn…
 list-first-sync-detail = Thư sẽ hiện ở đây khi được tải về.
+list-store-unreadable = Không thể mở kho thư
 
 ## Mail list: lines
 
+row-no-subject = (không có tiêu đề)
+row-unknown-sender = (người gửi không xác định)
+row-to = Tới:
+row-no-recipients = (không có người nhận)
 row-removed = Thư này đã bị xóa.
 row-starred = Có gắn dấu sao
 row-not-starred = Không có dấu sao
@@ -269,6 +276,11 @@ menu-make-rule = Tạo quy tắc…
 
 ## Snackbar after an action on mail in the list
 
+toast-key-imported = Đã nhập khóa
+toast-key-updated = Bạn đã có khóa này; giờ khóa đã được cập nhật
+toast-key-removed = Đã gỡ khóa
+toast-key-not-removed = Không thể gỡ khóa
+toast-fingerprint-copied = Đã sao chép dấu vân tay
 toast-archived = { $kind ->
     [conversation] Đã lưu trữ { $count } cuộc hội thoại.
    *[message] Đã lưu trữ { $count } thư.

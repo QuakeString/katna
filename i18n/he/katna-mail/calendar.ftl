@@ -118,6 +118,7 @@ calendar-add-meet = הוספת שיחת וידאו ב-Google Meet
 calendar-add-teams = הוספת פגישה ב-Teams
 calendar-has-call = נוספה שיחת וידאו
 calendar-weekday-day = { $weekday }, { $day }
+calendar-schedule-day = { $weekday }, { $month }
 calendar-all-day-box = כל היום
 calendar-more-options = אפשרויות נוספות
 calendar-save = שמירה

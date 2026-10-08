@@ -38,6 +38,8 @@ list-range-about = { $first }–{ $last } מתוך כ־{ $total }
 list-results = תוצאות עבור „{ $query }”
 list-results-corrected = מוצגות תוצאות עבור „{ $query }”
 list-search-instead = חיפוש „{ $query }” במקום זאת
+list-search-no-index = החיפוש לא מוכן: האינדקס עדיין לא נבנה.
+list-search-not-ready = החיפוש לא מוכן: { $error }
 list-files-more = +{ $count }
 list-replied = עניתם
 
@@ -393,6 +395,11 @@ list-empty-waiting = שום דבר לא ממתין לתשובה.
 list-empty-reminders = אין תזכורות. אפשר ללחוץ H על דואר כדי להוסיף אחת.
 list-first-sync = מביאים את הדואר שלך…
 list-first-sync-detail = הוא יופיע כאן כשיגיע.
+list-store-unreadable = לא ניתן היה לפתוח את מאגר הדואר
+row-no-subject = (ללא נושא)
+row-unknown-sender = (שולח לא ידוע)
+row-to = אל:
+row-no-recipients = (ללא נמענים)
 
 ## Mail list: lines
 

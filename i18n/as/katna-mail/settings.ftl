@@ -181,6 +181,7 @@ settings-general-start-at-login = লগইনৰ সময়ত Katna আৰ�
 settings-general-start-at-login-detail = উইণ্ড'ৰ নোখোলাকৈ মেইল ছিংক কৰে আৰু নতুন মেইলৰ জাননী আৰু ছিষ্টেম ট্ৰে আইকন দেখুৱায়
 settings-general-login-window = Katna Mail-ৰ উইণ্ড'টোও খোলক
 settings-general-login-window-detail = লগইনৰ সময়ত উইণ্ড'টোও খোল খায়
+settings-general-login-entry = লগইনৰ সময়ত আৰম্ভ হয় (ছেটিংছ > সাধাৰণ > ডেস্কটপ)
 settings-general-tray = ছিষ্টেম ট্ৰেত Katna দেখুৱাওক
 settings-general-tray-detail = নপঢ়াৰ সংখ্যা আৰু এটা মেনুৰ সৈতে
 settings-general-tray-color = ৰঙীন ট্ৰে আইকন

@@ -179,6 +179,7 @@ settings-general-start-at-login = Qala i-Katna lapho ungena
 settings-general-start-at-login-detail = Ivumelanisa imeyili futhi ibonise izaziso zemeyili entsha nesithonjana sethileyi, ngaphandle kokuvula iwindi
 settings-general-login-window = Vula newindi le-Katna Mail
 settings-general-login-window-detail = Iwindi nalo liyavuleka lapho ungena
+settings-general-login-entry = Iqalwa ekungeneni (Izilungiselelo > Okuvamile > Ideskithophu)
 settings-general-tray = Bonisa i-Katna kuthileyi yesistimu
 settings-general-tray-detail = Nesibalo sokungafundiwe nemenyu
 settings-general-tray-color = Isithonjana sethreyi ngombala

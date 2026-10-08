@@ -55,6 +55,7 @@ reader-details-subject = विषय:
 
 reader-downloading = सर्व्हरवरून हा मेसेज डाउनलोड करत आहे…
 reader-download-failed = हा मेसेज डाउनलोड करता आला नाही.
+reader-download-failed-reason = हा मेसेज डाउनलोड करता आला नाही. { $reason }
 reader-download-offline = हे खाते ऑफलाइन आहे. हा मेसेज डाउनलोड करण्यासाठी ऑनलाइन जा.
 reader-try-again = पुन्हा प्रयत्न करा
 

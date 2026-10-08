@@ -185,6 +185,7 @@ settings-general-start-at-login = Запускать Katna при входе в 
 settings-general-start-at-login-detail = Синхронизирует почту и показывает уведомления о новых письмах и значок в лотке, не открывая окно
 settings-general-login-window = Открывать также окно Katna Mail
 settings-general-login-window-detail = Окно тоже открывается при входе в систему
+settings-general-login-entry = Запускается при входе в систему (Настройки > Общие > Рабочий стол)
 settings-general-tray = Показывать Katna в системном лотке
 settings-general-tray-detail = Со счётчиком непрочитанных и меню
 settings-general-tray-color = Цветной значок в лотке

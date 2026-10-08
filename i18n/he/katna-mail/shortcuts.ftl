@@ -67,6 +67,7 @@ shortcut-navigation = הצגה או קיפול של התפריט
 shortcut-quick-settings = הגדרות מהירות
 shortcut-settings = כל ההגדרות
 shortcut-shortcuts = קיצורי מקלדת
+shortcut-palette = לוח הפקודות
 shortcut-reload = בדיקת דואר חדש
 shortcut-quit = יציאה
 

@@ -179,6 +179,7 @@ settings-general-start-at-login = Fara Katna lokacin shiga
 settings-general-start-at-login-detail = Yana daidaita wasiƙu kuma yana nuna sanarwar sababbin wasiƙu da gunkin tire, ba tare da buɗe taga ba
 settings-general-login-window = Buɗe tagar Katna Mail ita ma
 settings-general-login-window-detail = Taga ma tana buɗewa lokacin shiga
+settings-general-login-entry = Ana farawa lokacin shiga (Saituna > Gabaɗaya > Tebur)
 settings-general-tray = Nuna Katna a cikin tiren tsarin
 settings-general-tray-detail = Tare da adadin waɗanda ba a karanta ba da menu
 settings-general-tray-color = Gunkin tire mai launi

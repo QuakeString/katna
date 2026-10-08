@@ -41,4 +41,5 @@ quick-help = Bantuan
 quick-tour = Ikuti lawatan
 quick-whats-new = Apa yang baharu
 quick-check-updates = Semak kemas kini
+quick-send-feedback = Hantar maklum balas
 quick-about = Perihal Katna

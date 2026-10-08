@@ -348,6 +348,31 @@ mail v14
   rules: 3
   changes_since Mail: 3
   changes_since Pim: 3
+mail v15
+  accounts: 3
+  message_count: 3
+  folder_summaries: 3
+  unread_counts: 1
+  messages_after: 3
+  folder_messages: 0
+  people: 3
+  correspondents: 3
+  library_files: 3
+  outbox: 3
+  pinned: 3
+  waiting: 2
+  folder_bells: 3
+  calendars: 3
+  task_lists: 1
+  notes: 3
+  address_books: 3
+  saved_contacts: 3
+  contact_labels: 3
+  other_contacts: 3
+  templates: 3
+  rules: 3
+  changes_since Mail: 3
+  changes_since Pim: 3
 pim v1
   accounts: 3
   message_count: 3
@@ -773,7 +798,57 @@ pim v17
   rules: 3
   changes_since Mail: 3
   changes_since Pim: 3
+pim v18
+  accounts: 3
+  message_count: 3
+  folder_summaries: 3
+  unread_counts: 1
+  messages_after: 3
+  folder_messages: 0
+  people: 3
+  correspondents: 3
+  library_files: 3
+  outbox: 3
+  pinned: 3
+  waiting: 2
+  folder_bells: 3
+  calendars: 3
+  task_lists: 1
+  notes: 3
+  address_books: 3
+  saved_contacts: 3
+  contact_labels: 3
+  other_contacts: 3
+  templates: 3
+  rules: 3
+  changes_since Mail: 3
+  changes_since Pim: 3
 blobs v1
+  accounts: 3
+  message_count: 3
+  folder_summaries: 3
+  unread_counts: 1
+  messages_after: 3
+  folder_messages: 0
+  people: 3
+  correspondents: 3
+  library_files: 3
+  outbox: 3
+  pinned: 3
+  waiting: 2
+  folder_bells: 3
+  calendars: 3
+  task_lists: 1
+  notes: 3
+  address_books: 3
+  saved_contacts: 3
+  contact_labels: 3
+  other_contacts: 3
+  templates: 3
+  rules: 3
+  changes_since Mail: 3
+  changes_since Pim: 3
+blobs v2
   accounts: 3
   message_count: 3
   folder_summaries: 3

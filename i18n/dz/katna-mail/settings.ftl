@@ -175,6 +175,7 @@ settings-general-start-at-login = ནང་བསྐྱོད་འབད་བ�
 settings-general-start-at-login-detail = སྒོ་སྒྲིག་ཁ་མ་ཕྱེ་བར་ གློག་འཕྲིན་མཉམ་སྡེབ་འབདཝ་ཨིན་ དེ་ལས་ གློག་འཕྲིན་གསརཔ་གི་བརྡ་བསྐུལ་དང་ རིམ་ལུགས་སྡེར་མའི་ངོས་དཔར་སྟོནམ་ཨིན
 settings-general-login-window = Katna Mail གི་སྒོ་སྒྲིག་ཡང་ཁ་ཕྱེ།
 settings-general-login-window-detail = ནང་བསྐྱོད་འབད་བའི་སྐབས་ སྒོ་སྒྲིག་ཡང་ཁ་ཕྱེཝ་ཨིན
+settings-general-login-entry = ནང་བསྐྱོད་སྐབས་ འགོ་བཙུགས་ཡོདཔ (སྒྲིག་སྟངས། > སྤྱིར་བཏང > ཌེཀསི་ཊོཔ)
 settings-general-tray = Katna རིམ་ལུགས་སྡེར་མ་ནང་སྟོན།
 settings-general-tray-detail = མ་ལྷག་པའི་གྱངས་ཁ་དང་ དཀར་ཆག་དང་བཅས
 settings-general-tray-color = སྡེར་མའི་ངོས་དཔར་ ཚོས་གཞི་ཅན

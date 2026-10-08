@@ -179,6 +179,7 @@ settings-general-start-at-login = Begin Katna by aanmelding
 settings-general-start-at-login-detail = Sinkroniseer e-pos en wys kennisgewings van nuwe e-pos en die stelselbalkikoon, sonder om die venster oop te maak
 settings-general-login-window = Maak ook die Katna Mail-venster oop
 settings-general-login-window-detail = Die venster gaan ook by aanmelding oop
+settings-general-login-entry = Begin by aanmelding (Instellings > Algemeen > Werkskerm)
 settings-general-tray = Wys Katna in die stelselbalk
 settings-general-tray-detail = Met die ongeleesde telling en 'n kieslys
 settings-general-tray-color = Stelselbalkikoon in kleur

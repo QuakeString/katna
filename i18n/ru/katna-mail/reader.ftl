@@ -55,6 +55,7 @@ reader-details-subject = тема:
 
 reader-downloading = Загрузка письма с сервера…
 reader-download-failed = Не удалось загрузить это письмо.
+reader-download-failed-reason = Не удалось загрузить это письмо. { $reason }
 reader-download-offline = Этот аккаунт в автономном режиме. Выйдите в сеть, чтобы загрузить это письмо.
 reader-try-again = Повторить попытку
 

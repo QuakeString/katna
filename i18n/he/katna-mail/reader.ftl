@@ -55,6 +55,7 @@ reader-details-subject = נושא:
 
 reader-downloading = ההודעה הזו מורדת מהשרת…
 reader-download-failed = לא ניתן להוריד את ההודעה הזו.
+reader-download-failed-reason = לא ניתן היה להוריד את ההודעה הזו. { $reason }
 reader-download-offline = החשבון הזה במצב לא מקוון. כדי להוריד את ההודעה הזו יש לעבור למצב מקוון.
 reader-try-again = ניסיון נוסף
 

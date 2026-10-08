@@ -6,6 +6,7 @@
 
 about-tooltip = Katna གི་སྐོར་ལས
 about-tagline = Linux ཌེཀསི་ཊོཔ་གི་དོན་ལུ་ གློག་འཕྲིན་དང་ཟླ་ཐོ
+about-version = Katna Mail { $version }
 about-copy-version = ཐོན་རིམ་གྱི་ཁ་གསལ་འདྲ་བཤུས་རྐྱབས།
 about-version-copied = འདྲ་བཤུས་རྐྱབ་ཡི
 about-version-built = བཟོ་ཡོདཔ: { $date }
