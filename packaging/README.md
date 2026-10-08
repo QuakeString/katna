@@ -14,6 +14,7 @@ Files that distribution packages install, and the Arch Linux package.
 | `gnome-shell/<mail app ID>.search-provider.ini` | `/usr/share/gnome-shell/search-providers/` (GNOME search results from the daemon) |
 | `kio/<mail app ID>.SendFiles.desktop` | `/usr/share/kio/servicemenus/` ("Send with Katna Mail" in Dolphin; the daemon writes the user's copy with an account submenu) |
 | `nautilus/katna-mail.py` | `/usr/share/nautilus-python/extensions/` ("Send with Katna Mail" in GNOME Files; needs python-nautilus) |
+| `metainfo/<mail app ID>.metainfo.xml` | `/usr/share/metainfo/` (Katna Mail's entry in Discover and GNOME Software, CC0; the Flatpak renames it to its own ID) |
 | `icons/<mail app ID>.svg` | `/usr/share/icons/hicolor/scalable/apps/` |
 | `icons/hicolor/<N>x<N>/apps/<mail app ID>.png` | `/usr/share/icons/hicolor/<N>x<N>/apps/` |
 | `arch/PKGBUILD` | Arch Linux package `katna-git` |
@@ -238,6 +239,21 @@ is the prefix of Katna's IDs, so it may own Katna Mail's and the service's
 D-Bus names and export the service's activation file; D-Bus starts the
 service inside the sandbox. "Start Katna at login" does not work from the
 Flatpak yet (it needs the Background portal, `docs/ARCHITECTURE.md` §9.2).
+
+### AppStream
+
+Every package above installs Katna Mail's AppStream entry, so Discover
+and GNOME Software show it with its description, screenshots and links.
+Check it after a change:
+
+```sh
+appstreamcli validate --no-net packaging/metainfo/*.metainfo.xml
+```
+
+The Fedora and Ubuntu tests in `.github/workflows/linux-packages.yml`
+validate the installed copy. Its screenshots are the PNGs in
+`docs/screenshots/appstream/`, linked from `main` on GitHub; retake them
+with made-up demo data (`ci/linux-demo-data.sh`), never real mail.
 
 ### Any other Linux
 
