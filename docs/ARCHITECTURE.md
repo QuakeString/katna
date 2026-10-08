@@ -5960,19 +5960,22 @@ old and new daemon and app must keep working:
 #### Protecting local data
 
 - **Backup before migrating.** When the daemon is about to raise a
-  database's `user_version`, it first copies each database it will change
-  with SQLite's online backup into
-  `$XDG_DATA_HOME/katna/backup/<old version>/`, after checking there is room
-  for it. No room, no migration: the daemon stays on read-only duty and
-  says why. The last two backups are kept.
+  database's `user_version`, it first copies that database with
+  `VACUUM INTO` to `$XDG_DATA_HOME/katna/backup/<name>-v<old version>-<unix
+  time>.db`, after checking there is room for it plus 64 MiB. No room, no
+  migration: opening the store fails with `NoRoomForBackup`, which says why.
+  The last two backups of each database are kept.
 - **Expand, then contract.** A minor release's migrations only add tables,
   columns and indexes, so the previous stable release can still read the
   database. Removing or renaming happens one release later, once nothing
   reads the old shape. A migration that cannot follow this rule is only
   allowed in a major release.
-- Each database records the oldest Katna version that can open it
-  (`min_reader_version` in a small `schema_meta` table), so an older version
-  can tell "newer but still readable" from "too new".
+- Each database records the oldest schema version whose Katna can open it
+  (`min_reader_version` in a small `schema_meta` table, from mail.db v15,
+  pim.db v18 and blobs.db v2), so an older version can tell "newer but
+  still readable" from "too new". It then opens the database as it is,
+  without migrating. A migration that only adds leaves the value alone; one
+  that removes or reshapes raises it to its own version.
 - Settings: `config.toml` keys are only added; unknown keys written by a
   newer version are kept, not dropped, when an older version saves.
 - Secrets in the Secret Service keep their attributes (§9.2.1) across

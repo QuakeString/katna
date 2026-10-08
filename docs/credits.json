@@ -176,6 +176,17 @@
       "repository": "https://github.com/RazrFalcon/fontdb"
     },
     {
+      "name": "fs4",
+      "version": "0.13.1",
+      "description": "No libc, pure Rust cross-platform file locks. Original fs2, now supports async and replace libc by rustix.",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "Al Liu",
+        "Dan Burkert"
+      ],
+      "repository": "https://github.com/al8n/fs4-rs"
+    },
+    {
       "name": "futures-lite",
       "version": "2.6.1",
       "description": "Futures, streams, and async I/O combinators",
@@ -616,6 +627,16 @@
         "Erick Tryzelaar"
       ],
       "repository": "https://github.com/serde-rs/serde"
+    },
+    {
+      "name": "serde_ignored",
+      "version": "0.1.14",
+      "description": "Find out about keys that are ignored when deserializing data",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "David Tolnay"
+      ],
+      "repository": "https://github.com/dtolnay/serde-ignored"
     },
     {
       "name": "serde_json",

@@ -8,6 +8,7 @@
 use std::process::ExitCode;
 
 use futures_lite::{FutureExt, StreamExt};
+use katna_core::health::Health;
 use katna_core::{Config, Paths};
 use katna_daemon::{Ended, Instance, install, secrets::Secrets, update};
 use katna_sync::worker::WorkerConfig;
@@ -85,6 +86,16 @@ fn run() -> ExitCode {
             Err(err) => return fail(err),
         };
         let bus = connection.clone();
+        let health_file = paths.health_file();
+        let started_at = unix_now();
+        let mut health = Health::load(&health_file);
+        if health.begin_start(started_at) {
+            tracing::warn!(
+                starts = health.starts.len() - 1,
+                "the last starts never became healthy; safe mode"
+            );
+        }
+        save_health(&health, &health_file);
         let instance =
             match Instance::start(paths, secrets, WorkerConfig::default(), connection).await {
                 Ok(instance) => instance,
@@ -92,10 +103,27 @@ fn run() -> ExitCode {
                 // systemd from starting this one again every few seconds.
                 Err(err @ katna_daemon::StartError::AlreadyRunning) => {
                     eprintln!("katna-daemon: {err}");
+                    // Nor a failed start: the running copy owns the file.
+                    let mut health = Health::load(&health_file);
+                    health.starts.retain(|&at| at != started_at);
+                    save_health(&health, &health_file);
                     return ExitCode::SUCCESS;
                 }
                 Err(err) => return fail(err),
             };
+        if health.needs_check(katna_core::crash::VERSION) {
+            let checks = instance.self_check();
+            health.checked(katna_core::crash::VERSION, unix_now(), checks);
+            if health.healthy {
+                tracing::info!("self-check passed");
+            } else {
+                tracing::warn!(checks = ?health.checks, "self-check failed");
+            }
+        }
+        if health.healthy {
+            health.reached_healthy();
+        }
+        save_health(&health, &health_file);
         match zbus::Connection::system().await {
             Ok(system) => instance.watch_system(system),
             Err(err) => tracing::warn!(%err, "no system bus; not watching suspend and network"),
@@ -127,6 +155,20 @@ fn run() -> ExitCode {
         }
         ExitCode::SUCCESS
     })
+}
+
+/// Writes the health file; a failure is logged, never fatal.
+fn save_health(health: &Health, path: &std::path::Path) {
+    if let Err(err) = health.save(path) {
+        tracing::warn!(%err, "could not write the health file");
+    }
+}
+
+/// The current time in Unix seconds.
+fn unix_now() -> i64 {
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map_or(0, |d| i64::try_from(d.as_secs()).unwrap_or(i64::MAX))
 }
 
 fn install_user_service() -> ExitCode {

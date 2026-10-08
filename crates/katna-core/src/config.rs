@@ -4,7 +4,7 @@
 //!
 //! Every field has a default, so a missing file or a missing key is not an
 //! error. Unknown keys are ignored, so an older Katna can read a file written
-//! by a newer one.
+//! by a newer one, and kept: saving writes them back unchanged.
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
@@ -47,6 +47,85 @@ pub struct Config {
     pub hidden_accounts: HiddenAccounts,
     pub offline: OfflineAccounts,
     pub apps: AppsOn,
+    /// Keys this version does not know, written by a newer one.
+    #[serde(skip)]
+    pub unknown_keys: UnknownKeys,
+}
+
+/// Settings a newer Katna wrote that this version does not know, by their
+/// path of table names. [`Config::save`] writes them back, so going back to
+/// an older version and changing a setting keeps them. Keys inside arrays
+/// of tables (signatures) are not kept.
+#[derive(Debug, Clone, Default, PartialEq)]
+pub struct UnknownKeys(Vec<(Vec<String>, toml::Value)>);
+
+impl UnknownKeys {
+    /// Whether every key was known.
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+
+    /// The dotted paths of the keys, for logs.
+    pub fn paths(&self) -> impl Iterator<Item = String> + '_ {
+        self.0.iter().map(|(path, _)| path.join("."))
+    }
+
+    /// Collects the values at `paths` from the parsed file.
+    fn collect(text: &str, paths: Vec<Vec<String>>) -> Self {
+        let Ok(table) = text.parse::<toml::Table>() else {
+            return Self::default();
+        };
+        let found = paths
+            .into_iter()
+            .filter_map(|path| {
+                let (last, parents) = path.split_last()?;
+                let mut at = &table;
+                for key in parents {
+                    at = at.get(key)?.as_table()?;
+                }
+                let value = at.get(last)?.clone();
+                Some((path, value))
+            })
+            .collect();
+        Self(found)
+    }
+
+    /// Puts the keys back into `table` where nothing else took their place.
+    fn restore(&self, table: &mut toml::Table) {
+        'keys: for (path, value) in &self.0 {
+            let Some((last, parents)) = path.split_last() else {
+                continue;
+            };
+            let mut at = &mut *table;
+            for key in parents {
+                let next = at
+                    .entry(key.clone())
+                    .or_insert_with(|| toml::Value::Table(toml::Table::new()));
+                match next.as_table_mut() {
+                    Some(inner) => at = inner,
+                    None => continue 'keys,
+                }
+            }
+            at.entry(last.clone()).or_insert_with(|| value.clone());
+        }
+    }
+}
+
+/// The table path of an ignored key, or `None` when it is inside an array.
+fn key_path(path: &serde_ignored::Path<'_>) -> Option<Vec<String>> {
+    use serde_ignored::Path;
+    match path {
+        Path::Root => Some(Vec::new()),
+        Path::Map { parent, key } => {
+            let mut keys = key_path(parent)?;
+            keys.push(key.clone());
+            Some(keys)
+        }
+        Path::Some { parent }
+        | Path::NewtypeStruct { parent }
+        | Path::NewtypeVariant { parent } => key_path(parent),
+        Path::Seq { .. } => None,
+    }
 }
 
 impl Config {
@@ -1793,7 +1872,15 @@ impl Config {
 
     /// Parses and validates TOML text.
     fn parse(text: &str) -> Result<Self, ParseError> {
-        let mut config: Self = toml::from_str(text).map_err(ParseError::Toml)?;
+        let deserializer = toml::Deserializer::parse(text).map_err(ParseError::Toml)?;
+        let mut ignored = Vec::new();
+        let mut config: Self = serde_ignored::deserialize(deserializer, |path| {
+            ignored.extend(key_path(&path));
+        })
+        .map_err(ParseError::Toml)?;
+        if !ignored.is_empty() {
+            config.unknown_keys = UnknownKeys::collect(text, ignored);
+        }
         config.sending.upgrade();
         config.upgrade_sounds();
         config.validate().map_err(ParseError::Invalid)?;
@@ -1859,7 +1946,13 @@ impl Config {
     /// over it, so readers never see a half-written file.
     pub fn save(&self, path: &Path) -> Result<()> {
         self.validate()?;
-        let text = toml::to_string_pretty(self)?;
+        let text = if self.unknown_keys.is_empty() {
+            toml::to_string_pretty(self)?
+        } else {
+            let mut table = toml::Table::try_from(self)?;
+            self.unknown_keys.restore(&mut table);
+            toml::to_string_pretty(&table)?
+        };
         let dir = path
             .parent()
             .filter(|dir| !dir.as_os_str().is_empty())
@@ -2312,7 +2405,10 @@ mod tests {
 
     #[test]
     fn unknown_keys_are_ignored() {
-        let config = Config::parse("future = 1\n[general]\nnew_option = \"x\"\n").unwrap();
+        let mut config = Config::parse("future = 1\n[general]\nnew_option = \"x\"\n").unwrap();
+        let paths: Vec<_> = config.unknown_keys.paths().collect();
+        assert_eq!(paths, ["future", "general.new_option"]);
+        config.unknown_keys = UnknownKeys::default();
         assert_eq!(config, Config::default());
     }
 
@@ -2387,6 +2483,32 @@ mod tests {
         // No temporary files are left behind.
         let entries: Vec<_> = fs::read_dir(path.parent().unwrap()).unwrap().collect();
         assert_eq!(entries.len(), 1);
+    }
+
+    #[test]
+    fn save_keeps_keys_a_newer_version_wrote() {
+        let tmp = tempfile::tempdir().unwrap();
+        let path = tmp.path().join("config.toml");
+        let newer = "future_switch = true\n\n[general]\nshow_in_tray = false\nfuture_mode = \"bright\"\n\n[future_page]\nwidth = 3\n";
+        fs::write(&path, newer).unwrap();
+        let mut config = Config::load(&path).unwrap();
+        assert!(!config.general.show_in_tray);
+        let mut paths: Vec<_> = config.unknown_keys.paths().collect();
+        paths.sort();
+        assert_eq!(
+            paths,
+            ["future_page", "future_switch", "general.future_mode"]
+        );
+        config.general.show_in_tray = true;
+        config.save(&path).unwrap();
+        let saved: toml::Table = fs::read_to_string(&path).unwrap().parse().unwrap();
+        assert_eq!(saved["future_switch"].as_bool(), Some(true));
+        assert_eq!(saved["general"]["future_mode"].as_str(), Some("bright"));
+        assert_eq!(saved["general"]["show_in_tray"].as_bool(), Some(true));
+        assert_eq!(saved["future_page"]["width"].as_integer(), Some(3));
+        let again = Config::load(&path).unwrap();
+        assert!(again.general.show_in_tray);
+        assert_eq!(again.unknown_keys, config.unknown_keys);
     }
 
     #[test]

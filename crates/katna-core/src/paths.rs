@@ -158,6 +158,12 @@ impl Paths {
         self.state_dir.join("mail-window.toml")
     }
 
+    /// The daemon's start record and self-check:
+    /// `$XDG_STATE_HOME/katna/health.toml` (`docs/ARCHITECTURE.md` §21.2).
+    pub fn health_file(&self) -> PathBuf {
+        self.state_dir.join("health.toml")
+    }
+
     /// Crash reports, one text file per crash:
     /// `$XDG_STATE_HOME/katna/crashes/` (`docs/ARCHITECTURE.md` §19.2).
     pub fn crash_dir(&self) -> PathBuf {
