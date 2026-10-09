@@ -69,7 +69,7 @@ fn the_address_keeps_its_lines() {
         "{text}"
     );
     assert!(
-        html.contains("53/1 Example Road,<br>Howrah 711101 &lt;West Bengal&gt;</div>"),
+        html.contains("53/1 Example Road,<br>Howrah 711101 &lt;West Bengal&gt;</span>"),
         "{html}"
     );
 }
@@ -95,7 +95,7 @@ fn page_marks_are_pictures_in_the_colour() {
     let html = html(&demo(LayoutStyle::Classic));
     assert!(html.contains(r#"<a href="https://www.linkedin.com/company/demo"><img alt="LinkedIn" width="18" height="18""#));
     let uri = html
-        .split(r#"src=""#)
+        .split(r#"<img alt="LinkedIn" width="18" height="18" style="display:block;border:0" src=""#)
         .nth(1)
         .and_then(|s| s.split('"').next())
         .unwrap();
@@ -134,9 +134,57 @@ fn no_photo_shows_initials_and_empty_fields_leave_no_label() {
         html.contains(r#"<img alt="DA" width="68" height="68""#),
         "{html}"
     );
-    assert!(html.contains("M:</span>"));
-    assert!(!html.contains("O:</span>") && !html.contains("E:</span>"));
+    assert!(html.contains(r#"<img alt="Mobile" width="20" height="20""#));
+    assert!(!html.contains(r#"alt="Office""#) && !html.contains(r#"alt="Email""#));
     assert_eq!(text(&layout), "Demo  alam\nM: +91 1");
+}
+
+#[test]
+fn lines_start_with_icons_in_the_colour() {
+    let l = demo(LayoutStyle::Classic);
+    let html = html(&l);
+    let uri = html
+        .split(r#"<img alt="Mobile" width="20" height="20" style="display:block;border:0" src=""#)
+        .nth(1)
+        .and_then(|s| s.split('"').next())
+        .unwrap();
+    let image = image::load_from_memory(&picture_bytes(uri).unwrap())
+        .unwrap()
+        .into_rgba8();
+    assert_eq!(image.dimensions(), (40, 40));
+    // The icon in the colour, on a faint circle of it; the corners clear.
+    assert!(image.pixels().any(|p| p.0 == [0x1a, 0x56, 0xdb, 255]));
+    assert_eq!(image.get_pixel(20, 2).0[3], 36);
+    assert_eq!(image.get_pixel(0, 0).0[3], 0);
+}
+
+#[test]
+fn whatsapp_on_the_mobile_number_is_a_mark_after_it() {
+    let mut l = SignatureLayout {
+        style: LayoutStyle::Classic,
+        mobile: "+91 90000 12345".to_owned(),
+        whatsapp: "+919000012345".to_owned(),
+        telegram: "https://t.me/demoalam/".to_owned(),
+        ..SignatureLayout::default()
+    };
+    let html = html_of(&l);
+    assert!(
+        html.contains(r#"+91 90000 12345&nbsp;&nbsp;<a href="https://wa.me/919000012345""#),
+        "{html}"
+    );
+    assert_eq!(html.matches(r#"alt="WhatsApp""#).count(), 1);
+    assert!(html.contains(r#"<a href="https://t.me/demoalam" style="color:#0e7c86;text-decoration:none">@demoalam</a>"#), "{html}");
+    assert_eq!(
+        text(&l),
+        "M: +91 90000 12345\nWhatsApp: +919000012345\nTelegram: @demoalam"
+    );
+    // Another number gets a line of its own.
+    l.whatsapp = "+91 80000 11111".to_owned();
+    let html = html_of(&l);
+    assert!(html.contains(r#">+91 80000 11111</a>"#), "{html}");
+    assert!(!html.contains("12345&nbsp;"));
+    // Numbers stay on one line; the address may wrap.
+    assert!(html.contains(r#"vertical-align:middle;white-space:nowrap">"#));
 }
 
 #[test]

@@ -2551,13 +2551,20 @@ Gemini or confidential mode):
   **Layouts.** A signature can instead be made from one of twelve layouts
   (Classic, Logo left, Photo, Colour band, One line, Centred, With banner,
   Underline, Side bar, Card, Monogram, Plain text): its fields (name,
-  title, company, numbers, email, website, address, pages, logo, photo,
-  banner, colour) are kept in the settings (`Signature::layout`) and the
+  title, company, mobile and office numbers, WhatsApp, Telegram, email,
+  website, address, pages, logo, photo, banner, colour) are kept in the settings (`Signature::layout`) and the
   signature is written again from them on every change
   (`signatures/layout.rs`), as a designed block of mail-safe HTML (tables
   and inline styles, which Outlook's Word engine also draws) and a plain
   text twin whose numbers are labelled "M:" and "O:", which the person card
-  reads. Pictures are made small at twice their shown size
+  reads. In the HTML each line starts with its icon (mobile, phone, mail,
+  globe, pin, WhatsApp, Telegram) in the colour on a soft circle of it, a
+  20 px PNG; a WhatsApp number that is the mobile number is only its mark
+  after the mobile number, linked to `wa.me`, and Telegram links to
+  `t.me`. Numbers never wrap; in Katna's reader a table row whose cells
+  set no width wraps its cells under each other rather than be cut off,
+  so the Card's and Colour band's two columns stack in a narrow pane.
+  Pictures are made small at twice their shown size
   (`katna_preview::signature`: a logo at most 256 × 128 px, a dark logo on
   nothing put on a soft white card, a photo cut round, 136 px), and the
   page marks (Simple Icons), monogram and underline bar are drawn as PNGs

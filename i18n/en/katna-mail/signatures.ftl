@@ -60,12 +60,19 @@ signature-layout-plain = Plain text
 signature-layout-mobile-label = M:
 signature-layout-office-label = O:
 signature-layout-email-label = E:
+signature-layout-whatsapp-label = WhatsApp:
+signature-layout-telegram-label = Telegram:
 # The fields.
 signature-layout-name = Name
 signature-layout-job = Title
 signature-layout-company = Company
 signature-layout-mobile = Mobile
 signature-layout-office = Office
+# A WhatsApp number. When it is the mobile number, WhatsApp's mark shows
+# after the mobile number instead of a line of its own.
+signature-layout-whatsapp = WhatsApp
+# A Telegram username, such as @name.
+signature-layout-telegram = Telegram
 signature-layout-email = Email
 signature-layout-website = Website
 signature-layout-address = Address

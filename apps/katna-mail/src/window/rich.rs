@@ -349,6 +349,12 @@ impl<'a> Painter<'a> {
             .mt(px(s.margin[0].min(64.0) * SCALE))
             .mb(px(s.margin[1].min(64.0) * SCALE));
         d = match &b.kind {
+            // Cells that only ask for room for their longest word go
+            // under each other when they cannot all fit, as a two
+            // column signature does on a phone, rather than be cut off.
+            BoxKind::Row if b.children.iter().all(free_width) => {
+                d.flex_row().flex_wrap().items_start()
+            }
             BoxKind::Row => d.flex_row().items_start(),
             _ => d.flex_col(),
         };
@@ -702,6 +708,14 @@ impl<'a> Painter<'a> {
                 d.child(div().min_w_0().truncate().child(label))
             })
             .into_any_element()
+    }
+}
+
+/// A cell with no width of its own: it takes a share of the row.
+fn free_width(cell: &Block) -> bool {
+    match cell {
+        Block::Box(b) => b.style.width.is_none(),
+        _ => true,
     }
 }
 
