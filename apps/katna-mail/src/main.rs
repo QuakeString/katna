@@ -268,6 +268,15 @@ fn main() -> ExitCode {
             // thread runs, before anything that could take a while.
             cx.spawn(async move |_| instance::answer_pings(pings).await)
                 .detach();
+            // Sign-in pages the daemon hands over, opened from here so
+            // the desktop brings the browser to the front.
+            cx.spawn(async move |cx| {
+                let pages = daemon::sign_in_pages().1.clone();
+                while let Ok(url) = pages.recv().await {
+                    cx.update(|cx| cx.open_url(&url));
+                }
+            })
+            .detach();
             // Before the window opens, which reads the menu bar's address.
             // Requests the app makes of itself (the New event window's
             // More options), as another launch would.

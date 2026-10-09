@@ -539,6 +539,11 @@ impl MailWindow {
         }));
     }
 
+    /// Whether account `id` is signing in in the browser now.
+    pub(super) fn signing_in(&self, id: i64) -> bool {
+        self.problems.busy == Some(id)
+    }
+
     /// Opens `provider`'s sign-in page for account `id` (`address`), as
     /// a problem line's Sign in does; also from the folder pane's menu.
     pub(super) fn sign_in_account(

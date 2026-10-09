@@ -568,10 +568,15 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   (RFC 7636) and a loopback redirect (RFC 8252). The daemon listens on a
   free port of `127.0.0.1` (`http://127.0.0.1:PORT/` for Google;
   `http://localhost:PORT/` for Microsoft, which registers loopback
-  redirects under `localhost`, so `::1` is listened on too), opens the
-  provider's page in the default browser (the OpenURI portal, else
-  `xdg-open`), and trades the code for tokens with our own HTTPS client
-  (rustls). Scopes: Google `https://mail.google.com/ drive.file
+  redirects under `localhost`, so `::1` is listened on too), has the
+  provider's page opened in the default browser, and trades the code for
+  tokens with our own HTTPS client
+  (rustls). Katna Mail opens the page itself (`SignInFromApp`: the
+  daemon hands it the page as a `SignInPage` signal sent only to the
+  caller), since a click in its window lets KDE and Windows bring the
+  browser to the front, where a page a background service opens can land
+  behind Katna; `SignIn` (katnactl, older apps) has the daemon open it
+  (the OpenURI portal, else `xdg-open`). Scopes: Google `https://mail.google.com/ drive.file
   drive openid email profile` (with `access_type=offline` and
   `prompt=consent`, so every sign-in brings a refresh token; `drive.file`
   is for large attachments, §6.6, `drive` for the drive in Files,
@@ -3895,7 +3900,9 @@ Implemented so far (`katna_dbus::PimProxy`): `Accounts() → a(xssssxs)`
 `DiscoverAccount(address) → (account, POP3 server, source, provider,
 password works)` (an empty POP3 host when there is none),
 `SignIn(provider, id, address) → id` (OAuth2 in the browser; adds the
-account, or signs one in again), `CancelSignIn() → b`, `AddImapAccount(account,
+account, or signs one in again), `SignInFromApp(provider, id, address,
+ticket) → id` (the same, with the page sent to the caller as
+`SignInPage(ticket, url)` to open; level 2), `CancelSignIn() → b`, `AddImapAccount(account,
 password) → id`, `AddPop3Account(account, password) → id` (with
 leave-on-server, days to keep, and delete-with-local), `SetPop3Keep(id,
 leave on server, days, delete with local)`,

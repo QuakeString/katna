@@ -71,6 +71,7 @@ mod server_search;
 
 pub use mutes::MuteOf;
 pub use reminders::{SNOOZED, is_snoozed_path};
+pub use sign_in::Page;
 pub(crate) use sign_in::open_in_browser;
 mod sign_in;
 mod summaries;
@@ -119,6 +120,13 @@ pub enum Notice {
     TrackingChanged,
     /// Where an update of Katna stands changed.
     UpdateChanged,
+    /// The sign-in page of `SignInFromApp`'s `ticket`, for the app at bus
+    /// name `to` to open.
+    SignInPage {
+        to: String,
+        ticket: String,
+        url: String,
+    },
     /// A Google Drive upload moved on.
     DriveChanged(i64),
     /// Calendars, their events or the calendar sync's state changed.

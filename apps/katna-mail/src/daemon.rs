@@ -7,7 +7,7 @@
 
 use std::collections::HashMap;
 
-use futures_lite::{Stream, StreamExt};
+use futures_lite::{FutureExt, Stream, StreamExt};
 use katna_core::OAuthProvider;
 use katna_dbus::zbus::Connection;
 use katna_dbus::{
@@ -1157,9 +1157,64 @@ pub async fn sign_in(
     let pim = PimProxy::new(connection)
         .await
         .map_err(|err| AddError::Other(describe(&err)))?;
-    pim.sign_in(provider.as_str(), account.unwrap_or(0), address)
-        .await
-        .map_err(|err| add_error(&err))
+    let account = account.unwrap_or(0);
+    // The page goes to this app's windows to open: from the daemon, a
+    // service in the background, the desktop may leave the browser
+    // behind Katna, so nothing seems to happen.
+    let ticket = ticket();
+    let result = match pim.receive_sign_in_page().await {
+        Ok(mut pages) => {
+            let forward = async {
+                while let Some(page) = pages.next().await {
+                    if let Ok(args) = page.args()
+                        && args.ticket == ticket.as_str()
+                    {
+                        let _ = sign_in_pages().0.try_send(args.url.to_string());
+                    }
+                }
+                std::future::pending::<katna_dbus::zbus::Result<i64>>().await
+            };
+            pim.sign_in_from_app(provider.as_str(), account, address, &ticket)
+                .or(forward)
+                .await
+        }
+        Err(err) => Err(err),
+    };
+    match result {
+        // A daemon from before it opens the page itself.
+        Err(katna_dbus::zbus::Error::MethodError(name, _, _))
+            if name.as_str() == "org.freedesktop.DBus.Error.UnknownMethod" =>
+        {
+            pim.sign_in(provider.as_str(), account, address).await
+        }
+        result => result,
+    }
+    .map_err(|err| add_error(&err))
+}
+
+/// The sign-in pages the daemon handed this app ([`sign_in`]), which the
+/// app opens in the browser as they come.
+pub fn sign_in_pages() -> &'static (
+    async_channel::Sender<String>,
+    async_channel::Receiver<String>,
+) {
+    static PAGES: std::sync::OnceLock<(
+        async_channel::Sender<String>,
+        async_channel::Receiver<String>,
+    )> = std::sync::OnceLock::new();
+    PAGES.get_or_init(async_channel::unbounded)
+}
+
+/// A ticket no other sign-in has.
+fn ticket() -> String {
+    let mut bytes = [0u8; 16];
+    if getrandom::fill(&mut bytes).is_err() {
+        let nanos = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map_or(0, |d| d.as_nanos());
+        bytes = nanos.to_le_bytes();
+    }
+    bytes.iter().map(|b| format!("{b:02x}")).collect()
 }
 
 /// Ends a sign-in that still waits for the browser.

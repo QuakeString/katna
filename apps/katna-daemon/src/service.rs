@@ -14,7 +14,7 @@ use katna_dbus::{
 use katna_store::{Bell, FolderId, MailCategory, MessageFlags, MessageId, Pinned};
 use zbus::{fdo, object_server::SignalEmitter};
 
-use crate::daemon::{CommandError, Daemon, MuteOf, Notice};
+use crate::daemon::{CommandError, Daemon, MuteOf, Notice, Page};
 use crate::translate::TranslateError;
 
 /// The object at `/in/invenia/katna/Pim1`.
@@ -115,7 +115,32 @@ macro_rules! pim_interface {
             ) -> fdo::Result<i64> {
                 let provider = provider.parse().map_err(fdo::Error::InvalidArgs)?;
                 let account = (account != 0).then_some(AccountId(account));
-                Ok(self.daemon.sign_in(provider, account, &address).await?.0)
+                Ok(self
+                    .daemon
+                    .sign_in(provider, account, &address, &Page::Open)
+                    .await?
+                    .0)
+            }
+
+            async fn sign_in_from_app(
+                &self,
+                provider: String,
+                account: i64,
+                address: String,
+                ticket: String,
+                #[zbus(header)] header: zbus::message::Header<'_>,
+            ) -> fdo::Result<i64> {
+                let provider = provider.parse().map_err(fdo::Error::InvalidArgs)?;
+                let account = (account != 0).then_some(AccountId(account));
+                let to = header
+                    .sender()
+                    .ok_or_else(|| fdo::Error::InvalidArgs("no sender".into()))?
+                    .to_string();
+                Ok(self
+                    .daemon
+                    .sign_in(provider, account, &address, &Page::Tell { to, ticket })
+                    .await?
+                    .0)
             }
 
             async fn cancel_sign_in(&self) -> fdo::Result<bool> {
@@ -972,6 +997,13 @@ macro_rules! pim_interface {
             async fn update_changed(emitter: &SignalEmitter<'_>) -> zbus::Result<()>;
 
             #[zbus(signal)]
+            async fn sign_in_page(
+                emitter: &SignalEmitter<'_>,
+                ticket: &str,
+                url: &str,
+            ) -> zbus::Result<()>;
+
+            #[zbus(signal)]
             async fn katna_account_changed(emitter: &SignalEmitter<'_>) -> zbus::Result<()>;
 
             #[zbus(signal)]
@@ -1093,6 +1125,18 @@ pub async fn emit_signals(connection: zbus::Connection, notices: Receiver<Notice
             Notice::KatnaAccountChanged => PimService::katna_account_changed(&emitter).await,
             Notice::TrackingChanged => PimService::tracking_changed(&emitter).await,
             Notice::UpdateChanged => PimService::update_changed(&emitter).await,
+            Notice::SignInPage {
+                ref to,
+                ref ticket,
+                ref url,
+            } => match zbus::names::BusName::try_from(to.as_str()) {
+                // Only to the app that asked.
+                Ok(to) => {
+                    let emitter = emitter.to_owned().set_destination(to);
+                    PimService::sign_in_page(&emitter, ticket, url).await
+                }
+                Err(err) => Err(err.into()),
+            },
             Notice::DriveChanged(id) => PimService::drive_changed(&emitter, id).await,
             Notice::CalendarChanged => {
                 // The clock shows the events too.
