@@ -14,9 +14,9 @@ set -eu
 tarball=$1
 version=$2
 outdir=$3
-# Debian sorts `~` before anything, so a beta comes before its release
-# (docs/RELEASING.md).
-debversion=$(printf '%s' "$version" | sed 's/beta/~beta/')
+# Debian sorts `~` before anything, so an alpha or beta comes before its
+# release (docs/RELEASING.md).
+debversion=$(printf '%s' "$version" | sed 's/alpha/~alpha/;s/beta/~beta/')
 here=$(cd "$(dirname "$0")" && pwd)
 work=$(mktemp -d)
 root=$work/root

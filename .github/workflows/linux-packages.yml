@@ -363,10 +363,10 @@ jobs:
           rpmdev-setuptree
           git archive --prefix=katna/ -o ~/rpmbuild/SOURCES/katna.tar.gz HEAD
           KATNA_TITLE="$(git log -1 --format=%s)" rpmbuild -bb packaging/fedora/katna.spec \
-            --define "katna_version $(packaging/linux/version.sh | sed 's/beta/~beta/')" \
+            --define "katna_version $(packaging/linux/version.sh | sed 's/alpha/~alpha/;s/beta/~beta/')" \
             --define "katna_built $(git log -1 --format=%ct)"
           mkdir out
-          # Without a beta's `~`, which release file names cannot keep.
+          # Without an alpha's or beta's `~`, which release file names cannot keep.
           for rpm in ~/rpmbuild/RPMS/*/katna-*.rpm; do
             name=$(basename "$rpm")
             cp "$rpm" "out/${name//\~/}"

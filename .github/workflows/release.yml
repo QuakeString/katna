@@ -1,13 +1,15 @@
 name: Release
 
-# Builds a beta from a tag `vX.Y.Z-beta.N` cut from main (docs/RELEASING.md):
-# every format once from the tag's commit, with the checks main runs and
-# Ubuntu's and Windows' tests, then publishes the files as the beta release
-# `vX.Y.Z-beta.N` and the rolling `beta-latest`. Stable is never built:
-# promote.yml copies a beta's files once a reviewer approves.
+# Builds an alpha or a beta from a tag `vX.Y.Z-alpha.N` or `vX.Y.Z-beta.N`
+# cut from main (docs/RELEASING.md): every format once from the tag's
+# commit, with the checks main runs and Ubuntu's and Windows' tests, then
+# publishes the files as the release named by the tag and the rolling
+# `beta-latest`, which holds the newest alpha or beta. Stable is never
+# built: promote.yml copies a beta's files once a reviewer approves.
 on:
   push:
     tags:
+      - "v[0-9]*.[0-9]*.[0-9]*-alpha.[0-9]*"
       - "v[0-9]*.[0-9]*.[0-9]*-beta.[0-9]*"
 
 concurrency:
@@ -18,13 +20,14 @@ permissions:
   contents: read
 
 jobs:
-  # The tag names a beta of a version not released yet, on main.
+  # The tag names an alpha or beta of a version not released yet, on main.
   tag:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.check.outputs.version }}
       release: ${{ steps.check.outputs.release }}
-      beta: ${{ steps.check.outputs.beta }}
+      stage: ${{ steps.check.outputs.stage }}
+      number: ${{ steps.check.outputs.number }}
       commit: ${{ steps.check.outputs.commit }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -37,26 +40,33 @@ jobs:
           GH_REPO: ${{ github.repository }}
           TAG: ${{ github.ref_name }}
         run: |
-          if [[ ! $TAG =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)-beta\.([1-9][0-9]*)$ ]]; then
-            echo "::error::$TAG is not vX.Y.Z-beta.N (docs/RELEASING.md)"
+          if [[ ! $TAG =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)-(alpha|beta)\.([1-9][0-9]*)$ ]]; then
+            echo "::error::$TAG is not vX.Y.Z-alpha.N or vX.Y.Z-beta.N (docs/RELEASING.md)"
             exit 1
           fi
-          release=${TAG%-beta.*}
-          beta=${BASH_REMATCH[4]}
+          stage=${BASH_REMATCH[4]}
+          number=${BASH_REMATCH[5]}
+          release=${TAG%-"$stage".*}
           # The tagged commit, also for an annotated tag.
           commit=$(git rev-parse HEAD)
           git fetch --no-tags origin main
           if ! git merge-base --is-ancestor "$commit" origin/main; then
-            echo "::error::$TAG is not on main; betas are cut from main"
+            echo "::error::$TAG is not on main; alphas and betas are cut from main"
             exit 1
           fi
           if git rev-parse -q --verify "refs/tags/$release" > /dev/null; then
-            echo "::error::$release is out already; a beta leads to a version not released yet"
+            echo "::error::$release is out already; an alpha or beta leads to a version not released yet"
+            exit 1
+          fi
+          # Alphas come before betas: once a version has a beta, an alpha
+          # of it would sort before what testers have.
+          if [[ $stage == alpha && -n $(git tag -l "$release-beta.*") ]]; then
+            echo "::error::$release has a beta already; tag the next beta instead"
             exit 1
           fi
           # What every package must report: packaging/linux/version.sh.
           version=$(packaging/linux/version.sh)
-          expected="${release#v}beta$beta.r0.g$(git rev-parse --short=7 HEAD)"
+          expected="${release#v}$stage$number.r0.g$(git rev-parse --short=7 HEAD)"
           if [[ $version != "$expected" ]]; then
             echo "::error::version.sh gives $version, not $expected"
             exit 1
@@ -64,7 +74,8 @@ jobs:
           {
             echo "version=$version"
             echo "release=$release"
-            echo "beta=$beta"
+            echo "stage=$stage"
+            echo "number=$number"
             echo "commit=$commit"
           } | tee -a "$GITHUB_OUTPUT"
 
@@ -118,7 +129,7 @@ jobs:
       contents: write
       actions: read
 
-  beta:
+  publish:
     needs: [tag, checks, ubuntu, windows-tests, arch, windows, linux]
     runs-on: ubuntu-latest
     permissions:
@@ -217,16 +228,23 @@ jobs:
       - name: Write the release notes
         env:
           RELEASE: ${{ needs.tag.outputs.release }}
-          BETA: ${{ needs.tag.outputs.beta }}
+          STAGE: ${{ needs.tag.outputs.stage }}
+          NUMBER: ${{ needs.tag.outputs.number }}
           TAG: ${{ github.ref_name }}
         run: |
           base="https://github.com/$GITHUB_REPOSITORY/releases/download/beta-latest"
+          if [[ $STAGE == alpha ]]; then
+            about="An alpha is an early look for people happy to meet rough
+          edges and report bugs; betas of ${RELEASE#v} follow it."
+          else
+            about="A beta is for people who want new features early and
+          report bugs; if nothing serious turns up, these same files become
+          Katna ${RELEASE#v}."
+          fi
           cat > notes.md <<EOF
-          Beta $BETA of Katna ${RELEASE#v}, built from \`$TAG\` at $COMMIT
-          (version $VERSION). A beta is for people who want new features
-          early and report bugs; if nothing serious turns up, these same
-          files become Katna ${RELEASE#v}. \`beta-latest\` always holds the
-          newest beta.
+          ${STAGE^} $NUMBER of Katna ${RELEASE#v}, built from \`$TAG\` at $COMMIT
+          (version $VERSION). $about \`beta-latest\` always holds the newest
+          alpha or beta.
 
           - **Arch:** add \`[katna]\` with \`Server = $base\` to
             \`/etc/pacman.conf\` (packaging/README.md), then
@@ -239,15 +257,16 @@ jobs:
 
           SHA256SUMS lists every file's SHA-256.
           EOF
-      - name: Publish the beta
+      - name: Publish the release
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           RELEASE: ${{ needs.tag.outputs.release }}
-          BETA: ${{ needs.tag.outputs.beta }}
+          STAGE: ${{ needs.tag.outputs.stage }}
+          NUMBER: ${{ needs.tag.outputs.number }}
           TAG: ${{ github.ref_name }}
         run: |
           bash src/ci/publish-release.sh --prerelease "$TAG" "$COMMIT" \
-            "Katna ${RELEASE#v} beta $BETA" notes.md out
+            "Katna ${RELEASE#v} $STAGE $NUMBER" notes.md out
           bash src/ci/publish-release.sh --rolling --prerelease beta-latest "$COMMIT" \
-            "Katna beta (newest: ${RELEASE#v} beta $BETA)" notes.md out
+            "Katna beta (newest: ${RELEASE#v} $STAGE $NUMBER)" notes.md out
