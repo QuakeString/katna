@@ -1702,8 +1702,9 @@ impl MailWindow {
     }
 
     fn render_quick_card(&self, draft: &Draft, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        // The frosted glass goes in first, so the body draws over it.
         let card = raised(
-            self.quick_card_body(draft, th, cx)
+            div()
                 .id("event-draft")
                 .occlude()
                 // A phone's window, less a margin at each side.
@@ -1714,7 +1715,8 @@ impl MailWindow {
             th,
             15.0,
             3.0,
-        );
+        )
+        .child(self.quick_card_body(draft, th, cx));
         deferred(
             anchored()
                 .position(draft.at)
