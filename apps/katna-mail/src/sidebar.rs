@@ -333,7 +333,6 @@ impl Tree {
                 for folder in folders {
                     insert(&mut roots, id, folder, unread_of(folder.id));
                 }
-                lift_gmail_labels(&mut roots);
                 sort(&mut roots);
                 AccountNode {
                     id,
@@ -433,7 +432,7 @@ impl Tree {
             .iter()
             .filter(|a| a.id == account)
             .flat_map(|a| &a.roots)
-            .any(|n| GMAIL_ROOTS.contains(&root_segment(&n.path)))
+            .any(|n| GMAIL_ROOTS.contains(&n.segment.as_str()))
     }
 
     /// The folders of `account` a new folder may go inside, with their
@@ -510,7 +509,7 @@ impl Tree {
             let special = account
                 .roots
                 .iter()
-                .take_while(|n| n.role != Role::Other || is_gmail_label(n))
+                .take_while(|n| n.role != Role::Other)
                 .count();
             push_rows(&account.roots[..special], 0, expanded, &mut rows);
             rows.push(Row::Labels {
@@ -692,61 +691,12 @@ fn insert(nodes: &mut Vec<Node>, account: AccountId, folder: &FolderSummary, unr
     }
 }
 
-/// The first part of `path`.
-fn root_segment(path: &str) -> &str {
-    path.split(SEPARATOR).next().unwrap_or(path)
-}
-
-/// Whether `node` is one of Gmail's own labels, such as Starred or
-/// Important, lifted out of `[Gmail]`.
-fn is_gmail_label(node: &Node) -> bool {
-    node.path.contains(SEPARATOR) && GMAIL_ROOTS.contains(&root_segment(&node.path))
-}
-
-/// Whether the folder pane line `key` is Gmail's Important label.
-pub fn is_gmail_important(key: &str) -> bool {
-    let path = key.split_once(':').map_or(key, |(_, path)| path);
-    GMAIL_ROOTS.iter().any(|root| {
-        path.strip_prefix(root)
-            .and_then(|p| p.strip_prefix(SEPARATOR))
-            .is_some_and(|p| p.eq_ignore_ascii_case("important"))
-    })
-}
-
-/// Brings Gmail's own labels (Starred, Important, Sent Mail, Drafts, All
-/// Mail, Spam, Trash…) out of `[Gmail]` to the top, beside Inbox, as Gmail
-/// lists them. `[Gmail]` itself stays only if it holds mail.
-fn lift_gmail_labels(roots: &mut Vec<Node>) {
-    let mut lifted = Vec::new();
-    roots.retain_mut(|root| {
-        if !GMAIL_ROOTS.contains(&root.segment.as_str()) {
-            return true;
-        }
-        lifted.append(&mut root.children);
-        root.folder.is_some()
-    });
-    roots.append(&mut lifted);
-}
-
-/// Where a top-level folder goes: special folders first, Gmail's
-/// Important after Starred and Snoozed, its other labels after the
-/// special ones, then the user's own.
-fn rank(node: &Node) -> (Role, u8) {
-    match node.role {
-        Role::Other if is_gmail_label(node) && node.segment.eq_ignore_ascii_case("important") => {
-            (Role::Snoozed, 1)
-        }
-        Role::Other if is_gmail_label(node) => (Role::All, 1),
-        role => (role, 0),
-    }
-}
-
 fn sort(nodes: &mut [Node]) {
     // Special folders first, then by name, ignoring case and leading
     // punctuation such as Gmail's `[Gmail]`.
     let sort_key = |n: &Node| {
         (
-            rank(n),
+            n.role,
             n.name
                 .trim_start_matches(|c: char| !c.is_alphanumeric())
                 .to_lowercase(),
@@ -942,57 +892,6 @@ mod tests {
     }
 
     #[test]
-    fn gmail_labels_sit_beside_the_inbox() {
-        let mut folders = vec![
-            folder(1, 1, "INBOX", 4),
-            folder(2, 1, "[Gmail]/Sent Mail", 0),
-            folder(3, 1, "[Gmail]/Starred", 0),
-            folder(4, 1, "[Gmail]/Important", 2),
-            folder(5, 1, "[Gmail]/All Mail", 9),
-            folder(6, 1, "[Gmail]/Spam", 0),
-            folder(7, 1, "[Gmail]/Drafts", 0),
-            folder(8, 1, "Receipts", 0),
-            folder(9, 1, "[Gmail]/Chats", 0),
-        ];
-        for (ix, role) in [
-            (1, "sent"),
-            (2, "flagged"),
-            (4, "all"),
-            (5, "junk"),
-            (6, "drafts"),
-        ] {
-            folders[ix].role = Some(role.to_owned());
-        }
-        let tree = Tree::build(&[], &folders, &HashMap::new());
-        assert!(tree.is_gmail(AccountId(1)));
-        let rows = tree.rows(&tree.initially_expanded(), None, |_| true);
-        assert_eq!(
-            labels(&rows),
-            [
-                "# Account 1",
-                "Inbox",
-                "Starred",
-                "Important",
-                "Drafts",
-                "Sent Mail",
-                "Spam",
-                "All Mail",
-                "Chats",
-                "## Labels",
-                "Receipts",
-            ]
-        );
-        // Still Gmail's own: never renamed, deleted or a place for new ones.
-        assert!(!tree.editable(FolderId(4)));
-        assert!(is_gmail_important("1:[Gmail]/Important"));
-        assert!(!is_gmail_important("1:Important"));
-        assert_eq!(
-            tree.nest_targets(AccountId(1)),
-            [(FolderId(8), "Receipts".to_owned())]
-        );
-    }
-
-    #[test]
     fn nested_folders_special_first() {
         let accounts = [Account {
             id: AccountId(1),
@@ -1022,9 +921,10 @@ mod tests {
                 "# Work",
                 "Inbox -",
                 "  Receipts",
-                "Sent Mail",
                 "archive",
                 "## Labels",
+                "[Gmail] -",
+                "  Sent Mail",
                 "Projects -",
                 "  Katna",
                 "# Account 2",
@@ -1035,9 +935,9 @@ mod tests {
         let collapsed = tree.rows(&HashSet::new(), None, |_| true);
         assert_eq!(
             labels(&collapsed)[..4],
-            ["# Work", "Inbox +", "Sent Mail", "archive"]
+            ["# Work", "Inbox +", "archive", "## Labels"]
         );
-        let Row::Folder { folder, role, .. } = &rows[6] else {
+        let Row::Folder { folder, role, .. } = &rows[7] else {
             panic!("expected a folder row");
         };
         assert_eq!((*folder, *role), (None, Role::Other));

@@ -1,8 +1,0 @@
-# SPDX-License-Identifier: GPL-3.0-or-later
-
-title = "Gmail's folders on top"
-text = """
-Starred, Important, Sent, Drafts, All Mail, Spam and Trash of a Gmail
-account now sit right under Inbox, as in Gmail, instead of inside the
-folded [Gmail] label.
-"""
