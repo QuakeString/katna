@@ -5883,7 +5883,7 @@ it gets the most care.
 | Channel | Built from | Who it is for | How often |
 |---|---|---|---|
 | **Nightly** | every push to `main` (today's `arch-latest`) | developers and testers | every merge |
-| **Beta** | a tag `vX.Y.Z-beta.N` cut from `main` after the release checks pass | people who want new features early and report bugs | every few weeks |
+| **Beta** | a tag `vX.Y.Z-beta.N` (or an earlier `vX.Y.Z-alpha.N`, published to the same `beta-latest` and never promoted) cut from `main` after the release checks pass | people who want new features early and report bugs | every few weeks |
 | **Stable** | a beta promoted unchanged after its soak | everyone else; the default | after the soak |
 
 - Stable and beta are the **same files**: promotion copies the beta's
