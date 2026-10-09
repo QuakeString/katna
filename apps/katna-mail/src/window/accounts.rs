@@ -521,6 +521,7 @@ impl MailWindow {
             )
             // What is wrong with it, as the line over the mail list says.
             .children(problem.as_ref().map(|problem| {
+                let busy = self.signing_in(id.0);
                 div()
                     .pt(px(space::S1))
                     .flex()
@@ -538,9 +539,14 @@ impl MailWindow {
                         div()
                             .flex_1()
                             .min_w_0()
-                            .child(problem.text())
-                            // Its fix, as on the line over the mail list.
-                            .child(
+                            .child(if busy {
+                                format!("{} {}", problem.text(), tr!("sign-in-again-waiting"))
+                            } else {
+                                problem.text()
+                            })
+                            // Its fix, as on the line over the mail list,
+                            // which waits for the browser like it.
+                            .children((!busy).then(|| {
                                 div()
                                     .id(("account-fix", ix))
                                     .font_weight(FontWeight::MEDIUM)
@@ -559,8 +565,8 @@ impl MailWindow {
                                                 cx,
                                             )
                                         })
-                                    }),
-                            ),
+                                    })
+                            })),
                     )
             }));
         let own = self.remote.has_own_picture(id);

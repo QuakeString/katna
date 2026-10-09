@@ -692,7 +692,7 @@ pub mod mute {
 /// `Version()`. It goes up by one whenever `Pim1` gains a member, which is
 /// the only change `Pim1` takes; anything else becomes `Pim2`
 /// (`docs/ARCHITECTURE.md` §14.1, §21.2).
-pub const API_LEVEL: u32 = 1;
+pub const API_LEVEL: u32 = 2;
 
 /// The names in `Version()`'s schema versions.
 pub mod schema {
@@ -757,6 +757,19 @@ macro_rules! pim_proxy {
             /// links Zoho's tasks and calendars to it, and its mail keeps
             /// its password.
             fn sign_in(&self, provider: &str, account: i64, address: &str) -> zbus::Result<i64>;
+
+            /// `SignIn`, but the daemon does not open the browser: it sends
+            /// the page to the caller as `SignInPage` with `ticket`, for
+            /// the window that was clicked to open, so the desktop brings
+            /// the browser to the front. Level 2; daemons before it answer
+            /// `UnknownMethod`.
+            fn sign_in_from_app(
+                &self,
+                provider: &str,
+                account: i64,
+                address: &str,
+                ticket: &str,
+            ) -> zbus::Result<i64>;
 
             /// Ends a `SignIn` still waiting for the browser. Returns
             /// whether one was.
@@ -1503,6 +1516,11 @@ macro_rules! pim_proxy {
             /// `UpdateStatus` changed.
             #[zbus(signal)]
             fn update_changed(&self) -> zbus::Result<()>;
+
+            /// The sign-in page of the caller's `SignInFromApp` with
+            /// `ticket`, to open in the browser. Sent only to that caller.
+            #[zbus(signal)]
+            fn sign_in_page(&self, ticket: &str, url: &str) -> zbus::Result<()>;
 
             /// `KatnaAccount` changed.
             #[zbus(signal)]
