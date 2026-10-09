@@ -1265,6 +1265,7 @@ impl MailWindow {
                 let outbox = key == compose::OUTBOX_NAV_KEY;
                 let waiting = key == super::waiting::NAV_KEY;
                 let reminders = key == super::remind::NAV_KEY;
+                let important = *role == Role::Other && sidebar::is_gmail_important(key);
                 // Special folders show their name in the current language;
                 // the user's own keep theirs.
                 let label = if scheduled {
@@ -1275,6 +1276,8 @@ impl MailWindow {
                     tr!("folder-reminders")
                 } else if outbox {
                     tr!("folder-outbox")
+                } else if important {
+                    tr!("folder-important")
                 } else {
                     role.title().unwrap_or_else(|| label.clone())
                 };
@@ -1291,6 +1294,8 @@ impl MailWindow {
                             "bell"
                         } else if outbox {
                             "outbox"
+                        } else if important {
+                            "important"
                         } else {
                             role_icon(*role)
                         },

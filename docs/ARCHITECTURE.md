@@ -2077,7 +2077,10 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
 - **Navigation.** The folders as full pills, rounded at both ends and
   set 8 px in from the pane's edge (the drawers' lines too). The menu
   button folds it away (it first folded to a rail of icons; see below).
-  With one account the account heading is left out. With several, the
+  With one account the account heading is left out. A Gmail account's
+  own labels (Starred, Important, Sent, Drafts, All Mail, Spam, Trash…)
+  come out of `[Gmail]` to sit under Inbox as in Gmail, above Labels, so
+  one Gmail account without the unified lists still shows them. With several, the
   owner asked for one account at a time by default, as Gmail does:
   "Folder pane" in Settings > Accounts (`mail.accounts_shown`, `one` or
   `all`) picks between the shown account's folders only and every account
