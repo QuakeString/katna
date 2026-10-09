@@ -952,6 +952,11 @@ pub struct Sending {
     /// The [`Signature::id`] replies and forwards start with, unless the
     /// conversation shows which one the user signed with before.
     pub reply_signature: Option<u32>,
+    /// Each account's own defaults, by lowercase address; an account
+    /// without an entry starts with [`Self::new_mail_signature`] and
+    /// [`Self::reply_signature`].
+    #[serde(skip_serializing_if = "BTreeMap::is_empty")]
+    pub account_signatures: BTreeMap<String, AccountSignatures>,
     /// New messages open full screen.
     pub compose_full_screen: bool,
     /// Messages are written and sent as plain text, without formatting.
@@ -986,6 +991,7 @@ impl Default for Sending {
             signatures: Vec::new(),
             new_mail_signature: None,
             reply_signature: None,
+            account_signatures: BTreeMap::new(),
             compose_full_screen: false,
             plain_text: false,
             spell_check: true,
@@ -1024,10 +1030,45 @@ impl Sending {
     /// Removes a signature, and it as a default.
     pub fn remove_signature(&mut self, id: u32) {
         self.signatures.retain(|s| s.id != id);
-        for default in [&mut self.new_mail_signature, &mut self.reply_signature] {
+        let accounts = self
+            .account_signatures
+            .values_mut()
+            .flat_map(|a| [&mut a.new_mail, &mut a.reply]);
+        for default in [&mut self.new_mail_signature, &mut self.reply_signature]
+            .into_iter()
+            .chain(accounts)
+        {
             if *default == Some(id) {
                 *default = None;
             }
+        }
+    }
+
+    /// The signature mail from `address` starts with: for replies and
+    /// forwards when `replies`, else for new mail. `None` for none, or
+    /// when that signature is gone.
+    pub fn default_signature(&self, address: &str, replies: bool) -> Option<u32> {
+        let id = match self.account_signatures.get(&address.to_lowercase()) {
+            Some(own) if replies => own.reply,
+            Some(own) => own.new_mail,
+            None if replies => self.reply_signature,
+            None => self.new_mail_signature,
+        };
+        self.signature(id).map(|s| s.id)
+    }
+
+    /// Makes `id` (or none) the signature mail from `address` starts
+    /// with, for replies and forwards when `replies`, else for new mail.
+    pub fn set_default_signature(&mut self, address: &str, replies: bool, id: Option<u32>) {
+        let (new_mail, reply) = (self.new_mail_signature, self.reply_signature);
+        let own = self
+            .account_signatures
+            .entry(address.to_lowercase())
+            .or_insert(AccountSignatures { new_mail, reply });
+        if replies {
+            own.reply = id;
+        } else {
+            own.new_mail = id;
         }
     }
 
@@ -1038,6 +1079,17 @@ impl Sending {
             self.add_signature("My signature".to_owned(), old);
         }
     }
+}
+
+/// The signatures one account's mail starts with
+/// ([`Sending::account_signatures`]).
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AccountSignatures {
+    /// The [`Signature::id`] new mail starts with; `None` for none.
+    pub new_mail: Option<u32>,
+    /// The [`Signature::id`] replies and forwards start with.
+    pub reply: Option<u32>,
 }
 
 /// A named signature ([`Sending::signatures`]).
@@ -2312,6 +2364,46 @@ mod tests {
             "{text}"
         );
         assert_eq!(Config::parse(&text).unwrap(), config);
+    }
+
+    #[test]
+    fn signatures_per_account() {
+        let mut sending = Sending::default();
+        let work = sending.add_signature("Work".into(), "Kay, Enron".into());
+        let home = sending.add_signature("Home".into(), "Kay".into());
+        // An account not set yet starts with the shared defaults.
+        assert_eq!(
+            sending.default_signature("kay@enron.example", false),
+            Some(work)
+        );
+        assert_eq!(
+            sending.default_signature("kay@enron.example", true),
+            Some(work)
+        );
+        sending.set_default_signature("Kay@Home.example", false, Some(home));
+        sending.set_default_signature("kay@home.example", true, None);
+        assert_eq!(
+            sending.default_signature("kay@home.example", false),
+            Some(home)
+        );
+        assert_eq!(sending.default_signature("KAY@HOME.EXAMPLE", true), None);
+        assert_eq!(
+            sending.default_signature("kay@enron.example", false),
+            Some(work)
+        );
+        let config = Config {
+            sending: sending.clone(),
+            ..Config::default()
+        };
+        let text = toml::to_string_pretty(&config).unwrap();
+        assert_eq!(Config::parse(&text).unwrap(), config);
+        // Deleting a signature takes it out of every account.
+        sending.remove_signature(home);
+        assert_eq!(sending.default_signature("kay@home.example", false), None);
+        assert_eq!(
+            sending.account_signatures["kay@home.example"].new_mail,
+            None
+        );
     }
 
     #[test]

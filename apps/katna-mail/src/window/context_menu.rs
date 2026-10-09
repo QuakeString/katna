@@ -100,6 +100,12 @@ enum MenuFor {
     Scheme(&'static str),
     /// A signature in the list in Settings > Compose > Signatures.
     Signature(u32),
+    /// The signatures mail from an address starts with, for replies and
+    /// forwards when `replies` (Settings > Compose > Default signature).
+    DefaultSignature {
+        address: String,
+        replies: bool,
+    },
     /// The sounds to pick for an event in Settings > Notifications.
     Sound(SoundEvent),
     /// A mail's bubble in the chat view, or one of its files.
@@ -125,6 +131,7 @@ impl ContextMenu {
             MenuFor::Calendar(_)
             | MenuFor::Scheme(_)
             | MenuFor::Signature(_)
+            | MenuFor::DefaultSignature { .. }
             | MenuFor::Sound(_)
             | MenuFor::Bubble(..) => None,
         }
@@ -205,6 +212,22 @@ impl MailWindow {
         cx.notify();
     }
 
+    /// Opens the menu of signatures mail from `address` starts with.
+    pub(super) fn open_default_signature_menu(
+        &mut self,
+        address: String,
+        replies: bool,
+        at: Point<Pixels>,
+        cx: &mut Context<Self>,
+    ) {
+        self.menu = None;
+        self.context_menu = Some(ContextMenu::new(
+            MenuFor::DefaultSignature { address, replies },
+            at,
+        ));
+        cx.notify();
+    }
+
     /// Opens the menu of sounds for `event`.
     pub(super) fn open_sound_context_menu(
         &mut self,
@@ -239,6 +262,7 @@ impl MailWindow {
             MenuFor::Mail { .. }
             | MenuFor::Scheme(_)
             | MenuFor::Signature(_)
+            | MenuFor::DefaultSignature { .. }
             | MenuFor::Sound(_)
             | MenuFor::Bubble(..) => None,
         }
@@ -582,6 +606,9 @@ impl MailWindow {
             MenuFor::Calendar(target) => format!("context-menu-{}", target.key()),
             MenuFor::Scheme(id) => format!("context-menu-scheme-{id}"),
             MenuFor::Signature(id) => format!("context-menu-signature-{id}"),
+            MenuFor::DefaultSignature { address, replies } => {
+                format!("context-menu-default-signature-{address}-{replies}")
+            }
             MenuFor::Sound(event) => format!("context-menu-sound-{event:?}"),
             MenuFor::Bubble(id, file) => format!(
                 "context-menu-bubble-{}-{}",
@@ -653,6 +680,10 @@ impl MailWindow {
             Some(MenuFor::Calendar(target)) => self.calendar_menu_rows(target, rh, th, cx),
             Some(MenuFor::Scheme(id)) => (self.scheme_menu_rows(id, rh, th, cx), Vec::new()),
             Some(MenuFor::Signature(id)) => (self.signature_menu_rows(*id, rh, th, cx), Vec::new()),
+            Some(MenuFor::DefaultSignature { address, replies }) => (
+                self.default_signature_menu_rows(address, *replies, rh, th, cx),
+                Vec::new(),
+            ),
             Some(MenuFor::Sound(event)) => (self.sound_menu_rows(*event, rh, th, cx), Vec::new()),
             Some(MenuFor::Bubble(id, file)) => {
                 (self.bubble_menu_rows(*id, *file, rh, th, cx), Vec::new())
@@ -953,6 +984,7 @@ impl MailWindow {
             Some(
                 MenuFor::Scheme(_)
                 | MenuFor::Signature(_)
+                | MenuFor::DefaultSignature { .. }
                 | MenuFor::Sound(_)
                 | MenuFor::Bubble(..),
             )

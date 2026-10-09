@@ -22,7 +22,7 @@ use super::MailWindow;
 use super::context_menu::{Rows, menu_row, menu_row_with};
 use super::settings::Change;
 use crate::theme::Theme;
-use crate::widgets::{icon, icon_button};
+use crate::widgets::{choice_pill, icon, icon_button};
 
 /// The kinds of file a sound of the user's own can be.
 const FILE_KINDS: [&str; 6] = ["wav", "ogg", "oga", "opus", "flac", "mp3"];
@@ -294,34 +294,16 @@ impl MailWindow {
         let current = self.event_sound(event);
         let ix = index(event);
         let picker = self
-            .page_control(div().id(("sound-pick", ix)), th, cx)
-            .h(px(32.0))
+            .page_control(
+                choice_pill(("sound-pick", ix), sound_name(&current), !on, th),
+                th,
+                cx,
+            )
             .w(px(152.0))
-            .flex_none()
-            .pl(px(14.0))
-            .pr(px(8.0))
-            .flex()
-            .flex_row()
-            .items_center()
-            .gap(px(4.0))
-            .rounded_full()
-            .bg(rgba(th.chip))
-            .text_size(px(13.0))
-            .when(!on, |d| d.text_color(rgba(th.text_faint)))
-            .cursor_pointer()
-            .hover(|s| s.bg(rgba(th.hover)))
             .on_click(cx.listener(move |this, event_: &gpui::ClickEvent, _, cx| {
                 cx.stop_propagation();
                 this.open_sound_menu(event, event_.position(), cx);
-            }))
-            .child(
-                div()
-                    .flex_1()
-                    .min_w_0()
-                    .truncate()
-                    .child(sound_name(&current)),
-            )
-            .child(icon("chevron-down", th.text_dim, 16.0));
+            }));
         let play = icon_button(("sound-play", ix), "play", 16.0, th)
             .size(px(32.0))
             .tip(tr!("sounds-play"), th)

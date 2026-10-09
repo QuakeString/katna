@@ -561,9 +561,12 @@ settings-compose-signature-import = Import
 settings-compose-signature-edit-html = Edit HTML
 settings-compose-no-signatures = No signatures yet.
 settings-compose-no-signature = No signature
-settings-compose-for-new-mail = For new mail
-settings-compose-for-replies = For replies and forwards
-settings-compose-for-replies-detail = In a conversation where you signed a message, a reply starts with that signature instead.
+# The row choosing, for each account, the signature its mail starts with.
+settings-compose-default-signature = Default signature
+settings-compose-default-signature-detail = Changing From while writing puts in that account's signature. In a conversation where you signed a message, a reply starts with that signature instead.
+# Over the two choices of each account in that row.
+settings-compose-default-new-mail = New mail
+settings-compose-default-replies = Replies and forwards
 # The row choosing between plain text and formatted mail.
 settings-compose-format = Format
 settings-compose-plain-text = Write in plain text
@@ -701,8 +704,7 @@ settings-app-accounts-summary = Leave an account out of this app, while its item
 settings-compose-send-from-summary = The account new mail goes out from: the first one, another one, or the one you are in
 settings-compose-send-on-replies-summary = Send, or Send and archive the conversation, on replies and forwards
 settings-compose-signatures-summary = Added below your message, after a “--” line
-settings-compose-for-new-mail-summary = The signature new mail starts with
-settings-compose-for-replies-summary = The signature replies and forwards start with
+settings-compose-default-signature-summary = The signature each account's new mail, replies and forwards start with
 settings-compose-format-summary = Write new mail in plain text
 settings-compose-spelling-summary = Check spelling while writing, and the dictionary's language
 settings-general-search-triggers-summary = Words that search your mail from KRunner or the GNOME search

@@ -123,7 +123,7 @@ impl MailWindow {
                     cx,
                 );
                 if let Some(account) = account {
-                    this.send_compose_from(account);
+                    this.send_compose_from(account, cx);
                 }
                 cx.notify();
             })

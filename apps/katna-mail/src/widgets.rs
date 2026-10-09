@@ -714,6 +714,37 @@ pub fn outlined_button(
         .child(label)
 }
 
+/// A pill naming the current choice, with an arrow; a click on it opens
+/// the menu of choices where it was clicked (the sound of an event, the
+/// signature an account starts with). Dimmed while what it is for is off.
+pub fn choice_pill(
+    id: impl Into<gpui::ElementId>,
+    label: impl Into<SharedString>,
+    dim: bool,
+    th: &Theme,
+) -> Stateful<Div> {
+    let label = label.into();
+    div()
+        .id(id)
+        .h(px(space::S7))
+        .flex_none()
+        .pl(px(space::S4 + space::S1))
+        .pr(px(space::S3))
+        .flex()
+        .flex_row()
+        .items_center()
+        .gap(px(space::S2))
+        .rounded(px(radius::FULL))
+        .bg(rgba(th.chip))
+        .text_size(px(text::SMALL))
+        .when(dim, |d| d.text_color(rgba(th.text_faint)))
+        .cursor_pointer()
+        .hover(|s| s.bg(rgba(th.hover)))
+        .aria_label(label.clone())
+        .child(div().flex_1().min_w_0().truncate().child(label))
+        .child(icon("chevron-down", th.text_dim, 16.0))
+}
+
 /// An accent label with an icon before it, and no edge or fill until the
 /// pointer is over it ("Add email").
 pub fn text_button(

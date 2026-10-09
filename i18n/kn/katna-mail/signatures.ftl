@@ -69,7 +69,6 @@ signature-layout-light = ತಿಳಿ
 signature-layout-dark = ಗಾಢ
 signature-layout-text = ಸರಳ ಪಠ್ಯ
 signature-layout-inside = ಚಿತ್ರಗಳನ್ನು ಮೇಲ್‌ನ ಒಳಗೇ ಕಳುಹಿಸಲಾಗುತ್ತದೆ, ಹಾಗಾಗಿ ರಿಮೋಟ್ ಚಿತ್ರಗಳು ಆಫ್ ಇರುವಲ್ಲೂ ಅವು ಕಾಣಿಸುತ್ತವೆ. ಇದು ಪ್ರತಿ ಮೇಲ್‌ಗೆ { $size } ಸೇರಿಸುತ್ತದೆ.
-signature-layout-free = ಬೇರೆ ಏನಾದರೂ ಬೇಕೆ?
 signature-layout-edit = ಕೈಯಾರೆ ಎಡಿಟ್ ಮಾಡಿ
 signature-layout-edit-confirm = ಕೈಯಾರೆ ಎಡಿಟ್ ಮಾಡಬೇಕೆ? ಅದರ ಫೀಲ್ಡ್‌ಗಳು ಮತ್ತು ವಿನ್ಯಾಸ ಹೋಗುತ್ತವೆ, ಮತ್ತು ಎಡಿಟರ್ ಸಾಧ್ಯವಾದಷ್ಟು ಅದರ ನೋಟವನ್ನು ಉಳಿಸುತ್ತದೆ.
 signature-layout-use-confirm = { $layout } ವಿನ್ಯಾಸ ಬಳಸಬೇಕೆ? ಇದು ಈ ಸಹಿಯನ್ನು ಬದಲಾಯಿಸುತ್ತದೆ, ಅದರಿಂದಲೇ ತುಂಬಲಾಗುತ್ತದೆ.

@@ -66,7 +66,6 @@ signature-layout-light = روشن
 signature-layout-dark = تیره
 signature-layout-text = متن ساده
 signature-layout-inside = تصاویر داخل ایمیل فرستاده می‌شوند، پس حتی جایی که تصاویر راه دور خاموش است هم نمایش داده می‌شوند. این یکی { $size } به هر ایمیل اضافه می‌کند.
-signature-layout-free = چیز دیگری می‌خواهید؟
 signature-layout-edit = ویرایش دستی
 signature-layout-edit-confirm = دستی ویرایشش کنید؟ فیلدها و چیدمانش از بین می‌روند و ظاهرش تا جایی که ویرایشگر بتواند حفظ می‌شود.
 signature-layout-use-confirm = از چیدمان { $layout } استفاده شود؟ جایگزین این امضا می‌شود و با اطلاعات آن پر می‌شود.

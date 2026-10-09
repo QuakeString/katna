@@ -160,8 +160,19 @@ impl MailWindow {
         let signature = if self.reader.as_ref().is_some_and(|r| r.key == key) {
             self.signature_for(Kind::Reply)
         } else {
-            let sending = &self.config.sending;
-            sending.signature(sending.reply_signature).map(|s| s.id)
+            // The account the conversation's newest message is in.
+            let address = self
+                .mail
+                .as_ref()
+                .ok()
+                .and_then(|mail| {
+                    let newest = mail.entry_messages(key).last().copied()?;
+                    mail.message_account(newest)
+                })
+                .and_then(|id| self.accounts.iter().find(|a| a.id == id))
+                .map(|a| a.address.as_str())
+                .unwrap_or_default();
+            self.config.sending.default_signature(address, true)
         };
         // A draft kept from before comes back as it was left.
         let kept = self.summaries.kept_replies.get(&key).cloned();

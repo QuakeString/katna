@@ -69,7 +69,6 @@ signature-layout-light = 浅色
 signature-layout-dark = 深色
 signature-layout-text = 纯文本
 signature-layout-inside = 图片会嵌入邮件中发送，因此即使对方关闭了网络图片也能显示。这会让每封邮件增加 { $size }。
-signature-layout-free = 想要其他样式？
 signature-layout-edit = 手动编辑
 signature-layout-edit-confirm = 要手动编辑吗？其字段和布局将被移除，外观会在编辑器所能支持的范围内保留。
 signature-layout-use-confirm = 要使用“{ $layout }”布局吗？它会替换此签名，并用此签名的内容填充。

@@ -69,7 +69,6 @@ signature-layout-light = ਹਲਕਾ
 signature-layout-dark = ਗੂੜ੍ਹਾ
 signature-layout-text = ਸਾਦੀ ਲਿਖਤ
 signature-layout-inside = ਤਸਵੀਰਾਂ ਮੇਲ ਦੇ ਅੰਦਰ ਭੇਜੀਆਂ ਜਾਂਦੀਆਂ ਹਨ, ਇਸ ਲਈ ਉਹ ਉੱਥੇ ਵੀ ਦਿਸਦੀਆਂ ਹਨ ਜਿੱਥੇ ਵੈੱਬ ਤੋਂ ਚਿੱਤਰ ਬੰਦ ਹਨ। ਇਹ ਹਰ ਮੇਲ ਵਿੱਚ { $size } ਜੋੜਦਾ ਹੈ।
-signature-layout-free = ਕੁਝ ਹੋਰ ਚਾਹੀਦਾ ਹੈ?
 signature-layout-edit = ਖੁਦ ਸੋਧੋ
 signature-layout-edit-confirm = ਇਸਨੂੰ ਖੁਦ ਸੋਧਣਾ ਹੈ? ਇਸਦੇ ਖੇਤਰ ਅਤੇ ਖਾਕਾ ਹਟ ਜਾਂਦੇ ਹਨ, ਅਤੇ ਜਿੱਥੋਂ ਤੱਕ ਐਡੀਟਰ ਸੰਭਾਲ ਸਕੇ, ਇਸਦੀ ਦਿੱਖ ਬਣੀ ਰਹਿੰਦੀ ਹੈ।
 signature-layout-use-confirm = { $layout } ਖਾਕਾ ਵਰਤਣਾ ਹੈ? ਇਹ ਇਸ ਦਸਤਖਤ ਦੀ ਥਾਂ ਲੈਂਦਾ ਹੈ, ਇਸ ਤੋਂ ਭਰਿਆ ਹੋਇਆ।

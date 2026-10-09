@@ -199,7 +199,7 @@ impl MailWindow {
             self.close_compose_saving(cx);
             self.open_compose(Kind::New, None, window, cx);
             if let Some(account) = account {
-                self.send_compose_from(account);
+                self.send_compose_from(account, cx);
                 self.ask_delivery_receipts(cx);
             }
         }

@@ -69,7 +69,6 @@ signature-layout-light = ភ្លឺ
 signature-layout-dark = ងងឹត
 signature-layout-text = អត្ថបទធម្មតា
 signature-layout-inside = រូបភាពត្រូវបានផ្ញើនៅក្នុងសំបុត្រ ដូច្នេះវាបង្ហាញ សូម្បីតែកន្លែងដែលរូបភាពពីបណ្ដាញត្រូវបានបិទ។ រូបភាពនេះបន្ថែម { $size } ទៅសំបុត្រនីមួយៗ។
-signature-layout-free = ចង់បានអ្វីផ្សេងទៀតទេ?
 signature-layout-edit = កែសម្រួលដោយដៃ
 signature-layout-edit-confirm = កែសម្រួលវាដោយដៃឬ? វាលនិងប្លង់របស់វានឹងបាត់ ហើយវារក្សារូបរាងរបស់វាតាមដែលកម្មវិធីកែអាចរក្សាបាន។
 signature-layout-use-confirm = ប្រើប្លង់ { $layout } ឬ? វាជំនួសហត្ថលេខានេះ ដោយបំពេញព័ត៌មានពីវា។

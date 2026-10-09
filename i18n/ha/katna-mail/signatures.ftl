@@ -69,7 +69,6 @@ signature-layout-light = Haske
 signature-layout-dark = Duhu
 signature-layout-text = Rubutu mara ado
 signature-layout-inside = Ana aika hotuna a cikin wasiƙar, don haka suna bayyana har inda aka kashe hotuna na nesa. Wannan yana ƙara { $size } ga kowace wasiƙa.
-signature-layout-free = Kuna son wani abu dabam?
 signature-layout-edit = Gyara da hannu
 signature-layout-edit-confirm = A gyara shi da hannu? Filayensa da tsarinsa za su tafi, kuma zai riƙe kamanninsa gwargwadon yadda editan zai iya.
 signature-layout-use-confirm = A yi amfani da tsarin { $layout }? Zai maye gurbin wannan sa hannu, a cike da bayanansa.

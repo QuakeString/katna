@@ -69,7 +69,6 @@ signature-layout-light = Licht
 signature-layout-dark = Donker
 signature-layout-text = Platte tekst
 signature-layout-inside = Afbeeldingen worden in de e-mail zelf meegestuurd, zodat ze ook zichtbaar zijn waar afbeeldingen van internet uit staan. Deze voegt { $size } toe aan elke e-mail.
-signature-layout-free = Iets anders?
 signature-layout-edit = Handmatig bewerken
 signature-layout-edit-confirm = Handmatig bewerken? De velden en indeling verdwijnen, en het uiterlijk blijft zo goed als de editor het kan vasthouden.
 signature-layout-use-confirm = De indeling { $layout } gebruiken? Die vervangt deze handtekening, ingevuld met de gegevens ervan.

@@ -66,7 +66,6 @@ signature-layout-light = فاتح
 signature-layout-dark = داكن
 signature-layout-text = نص عادي
 signature-layout-inside = تُرسَل الصور داخل الرسالة، لذا تظهر حتى حيث تكون الصور البعيدة متوقفة. يضيف هذا التوقيع { $size } إلى كل رسالة.
-signature-layout-free = تريد شيئًا آخر؟
 signature-layout-edit = التعديل يدويًا
 signature-layout-edit-confirm = هل تريد تعديله يدويًا؟ تزول حقوله وتخطيطه، ويحتفظ بمظهره قدر ما يستطيع المحرِّر.
 signature-layout-use-confirm = هل تريد استخدام تخطيط { $layout }؟ سيحل محل هذا التوقيع، معبّأً من بياناته.

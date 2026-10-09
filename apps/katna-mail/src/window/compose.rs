@@ -1142,12 +1142,42 @@ impl MailWindow {
     }
 
     /// Sends the open new message from `account`, as picking it in From.
-    pub(super) fn send_compose_from(&mut self, account: AccountId) {
-        if let Some(compose) = &mut self.compose
-            && self.accounts.iter().any(|a| a.id == account)
-        {
+    pub(super) fn send_compose_from(&mut self, account: AccountId, cx: &mut Context<Self>) {
+        self.change_compose_from(account, cx);
+    }
+
+    /// Sends the open message from `account`. The signature follows when
+    /// it is the one the old account starts with, not one picked by hand.
+    /// Returns the signature put in instead, if it changed.
+    fn change_compose_from(
+        &mut self,
+        account: AccountId,
+        cx: &mut Context<Self>,
+    ) -> Option<Option<u32>> {
+        let address = |id: AccountId| {
+            self.accounts
+                .iter()
+                .find(|a| a.id == id)
+                .map(|a| a.address.clone())
+        };
+        let new_address = address(account)?;
+        let old = self.compose_from_id();
+        let compose = self.compose.as_ref()?;
+        let replies = compose.kind != Kind::New;
+        let signature = compose.signature;
+        let sending = &self.config.sending;
+        let was = old
+            .and_then(address)
+            .map(|a| sending.default_signature(&a, replies));
+        let now = sending.default_signature(&new_address, replies);
+        if let Some(compose) = &mut self.compose {
             compose.from = Some(account);
         }
+        if was != Some(signature) || now == signature {
+            return None;
+        }
+        self.choose_signature(now, cx);
+        Some(now)
     }
 
     /// Scrolls the conversation smoothly to the reply that just opened at
@@ -1212,14 +1242,20 @@ impl MailWindow {
         .detach();
     }
 
-    /// The signature a new message starts with: for new mail the default;
-    /// in a conversation the one the user signed their newest message in it
-    /// with, else the default for replies.
+    /// The signature a new message starts with: for new mail its account's
+    /// default; in a conversation the one the user signed their newest
+    /// message in it with, else the account's default for replies.
     pub(in crate::window) fn signature_for(&self, kind: Kind) -> Option<u32> {
         let sending = &self.config.sending;
+        let address = self
+            .compose_account(kind)
+            .map(|a| a.address.as_str())
+            .unwrap_or_default();
         let id = match kind {
-            Kind::New => sending.new_mail_signature,
-            _ => self.signature_used().or(sending.reply_signature),
+            Kind::New => sending.default_signature(address, false),
+            _ => self
+                .signature_used()
+                .or_else(|| sending.default_signature(address, true)),
         };
         sending.signature(id).map(|s| s.id)
     }
@@ -1742,7 +1778,7 @@ impl MailWindow {
     /// forward the account the open conversation is in, whatever list it
     /// was opened from (the unified inbox or search mix accounts); else
     /// that of the open folder, or the first.
-    fn compose_account(&self, kind: Kind) -> Option<&katna_core::Account> {
+    pub(super) fn compose_account(&self, kind: Kind) -> Option<&katna_core::Account> {
         let chosen = &self.config.sending.send_from;
         let fixed = (kind == Kind::New && chosen != SEND_FROM_CURRENT)
             .then(|| {
@@ -2996,8 +3032,20 @@ impl MailWindow {
                     d.child(icon("check", th.nav_selected_text, 20.0))
                 })
                 .on_click(cx.listener(move |this, _, window, cx| {
+                    if let Some(signature) = this.change_compose_from(id, cx) {
+                        let said = match this.config.sending.signature(signature) {
+                            Some(s) if !s.name.trim().is_empty() => {
+                                tr!("compose-signature-changed", name = s.name.clone())
+                            }
+                            Some(_) => tr!(
+                                "compose-signature-changed",
+                                name = tr!("compose-tool-signature-untitled")
+                            ),
+                            None => tr!("compose-signature-taken-out"),
+                        };
+                        this.show_snackbar(said, None, cx);
+                    }
                     if let Some(c) = &mut this.compose {
-                        c.from = Some(id);
                         c.popup = None;
                         window.focus(&c.body.focus_handle(cx), cx);
                     }

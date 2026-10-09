@@ -1113,9 +1113,14 @@ impl MailWindow {
     /// "Work, by default" or "None yet".
     fn signature_summary(&self) -> SharedString {
         let sending = &self.config.sending;
+        // As new mail starts, from the account it goes out from.
+        let address = self
+            .compose_account(super::compose::Kind::New)
+            .map(|a| a.address.as_str())
+            .unwrap_or_default();
         match (
             sending.signatures.len(),
-            sending.signature(sending.new_mail_signature),
+            sending.signature(sending.default_signature(address, false)),
         ) {
             (0, _) => tr!("quick-signatures-none").into(),
             (n, Some(default)) => {
