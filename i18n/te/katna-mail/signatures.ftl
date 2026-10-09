@@ -69,7 +69,6 @@ signature-layout-light = లైట్
 signature-layout-dark = డార్క్
 signature-layout-text = సాదా టెక్స్ట్
 signature-layout-inside = చిత్రాలు మెయిల్ లోపలే పంపబడతాయి, కాబట్టి రిమోట్ ఇమేజ్‌లు ఆఫ్‌లో ఉన్న చోట కూడా కనిపిస్తాయి. ఇది ప్రతి మెయిల్‌కు { $size } జోడిస్తుంది.
-signature-layout-free = ఇంకేదైనా కావాలా?
 signature-layout-edit = చేతితో ఎడిట్ చేయండి
 signature-layout-edit-confirm = చేతితో ఎడిట్ చేయాలా? దాని ఫీల్డ్‌లు, లేఅవుట్ పోతాయి, ఎడిటర్ ఉంచగలిగినంత వరకు దాని రూపం అలాగే ఉంటుంది.
 signature-layout-use-confirm = { $layout } లేఅవుట్‌ను ఉపయోగించాలా? ఇది ఈ సంతకాన్ని భర్తీ చేసి, దీని వివరాలతో నింపుతుంది.

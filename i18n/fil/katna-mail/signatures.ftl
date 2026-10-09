@@ -69,7 +69,6 @@ signature-layout-light = Maliwanag
 signature-layout-dark = Madilim
 signature-layout-text = Plain text
 signature-layout-inside = Ipinapadala ang mga larawan sa loob ng mail, kaya lumalabas ang mga ito kahit naka-off ang mga remote na larawan. Nagdaragdag ito ng { $size } sa bawat mail.
-signature-layout-free = Gusto mo ng iba?
 signature-layout-edit = I-edit nang mano-mano
 signature-layout-edit-confirm = I-edit ito nang mano-mano? Mawawala ang mga field at layout nito, at pananatilihin ang hitsura nito hangga't kaya ng editor.
 signature-layout-use-confirm = Gamitin ang layout na { $layout }? Papalitan nito ang lagdang ito, na pupunan mula rito.

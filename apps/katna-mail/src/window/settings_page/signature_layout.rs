@@ -953,14 +953,11 @@ impl MailWindow {
             .flex_row()
             .flex_wrap()
             .items_center()
-            .justify_between()
+            .justify_end()
             .gap(px(space::S3))
             .pt(px(space::S3))
             .border_t_1()
             .border_color(rgba(th.divider))
-            .text_size(px(text::SMALL))
-            .text_color(rgba(th.text_dim))
-            .child(tr!("signature-layout-free"))
             .child(
                 outlined_button(
                     "page-signature-layout-edit",

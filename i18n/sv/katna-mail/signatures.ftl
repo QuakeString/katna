@@ -69,7 +69,6 @@ signature-layout-light = Ljus
 signature-layout-dark = Mörk
 signature-layout-text = Oformaterad text
 signature-layout-inside = Bilderna skickas inuti mejlet, så de visas även där bilder från webben är avstängda. Den här lägger till { $size } i varje mejl.
-signature-layout-free = Vill du ha något annat?
 signature-layout-edit = Redigera för hand
 signature-layout-edit-confirm = Redigera den för hand? Dess fält och layout försvinner, och den behåller sitt utseende så långt redigeraren klarar.
 signature-layout-use-confirm = Använda layouten { $layout }? Den ersätter den här signaturen och fylls i utifrån den.

@@ -69,7 +69,6 @@ signature-layout-light = ສະຫວ່າງ
 signature-layout-dark = ມືດ
 signature-layout-text = ຂໍ້ຄວາມທຳມະດາ
 signature-layout-inside = ຮູບພາບຖືກສົ່ງໄປພາຍໃນອີເມວ, ສະນັ້ນມັນຈະສະແດງເຖິງແມ່ນບ່ອນທີ່ປິດຮູບພາບຈາກເວັບໄວ້. ອັນນີ້ເພີ່ມ { $size } ໃຫ້ແຕ່ລະອີເມວ.
-signature-layout-free = ຕ້ອງການແບບອື່ນບໍ?
 signature-layout-edit = ແກ້ໄຂເອງ
 signature-layout-edit-confirm = ແກ້ໄຂມັນເອງບໍ? ຊ່ອງ ແລະ ໂຄງຮ່າງຂອງມັນຈະຫາຍໄປ, ແລະ ມັນຈະຮັກສາຮູບລັກສະນະໄວ້ເທົ່າທີ່ຕົວແກ້ໄຂຮອງຮັບໄດ້.
 signature-layout-use-confirm = ໃຊ້ໂຄງຮ່າງ { $layout } ບໍ? ມັນຈະແທນລາຍເຊັນນີ້, ໂດຍຕື່ມຂໍ້ມູນຈາກມັນ.

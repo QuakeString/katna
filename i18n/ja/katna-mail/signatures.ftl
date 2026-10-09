@@ -69,7 +69,6 @@ signature-layout-light = ライト
 signature-layout-dark = ダーク
 signature-layout-text = プレーンテキスト
 signature-layout-inside = 画像はメールに埋め込んで送信されるため、ウェブ上の画像をオフにしている受信者にも表示されます。この画像により、メール 1 通あたり { $size } 増えます。
-signature-layout-free = ほかのデザインにしたい場合は
 signature-layout-edit = 手動で編集
 signature-layout-edit-confirm = 手動で編集しますか？入力欄とレイアウトはなくなりますが、見た目はエディタで再現できる範囲で保たれます。
 signature-layout-use-confirm = 「{ $layout }」レイアウトを使いますか？この署名の内容を使って、署名が置き換えられます。

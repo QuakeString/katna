@@ -1030,8 +1030,7 @@ impl NewMailNotices {
         };
         let sending = &settings.sending;
         let signature = sending
-            .reply_signature
-            .and_then(|id| sending.signatures.iter().find(|s| s.id == id))
+            .signature(sending.default_signature(&account.address, true))
             .map(|s| s.text.as_str())
             .unwrap_or_default();
         // The quote's first line, in the interface's language as Katna

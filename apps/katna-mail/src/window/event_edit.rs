@@ -696,7 +696,7 @@ impl MailWindow {
             cx,
         );
         if let Some(account) = account {
-            self.send_compose_from(account);
+            self.send_compose_from(account, cx);
         }
         cx.notify();
     }

@@ -69,7 +69,6 @@ signature-layout-light = Clair
 signature-layout-dark = Sombre
 signature-layout-text = Texte brut
 signature-layout-inside = Les images sont envoyées dans le message, elles s’affichent donc même là où les images distantes sont désactivées. Celle-ci ajoute { $size } à chaque message.
-signature-layout-free = Vous voulez autre chose ?
 signature-layout-edit = Modifier à la main
 signature-layout-edit-confirm = La modifier à la main ? Ses champs et sa mise en page disparaissent, et elle garde son apparence autant que l’éditeur le permet.
 signature-layout-use-confirm = Utiliser la mise en page { $layout } ? Elle remplace cette signature, remplie à partir de celle-ci.

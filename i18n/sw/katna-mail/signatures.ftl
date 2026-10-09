@@ -69,7 +69,6 @@ signature-layout-light = Angavu
 signature-layout-dark = Meusi
 signature-layout-text = Maandishi matupu
 signature-layout-inside = Picha hutumwa ndani ya barua, hivyo huonekana hata mahali picha za mbali zimezimwa. Hii huongeza { $size } kwa kila barua.
-signature-layout-free = Unataka kitu kingine?
 signature-layout-edit = Hariri kwa mkono
 signature-layout-edit-confirm = Uihariri kwa mkono? Sehemu zake na mpangilio vitaondoka, na itabaki na mwonekano wake kadiri kihariri kinavyoweza kuushikilia.
 signature-layout-use-confirm = Tumia mpangilio wa { $layout }? Unachukua nafasi ya sahihi hii, ukijazwa kutoka kwayo.

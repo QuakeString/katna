@@ -159,6 +159,11 @@ compose-tool-signature-untitled = Untitled
 compose-tool-signature-manage = Manage signatures
 # The faint tag naming the signature beside it in the text.
 compose-signature-tag-tip = Choose another signature
+# After choosing another account in From, which starts with its own
+# signature. $name: the signature's name.
+compose-signature-changed = Signature changed to { $name }
+# After choosing another account in From, which starts without a signature.
+compose-signature-taken-out = Signature taken out
 
 ## The templates menu, and saving a message as a template
 

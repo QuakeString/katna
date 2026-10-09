@@ -69,7 +69,6 @@ signature-layout-light = हल्का
 signature-layout-dark = गहरा
 signature-layout-text = सादा टेक्स्ट
 signature-layout-inside = तस्वीरें मेल के अंदर ही भेजी जाती हैं, इसलिए वेब से इमेज बंद होने पर भी दिखती हैं। यह हर मेल में { $size } जोड़ती है।
-signature-layout-free = कुछ और चाहिए?
 signature-layout-edit = हाथ से बदलाव करें
 signature-layout-edit-confirm = इसमें हाथ से बदलाव करें? इसके फ़ील्ड और लेआउट हट जाते हैं, और जहां तक एडिटर संभाल सके, इसका रूप बना रहता है।
 signature-layout-use-confirm = { $layout } लेआउट इस्तेमाल करें? यह इस हस्ताक्षर की जगह लेता है, और इसी से भरा जाता है।

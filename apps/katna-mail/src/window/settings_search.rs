@@ -475,15 +475,9 @@ const ENTRIES: &[Entry] = &[
     ),
     entry(
         Section::Signatures,
-        "settings-compose-for-new-mail",
-        "settings-compose-for-new-mail-summary",
-        "default signature",
-    ),
-    entry(
-        Section::Signatures,
-        "settings-compose-for-replies",
-        "settings-compose-for-replies-summary",
-        "default signature reply forward",
+        "settings-compose-default-signature",
+        "settings-compose-default-signature-summary",
+        "default signature account new mail reply forward from",
     ),
     entry(
         Section::Signatures,

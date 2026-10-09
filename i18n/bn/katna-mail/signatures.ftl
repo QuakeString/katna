@@ -69,7 +69,6 @@ signature-layout-light = লাইট
 signature-layout-dark = ডার্ক
 signature-layout-text = সাধারণ লেখা
 signature-layout-inside = ছবিগুলি মেলের ভেতরেই পাঠানো হয়, তাই দূরবর্তী ছবি বন্ধ থাকলেও সেগুলি দেখা যায়। এটি প্রতিটি মেলে { $size } যোগ করে।
-signature-layout-free = অন্য কিছু চান?
 signature-layout-edit = নিজে সম্পাদনা করুন
 signature-layout-edit-confirm = নিজে সম্পাদনা করবেন? এর ঘর ও লেআউট চলে যাবে, আর এডিটর যতটা পারে ততটা এর চেহারা বজায় থাকবে।
 signature-layout-use-confirm = { $layout } লেআউট ব্যবহার করবেন? এটি এই স্বাক্ষরের জায়গা নেবে, এখান থেকে তথ্য নিয়ে পূরণ করা হবে।

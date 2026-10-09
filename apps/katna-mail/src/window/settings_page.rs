@@ -31,7 +31,7 @@ use katna_i18n::tr;
 use katna_ui::motion::{self, lerp};
 use katna_ui::px;
 use katna_ui::rich::RichEvent;
-use katna_ui::tokens::space;
+use katna_ui::tokens::{space, text};
 use katna_ui::{InputEvent, RichEditor, TextInput};
 
 use super::apps::App as RailApp;
@@ -42,8 +42,8 @@ use crate::autostart::Start;
 use crate::tabs::{self, Provider};
 use crate::theme::Theme;
 use crate::widgets::{
-    FocusRing, ScaledEdge, TabStops, choice_chip, field, icon, icon_button, line_field,
-    outlined_button, tip,
+    FocusRing, ScaledEdge, TabStops, avatar_filled, choice_chip, choice_pill, field, icon,
+    icon_button, line_field, outlined_button, tip,
 };
 
 mod ai;
@@ -2706,15 +2706,165 @@ impl MailWindow {
         rows
     }
 
-    fn set_default_signature(&mut self, replies: bool, id: Option<u32>, cx: &mut Context<Self>) {
-        let sending = &mut self.config.sending;
-        if replies {
-            sending.reply_signature = id;
-        } else {
-            sending.new_mail_signature = id;
+    /// The menu of signatures mail from `address` can start with, for
+    /// replies and forwards when `replies`, the current one ticked.
+    pub(super) fn default_signature_menu_rows(
+        &self,
+        address: &str,
+        replies: bool,
+        rh: f32,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> super::context_menu::Rows {
+        let sending = &self.config.sending;
+        let current = sending.default_signature(address, replies);
+        let mut rows = super::context_menu::Rows::new(rh);
+        let choices = std::iter::once((None, tr!("settings-compose-no-signature"))).chain(
+            sending
+                .signatures
+                .iter()
+                .map(|s| (Some(s.id), signature_name(s))),
+        );
+        for (n, (id, label)) in choices.enumerate() {
+            let tick = if current == id {
+                icon("check", th.accent, 20.0)
+            } else {
+                div().size(px(20.0)).into_any_element()
+            };
+            let address = address.to_owned();
+            rows.item(
+                super::context_menu::menu_row_with(
+                    ("default-signature-choice", n),
+                    tick,
+                    label.into(),
+                    th,
+                    rh,
+                )
+                .on_click(cx.listener(move |this, _, _, cx| {
+                    this.close_context_menu(cx);
+                    this.set_default_signature(&address, replies, id, cx);
+                })),
+            );
         }
+        rows
+    }
+
+    fn set_default_signature(
+        &mut self,
+        address: &str,
+        replies: bool,
+        id: Option<u32>,
+        cx: &mut Context<Self>,
+    ) {
+        self.config
+            .sending
+            .set_default_signature(address, replies, id);
         self.save_config();
         cx.notify();
+    }
+
+    /// Each account with the signature its new mail starts with and the
+    /// one its replies and forwards start with, each a pill that opens
+    /// the menu of signatures. On a narrow page the pills go under the
+    /// address.
+    fn default_signatures(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let sending = &self.config.sending;
+        let name_of = |id: Option<u32>| match sending.signature(id) {
+            Some(s) => signature_name(s),
+            None => tr!("settings-compose-no-signature"),
+        };
+        let accounts = self.accounts.iter().enumerate().map(|(ix, account)| {
+            let address = account.address.clone();
+            let pick = |replies: bool| {
+                let label = if replies {
+                    tr!("settings-compose-default-replies")
+                } else {
+                    tr!("settings-compose-default-new-mail")
+                };
+                let current = name_of(sending.default_signature(&address, replies));
+                let address = address.clone();
+                div()
+                    .flex_1()
+                    .min_w(px(140.0))
+                    .flex()
+                    .flex_col()
+                    .gap(px(space::S1))
+                    .child(
+                        div()
+                            .text_size(px(text::CAPTION))
+                            .text_color(rgba(th.text_dim))
+                            .child(label),
+                    )
+                    .child(
+                        self.page_control(
+                            choice_pill(
+                                ("page-default-signature", ix * 2 + usize::from(replies)),
+                                current,
+                                false,
+                                th,
+                            ),
+                            th,
+                            cx,
+                        )
+                        .on_click(cx.listener(
+                            move |this, event: &gpui::ClickEvent, _, cx| {
+                                cx.stop_propagation();
+                                this.open_default_signature_menu(
+                                    address.clone(),
+                                    replies,
+                                    event.position(),
+                                    cx,
+                                );
+                            },
+                        )),
+                    )
+            };
+            let name = account.display_name.trim();
+            // Wide enough for a usual address, else the pills go under it.
+            let who = div()
+                .flex_1()
+                .min_w(px(280.0))
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(space::S3))
+                .child(avatar_filled(
+                    if name.is_empty() { &address } else { name },
+                    self.account_color(&address, th),
+                    24.0,
+                ))
+                .child(
+                    div()
+                        .min_w_0()
+                        .truncate()
+                        .text_size(px(text::BODY))
+                        .child(address.clone()),
+                );
+            div()
+                .flex()
+                .flex_row()
+                .flex_wrap()
+                .items_center()
+                .gap(px(space::S3))
+                .py(px(space::S3))
+                .when(ix > 0, |d| d.border_t_1().border_color(rgba(th.divider)))
+                .child(who)
+                .child(
+                    div()
+                        .flex_1()
+                        .min_w(px(296.0))
+                        .flex()
+                        .flex_row()
+                        .gap(px(space::S3))
+                        .child(pick(false))
+                        .child(pick(true)),
+                )
+        });
+        control_column(240.0)
+            .flex()
+            .flex_col()
+            .children(accounts)
+            .into_any_element()
     }
 
     fn set_send_from(&mut self, address: String, cx: &mut Context<Self>) {
@@ -2888,6 +3038,7 @@ impl MailWindow {
         let layout_form = self.layout_form(th, window, cx);
         let sending = &self.config.sending;
         let editing = self.settings_page.as_ref().and_then(|p| p.editing.as_ref());
+        let defaults = self.default_signatures(th, cx);
         let list = sending.signatures.iter().map(|s| {
             let on = editing.is_some_and(|e| e.id == s.id);
             let id = s.id;
@@ -2913,11 +3064,7 @@ impl MailWindow {
                     .py(px(katna_ui::tokens::space::S2))
                     .flex()
                     .flex_col()
-                    .child(div().truncate().child(if s.name.trim().is_empty() {
-                        tr!("settings-compose-untitled")
-                    } else {
-                        s.name.clone()
-                    }))
+                    .child(div().truncate().child(signature_name(s)))
                     .child(
                         div()
                             .truncate()
@@ -2956,81 +3103,24 @@ impl MailWindow {
                 .children(free)
                 .children(form)
                 .children(tools.filter(|_| !from_layout))
-                .child(
-                    div()
-                        .flex()
-                        .flex_row()
-                        .gap(px(katna_ui::tokens::space::S3))
-                        .child(div().flex_1())
-                        .when(designed, |d| {
-                            d.child(
-                                outlined_button(
-                                    "page-signature-edit-html",
-                                    tr!("settings-compose-signature-edit-html"),
-                                    th,
-                                )
-                                .map(|d| self.page_control(d, th, cx))
-                                .on_click(cx.listener(
-                                    move |this, _, window, cx| {
-                                        this.open_paste_html(Some(id), window, cx)
-                                    },
-                                )),
-                            )
-                        })
-                        .child(
+                .when(designed, |d| {
+                    d.child(
+                        div().flex().flex_row().justify_end().child(
                             outlined_button(
-                                "page-signature-duplicate",
-                                tr!("settings-compose-signature-duplicate"),
+                                "page-signature-edit-html",
+                                tr!("settings-compose-signature-edit-html"),
                                 th,
                             )
                             .map(|d| self.page_control(d, th, cx))
                             .on_click(cx.listener(
-                                move |this, _, window, cx| this.duplicate_signature(id, window, cx),
-                            )),
-                        )
-                        .child(
-                            outlined_button(
-                                "page-signature-delete",
-                                tr!("settings-compose-signature-delete"),
-                                th,
-                            )
-                            .map(|d| self.page_control(d, th, cx))
-                            .on_click(cx.listener(
-                                move |this, _, window, cx| this.delete_signature(id, window, cx),
+                                move |this, _, window, cx| {
+                                    this.open_paste_html(Some(id), window, cx)
+                                },
                             )),
                         ),
-                )
-        });
-        let defaults = |replies: bool| {
-            let current = if replies {
-                sending.reply_signature
-            } else {
-                sending.new_mail_signature
-            };
-            let choices = std::iter::once((None, tr!("settings-compose-no-signature"))).chain(
-                sending
-                    .signatures
-                    .iter()
-                    .map(|s| (Some(s.id), s.name.clone())),
-            );
-            div()
-                .flex()
-                .flex_row()
-                .flex_wrap()
-                .gap(px(6.0))
-                .children(choices.enumerate().map(|(n, (id, label))| {
-                    chip(
-                        ("page-signature-default", usize::from(replies) * 1000 + n),
-                        label,
-                        current == id,
-                        th,
                     )
-                    .map(|d| self.page_control(d, th, cx))
-                    .on_click(cx.listener(move |this, _, _, cx| {
-                        this.set_default_signature(replies, id, cx)
-                    }))
-                }))
-        };
+                })
+        });
         div()
             .flex()
             .flex_col()
@@ -3106,15 +3196,9 @@ impl MailWindow {
             )
             .when(!sending.signatures.is_empty(), |d| {
                 d.child(self.row(
-                    tr!("settings-compose-for-new-mail"),
-                    None,
-                    defaults(false),
-                    th,
-                ))
-                .child(self.row(
-                    tr!("settings-compose-for-replies"),
-                    Some(&tr!("settings-compose-for-replies-detail")),
-                    defaults(true),
+                    tr!("settings-compose-default-signature"),
+                    Some(&tr!("settings-compose-default-signature-detail")),
+                    defaults,
                     th,
                 ))
             })
@@ -3915,6 +3999,15 @@ pub(super) fn number_field(
                     tr!("settings-files-less-tip"),
                 )),
         )
+}
+
+/// A signature's name, "Untitled" when blank.
+fn signature_name(signature: &katna_core::config::Signature) -> String {
+    if signature.name.trim().is_empty() {
+        tr!("settings-compose-untitled")
+    } else {
+        signature.name.clone()
+    }
 }
 
 /// A [`choice_chip`] whose blank name reads "Untitled".

@@ -69,7 +69,6 @@ signature-layout-light = Ekhanyayo
 signature-layout-dark = Emnyama
 signature-layout-text = Umbhalo osobala
 signature-layout-inside = Izithombe zithunyelwa ngaphakathi kwemeyili, ngakho ziyabonakala ngisho nalapho izithombe ezikude zivaliwe. Lesi sengeza u-{ $size } kumeyili ngayinye.
-signature-layout-free = Ufuna okunye?
 signature-layout-edit = Hlela ngesandla
 signature-layout-edit-confirm = Uyihlele ngesandla? Izinkambu zayo nesakhiwo kuyahamba, futhi igcina ukubukeka kwayo ngokusemandleni omhleli.
 signature-layout-use-confirm = Sebenzisa isakhiwo esithi { $layout }? Sithatha indawo yale siginesha, sigcwaliswe ngayo.

@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A signature for each account"
+text = """
+Settings > Compose > Default signature lists your accounts, each with the
+signature its new mail starts with and the one its replies and forwards
+start with. Changing From while writing puts in that account's signature.
+Duplicate and Delete for a signature are now in its right-click menu, and
+Customise turns a layout into one you edit freely.
+"""

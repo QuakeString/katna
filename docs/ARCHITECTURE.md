@@ -2567,11 +2567,20 @@ Gemini or confidential mode):
   on (`<br>` in the HTML). The page
   shows the result in a light or dark reader or as plain text. Picking a
   layout for a signature written by hand fills the fields in from it (as
-  the person card reads it, and its first picture as the logo); Edit by
-  hand turns a layout signature back into one, and both ask first.
-  Duplicate (beside Delete) copies a signature whole, named "… (copy)",
-  right after it, and opens the copy; a signature's right-click menu in
-  the list has Edit, Duplicate and Delete.
+  the person card reads it, and its first picture as the logo); Customise
+  turns a layout signature back into one, and both ask first. A
+  signature's right-click menu in the list has Edit, Duplicate and
+  Delete; Duplicate copies it whole, named "… (copy)", right after it,
+  and opens the copy.
+  **Per account.** The list is shared, and each account picks the
+  signature its new mail starts with and the one its replies and
+  forwards start with, under Default signature
+  (`Sending::account_signatures`, by address; an account not set yet
+  starts with the old shared `new_mail_signature` and `reply_signature`).
+  Compose, the summary card's reply and a notification's quick reply all
+  use the account the mail goes out from. Changing From while writing
+  puts in the new account's signature, with a note, unless the one there
+  was picked by hand.
 - **Grammar.** Harper (`harper-core`, Apache-2.0) checks English drafts,
   text and subject, on this computer as you write (`grammar.rs`), on by default, under
   Settings → Compose → Grammar. Paragraphs are checked off the UI thread

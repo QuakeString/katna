@@ -69,7 +69,6 @@ signature-layout-light = வெளிர்
 signature-layout-dark = இருண்ட
 signature-layout-text = எளிய உரை
 signature-layout-inside = படங்கள் அஞ்சலுக்குள்ளேயே அனுப்பப்படும், எனவே இணையப் படங்கள் முடக்கப்பட்ட இடங்களிலும் தெரியும். இது ஒவ்வொரு அஞ்சலுக்கும் { $size } சேர்க்கும்.
-signature-layout-free = வேறு ஏதாவது வேண்டுமா?
 signature-layout-edit = கைமுறையாகத் திருத்து
 signature-layout-edit-confirm = கைமுறையாகத் திருத்தவா? அதன் புலங்களும் தளவமைப்பும் போய்விடும்; எடிட்டரால் முடிந்தவரை அதன் தோற்றம் அப்படியே இருக்கும்.
 signature-layout-use-confirm = { $layout } தளவமைப்பைப் பயன்படுத்தவா? இது இந்தக் கையொப்பத்தை மாற்றி, அதிலிருந்து நிரப்பப்படும்.

@@ -66,7 +66,6 @@ signature-layout-light = Светлая
 signature-layout-dark = Тёмная
 signature-layout-text = Обычный текст
 signature-layout-inside = Изображения отправляются внутри письма, поэтому видны даже там, где внешние изображения отключены. Это добавляет { $size } к каждому письму.
-signature-layout-free = Хотите что-то другое?
 signature-layout-edit = Изменить вручную
 signature-layout-edit-confirm = Изменить вручную? Поля и макет исчезнут, а внешний вид сохранится настолько, насколько позволяет редактор.
 signature-layout-use-confirm = Использовать макет «{ $layout }»? Он заменит эту подпись и будет заполнен её данными.

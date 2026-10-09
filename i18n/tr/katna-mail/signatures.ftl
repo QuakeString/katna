@@ -66,7 +66,6 @@ signature-layout-light = Açık
 signature-layout-dark = Koyu
 signature-layout-text = Düz metin
 signature-layout-inside = Resimler postanın içinde gönderilir, böylece uzak resimlerin kapalı olduğu yerlerde de görünür. Bu imza her postaya { $size } ekler.
-signature-layout-free = Başka bir şey mi istiyorsunuz?
 signature-layout-edit = Elle düzenle
 signature-layout-edit-confirm = Elle düzenlensin mi? Alanları ve düzeni kaybolur; görünümü ise düzenleyicinin elverdiği ölçüde korunur.
 signature-layout-use-confirm = { $layout } düzeni kullanılsın mı? Bu imzanın yerini alır ve onun bilgileriyle doldurulur.

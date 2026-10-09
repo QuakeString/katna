@@ -69,7 +69,6 @@ signature-layout-light = Lig
 signature-layout-dark = Donker
 signature-layout-text = Gewone teks
 signature-layout-inside = Prente word binne-in die e-pos gestuur, sodat hulle wys selfs waar prente van die web af is. Hierdie een voeg { $size } by elke e-pos.
-signature-layout-free = Wil jy iets anders hê?
 signature-layout-edit = Wysig met die hand
 signature-layout-edit-confirm = Wysig dit met die hand? Sy velde en uitleg verdwyn, en dit behou sy voorkoms so ver as wat die redigeerder dit kan hou.
 signature-layout-use-confirm = Gebruik die { $layout }-uitleg? Dit vervang hierdie handtekening en word daaruit ingevul.

@@ -87,9 +87,10 @@ signature-layout-dark = Dark
 signature-layout-text = Plain text
 # $size: such as 23 KB.
 signature-layout-inside = Pictures are sent inside the mail, so they show even where remote images are off. This one adds { $size } to each mail.
-signature-layout-free = Want something else?
-signature-layout-edit = Edit by hand
-signature-layout-edit-confirm = Edit it by hand? Its fields and layout go, and it keeps its look as far as the editor can hold it.
+# The button that turns a signature made from a layout into one edited
+# freely, like any text.
+signature-layout-edit = Customise
+signature-layout-edit-confirm = Customise it freely? Its fields and layout go, and it keeps its look as far as the editor can hold it.
 # $layout: the layout's name.
 signature-layout-use-confirm = Use the { $layout } layout? It replaces this signature, filled in from it.
 signature-layout-use = Use layout
