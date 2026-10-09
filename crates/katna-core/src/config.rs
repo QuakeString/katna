@@ -1124,6 +1124,12 @@ pub struct SignatureLayout {
     pub company: String,
     pub mobile: String,
     pub office: String,
+    /// The WhatsApp number; shown beside the mobile number when the same.
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub whatsapp: String,
+    /// The Telegram username, as `@name`, `name` or a `t.me` link.
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub telegram: String,
     pub email: String,
     pub website: String,
     pub address: String,

@@ -4,8 +4,9 @@
 //! in once, written as mail-safe HTML (tables and inline styles, which
 //! Outlook's Word engine also draws) with a plain text twin. Pictures
 //! travel inside the mail as `data:` URIs, which sending turns into
-//! `cid:` parts. Numbers are labelled "M:" and "O:", which Katna's own
-//! person card reads. No GPUI here.
+//! `cid:` parts. Each line starts with an icon in the colour on a faint
+//! circle of it; the plain text twin labels numbers "M:" and "O:", which
+//! Katna's own person card reads. No GPUI here.
 
 use std::cell::RefCell;
 use std::collections::HashMap;
@@ -25,6 +26,8 @@ const DIM: &str = "#5f6368";
 const LINE: &str = "#e0e3e7";
 /// Page marks are shown this many pixels square, drawn at twice that.
 const MARK: u32 = 18;
+/// The icons before lines, the same.
+const BADGE: u32 = 20;
 /// Photos and monograms are shown this many pixels across.
 const PHOTO: u32 = 68;
 
@@ -111,6 +114,8 @@ fn labelled(l: &SignatureLayout) -> Vec<(String, String)> {
     [
         (tr!("signature-layout-mobile-label"), &l.mobile),
         (tr!("signature-layout-office-label"), &l.office),
+        (tr!("signature-layout-whatsapp-label"), &l.whatsapp),
+        (tr!("signature-layout-telegram-label"), &telegram_name(l)),
         (tr!("signature-layout-email-label"), &l.email),
     ]
     .into_iter()
@@ -221,47 +226,133 @@ impl Writer<'_> {
     }
 
     fn line(&self, field: Field) -> Option<String> {
-        let c = self.c;
-        let (label, value) = match field {
-            Field::Mobile => (tr!("signature-layout-mobile-label"), &self.l.mobile),
-            Field::Office => (tr!("signature-layout-office-label"), &self.l.office),
-            Field::Email => (tr!("signature-layout-email-label"), &self.l.email),
-            Field::Website => return self.website(),
+        let l = self.l;
+        let (icon, alt, shown) = match field {
+            Field::Mobile => {
+                let number = l.mobile.trim();
+                if number.is_empty() {
+                    return None;
+                }
+                // The same number on WhatsApp: its mark after the number.
+                let chat = whatsapp_shared(l)
+                    .then(|| {
+                        let badge = self.badge("brand-whatsapp", "WhatsApp")?;
+                        Some(format!(
+                            r#"&nbsp;&nbsp;<a href="{href}" style="text-decoration:none">{badge}</a>"#,
+                            href = esc(&whatsapp_link(number))
+                        ))
+                    })
+                    .flatten()
+                    .unwrap_or_default();
+                (
+                    "mobile",
+                    tr!("signature-layout-mobile"),
+                    format!("{}{chat}", esc(number)),
+                )
+            }
+            Field::Office => (
+                "phone",
+                tr!("signature-layout-office"),
+                esc(l.office.trim()),
+            ),
+            Field::WhatsApp => {
+                let number = l.whatsapp.trim();
+                if whatsapp_shared(l) || number.is_empty() {
+                    return None;
+                }
+                (
+                    "brand-whatsapp",
+                    "WhatsApp".to_owned(),
+                    self.styled_link(&whatsapp_link(number), number),
+                )
+            }
+            Field::Telegram => {
+                let name = telegram_name(l);
+                if name.is_empty() {
+                    return None;
+                }
+                let href = format!("https://t.me/{}", name.trim_start_matches('@'));
+                (
+                    "brand-telegram",
+                    "Telegram".to_owned(),
+                    self.styled_link(&href, &name),
+                )
+            }
+            Field::Email => {
+                let address = l.email.trim();
+                if address.is_empty() {
+                    return None;
+                }
+                (
+                    "mail",
+                    tr!("signature-layout-email"),
+                    self.mail_link(address),
+                )
+            }
+            Field::Website => {
+                let site = l.website.trim();
+                if site.is_empty() {
+                    return None;
+                }
+                ("language", tr!("signature-layout-website"), self.link(site))
+            }
             Field::Address => {
-                let address = address_lines(self.l)
-                    .map(esc)
-                    .collect::<Vec<_>>()
-                    .join("<br>");
-                return (!address.is_empty()).then(|| {
-                    format!(
-                        r#"<div style="font-size:12px;line-height:18px;color:{DIM}">{address}</div>"#
-                    )
-                });
+                let address = address_lines(l).map(esc).collect::<Vec<_>>().join("<br>");
+                if address.is_empty() {
+                    return None;
+                }
+                let badge = self.badge("location", &tr!("signature-layout-address"));
+                return Some(self.row(
+                    badge,
+                    true,
+                    &format!(r#"<span style="font-size:12px;line-height:18px;color:{DIM}">{address}</span>"#),
+                ));
             }
         };
-        let value = value.trim();
-        if value.is_empty() {
+        if shown.is_empty() {
             return None;
         }
-        let shown = if field == Field::Email {
-            self.mail_link(value)
-        } else {
-            esc(value)
-        };
-        Some(format!(
-            r#"<div style="font-size:12.5px;line-height:19px;color:{INK}"><span style="color:{c};font-weight:bold">{label}</span>&nbsp;{shown}</div>"#,
-            label = esc(&label)
+        let badge = self.badge(icon, &alt);
+        Some(self.row(
+            badge,
+            false,
+            &format!(
+                r#"<span style="font-size:12.5px;line-height:19px;color:{INK}">{shown}</span>"#
+            ),
         ))
     }
 
-    fn website(&self) -> Option<String> {
-        let site = self.l.website.trim();
-        (!site.is_empty()).then(|| {
-            format!(
-                r#"<div style="font-size:12.5px;line-height:19px">{}</div>"#,
-                self.link(site)
-            )
-        })
+    /// A line: the icon, then what it is for, in a table so that every
+    /// reader keeps them side by side. Only the address may `wrap`: a
+    /// number split over two lines reads wrong.
+    fn row(&self, badge: Option<String>, wrap: bool, shown: &str) -> String {
+        let nowrap = if wrap { "" } else { ";white-space:nowrap" };
+        let icon = badge
+            .map(|b| format!(r#"<td style="padding:2px 6px 2px 0;vertical-align:top;width:{BADGE}px">{b}</td>"#))
+            .unwrap_or_default();
+        format!(
+            r#"<table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse"><tr>{icon}<td style="padding:2px 0;vertical-align:middle{nowrap}">{shown}</td></tr></table>"#
+        )
+    }
+
+    /// Icon `name` in the colour on a faint circle, as a picture.
+    fn badge(&self, name: &'static str, alt: &str) -> Option<String> {
+        let png = drawn(Drawn::Badge(name, colour(self.l)))?;
+        Some(format!(
+            r#"<img alt="{alt}" width="{BADGE}" height="{BADGE}" style="display:block;border:0" src="data:image/png;base64,{png}">"#,
+            alt = esc(alt),
+            png = base64_encode(&png)
+        ))
+    }
+
+    /// `shown` linking to `href`, in the colour.
+    fn styled_link(&self, href: &str, shown: &str) -> String {
+        let c = self.c;
+        format!(
+            r#"<a href="{href}" style="color:{c};text-decoration:none">{shown}</a>"#,
+            href = esc(href),
+            shown = esc(shown)
+        )
     }
 
     fn link(&self, site: &str) -> String {
@@ -375,7 +466,7 @@ impl Writer<'_> {
             "{}{}{}{}",
             self.name(15.0),
             self.role(6),
-            self.lines(&[Mobile, Office, Email, Website, Address]),
+            self.lines(&[Mobile, Office, WhatsApp, Telegram, Email, Website, Address]),
             self.marks(6, false)
         )
     }
@@ -387,7 +478,7 @@ impl Writer<'_> {
             "{}{}{}{}",
             self.name(15.0),
             self.role(6),
-            self.lines(&[Mobile, Office, Email, Website, Address]),
+            self.lines(&[Mobile, Office, WhatsApp, Telegram, Email, Website, Address]),
             self.marks(6, false)
         );
         match self.logo((120, 64)) {
@@ -421,7 +512,7 @@ impl Writer<'_> {
             r#"<table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse"><tr><td style="padding-right:14px;vertical-align:middle">{photo}</td><td style="vertical-align:middle">{name}{title}{company}{lines}{marks}</td></tr></table>"#,
             photo = self.photo_or_initials(),
             name = self.name(15.0),
-            lines = self.lines(&[Mobile, Office, Email, Website]),
+            lines = self.lines(&[Mobile, Office, WhatsApp, Telegram, Email, Website]),
             marks = self.marks(6, false)
         )
     }
@@ -444,8 +535,8 @@ impl Writer<'_> {
         format!(
             r#"<table cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;min-width:300px"><tr><td style="background:{c};padding:8px 12px;border-radius:6px 6px 0 0"><span style="font-size:14.5px;font-weight:bold;color:#ffffff">{name}</span>{title}</td></tr><tr><td style="padding:8px 12px;border:1px solid {LINE};border-top:0;border-radius:0 0 6px 6px"><table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse"><tr><td style="padding-right:18px;vertical-align:top">{left}</td><td style="vertical-align:top">{right}</td></tr></table>{company}{address}{marks}</td></tr></table>"#,
             name = esc(&self.l.name),
-            left = self.lines(&[Mobile, Office]),
-            right = self.lines(&[Email, Website]),
+            left = self.lines(&[Mobile, Office, WhatsApp]),
+            right = self.lines(&[Email, Website, Telegram]),
             address = self.lines(&[Address]),
             marks = self.marks(6, false)
         )
@@ -590,7 +681,7 @@ impl Writer<'_> {
         format!(
             r#"<table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse"><tr><td style="border-left:4px solid {c};padding-left:12px">{name}{title}{company}{lines}{marks}</td></tr></table>"#,
             name = self.name(15.0),
-            lines = self.lines(&[Mobile, Office, Email, Website, Address]),
+            lines = self.lines(&[Mobile, Office, WhatsApp, Telegram, Email, Website, Address]),
             marks = self.marks(6, false)
         )
     }
@@ -619,8 +710,8 @@ impl Writer<'_> {
         format!(
             r#"<table cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;border:1px solid {LINE};border-radius:10px"><tr><td style="padding:12px 16px">{head}{name}{title}<table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse"><tr><td style="padding-right:16px;vertical-align:top">{left}</td><td style="vertical-align:top">{right}</td></tr></table>{address}{marks}</td></tr></table>"#,
             name = self.name(15.0),
-            left = self.lines(&[Mobile, Office]),
-            right = self.lines(&[Email, Website]),
+            left = self.lines(&[Mobile, Office, WhatsApp]),
+            right = self.lines(&[Email, Website, Telegram]),
             address = self.lines(&[Address]),
             marks = self.marks(6, false)
         )
@@ -656,6 +747,8 @@ impl Writer<'_> {
 enum Field {
     Mobile,
     Office,
+    WhatsApp,
+    Telegram,
     Email,
     Website,
     Address,
@@ -668,6 +761,37 @@ fn web_address(site: &str) -> String {
         site.to_owned()
     } else {
         format!("https://{site}")
+    }
+}
+
+/// Whether the WhatsApp number is the mobile number (digits compared):
+/// then only its mark shows, after the mobile number.
+fn whatsapp_shared(l: &SignatureLayout) -> bool {
+    let digits = |s: &str| s.chars().filter(char::is_ascii_digit).collect::<String>();
+    let wa = digits(&l.whatsapp);
+    !wa.is_empty() && wa == digits(&l.mobile)
+}
+
+/// The chat link of a WhatsApp number: `https://wa.me/` and its digits.
+fn whatsapp_link(number: &str) -> String {
+    let digits: String = number.chars().filter(char::is_ascii_digit).collect();
+    format!("https://wa.me/{digits}")
+}
+
+/// The Telegram username as `@name`, from `@name`, `name` or a `t.me`
+/// link; empty for none.
+fn telegram_name(l: &SignatureLayout) -> String {
+    let raw = l.telegram.trim();
+    let name = raw
+        .rsplit_once("t.me/")
+        .or_else(|| raw.rsplit_once("telegram.me/"))
+        .map_or(raw, |(_, name)| name)
+        .trim_start_matches('@')
+        .trim_end_matches('/');
+    if name.is_empty() {
+        String::new()
+    } else {
+        format!("@{name}")
     }
 }
 
@@ -721,6 +845,8 @@ enum Drawn {
     Monogram(String, u32, u32),
     /// A bar of a colour, width × height.
     Bar(u32, u32, u32),
+    /// An icon in a colour on a faint circle of it.
+    Badge(&'static str, u32),
 }
 
 thread_local! {
@@ -743,6 +869,10 @@ fn drawn(what: Drawn) -> Option<Vec<u8>> {
                 Drawn::Monogram(initials, _, _) if initials.is_empty() => None,
                 Drawn::Monogram(initials, rgb, side) => draw::monogram(&initials, rgb, side).ok(),
                 Drawn::Bar(rgb, width, height) => draw::bar(rgb, width, height).ok(),
+                Drawn::Badge(name, rgb) => {
+                    let svg = crate::assets::icon_svg(name)?;
+                    draw::badge(svg, rgb, BADGE * 2).ok()
+                }
             })
             .clone()
     })

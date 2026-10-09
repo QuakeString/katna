@@ -37,7 +37,8 @@ const THUMB: (f32, f32) = (72.0, 46.0);
 /// The form of a signature made from a layout.
 pub(super) struct LayoutForm {
     id: u32,
-    /// Name, title, company, mobile, office, email, website.
+    /// Name, title, company, mobile, office, WhatsApp, Telegram, email,
+    /// website.
     fields: Vec<Entity<TextInput>>,
     /// The address, a line or more.
     address: Entity<TextArea>,
@@ -66,32 +67,45 @@ pub(super) enum Confirm {
 }
 
 /// The labels of [`LayoutForm::fields`], in order, then the address's.
-fn field_labels() -> [String; 8] {
+fn field_labels() -> [String; 10] {
     [
         tr!("signature-layout-name"),
         tr!("signature-layout-job"),
         tr!("signature-layout-company"),
         tr!("signature-layout-mobile"),
         tr!("signature-layout-office"),
+        tr!("signature-layout-whatsapp"),
+        tr!("signature-layout-telegram"),
         tr!("signature-layout-email"),
         tr!("signature-layout-website"),
         tr!("signature-layout-address"),
     ]
 }
 
-fn field_values(l: &SignatureLayout) -> [&String; 8] {
+fn field_values(l: &SignatureLayout) -> [&String; 10] {
     [
-        &l.name, &l.title, &l.company, &l.mobile, &l.office, &l.email, &l.website, &l.address,
+        &l.name,
+        &l.title,
+        &l.company,
+        &l.mobile,
+        &l.office,
+        &l.whatsapp,
+        &l.telegram,
+        &l.email,
+        &l.website,
+        &l.address,
     ]
 }
 
-fn field_values_mut(l: &mut SignatureLayout) -> [&mut String; 8] {
+fn field_values_mut(l: &mut SignatureLayout) -> [&mut String; 10] {
     [
         &mut l.name,
         &mut l.title,
         &mut l.company,
         &mut l.mobile,
         &mut l.office,
+        &mut l.whatsapp,
+        &mut l.telegram,
         &mut l.email,
         &mut l.website,
         &mut l.address,
@@ -140,6 +154,9 @@ fn filled_from(signature: &Signature, style: LayoutStyle, address: &str) -> Sign
     };
     l.title = d.title.unwrap_or_default();
     for phone in d.phones {
+        if phone.kind == PhoneKind::WhatsApp && l.whatsapp.is_empty() {
+            l.whatsapp = phone.number.clone();
+        }
         let slot = match phone.kind {
             PhoneKind::Mobile | PhoneKind::WhatsApp => &mut l.mobile,
             _ => &mut l.office,
@@ -630,7 +647,7 @@ impl MailWindow {
                 .text_color(rgba(th.text_dim))
                 .child(said)
         };
-        let field = |n: usize, labels: &[String; 8]| {
+        let field = |n: usize, labels: &[String; 10]| {
             div()
                 .flex_1()
                 .min_w(px(160.0))
@@ -663,12 +680,13 @@ impl MailWindow {
             .child(field(2, &labels))
             .child(pair(3, 4))
             .child(pair(5, 6))
+            .child(pair(7, 8))
             .child(
                 div()
                     .flex()
                     .flex_col()
                     .gap(px(space::S1))
-                    .child(label(labels[7].clone()))
+                    .child(label(labels[9].clone()))
                     .child(area_field(
                         "page-signature-layout-address",
                         &form.address,

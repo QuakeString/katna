@@ -149,6 +149,7 @@ icons!(
     "mark-unread",
     "menu",
     "minimize",
+    "mobile",
     "more",
     "move-to",
     "no-fill",
