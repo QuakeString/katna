@@ -67,8 +67,8 @@ from a terminal.
 # profile has what Katna is built with everywhere.
 unset RUSTFLAGS
 # Katna Mail names this version in What's new, and the build's date in
-# the Update dialog. RPM's `~` (a beta sorts before its release) is not in
-# the version Katna reports (docs/RELEASING.md).
+# the Update dialog. RPM's `~` (an alpha or beta sorts before its
+# release) is not in the version Katna reports (docs/RELEASING.md).
 export KATNA_VERSION=$(echo '%{version}' | tr -d '~')
 # Katna offers the new build and the dnf command that installs it
 # (katna_core::update::Package::Rpm).

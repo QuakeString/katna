@@ -4,7 +4,7 @@ How a version of Katna is numbered, built and published. The design is
 `ARCHITECTURE.md` §21.2 ("Update channels and safe updates"); the work is
 the plan's release track (U.1 and U.8).
 
-Tagging a beta, approving a stable release and the repository settings
+Tagging an alpha or beta, approving a stable release and the repository settings
 below are the owner's. Nobody else, people or Claude, pushes a version tag
 or approves a promotion.
 
@@ -14,6 +14,7 @@ Versions follow [SemVer](https://semver.org). Tags:
 
 | Tag | What it is |
 |---|---|
+| `vX.Y.Z-alpha.N` | Alpha `N` of version `X.Y.Z`, cut from `main`: an early look, never promoted |
 | `vX.Y.Z-beta.N` | Beta `N` of version `X.Y.Z`, cut from `main` |
 | `vX.Y.Z` | The release, made only by promoting a beta (below), never pushed by hand |
 
@@ -21,6 +22,7 @@ Versions follow [SemVer](https://semver.org). Tags:
   migration; migrations land in minor or major releases.
 - A fix found while a beta soaks makes a new beta (`-beta.N+1`) from `main`,
   which restarts the soak.
+- Alphas come first: once a version has a beta, it gets no more alphas.
 
 Every package reports the same version, worked out from the newest version
 tag by `packaging/linux/version.sh` (the PKGBUILD runs it; the Windows
@@ -29,13 +31,15 @@ script does the same in PowerShell):
 | Commit | Version |
 |---|---|
 | before the first tag | `0.0.0.rCOUNT.gHASH` (`COUNT` = every commit) |
+| `N` commits after `vX.Y.Z-alpha.A` | `X.Y.ZalphaA.rN.gHASH` |
 | `N` commits after `vX.Y.Z-beta.B` | `X.Y.ZbetaB.rN.gHASH` |
 | `N` commits after `vX.Y.Z` | `X.Y.Z.rN.gHASH` |
 
-A beta counts only until its release is tagged: on the commit a release was
-promoted from, and after it, the release's version wins. Each package
-manager sorts a beta before its release: pacman and Katna's own updater
-(`katna_core::update::newer`) as written, Debian and RPM with `~beta`.
+An alpha or beta counts only until its release is tagged: on the commit a
+release was promoted from, and after it, the release's version wins. Each
+package manager sorts alphas before betas before their release: pacman and
+Katna's own updater (`katna_core::update::newer`) as written, Debian and
+RPM with `~alpha` and `~beta`.
 Katna Mail's About and What's new show the plain form.
 
 Once the first tag exists, nightly builds are numbered from it, so their
@@ -46,13 +50,16 @@ Once the first tag exists, nightly builds are numbered from it, so their
 | Channel | Built from | Published as |
 |---|---|---|
 | Nightly | every push to `main` | `arch-latest`, `windows-latest`, `linux-latest` (pre-releases, replaced on every push) |
-| Beta | a tag `vX.Y.Z-beta.N` | the release `vX.Y.Z-beta.N` and the rolling `beta-latest` |
+| Beta | a tag `vX.Y.Z-alpha.N` or `vX.Y.Z-beta.N` | the release named by the tag and the rolling `beta-latest` |
 | Stable | a beta, promoted unchanged | the release `vX.Y.Z` (GitHub's "Latest") and the rolling `stable-latest` |
 
 Stable and beta are the same files: promotion copies a beta's files and
-signatures and never rebuilds, so what was tested is what ships.
+signatures and never rebuilds, so what was tested is what ships. Alphas
+share the beta channel: `beta-latest` holds the newest alpha or beta, so
+an alpha's testers get the next alpha, then the betas. An alpha is never
+promoted.
 
-Each beta and stable release holds every format: the Arch package with its
+Each alpha, beta and stable release holds every format: the Arch package with its
 pacman database (`katna.db`), `KatnaSetup.exe` and `KatnaMail.msix`, the
 RPM, `.deb`, Snap, Flatpak, AppImage and tarball, the screenshots of each
 running in CI, `SHA256SUMS` (signed as `SHA256SUMS.minisig` once the update
@@ -73,17 +80,19 @@ What each format uses today, and what §21.2 plans:
 
 Katna's in-app updates read the manifest of the install's channel
 (`update::Channel`, U.10): a nightly build (`….rN.g…`, N above 0) stays
-on nightly, and a beta's or release's files (`r0`) take stable, the
-default, because both carry the same files. Beta testers pick Beta in
+on nightly, an alpha's files take beta, and a beta's or release's files
+(`r0`) take stable, the default, because both carry the same files. Beta
+testers pick Beta in
 the settings (`updates.channel` in `config.toml`). Moving to a safer
 channel never installs an older build: the installed one stays until the
 channel passes it.
 
-## Cutting a beta
+## Cutting an alpha or beta
 
 1. Check `main` is green: CI, Secondary (Ubuntu and Windows) and the
    nightly packages.
-2. Tag the commit and push the tag:
+2. Tag the commit and push the tag (an alpha the same way, with
+   `-alpha.N`):
 
    ```sh
    git tag -a v0.1.0-beta.1 -m "Katna 0.1.0 beta 1" <commit>
@@ -91,18 +100,19 @@ channel passes it.
    ```
 
 3. **Release** (`.github/workflows/release.yml`) starts on the tag. It
-   - checks the tag is `vX.Y.Z-beta.N`, its commit is on `main`, `vX.Y.Z` is
-     not out yet and `version.sh` gives the beta's version;
+   - checks the tag is `vX.Y.Z-alpha.N` or `vX.Y.Z-beta.N`, its commit is
+     on `main`, `vX.Y.Z` is not out yet, an alpha's version has no beta yet,
+     and `version.sh` gives the tag's version;
    - runs CI as on `main` (Arch, cargo-deny, sizes) and the Ubuntu and
      Windows tests;
    - builds every format once from that commit (`arch-package.yml`,
      `windows-package.yml` as a full build, `linux-packages.yml`), each
      installed and tried on its platform as every night;
    - checks every format reports the tag's version, signs, and publishes
-     the release `vX.Y.Z-beta.N` (a pre-release) and `beta-latest`.
+     the release named by the tag (a pre-release) and `beta-latest`.
 
    If any of it fails nothing is published. Fix it on `main` and tag the
-   next beta; a tag is never moved.
+   next alpha or beta; a tag is never moved.
 
 ## Promoting a beta to stable
 

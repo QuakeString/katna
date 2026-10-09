@@ -42,9 +42,10 @@ const ARCH_PACKAGE: &str = "katna-git";
 const DEB_FILES: &str = "/var/lib/dpkg/info/katna.list";
 
 /// Which builds an install takes (`docs/ARCHITECTURE.md` §21.2, plan
-/// U.10): every build of `main`, the betas, or the releases. Beta and
-/// stable carry the same files, so a build cannot tell them apart; it
-/// takes the channel from the settings, else [`Channel::default_for`].
+/// U.10): every build of `main`, the alphas and betas, or the releases.
+/// Beta and stable carry the same files, so a build cannot tell them
+/// apart; it takes the channel from the settings, else
+/// [`Channel::default_for`].
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Channel {
@@ -56,6 +57,8 @@ pub enum Channel {
 impl Channel {
     /// The channel of an install that has not picked one: a build of
     /// `main` between tags (`….rN.g…` with N above 0) stays on nightly;
+    /// an alpha's files (`…alphaA.r0…`) take beta, where the next alphas
+    /// and betas are published, since an alpha never becomes a release;
     /// a beta's or release's files (`r0`, or a plain `X.Y.Z`) take
     /// stable, the safe default. Nix builds `main` itself and has no
     /// commit count, so it is always nightly.
@@ -63,6 +66,7 @@ impl Channel {
         match parse_version(version) {
             _ if package == Package::Nix => Self::Nightly,
             Some((_, _, commits)) if commits > 0 => Self::Nightly,
+            Some((_, Stage::Alpha(_), _)) => Self::Beta,
             _ => Self::Stable,
         }
     }
@@ -75,8 +79,8 @@ impl Channel {
         picked.unwrap_or_else(|| Self::default_for(package, version))
     }
 
-    /// The rolling release holding this channel's newest betas or
-    /// releases (`.github/workflows/release.yml`, `promote.yml`); nightly
+    /// The rolling release holding this channel's newest alphas and
+    /// betas, or releases (`.github/workflows/release.yml`, `promote.yml`); nightly
     /// builds are in each package's own release instead.
     fn rolling(self) -> Option<&'static str> {
         match self {
@@ -720,28 +724,41 @@ pub fn commit_of(version: &str) -> Option<&str> {
     (hash.len() >= 7 && hash.bytes().all(|b| b.is_ascii_hexdigit())).then_some(hash)
 }
 
+/// How far along the road to its release a build of a version is: an
+/// alpha, then a beta, then the release itself.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+enum Stage {
+    Alpha(u64),
+    Beta(u64),
+    Release,
+}
+
 /// A version as the packages write it (`docs/RELEASING.md`):
-/// `X.Y.Z.rN.gHASH` (N commits after the tag `vX.Y.Z`), `X.Y.ZbetaB.rN.gHASH`
-/// after the tag `vX.Y.Z-beta.B`, or plain `X.Y.Z` for a build of a tag.
-/// Ordered by the numbers, then a beta before the release it leads to, then
+/// `X.Y.Z.rN.gHASH` (N commits after the tag `vX.Y.Z`), `X.Y.ZalphaA.rN.gHASH`
+/// after the tag `vX.Y.Z-alpha.A`, `X.Y.ZbetaB.rN.gHASH` after the tag
+/// `vX.Y.Z-beta.B`, or plain `X.Y.Z` for a build of a tag. Ordered by the
+/// numbers, then alphas before betas before the release they lead to, then
 /// the commits.
-fn parse_version(version: &str) -> Option<([u64; 3], u64, u64)> {
+fn parse_version(version: &str) -> Option<([u64; 3], Stage, u64)> {
     let mut parts = version.split('.');
     let mut numbers = [0; 3];
     for number in &mut numbers[..2] {
         *number = parts.next()?.parse().ok()?;
     }
     let third = parts.next()?;
-    let (patch, beta) = match third.split_once("beta") {
-        Some((patch, beta)) => (patch, beta.parse().ok()?),
-        None => (third, u64::MAX),
+    let (patch, stage) = if let Some((patch, alpha)) = third.split_once("alpha") {
+        (patch, Stage::Alpha(alpha.parse().ok()?))
+    } else if let Some((patch, beta)) = third.split_once("beta") {
+        (patch, Stage::Beta(beta.parse().ok()?))
+    } else {
+        (third, Stage::Release)
     };
     numbers[2] = patch.parse().ok()?;
     let commits = match parts.next() {
         None => 0,
         Some(r) => r.strip_prefix('r')?.parse().ok()?,
     };
-    Some((numbers, beta, commits))
+    Some((numbers, stage, commits))
 }
 
 /// Whether `offered` is a later build than `installed`. A version that
@@ -783,6 +800,24 @@ mod tests {
         assert_eq!(
             package_version("katna-git-1.0.0beta1.r0.gabcdef1-1-x86_64.pkg.tar.zst"),
             Some("1.0.0beta1.r0.gabcdef1")
+        );
+    }
+
+    #[test]
+    fn an_alpha_comes_before_the_betas() {
+        assert!(newer("0.0.0.r1100.gaaaaaaa", "0.1.0alpha1.r0.gbbbbbbb"));
+        assert!(newer("0.1.0alpha1.r0.gaaaaaaa", "0.1.0alpha1.r2.gbbbbbbb"));
+        assert!(newer("0.1.0alpha1.r9.gaaaaaaa", "0.1.0alpha2.r0.gbbbbbbb"));
+        assert!(newer("0.1.0alpha2.r9.gaaaaaaa", "0.1.0beta1.r0.gbbbbbbb"));
+        assert!(newer("0.1.0alpha2.r9.gaaaaaaa", "0.1.0.r0.gbbbbbbb"));
+        assert!(newer("0.1.0alpha2.r9.gaaaaaaa", "0.1.0"));
+        assert!(newer("0.1.0.r5.gaaaaaaa", "0.2.0alpha1.r0.gbbbbbbb"));
+        assert!(!newer("0.1.0beta1.r0.gaaaaaaa", "0.1.0alpha9.r40.gbbbbbbb"));
+        assert!(!newer("0.1.0", "0.1.0alpha1.r0.gbbbbbbb"));
+        assert!(!newer("0.1.0.r0.gaaaaaaa", "0.1.0alpha"));
+        assert_eq!(
+            package_version("katna-git-0.1.0alpha1.r0.gabcdef1-1-x86_64.pkg.tar.zst"),
+            Some("0.1.0alpha1.r0.gabcdef1")
         );
     }
 
@@ -1150,6 +1185,15 @@ mod tests {
             Channel::Stable
         );
         assert_eq!(default(Package::Windows, "0.1.0"), Channel::Stable);
+        // An alpha is never released: its installs take the betas.
+        assert_eq!(
+            default(Package::Arch, "0.1.0alpha1.r0.gabcdef1"),
+            Channel::Beta
+        );
+        assert_eq!(
+            default(Package::Windows, "0.1.0alpha1.r3.gabcdef1"),
+            Channel::Nightly
+        );
         assert_eq!(default(Package::Nix, "0.1.0.r0.gabcdef1"), Channel::Nightly);
         assert_eq!(
             Channel::of(Package::Arch, "0.1.0beta1.r0.gabcdef1", Some(Channel::Beta)),
