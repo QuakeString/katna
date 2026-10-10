@@ -32,6 +32,7 @@ use katna_ui::{px, unpx};
 
 use super::super::attachments::{Thumb, kind_badge};
 use super::super::compose::Kind;
+use super::super::contact::{other_signer, person_name};
 use super::super::context_menu::Rows;
 use super::super::select::Pieces;
 use super::super::{MailWindow, Menu, rich};
@@ -995,8 +996,15 @@ impl MailWindow {
             if !a.email.contains('@') || !seen.insert(a.email.to_lowercase()) {
                 continue;
             }
+            // As the contact card names them.
+            let known = self.contact_known_name(&a.email);
+            let signer = reader
+                .signature_of(&a.email)
+                .and_then(|s| other_signer(&s, a.name.as_deref(), known.as_deref()));
+            let name = person_name(signer.as_deref(), a.name.as_deref(), known.as_deref())
+                .unwrap_or_else(|| a.email.clone());
             let member = Member {
-                name: a.label().to_owned(),
+                name,
                 email: a.email.clone(),
                 mails: sent(&a.email),
                 me: self.is_me(&a.email),

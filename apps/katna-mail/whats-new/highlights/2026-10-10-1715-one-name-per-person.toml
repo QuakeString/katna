@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "One name for each person"
+text = """
+In the chat view, the list of people in a chat and the contact card now
+name someone the same way. When a colleague writes from a shared address
+such as accounts@, both show the name they signed with. Contact cards
+also open with their details sooner.
+"""
