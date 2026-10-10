@@ -524,14 +524,19 @@ impl Tree {
 impl Tree {
     /// The rows of the unified inbox: its heading and, when `open`, its
     /// lists that some account has, each followed by its accounts when
-    /// expanded (by [`Unified::key`]). Empty with fewer than two accounts.
+    /// expanded (by [`Unified::key`]). With one account the lists stand
+    /// alone, without the heading; empty with none.
     pub fn unified_rows(&self, expanded: &HashSet<String>, open: bool) -> Vec<Row> {
-        if self.accounts.len() < 2 {
-            return Vec::new();
-        }
-        let mut rows = vec![Row::AllAccounts { expanded: open }];
-        if !open {
-            return rows;
+        let lone = match self.accounts.len() {
+            0 => return Vec::new(),
+            n => n == 1,
+        };
+        let mut rows = Vec::new();
+        if !lone {
+            rows.push(Row::AllAccounts { expanded: open });
+            if !open {
+                return rows;
+            }
         }
         for view in Unified::ALL {
             let parts = self.unified_parts(view);
@@ -559,6 +564,43 @@ impl Tree {
             if is_expanded {
                 rows.extend(parts);
             }
+        }
+        rows
+    }
+
+    /// Under the unified lists of a single account: its folders the lists
+    /// leave out (such as Archive), then its own under Labels. Gmail's own
+    /// labels, which the lists already show, are left out.
+    pub fn lone_rows(&self, expanded: &HashSet<String>) -> Vec<Row> {
+        let [account] = self.accounts.as_slice() else {
+            return Vec::new();
+        };
+        let listed = |role: Role| {
+            matches!(
+                role,
+                Role::Inbox
+                    | Role::Flagged
+                    | Role::Drafts
+                    | Role::Sent
+                    | Role::Junk
+                    | Role::Trash
+                    | Role::All
+            )
+        };
+        let (special, own): (Vec<&Node>, Vec<&Node>) =
+            account.roots.iter().partition(|n| n.role != Role::Other);
+        let mut rows = Vec::new();
+        for node in special.into_iter().filter(|n| !listed(n.role)) {
+            push_rows(std::slice::from_ref(node), 0, expanded, &mut rows);
+        }
+        rows.push(Row::Labels {
+            account: account.id,
+        });
+        for node in own
+            .into_iter()
+            .filter(|n| !GMAIL_ROOTS.contains(&n.segment.as_str()))
+        {
+            push_rows(std::slice::from_ref(node), 0, expanded, &mut rows);
         }
         rows
     }
@@ -1103,8 +1145,16 @@ mod tests {
             ]
         );
 
-        // One account has no unified inbox.
+        // One account: the lists without the heading, folded or not.
         let one = Tree::build(&accounts, &folders[..4], &unread);
-        assert!(one.unified_rows(&HashSet::new(), true).is_empty());
+        let lists = labels(&one.unified_rows(&HashSet::new(), false));
+        assert_eq!(lists, labels(&one.unified_rows(&HashSet::new(), true)));
+        assert!(!lists.iter().any(|l| l.starts_with("# All")));
+        assert!(lists.iter().any(|l| l.starts_with("Unread")));
+        assert!(
+            Tree::build(&[], &[], &unread)
+                .unified_rows(&HashSet::new(), true)
+                .is_empty()
+        );
     }
 }

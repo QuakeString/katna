@@ -56,8 +56,15 @@ impl MailWindow {
     /// What the account menu marks as open: All Accounts (`Some(None)`),
     /// one account, or nothing.
     pub(super) fn menu_current(&self) -> Option<Option<AccountId>> {
-        if self.shows_unified() && matches!(self.unified, Some((_, None))) {
+        // With one account its lists are that account's: it is marked.
+        if self.shows_unified()
+            && self.unified_accounts().is_some()
+            && matches!(self.unified, Some((_, None)))
+        {
             return Some(None);
+        }
+        if let [only] = self.tree.accounts.as_slice() {
+            return Some(Some(only.id));
         }
         if let Some(id) = self.shown_account() {
             return Some(Some(id));

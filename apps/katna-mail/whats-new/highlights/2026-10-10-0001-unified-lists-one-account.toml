@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Unified inbox with one account"
+text = """
+With the unified inbox on and only one account, the folder pane now
+shows Inbox, Unread, Starred, Important, Sent, All mail, Spam, Trash and
+Drafts at the top, with your labels below, just as it does with several
+accounts.
+"""

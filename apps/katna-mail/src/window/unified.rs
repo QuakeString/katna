@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! The unified inbox: with several accounts and Settings > General >
-//! Unified inbox on, "All Accounts" heads the folder pane with each
+//! The unified inbox: with Settings > General > Unified inbox on,
+//! "All Accounts" heads the folder pane with each
 //! special folder (Inbox, Sent, ...) of every account in one list, and
 //! lists of the unread, starred and important mail of all. Each list opens
 //! to one row per account. The accounts below start folded; the arrow
-//! beside each account's name folds and opens it either way.
+//! beside each account's name folds and opens it either way. With one
+//! account the lists stand alone at the top, without the heading, and
+//! that account's other folders and labels follow.
 
 use std::collections::{HashMap, HashSet};
 
@@ -47,9 +49,9 @@ impl MailWindow {
     }
 
     /// Whether the folder pane has the unified inbox: turned on, with
-    /// several accounts.
+    /// an account.
     pub(super) fn shows_unified(&self) -> bool {
-        self.config.mail.unified_inbox && self.tree.accounts.len() > 1
+        self.config.mail.unified_inbox && !self.tree.accounts.is_empty()
     }
 
     /// The inbox tabs of a unified list: one account's own when it is
