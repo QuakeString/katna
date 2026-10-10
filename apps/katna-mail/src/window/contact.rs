@@ -405,6 +405,12 @@ impl MailWindow {
         matches!(self.contact.profiles.get(email), Some((_, None)))
     }
 
+    /// The name `email` uses most on mail, once their profile was read.
+    pub(super) fn contact_known_name(&self, email: &str) -> Option<String> {
+        let (_, profile) = self.contact.profiles.get(&email.to_lowercase())?;
+        profile.as_ref()?.summary.name.clone()
+    }
+
     fn contact_profile(&mut self, email: &str, cx: &mut Context<Self>) -> Option<Rc<Profile>> {
         let known = self.contact.profiles.get(email).cloned();
         // Being read for the first time, or read a while ago.
@@ -427,10 +433,7 @@ impl MailWindow {
                     .background_executor()
                     .spawn({
                         let address = address.clone();
-                        async move {
-                            std::thread::sleep(std::time::Duration::from_millis(1500));
-                            profile::read(&paths, &address, &task_mails)
-                        }
+                        async move { profile::read(&paths, &address, &task_mails) }
                     })
                     .await;
                 this.update(cx, |this, cx| {
@@ -701,18 +704,10 @@ impl MailWindow {
             .reading
             .then(|| self.reader.as_ref()?.signature_of(email))
             .flatten();
-        // A colleague signed the open mail from a shared address
-        // ("accounts@"): the card is theirs, not that of a name the
-        // address used on other mail.
-        let signer = open_signature.as_deref().and_then(|s| {
-            let signer = signature::signer(s)?;
-            (known_name.is_none() || signature::someone_else(s, known_name.as_deref()))
-                .then_some(signer)
-        });
-        let name = signer
-            .clone()
-            .or(known_name)
-            .or_else(|| name.map(str::to_owned));
+        let signer = open_signature
+            .as_deref()
+            .and_then(|s| other_signer(s, name, known_name.as_deref()));
+        let name = person_name(signer.as_deref(), name, known_name.as_deref());
         // What older mail said of the person is not the signer's.
         let card = profile.as_ref().map(|p| match signer {
             Some(_) => profile::Card {
@@ -2166,4 +2161,63 @@ fn contact_placeholder(th: &Theme, reduce: bool) -> AnyElement {
                 )
         }));
     super::skeleton::breathing("contact-placeholder", rows, reduce)
+}
+
+/// Who signed `signature`, when it isn't the person the mail is from:
+/// a colleague writing from a shared address ("accounts@"). The mail's
+/// own name for its sender counts first, then the name the address uses
+/// most on other mail.
+pub(super) fn other_signer(
+    signature: &str,
+    header: Option<&str>,
+    known: Option<&str>,
+) -> Option<String> {
+    let signer = signature::signer(signature)?;
+    let named = header.filter(|n| !n.trim().is_empty()).or(known);
+    (named.is_none() || signature::someone_else(signature, named)).then_some(signer)
+}
+
+/// The name a person goes by, wherever it shows (the card, the chat's
+/// people): who signed their mail here, else the name their mail here
+/// carries, else the one the address uses most.
+pub(super) fn person_name(
+    signer: Option<&str>,
+    header: Option<&str>,
+    known: Option<&str>,
+) -> Option<String> {
+    signer
+        .or(header.filter(|n| !n.trim().is_empty()))
+        .or(known)
+        .map(str::to_owned)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{other_signer, person_name};
+
+    const SIGNED: &str = "Best Regards,\nRakib Alam\nAccounts\n+91 70447 62847";
+
+    #[test]
+    fn a_colleague_on_a_shared_address_goes_by_their_signature() {
+        let signer = other_signer(SIGNED, Some("Niyajuddin Mollick"), None);
+        assert_eq!(signer.as_deref(), Some("Rakib Alam"));
+        let name = person_name(signer.as_deref(), Some("Niyajuddin Mollick"), None);
+        assert_eq!(name.as_deref(), Some("Rakib Alam"));
+    }
+
+    #[test]
+    fn a_sender_signing_their_own_mail_keeps_the_mail_name() {
+        let signer = other_signer(SIGNED, Some("Rakib Alam"), Some("Accounts Team"));
+        assert_eq!(signer, None);
+        let name = person_name(None, Some("Rakib Alam"), Some("Accounts Team"));
+        assert_eq!(name.as_deref(), Some("Rakib Alam"));
+    }
+
+    #[test]
+    fn the_mail_name_comes_before_the_usual_one() {
+        let name = person_name(None, Some("Niyajuddin Mollick"), Some("Rakib Alam"));
+        assert_eq!(name.as_deref(), Some("Niyajuddin Mollick"));
+        let name = person_name(None, Some("  "), Some("Rakib Alam"));
+        assert_eq!(name.as_deref(), Some("Rakib Alam"));
+    }
 }
