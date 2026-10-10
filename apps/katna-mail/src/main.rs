@@ -38,7 +38,7 @@ mod whats_new;
 mod widgets;
 mod window;
 
-use std::cell::Cell;
+use std::cell::{Cell, RefCell};
 use std::path::PathBuf;
 use std::process::ExitCode;
 use std::rc::Rc;
@@ -260,6 +260,17 @@ fn main() -> ExitCode {
             pings,
         } => (connection, sender, requests, pings),
     };
+    // Without a screen GPUI runs headless: the app would hold its place as
+    // the running copy with a window no one can see, and every later
+    // launch would hand over to it. Leaving lets the next launch, with the
+    // desktop's settings, become the app.
+    if !has_screen() {
+        eprintln!(
+            "katna-mail: no screen to open a window on (WAYLAND_DISPLAY and DISPLAY are unset)"
+        );
+        tracing::error!("no screen to open a window on");
+        return ExitCode::FAILURE;
+    }
 
     gpui_platform::application()
         .with_assets(assets::Assets)
@@ -305,7 +316,17 @@ fn main() -> ExitCode {
                 cx,
             );
             let window_connection = connection.clone();
+            // The first window shows the list read while the app started;
+            // a later one (should the first be lost) reads it again.
+            let preloading = RefCell::new(Some(preloading));
+            let open_first = Cell::new(open_first);
             let open_main = move |cx: &mut App| {
+                let (env, paths, font) = (env.clone(), paths.clone(), font.clone());
+                let preloading = preloading
+                    .borrow_mut()
+                    .take()
+                    .unwrap_or_else(|| data::Preloading::start(&paths));
+                let open_first = open_first.replace(false);
                 let mut options = window_options(
                     &env,
                     MAIL_APP_ID,
@@ -317,7 +338,7 @@ fn main() -> ExitCode {
                 let placement = placement::MailPlacement::new(
                     paths.mail_window_file(),
                     env.clone(),
-                    window_connection,
+                    window_connection.clone(),
                 );
                 let shown = placement.restore(&mut options, cx);
                 let opened = cx.open_window(options, |window, cx| {
@@ -348,10 +369,9 @@ fn main() -> ExitCode {
                 }
                 Some(handle)
             };
-            let mut open_main = Some(open_main);
             let mut main = None;
             if !capture_only {
-                main = open_main.take().and_then(|open| open(cx));
+                main = open_main(cx);
                 if main.is_none() {
                     return;
                 }
@@ -372,22 +392,34 @@ fn main() -> ExitCode {
                 // for as long as the app runs.
                 let _connection = connection;
                 while let Ok(request) = requests.recv().await {
+                    tracing::info!(?request, "request");
                     if let instance::Request::Capture(param) = &request {
                         cx.update(|cx| window::capture::open(param, cx));
                         continue;
                     }
-                    if main.is_none() {
-                        main = cx.update(|cx| open_main.take().and_then(|open| open(cx)));
-                        main_id.set(main.map(|h| h.window_id()));
-                    }
-                    let Some(handle) = main else {
-                        break;
-                    };
-                    let handled = handle.update(cx, |view, window, cx| {
-                        view.handle_request(request, window, cx);
-                    });
-                    if handled.is_err() {
-                        break;
+                    // Every request is answered by the mail window: when
+                    // it is gone (or never opened, after quick capture), a
+                    // new one opens. Before, a lost window left the app
+                    // running with no way to show it but quitting it.
+                    let mut request = Some(request);
+                    for _ in 0..2 {
+                        if main.is_none() {
+                            main = cx.update(|cx| open_main(cx));
+                            main_id.set(main.map(|h| h.window_id()));
+                        }
+                        let Some(handle) = main else {
+                            break;
+                        };
+                        let handled = handle.update(cx, |view, window, cx| {
+                            if let Some(request) = request.take() {
+                                view.handle_request(request, window, cx);
+                            }
+                        });
+                        if handled.is_ok() {
+                            break;
+                        }
+                        tracing::warn!("the mail window is gone; opening a new one");
+                        main = None;
                     }
                 }
             })
@@ -454,6 +486,17 @@ fn start_at_login_by_default(paths: &Paths) {
             tracing::warn!(%err, "cannot save the config");
         }
     }
+}
+
+/// Whether there is a screen to open a window on: on Linux and the BSDs
+/// a Wayland or X11 display, as GPUI picks one.
+fn has_screen() -> bool {
+    if cfg!(any(windows, target_os = "macos")) || std::env::var_os("ZED_HEADLESS").is_some() {
+        return true;
+    }
+    ["WAYLAND_DISPLAY", "DISPLAY"]
+        .iter()
+        .any(|name| std::env::var_os(name).is_some_and(|value| !value.is_empty()))
 }
 
 fn usage_error() -> ExitCode {
