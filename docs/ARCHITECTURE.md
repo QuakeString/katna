@@ -2101,7 +2101,11 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   Trash and Drafts across every account (`window/unified.rs`). The special
   folders list each account's folder of that role together; Unread,
   Starred and Important list mail with that flag in every folder but trash
-  and spam. Each opens to one line per account. The lists are read like
+  and spam. Each opens to one line per account. With one account the
+  lists stand alone at the top, without the heading, followed by the
+  account's folders they leave out (Snoozed, Archive), its Labels and its
+  other folders; Gmail's own `[Gmail]` label is not repeated there
+  (`Tree::lone_rows`). The lists are read like
   search results (no one listed folder), merged by date in
   `Store::spread_threads` and `spread_message_ids`, which show server
   copies of one message once. The unified Inbox has inbox tabs shared by

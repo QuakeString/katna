@@ -1562,6 +1562,22 @@ impl MailWindow {
 
     /// The lines the folder pane shows now.
     fn nav_rows_now(&self) -> Vec<sidebar::Row> {
+        // One account with the unified inbox on: the unified lists, then
+        // what they leave out.
+        let mut rows = if self.config.mail.unified_inbox && self.tree.accounts.len() == 1 {
+            let mut rows = self.tree.unified_rows(&self.expanded, true);
+            rows.extend(self.tree.lone_rows(&self.expanded));
+            rows
+        } else {
+            self.account_nav_rows()
+        };
+        self.add_waiting_rows(&mut rows);
+        rows
+    }
+
+    /// The folder pane's lines of the accounts, under the unified lists
+    /// when they show.
+    fn account_nav_rows(&self) -> Vec<sidebar::Row> {
         let only = self.shown_account();
         // With one account on show its folders stand alone, never folded.
         let single = only.is_some() || self.tree.accounts.len() == 1;
@@ -1582,6 +1598,12 @@ impl MailWindow {
             all.append(&mut rows);
             rows = all;
         }
+        rows
+    }
+
+    /// Scheduled mail, the outbox, waiting and reminders, under the first
+    /// Sent line.
+    fn add_waiting_rows(&self, rows: &mut Vec<sidebar::Row>) {
         // Scheduled mail and the outbox show under the first Sent folder
         // while there is some.
         let scheduled = self.writing.scheduled_count();
@@ -1662,7 +1684,6 @@ impl MailWindow {
                 );
             }
         }
-        rows
     }
 
     /// The folder the list shows; `None` for search results.
