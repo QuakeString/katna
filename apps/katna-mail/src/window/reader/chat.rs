@@ -987,6 +987,20 @@ impl MailWindow {
                 .filter(|v| v.from.iter().any(|a| a.email.eq_ignore_ascii_case(email)))
                 .count()
         };
+        // The name the contact card starts from: the first one given on the
+        // newest mail, From before To before Cc (`Mail::message_people`).
+        let named = |email: &str| {
+            views
+                .iter()
+                .rev()
+                .flat_map(|v| v.from.iter().chain(&v.to).chain(&v.cc))
+                .filter(|a| a.email.trim().eq_ignore_ascii_case(email.trim()))
+                .find_map(|a| {
+                    let name = a.name.as_deref()?.trim();
+                    (!name.is_empty() && !name.eq_ignore_ascii_case(email.trim()))
+                        .then(|| name.to_owned())
+                })
+        };
         let mut seen = HashSet::new();
         let mut me: Option<Member> = None;
         let mut members = Vec::new();
@@ -998,10 +1012,11 @@ impl MailWindow {
             }
             // As the contact card names them.
             let known = self.contact_known_name(&a.email);
+            let header = named(&a.email);
             let signer = reader
                 .signature_of(&a.email)
-                .and_then(|s| other_signer(&s, a.name.as_deref(), known.as_deref()));
-            let name = person_name(signer.as_deref(), a.name.as_deref(), known.as_deref())
+                .and_then(|s| other_signer(&s, header.as_deref(), known.as_deref()));
+            let name = person_name(signer.as_deref(), header.as_deref(), known.as_deref())
                 .unwrap_or_else(|| a.email.clone());
             let member = Member {
                 name,
