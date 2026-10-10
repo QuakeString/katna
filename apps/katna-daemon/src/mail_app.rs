@@ -166,6 +166,11 @@ fn mail_program() -> std::path::PathBuf {
 }
 
 async fn spawn(connection: &zbus::Connection, mut command: Command) {
+    // The desktop's screen as it is now, not as it was when this daemon
+    // started (`systemd::session_display`).
+    let screen = crate::systemd::session_display(connection).await;
+    tracing::info!(?screen, "starting katna-mail");
+    command.envs(screen);
     match command.spawn() {
         Ok(mut child) => {
             if let Err(err) = crate::systemd::move_to_own_scope(connection, child.id()).await {

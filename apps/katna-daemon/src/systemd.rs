@@ -42,6 +42,46 @@ pub(crate) async fn restart(connection: &zbus::Connection, service: &str) -> zbu
     Ok(())
 }
 
+/// What tells an app which screen to open on. The daemon may have started
+/// at boot, before the desktop did, or kept running across a log out and
+/// in, so its own values can be missing or belong to a session that is
+/// gone: a Katna Mail started with them opens no window anyone sees.
+const DISPLAY_VARIABLES: [&str; 9] = [
+    "WAYLAND_DISPLAY",
+    "DISPLAY",
+    "XAUTHORITY",
+    "XDG_SESSION_TYPE",
+    "XDG_CURRENT_DESKTOP",
+    "XDG_SESSION_DESKTOP",
+    "DESKTOP_SESSION",
+    "KDE_FULL_SESSION",
+    "KDE_SESSION_VERSION",
+];
+
+/// The desktop session's display variables as the systemd user manager
+/// has them now: desktops hand them over when they start, as KDE's
+/// `startplasma` and GNOME do. Empty where there is no systemd.
+pub(crate) async fn session_display(connection: &zbus::Connection) -> Vec<(String, String)> {
+    let Ok(manager) = manager(connection).await else {
+        return Vec::new();
+    };
+    let environment: Vec<String> = manager
+        .get_property("Environment")
+        .await
+        .unwrap_or_default();
+    display_variables(&environment)
+}
+
+/// The [`DISPLAY_VARIABLES`] in `environment`, given as `NAME=value`.
+fn display_variables(environment: &[String]) -> Vec<(String, String)> {
+    environment
+        .iter()
+        .filter_map(|entry| entry.split_once('='))
+        .filter(|(name, _)| DISPLAY_VARIABLES.contains(name))
+        .map(|(name, value)| (name.to_owned(), value.to_owned()))
+        .collect()
+}
+
 /// The scope a Katna Mail started by this daemon moves to, named as
 /// desktops name the apps they start (`app-<app id>-<pid>.scope`).
 fn scope_name(pid: u32) -> String {
@@ -72,6 +112,25 @@ pub(crate) async fn move_to_own_scope(connection: &zbus::Connection, pid: u32) -
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn takes_only_the_display_variables() {
+        let environment = [
+            "HOME=/home/ada".to_owned(),
+            "WAYLAND_DISPLAY=wayland-0".to_owned(),
+            "DISPLAY=:1".to_owned(),
+            "XDG_SESSION_TYPE=wayland".to_owned(),
+            "BROKEN".to_owned(),
+        ];
+        assert_eq!(
+            display_variables(&environment),
+            [
+                ("WAYLAND_DISPLAY".to_owned(), "wayland-0".to_owned()),
+                ("DISPLAY".to_owned(), ":1".to_owned()),
+                ("XDG_SESSION_TYPE".to_owned(), "wayland".to_owned()),
+            ]
+        );
+    }
 
     #[test]
     fn names_the_scope_like_a_desktop_would() {
