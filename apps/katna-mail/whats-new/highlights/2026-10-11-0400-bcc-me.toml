@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "See when you got a mail as Bcc"
+text = """
+When a mail reached you though your address isn't in To or Cc, the line
+under the sender now ends in "bcc: me" and its details show a bcc row.
+Mail you sent shows whom you added as Bcc.
+"""

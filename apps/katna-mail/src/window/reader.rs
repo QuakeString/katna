@@ -1728,23 +1728,35 @@ impl MailWindow {
                 .collect();
             recipient_names(&people, full_names).join(&tr!("row-names-separator"))
         };
+        let blind = view
+            .map(|v| self.blind_copies(v, part.row.as_ref().map(|r| r.account)))
+            .unwrap_or_default();
         let recipients = view.map(|v| {
             let mut all = v.to.clone();
             all.extend(v.cc.iter().cloned());
             if part.ticks.is_empty() {
-                return div()
-                    .min_w_0()
-                    .truncate()
-                    .child(tr!("reader-to", names = names(&all)))
-                    .into_any_element();
+                let line = match (all.is_empty(), blind.is_empty()) {
+                    (_, true) => tr!("reader-to", names = names(&all)),
+                    (true, false) => tr!("reader-bcc", names = names(&blind)),
+                    (false, false) => {
+                        tr!("reader-to-bcc", names = names(&all), bcc = names(&blind))
+                    }
+                };
+                return div().min_w_0().truncate().child(line).into_any_element();
             }
-            // Each name with its delivered or read tick.
+            // Each name with its delivered or read tick, Bcc last after
+            // its label.
             let mut seen = std::collections::HashSet::new();
             let people: Vec<(bool, &katna_render::Address)> = all
                 .iter()
+                .chain(&blind)
                 .filter(|a| seen.insert(a.email.to_lowercase()))
                 .map(|a| (self.is_me(&a.email), a))
                 .collect();
+            let first_blind = people
+                .iter()
+                .position(|(_, a)| blind.iter().any(|b| b.email.eq_ignore_ascii_case(&a.email)))
+                .filter(|_| !blind.is_empty());
             let labels = recipient_names(&people, full_names);
             let count = labels.len();
             div()
@@ -1763,6 +1775,9 @@ impl MailWindow {
                             .flex()
                             .flex_row()
                             .items_center()
+                            .when(first_blind == Some(i), |d| {
+                                d.child(div().mr(px(space::S2)).child(tr!("reader-bcc-label")))
+                            })
                             .child(label)
                             .children(self.render_tick(tick, ("part-tick", ix * 1000 + i), th))
                             .when(i + 1 < count, |d| d.child(div().mr(px(4.0)).child(",")))
@@ -2003,6 +2018,7 @@ impl MailWindow {
             let from = addresses("from", &view.from);
             let to = (!view.to.is_empty()).then(|| addresses("to", &view.to));
             let copy = (!view.cc.is_empty()).then(|| addresses("cc", &view.cc));
+            let hidden = (!blind.is_empty()).then(|| addresses("bcc", &blind));
             let mut plain = |text: String| -> AnyElement {
                 let (styled, holder) = pieces.piece(text.into(), Vec::new());
                 holder.child(styled).into_any_element()
@@ -2023,6 +2039,7 @@ impl MailWindow {
                 .child(line(tr!("reader-details-from"), from))
                 .children(to.map(|to| line(tr!("reader-details-to"), to)))
                 .children(copy.map(|cc| line(tr!("reader-details-cc"), cc)))
+                .children(hidden.map(|bcc| line(tr!("reader-details-bcc"), bcc)))
                 .child(line(tr!("reader-details-date"), date))
                 .child(line(tr!("reader-details-subject"), subject));
             self.selectable_body(super::select::DETAILS_PART + slot, details, cx)
@@ -2475,6 +2492,33 @@ impl MailWindow {
         self.accounts
             .iter()
             .any(|a| a.address.eq_ignore_ascii_case(email))
+    }
+
+    /// Who got a message as Bcc: the list the user's own sent copy keeps,
+    /// or else the user, when it reached `account` though none of their
+    /// addresses is in its To or Cc (\u{201c}bcc: me\u{201d}, as Gmail
+    /// shows it). List and bulk mail is addressed to the list, not Bcc.
+    fn blind_copies(
+        &self,
+        view: &katna_render::MessageView,
+        account: Option<katna_core::AccountId>,
+    ) -> Vec<katna_render::Address> {
+        if !view.bcc.is_empty() {
+            return view.bcc.clone();
+        }
+        let mine = |list: &[katna_render::Address]| list.iter().any(|a| self.is_me(&a.email));
+        if view.bulk || view.list || mine(&view.from) || mine(&view.to) || mine(&view.cc) {
+            return Vec::new();
+        }
+        account
+            .and_then(|id| self.accounts.iter().find(|a| a.id == id))
+            .map(|a| {
+                vec![katna_render::Address {
+                    name: None,
+                    email: a.address.clone(),
+                }]
+            })
+            .unwrap_or_default()
     }
 }
 
