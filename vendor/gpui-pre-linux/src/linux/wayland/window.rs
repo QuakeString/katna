@@ -909,6 +909,15 @@ impl WaylandWindow {
             .as_ref()
             .map(|viewporter| viewporter.get_viewport(&surface, &globals.qh, ()));
 
+        // Asked for before the first commit, so the compositor's first
+        // configure is already maximized and the window never shows at its
+        // restore size first (Katna).
+        if params.maximized
+            && let Some(toplevel) = surface_state.toplevel()
+        {
+            toplevel.set_maximized();
+        }
+
         let frame_ping = globals.frame_ping.clone();
         let this = Self(WaylandWindowStatePtr {
             state: Rc::new(RefCell::new(WaylandWindowState::new(
