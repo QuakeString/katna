@@ -99,6 +99,7 @@ pub enum Unified {
     Inbox,
     Unread,
     Starred,
+    Snoozed,
     Important,
     Sent,
     AllMail,
@@ -109,10 +110,11 @@ pub enum Unified {
 
 impl Unified {
     /// In the order the folder pane lists them.
-    pub const ALL: [Self; 9] = [
+    pub const ALL: [Self; 10] = [
         Self::Inbox,
         Self::Unread,
         Self::Starred,
+        Self::Snoozed,
         Self::Important,
         Self::Sent,
         Self::AllMail,
@@ -126,6 +128,7 @@ impl Unified {
     pub fn role(self) -> Option<Role> {
         match self {
             Self::Inbox => Some(Role::Inbox),
+            Self::Snoozed => Some(Role::Snoozed),
             Self::Sent => Some(Role::Sent),
             Self::AllMail => Some(Role::All),
             Self::Junk => Some(Role::Junk),
@@ -161,6 +164,7 @@ impl Unified {
             Self::Inbox => "all:inbox",
             Self::Unread => "all:unread",
             Self::Starred => "all:starred",
+            Self::Snoozed => "all:snoozed",
             Self::Important => "all:important",
             Self::Sent => "all:sent",
             Self::AllMail => "all:all-mail",
@@ -579,6 +583,7 @@ impl Tree {
             matches!(
                 role,
                 Role::Inbox
+                    | Role::Snoozed
                     | Role::Flagged
                     | Role::Drafts
                     | Role::Sent
@@ -632,6 +637,10 @@ impl Tree {
                         let node = account
                             .folders()
                             .find(|n| n.role == role && n.folder.is_some())?;
+                        // Snoozed shows only while it holds mail.
+                        if role == Role::Snoozed && node.total == 0 {
+                            return None;
+                        }
                         (node.folder, node.unread)
                     }
                     None => (None, 0),
@@ -1167,5 +1176,51 @@ mod tests {
                 .unified_rows(&HashSet::new(), true)
                 .is_empty()
         );
+    }
+
+    #[test]
+    fn unified_snoozed_while_mail_is_snoozed() {
+        let accounts = [
+            Account {
+                id: AccountId(1),
+                kind: AccountKind::Imap,
+                display_name: String::new(),
+                address: "ada@example.org".into(),
+            },
+            Account {
+                id: AccountId(2),
+                kind: AccountKind::Imap,
+                display_name: String::new(),
+                address: "kay@example.org".into(),
+            },
+        ];
+        let views = |folders: &[FolderSummary]| {
+            let tree = Tree::build(&accounts, folders, &HashMap::new());
+            let rows = tree.unified_rows(&HashSet::from(["all:snoozed".to_owned()]), true);
+            labels(&rows)
+        };
+        // Empty Snoozed folders: no row.
+        let empty = [
+            folder(1, 1, "INBOX", 3),
+            folder(2, 1, "Snoozed", 0),
+            folder(3, 2, "INBOX", 2),
+            folder(4, 2, "INBOX/Snoozed", 0),
+        ];
+        assert!(!views(&empty).iter().any(|l| l.starts_with("Snoozed")));
+        // Mail snoozed in one account: the row after Starred, with that
+        // account under it.
+        let mut snoozed = empty.clone();
+        snoozed[3].total = 2;
+        let rows = views(&snoozed);
+        let at = rows.iter().position(|l| l.starts_with("Snoozed")).unwrap();
+        assert!(rows[at - 1].starts_with("Starred"));
+        assert_eq!(rows[at + 1], "  kay@example.org Some(4) 0");
+        assert!(rows[at + 2].starts_with("Important"));
+        // A Snoozed label deeper down is the user's own, not Katna's.
+        let own = [
+            folder(1, 1, "INBOX", 3),
+            folder(2, 1, "Mailspring/Snoozed", 4),
+        ];
+        assert!(!views(&own).iter().any(|l| l.starts_with("Snoozed")));
     }
 }
