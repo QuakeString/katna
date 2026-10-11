@@ -2,7 +2,8 @@
 
 //! The unified inbox: with Settings > General > Unified inbox on,
 //! "All Accounts" heads the folder pane with each
-//! special folder (Inbox, Sent, ...) of every account in one list, and
+//! special folder (Inbox, Sent, ...) of every account in one list (Snoozed
+//! only while some mail is snoozed), and
 //! lists of the unread, starred and important mail of all. Each list opens
 //! to one row per account. The accounts below start folded; the arrow
 //! beside each account's name folds and opens it either way. With one

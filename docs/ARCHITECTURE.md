@@ -2097,8 +2097,9 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   goes unseen. Each account heading has an arrow that folds its folders.
   The unified inbox (Settings > Accounts, `mail.unified_inbox`, off by
   default) puts an "All Accounts" section over the accounts, which then
-  start folded: Inbox, Unread, Starred, Important, Sent, All mail, Spam,
-  Trash and Drafts across every account (`window/unified.rs`). The special
+  start folded: Inbox, Unread, Starred, Snoozed, Important, Sent, All
+  mail, Spam, Trash and Drafts across every account (`window/unified.rs`).
+  Snoozed shows only while some account's Snoozed folder holds mail. The special
   folders list each account's folder of that role together; Unread,
   Starred and Important list mail with that flag in every folder but trash
   and spam. Each opens to one line per account. With one account the
