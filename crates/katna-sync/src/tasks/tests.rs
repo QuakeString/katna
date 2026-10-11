@@ -1232,6 +1232,8 @@ struct Zoho {
     next: u32,
     /// Every API call answered with this, as for a refused sign-in.
     refuse: Option<(u16, Value)>,
+    /// Writes `null` for empty texts and lists, as Zoho itself does.
+    nulls: bool,
 }
 
 impl Zoho {
@@ -1253,7 +1255,10 @@ impl Zoho {
             .filter(|(_, p, _)| p.as_deref() == Some(id))
             .count();
         task["numberOfSubtasks"] = json!(count);
-        task["subtasks"] = json!([]);
+        task["subtasks"] = if self.nulls { Value::Null } else { json!([]) };
+        if self.nulls && task["description"].as_str().is_none_or(str::is_empty) {
+            task["description"] = Value::Null;
+        }
         task
     }
 }
@@ -1316,7 +1321,11 @@ fn zoho(state: &mut Zoho, request: &Seen, _base: &str) -> (u16, Value) {
                 .take(limit)
                 .map(|id| state.shown(id))
                 .collect();
-            let mut data = json!({ "tasks": page });
+            let mut data = if page.is_empty() && state.nulls {
+                json!({ "tasks": null })
+            } else {
+                json!({ "tasks": page })
+            };
             if from + limit < ids.len() {
                 data["paging"] =
                     json!({ "nextPage": format!("/api/tasks/me?from={}", from + limit) });
@@ -1757,6 +1766,30 @@ fn zoho_lists_stay_as_zoho_has_them() {
     assert_eq!(mine.title, "Personal Tasks");
     assert_eq!(titles_in(&store, mine.id).len(), 2);
     assert!(fake.lock().unwrap().1.iter().all(|s| s.method == "GET"));
+}
+
+#[test]
+fn zoho_nulls_read_as_empty() {
+    // Zoho writes `null` for a task without subtasks or notes, and for the
+    // tasks of a group that has none.
+    let mut fake = Zoho {
+        nulls: true,
+        ..Zoho::default()
+    };
+    fake.groups.insert("7".into(), "Team".into());
+    fake.put(
+        "me",
+        None,
+        json!({ "id": "P", "title": "Water plants", "status": "In Progress" }),
+    );
+    let (base, _) = serve(fake, zoho);
+    let service = zoho_service(&base, None);
+    let (_dir, store, account) = store();
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+    let lists = account_lists(&store);
+    assert_eq!(lists.len(), 2, "{lists:?}");
+    let mine = lists.iter().find(|l| l.title == "Personal Tasks").unwrap();
+    assert_eq!(titles_in(&store, mine.id), ["Water plants"]);
 }
 
 #[test]

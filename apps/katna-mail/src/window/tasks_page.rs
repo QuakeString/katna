@@ -1990,22 +1990,39 @@ impl MailWindow {
                 groups.push((Some(account.id), account.address.clone(), Vec::new()));
             }
         }
+        let mut shown_accounts = Vec::with_capacity(groups.len());
         for (account, address, columns) in groups {
             let heading = if address.is_empty() {
                 tr!("tasks-on-this-computer")
             } else {
                 address
             };
+            // The address, with its + for a new list in this account, as
+            // Mail's Labels heading has.
+            let add_key = account.map_or(0, |a| a.0 as usize + 1);
             nav = nav.child(
                 div()
                     .mt(px(space::S4))
                     .mb(px(space::S2))
-                    .px(px(space::S6))
+                    .pl(px(space::S6))
+                    .pr(px(space::S3))
+                    .flex()
+                    .flex_row()
+                    .items_center()
                     .text_size(px(text::CAPTION))
                     .font_weight(FontWeight::MEDIUM)
                     .text_color(rgba(th.text_faint))
-                    .truncate()
-                    .child(heading),
+                    .child(div().flex_1().min_w_0().truncate().child(heading))
+                    .child(
+                        icon_button(("tasks-account-new-list", add_key), "add", 18.0, th)
+                            .flex_none()
+                            .size(px(28.0))
+                            .tip(tr!("tasks-new-list"), th)
+                            .on_click(cx.listener(move |this, _, window, cx| {
+                                cx.stop_propagation();
+                                this.task_start_naming(None, account, window, cx)
+                            })),
+                    ),
             );
             let note = account
                 .map(|a| a.0)
@@ -2031,11 +2048,33 @@ impl MailWindow {
                     })
                     .on_click(
                         cx.listener(move |this, _, _, cx| this.task_set_view(View::List(id), cx)),
+                    )
+                    // Its menu, as the ⋮ on its card: sort, rename, delete.
+                    .on_mouse_down(
+                        MouseButton::Right,
+                        cx.listener(move |this, event: &gpui::MouseDownEvent, _, cx| {
+                            this.tasks.menu = Some(Menu::List {
+                                list: id,
+                                at: event.position,
+                            });
+                            cx.stop_propagation();
+                            cx.notify();
+                        }),
                     ),
                 );
             }
+            // A new list's name is typed under its account's lists.
+            let new_here = page
+                .naming
+                .as_ref()
+                .filter(|n| n.list.is_none() && n.account == account);
+            nav = nav.children(new_here.map(|n| self.naming_row(n, th, cx)));
+            shown_accounts.push(account);
         }
-        let new_list = page.naming.as_ref().filter(|n| n.list.is_none());
+        let new_list = page
+            .naming
+            .as_ref()
+            .filter(|n| n.list.is_none() && !shown_accounts.contains(&n.account));
         nav = nav.children(new_list.map(|n| self.naming_row(n, th, cx)));
         // A new list goes to the account of the list in view, else the
         // first account's.

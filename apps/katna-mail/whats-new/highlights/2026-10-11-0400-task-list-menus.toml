@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Manage task lists from the side list"
+text = """
+In Tasks, right-click a list in the side list to sort, rename or delete
+it, and use the + beside an account to make a new list there. Zoho task
+lists that came back empty no longer fail to load.
+"""
+apps = ["tasks"]

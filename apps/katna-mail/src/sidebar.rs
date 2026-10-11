@@ -722,6 +722,13 @@ fn insert(nodes: &mut Vec<Node>, account: AccountId, folder: &FolderSummary, unr
             let node = &mut level[at];
             node.folder = Some(folder.id);
             node.role = Role::detect(folder.role.as_deref(), part);
+            // Katna's snoozed mail goes to `Snoozed` or `INBOX/Snoozed`
+            // (`katna-daemon`'s `is_snoozed_path`); another app's, such as
+            // Mailspring's `Mailspring/Snoozed`, is a folder like any other.
+            let katnas = i == 0 || (i == 1 && parts[0].eq_ignore_ascii_case("inbox"));
+            if node.role == Role::Snoozed && !katnas {
+                node.role = Role::Other;
+            }
             node.total = folder.total;
             node.unread = unread;
             if node.role == Role::Inbox && node.name.eq_ignore_ascii_case("inbox") {
@@ -906,6 +913,8 @@ mod tests {
             folder(8, 1, "Old", 0),
             folder(9, 1, "Old/Trash", 0),
             folder(10, 1, "Snoozed", 0),
+            folder(11, 1, "Mailspring", 0),
+            folder(12, 1, "Mailspring/Snoozed", 0),
         ];
         let tree = Tree::build(&[], &folders, &HashMap::new());
         let editable: Vec<i64> = folders
@@ -914,8 +923,9 @@ mod tests {
             .map(|f| f.id.0)
             .collect();
         // Not the inbox, Gmail's labels, Sent, Notes, Snoozed, or a folder
-        // holding a special one.
-        assert_eq!(editable, [2, 4, 5]);
+        // holding a special one. Mailspring's snoozed mail is not Katna's.
+        assert_eq!(editable, [2, 4, 5, 11, 12]);
+        assert_eq!(tree.node(FolderId(12)).unwrap().role, Role::Other);
         assert!(!tree.editable(FolderId(99)));
         assert_eq!(tree.subtree(FolderId(4)), [FolderId(4), FolderId(5)]);
         assert!(tree.subtree(FolderId(99)).is_empty());
