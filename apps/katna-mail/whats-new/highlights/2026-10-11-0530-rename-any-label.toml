@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Rename or delete any label"
+text = """
+A label that holds one named Snoozed, like Mailspring's, now has Rename
+and Delete when you right-click it, as every other label of yours does.
+Only Katna's own Snoozed folder keeps its clock.
+"""
