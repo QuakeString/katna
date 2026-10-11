@@ -1568,6 +1568,7 @@ impl Window {
                 window_min_size,
                 app_id: app_id.clone(),
                 icon,
+                maximized: matches!(window_bounds, WindowBounds::Maximized(_)),
                 #[cfg(target_os = "macos")]
                 tabbing_identifier,
             },

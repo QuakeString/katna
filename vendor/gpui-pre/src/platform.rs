@@ -2303,6 +2303,12 @@ pub struct WindowParams {
 
     pub window_min_size: Option<Size<Pixels>>,
 
+    /// Whether the window opens maximized. Wayland asks for it before the
+    /// window first shows, so it never shows at its restore size first
+    /// (Katna); elsewhere the window is maximized right after it opens.
+    #[cfg_attr(not(any(target_os = "linux", target_os = "freebsd")), allow(dead_code))]
+    pub maximized: bool,
+
     #[cfg(target_os = "macos")]
     pub tabbing_identifier: Option<String>,
 }

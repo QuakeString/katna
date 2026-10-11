@@ -182,6 +182,9 @@ impl LinuxCommon {
             background_executor,
             foreground_executor: ForegroundExecutor::new(dispatcher),
             text_system,
+            #[cfg(any(feature = "wayland", feature = "x11"))]
+            appearance: crate::linux::xdg_desktop_portal::initial_appearance(),
+            #[cfg(not(any(feature = "wayland", feature = "x11")))]
             appearance: WindowAppearance::Light,
             auto_hide_scrollbars: false,
             button_layout: WindowButtonLayout::linux_default(),
