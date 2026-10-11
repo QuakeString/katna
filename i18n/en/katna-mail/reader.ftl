@@ -45,8 +45,15 @@ reader-sending = Sending…
 reader-me = me
 # Under the sender's name. $names: the recipients, separated by commas ("me, Bob").
 reader-to = to { $names }
+# The same when some got it as Bcc (blind carbon copy, hidden from the
+# others): "to Anil, Alok, bcc: me". $bcc: those recipients.
+reader-to-bcc = to { $names }, bcc: { $bcc }
+# The same when everyone got it as Bcc: "bcc: me".
+reader-bcc = bcc: { $names }
 # Before the recipients when each has a delivered or read tick.
 reader-to-label = to
+# Among those, before the ones who got it as Bcc.
+reader-bcc-label = bcc:
 reader-tick-delivered = Delivered { $when }
 reader-tick-no-bounce = Sent { $when }; no bounce came back, so it most likely arrived
 reader-tick-bounced = Not delivered: bounced { $when }
@@ -67,6 +74,8 @@ reader-window-failed = Could not open a new window.
 reader-details-from = from:
 reader-details-to = to:
 reader-details-cc = cc:
+# Bcc: blind carbon copy, hidden from the other recipients.
+reader-details-bcc = bcc:
 reader-details-date = date:
 reader-details-subject = subject:
 

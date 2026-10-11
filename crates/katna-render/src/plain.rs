@@ -52,6 +52,8 @@ pub struct MessageView {
     pub from: Vec<Address>,
     pub to: Vec<Address>,
     pub cc: Vec<Address>,
+    /// The `Bcc` header: only the sender's own copy keeps it.
+    pub bcc: Vec<Address>,
     /// Unix seconds, from the `Date` header.
     pub date: Option<i64>,
     /// The text parts, HTML converted to text, joined by blank lines.
@@ -69,6 +71,9 @@ pub struct MessageView {
     /// offers to unsubscribe and is no mailing list's discussion, or says
     /// it is bulk mail.
     pub bulk: bool,
+    /// Came through a mailing list (it has a `List-Id`), so it is
+    /// addressed to the list rather than to its members.
+    pub list: bool,
 }
 
 /// Parses `raw` into its plain-text view. A message that cannot be parsed
@@ -138,6 +143,7 @@ pub fn message_view(raw: &[u8]) -> MessageView {
         from: addresses(message.from()),
         to: addresses(message.to()),
         cc: addresses(message.cc()),
+        bcc: addresses(message.bcc()),
         date: message.date().map(|d| d.to_timestamp()),
         body,
         truncated,
@@ -150,6 +156,7 @@ pub fn message_view(raw: &[u8]) -> MessageView {
             .map(|ids| ids.iter().map(|id| id.to_string()).collect())
             .unwrap_or_default(),
         bulk: is_bulk(&message),
+        list: message.header_raw("List-Id").is_some(),
     }
 }
 
@@ -272,6 +279,18 @@ Hello Bob,\r\n\r\nthe engine works.\r\n\r\n";
         assert_eq!(view.body, "Hello Bob,\r\n\r\nthe engine works.");
         assert!(!view.from_html && !view.truncated);
         assert!(view.attachments.is_empty());
+    }
+
+    #[test]
+    fn bcc_and_list_are_read() {
+        let raw = b"From: me@example.org\r\nTo: bob@example.net\r\n\
+Bcc: Carol <carol@example.com>\r\nList-Id: <team.example.org>\r\n\
+Subject: Hi\r\n\r\nHello\r\n";
+        let view = message_view(raw);
+        assert_eq!(view.bcc[0].email, "carol@example.com");
+        assert!(view.list);
+        let plain = message_view(b"From: a@example.org\r\nSubject: Hi\r\n\r\nHello\r\n");
+        assert!(plain.bcc.is_empty() && !plain.list);
     }
 
     #[test]
