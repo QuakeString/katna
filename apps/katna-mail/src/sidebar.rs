@@ -725,7 +725,8 @@ fn insert(nodes: &mut Vec<Node>, account: AccountId, folder: &FolderSummary, unr
             // Katna's snoozed mail goes to `Snoozed` or `INBOX/Snoozed`
             // (`katna-daemon`'s `is_snoozed_path`); another app's, such as
             // Mailspring's `Mailspring/Snoozed`, is a folder like any other.
-            if node.role == Role::Snoozed && i > 0 && !parts[0].eq_ignore_ascii_case("inbox") {
+            let katnas = i == 0 || (i == 1 && parts[0].eq_ignore_ascii_case("inbox"));
+            if node.role == Role::Snoozed && !katnas {
                 node.role = Role::Other;
             }
             node.total = folder.total;
