@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Rename and delete labels other apps made"
+text = """
+A label that holds another app's Snoozed label, such as Mailspring's, is
+no longer mistaken for Katna's snoozed mail, so right-clicking it offers
+Rename and Delete again.
+"""
