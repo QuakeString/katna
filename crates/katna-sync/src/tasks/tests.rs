@@ -1232,6 +1232,8 @@ struct Zoho {
     next: u32,
     /// Every API call answered with this, as for a refused sign-in.
     refuse: Option<(u16, Value)>,
+    /// Empty lists and fields written as `null`, as Zoho sometimes does.
+    nulls: bool,
 }
 
 impl Zoho {
@@ -1253,8 +1255,17 @@ impl Zoho {
             .filter(|(_, p, _)| p.as_deref() == Some(id))
             .count();
         task["numberOfSubtasks"] = json!(count);
-        task["subtasks"] = json!([]);
+        task["subtasks"] = if self.nulls { Value::Null } else { json!([]) };
         task
+    }
+
+    /// `items` as a list in an answer.
+    fn list(&self, items: Vec<Value>) -> Value {
+        if self.nulls && items.is_empty() {
+            Value::Null
+        } else {
+            json!(items)
+        }
     }
 }
 
@@ -1290,7 +1301,7 @@ fn zoho(state: &mut Zoho, request: &Seen, _base: &str) -> (u16, Value) {
                 .iter()
                 .map(|(id, name)| json!({ "id": id.parse::<u64>().unwrap(), "name": name }))
                 .collect();
-            return zoho_ok(json!({ "groups": groups }));
+            return zoho_ok(json!({ "groups": state.list(groups) }));
         }
         ["me", rest @ ..] => ("me".into(), rest),
         ["groups", group, rest @ ..] => ((*group).to_owned(), rest),
@@ -1316,7 +1327,7 @@ fn zoho(state: &mut Zoho, request: &Seen, _base: &str) -> (u16, Value) {
                 .take(limit)
                 .map(|id| state.shown(id))
                 .collect();
-            let mut data = json!({ "tasks": page });
+            let mut data = json!({ "tasks": state.list(page) });
             if from + limit < ids.len() {
                 data["paging"] =
                     json!({ "nextPage": format!("/api/tasks/me?from={}", from + limit) });
@@ -1384,7 +1395,7 @@ fn zoho(state: &mut Zoho, request: &Seen, _base: &str) -> (u16, Value) {
                 .filter(|(_, p, _)| p.as_deref() == Some(*id))
                 .map(|(_, _, t)| t.clone())
                 .collect();
-            zoho_ok(json!({ "tasks": subtasks }))
+            zoho_ok(json!({ "tasks": state.list(subtasks) }))
         }
         _ => zoho_missing(),
     }
@@ -1757,6 +1768,32 @@ fn zoho_lists_stay_as_zoho_has_them() {
     assert_eq!(mine.title, "Personal Tasks");
     assert_eq!(titles_in(&store, mine.id).len(), 2);
     assert!(fake.lock().unwrap().1.iter().all(|s| s.method == "GET"));
+}
+
+#[test]
+fn zoho_nulls_read_as_empty() {
+    // Zoho writes an empty list, and a field it has nothing in, as null.
+    let mut fake = Zoho {
+        nulls: true,
+        ..Zoho::default()
+    };
+    fake.groups.insert("7".into(), "Team".into());
+    fake.put(
+        "me",
+        None,
+        json!({ "id": "P", "title": "Water plants", "description": null,
+                "status": "In Progress", "dueDate": null, "priority": null }),
+    );
+    let (base, _fake) = serve(fake, zoho);
+    let service = zoho_service(&base, None);
+    let (_dir, store, account) = store();
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+    let lists = account_lists(&store);
+    assert_eq!(lists.len(), 2, "{lists:?}");
+    let mine = lists.iter().find(|l| l.title == "Personal Tasks").unwrap();
+    let team = lists.iter().find(|l| l.title == "Team").unwrap();
+    assert_eq!(titles_in(&store, mine.id), ["Water plants"]);
+    assert!(titles_in(&store, team.id).is_empty());
 }
 
 #[test]
