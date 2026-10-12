@@ -647,7 +647,11 @@ impl MailWindow {
         // The colour and label popovers open where the menu was.
         let popover = |labels: bool| {
             cx.listener(move |this: &mut Self, _: &gpui::ClickEvent, window, cx| {
-                let at = this.notes.as_ref().and_then(|p| p.more.as_ref()).map(|m| m.at);
+                let at = this
+                    .notes
+                    .as_ref()
+                    .and_then(|p| p.more.as_ref())
+                    .map(|m| m.at);
                 if let Some(at) = at {
                     this.open_bulk(labels, at, window, cx)
                 }
@@ -667,12 +671,16 @@ impl MailWindow {
                         .on_click(close_then(|this, cx| this.trash_checked(false, cx))),
                 )
                 .child(
-                    item("notes-card-delete-forever", "trash", tr!("notes-delete-forever"))
-                        .on_click(cx.listener(move |this, _, _, cx| {
-                            let ids = ids.clone();
-                            this.clear_checks(cx);
-                            this.delete_notes_forever(ids, cx)
-                        })),
+                    item(
+                        "notes-card-delete-forever",
+                        "trash",
+                        tr!("notes-delete-forever"),
+                    )
+                    .on_click(cx.listener(move |this, _, _, cx| {
+                        let ids = ids.clone();
+                        this.clear_checks(cx);
+                        this.delete_notes_forever(ids, cx)
+                    })),
                 );
         }
         let all_pinned = notes.iter().all(|n| n.pinned);
@@ -693,7 +701,11 @@ impl MailWindow {
         .child(
             item("notes-card-remind", "bell", tr!("notes-remind")).on_click(cx.listener(
                 move |this, _, _, cx| {
-                    let at = this.notes.as_ref().and_then(|p| p.more.as_ref()).map(|m| m.at);
+                    let at = this
+                        .notes
+                        .as_ref()
+                        .and_then(|p| p.more.as_ref())
+                        .map(|m| m.at);
                     if let Some(page) = this.notes.as_mut() {
                         page.more = None;
                         page.menu_card = None;
@@ -769,9 +781,7 @@ impl MailWindow {
             elevation::MENU,
         );
         if card {
-            return self
-                .render_card_menu_items(menu, th, cx)
-                .into_any_element();
+            return self.render_card_menu_items(menu, th, cx).into_any_element();
         }
         if !open_note {
             menu = menu

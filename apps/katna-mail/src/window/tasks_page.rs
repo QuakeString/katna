@@ -2431,24 +2431,24 @@ impl MailWindow {
         let heading = card_heading(list_title(column), th)
             .on_mouse_down(MouseButton::Right, open_list_menu(id, cx))
             .child(
-            icon_button(("tasks-list-menu", id as usize), "more", 20.0, th)
-                .size(px(32.0))
-                // Not over its own menu.
-                .when(page.menu.is_none(), |d| {
-                    d.tip(tr!("tasks-list-options"), th)
-                })
-                .on_mouse_down(
-                    MouseButton::Left,
-                    cx.listener(move |this, event: &gpui::MouseDownEvent, _, cx| {
-                        this.tasks.menu = Some(Menu::List {
-                            list: id,
-                            at: event.position,
-                        });
-                        cx.stop_propagation();
-                        cx.notify();
-                    }),
-                ),
-        );
+                icon_button(("tasks-list-menu", id as usize), "more", 20.0, th)
+                    .size(px(32.0))
+                    // Not over its own menu.
+                    .when(page.menu.is_none(), |d| {
+                        d.tip(tr!("tasks-list-options"), th)
+                    })
+                    .on_mouse_down(
+                        MouseButton::Left,
+                        cx.listener(move |this, event: &gpui::MouseDownEvent, _, cx| {
+                            this.tasks.menu = Some(Menu::List {
+                                list: id,
+                                at: event.position,
+                            });
+                            cx.stop_propagation();
+                            cx.notify();
+                        }),
+                    ),
+            );
         let add = match adding_top {
             Some(adding) => self.adding_row(adding, false, th, cx),
             None => self
