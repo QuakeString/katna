@@ -30,7 +30,7 @@ use std::{
 };
 
 use katna_store::tasks::{RemoteTask, RemoteTaskList, Task};
-use serde::Deserialize;
+use serde::{Deserialize, Deserializer, de::DeserializeOwned};
 use serde_json::{Map, Value, json};
 
 use super::{Pull, gone, segment, unix};
@@ -82,9 +82,9 @@ struct Envelope {
 
 #[derive(Deserialize, Default)]
 struct Status {
-    #[serde(default)]
+    #[serde(default, deserialize_with = "or_default")]
     code: u16,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "or_default")]
     description: String,
 }
 
@@ -92,11 +92,11 @@ struct Status {
 struct Item {
     #[serde(default)]
     id: Value,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "or_default")]
     title: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "or_default")]
     description: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "or_default")]
     status: String,
     #[serde(rename = "dueDate", default)]
     due: Value,
@@ -104,7 +104,7 @@ struct Item {
     modified: Value,
     #[serde(rename = "numberOfSubtasks", default)]
     subtask_count: Value,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "or_default")]
     subtasks: Vec<Value>,
     #[serde(rename = "parentTaskId", default)]
     parent: Value,
@@ -116,8 +116,25 @@ struct Item {
 struct Group {
     #[serde(default)]
     id: Value,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "or_default")]
     name: String,
+}
+
+/// A field Zoho sends as `null` when it has nothing, as when missing.
+fn or_default<'de, D, T>(deserializer: D) -> std::result::Result<T, D::Error>
+where
+    D: Deserializer<'de>,
+    T: Deserialize<'de> + Default,
+{
+    Ok(Option::<T>::deserialize(deserializer)?.unwrap_or_default())
+}
+
+/// The items of a list in an answer; Zoho writes an empty one as `null`.
+fn listed<T: DeserializeOwned>(value: &Value, doing: &str) -> Result<Vec<T>> {
+    if value.is_null() {
+        return Ok(Vec::new());
+    }
+    serde_json::from_value(value.clone()).map_err(|err| protocol(doing, err))
 }
 
 /// A number or a string as text: Zoho writes IDs either way.
@@ -320,8 +337,7 @@ impl ZohoTasks {
             }
             Err(err) => return Err(err),
         };
-        let groups: Vec<Group> = serde_json::from_value(data["groups"].clone())
-            .map_err(|err| protocol("reading the task groups", err))?;
+        let groups: Vec<Group> = listed(&data["groups"], "reading the task groups")?;
         lists.extend(groups.into_iter().filter_map(|group| {
             let id = text(&group.id);
             (!id.is_empty()).then(|| RemoteTaskList {
@@ -379,8 +395,7 @@ impl ZohoTasks {
                 });
             }
             let data = parse(&reply, "reading tasks")?;
-            let page: Vec<Item> = serde_json::from_value(data["tasks"].clone())
-                .map_err(|err| protocol("reading tasks", err))?;
+            let page: Vec<Item> = listed(&data["tasks"], "reading tasks")?;
             let got = page.len();
             items.extend(page);
             let more = !data["paging"]["nextPage"].is_null()
@@ -425,8 +440,7 @@ impl ZohoTasks {
             return Ok(None);
         }
         let data = parse(&reply, "reading subtasks")?;
-        let items: Vec<Item> = serde_json::from_value(data["tasks"].clone())
-            .map_err(|err| protocol("reading subtasks", err))?;
+        let items: Vec<Item> = listed(&data["tasks"], "reading subtasks")?;
         Ok(Some(
             items
                 .into_iter()
