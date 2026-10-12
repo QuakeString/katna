@@ -6,6 +6,7 @@
 
 about-tooltip = អំពី Katna
 about-tagline = សំបុត្រ និងប្រតិទិនសម្រាប់ផ្ទៃតុ Linux
+about-version = Katna Mail { $version }
 about-copy-version = ចម្លងព័ត៌មានកំណែ
 about-version-copied = បានចម្លង
 about-version-built = បានបង្កើត៖ { $date }
@@ -41,6 +42,8 @@ about-update-restart = ធ្វើបច្ចុប្បន្នភាព �
 about-update-cancel = កុំទាន់
 about-changelog = កំណត់ត្រាការផ្លាស់ប្ដូរ
 about-source = កូដប្រភព
+about-debug-report = ចម្លងរបាយការណ៍បំបាត់កំហុស
+about-debug-report-tip = កំណែ ការពិនិត្យក្រោយបច្ចុប្បន្នភាព និងកំណត់ហេតុថ្មីៗ សម្រាប់របាយការណ៍កំហុស។ គ្មានសំបុត្រ ឬពាក្យសម្ងាត់ទេ។
 about-coffee = ទិញកាហ្វេឱ្យខ្ញុំមួយកែវ
 about-coffee-coffee = កាហ្វេទេ?
 about-coffee-tea = តែទេ?

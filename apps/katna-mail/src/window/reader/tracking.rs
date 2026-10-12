@@ -350,6 +350,8 @@ impl MailWindow {
         let popover = div()
             .id(("seen-popover", ix))
             .absolute()
+            // Placed on screen, by the eye it points at.
+            .placed_ltr()
             .left(px(x))
             .map(|d| {
                 if below {

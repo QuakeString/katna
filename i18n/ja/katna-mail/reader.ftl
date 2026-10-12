@@ -55,6 +55,7 @@ reader-details-subject = 件名:
 
 reader-downloading = このメールをサーバーからダウンロードしています…
 reader-download-failed = このメールをダウンロードできませんでした。
+reader-download-failed-reason = このメールをダウンロードできませんでした。{ $reason }
 reader-download-offline = このアカウントはオフラインです。このメールをダウンロードするにはオンラインにしてください。
 reader-try-again = 再試行
 
@@ -90,6 +91,89 @@ security-missing-key = お持ちでない鍵で署名されているため、確
 security-missing-key-id = お持ちでない鍵（{ $key }）で署名されているため、確認できません
 security-signature-unavailable = 署名付き。署名を確認するには { $tool } をインストールしてください
 security-signature-error = 署名を確認できませんでした。
+security-look-up-key = 鍵を検索
+
+## The key popover: the details of the key a message was signed with, and
+## a key to import (looked up, or attached to the message)
+
+key-card-verified = 検証済みの署名
+key-card-verified-detail = 署名は正しく、この鍵は信頼済みです。
+key-card-unverified = 未検証の署名
+key-card-unverified-detail = 署名は正しいものの、この鍵が本人のものであることは確認されていません。相手とフィンガープリントを照合してから、GnuPG（Kleopatra または gpg --edit-key）でこの鍵を信頼してください。
+key-card-not-sender = 別の人による署名
+key-card-not-sender-detail = 署名は正しいものの、送信者の鍵ではありません。
+key-card-untrusted = 信頼していない鍵
+key-card-untrusted-detail = この鍵は GnuPG で信頼しないとマークされています。
+key-card-signature-expired = 署名の有効期限切れ
+key-card-signature-expired-detail = 署名は正しかったものの、有効期限が切れています。
+key-card-key-expired = 鍵の有効期限切れ
+key-card-key-expired-detail = 署名は正しいものの、その後、鍵の有効期限が切れています。
+key-card-key-revoked = 失効した鍵
+key-card-key-revoked-detail = 所有者がこの鍵を失効させたため、署名は信頼できません。
+key-card-bad = 不正な署名
+key-card-bad-detail = このメールは署名後に変更されたか、署名が偽造されています。
+key-card-signed-by = 署名者
+key-card-belongs-to = 所有者
+key-card-fingerprint = フィンガープリント
+key-card-signed = 署名日時
+key-card-key = 鍵
+key-card-kind = { $standard }、{ $algorithm }
+key-card-created = 作成日
+key-card-expires = 有効期限
+key-card-never = なし
+key-card-issued-by = 発行者
+key-card-found-in = 入手元
+key-card-keyring = GnuPG キーリング
+key-card-copy = フィンガープリントをコピー
+key-card-import-title = この鍵をインポートしますか？
+key-card-from-directory = { $domain } の鍵ディレクトリで見つかりました。
+key-card-from-attachment = 添付ファイル { $name } から。
+key-card-import-note = インポートすると、Katna でこの人の署名を確認したり、この人宛てのメールを暗号化したりできます。鍵を完全に信頼するには、相手とフィンガープリントを照合してください。
+key-card-cancel = キャンセル
+key-card-import = 鍵をインポート
+key-card-looking-up = 鍵を検索しています…
+key-card-looking-up-detail = { $domain } の鍵ディレクトリに問い合わせています。
+key-card-not-found = 鍵が見つかりません
+key-card-not-found-detail = { $domain } はこのアドレスの鍵を公開していません。送信者に鍵を送ってもらうよう依頼してください。
+key-card-not-kept = 見つかった鍵は使用できません。
+key-card-failed = 鍵を取得できませんでした
+
+## Sender checks: the banner on mail that failed the checks the user's mail
+## provider ran on its sender (DMARC, DKIM, SPF), and the "?" on the picture
+## of a sender nothing confirmed
+
+sender-failed-title = このメールは { $domain } からのものではない可能性があります
+sender-failed-body = { $provider } の送信者チェックに合格しませんでした。リンク、添付ファイル、返信には注意してください。
+sender-provider-unknown = お使いのメールサービス
+sender-details = 詳細
+sender-details-hide = 詳細を非表示
+sender-looks-safe = 安全そう
+sender-move-to-spam = 迷惑メールに移動
+sender-checked-by = { $provider } が確認
+sender-checked-by-server = { $provider } が確認（{ $server }）
+sender-dmarc = 送信者ドメイン（DMARC）
+sender-dkim = 署名（DKIM）
+sender-spf = 送信サーバー（SPF）
+sender-result-pass = 合格
+sender-result-fail = 不合格
+sender-result-unsure = 不明
+sender-result-none = なし
+sender-result-missing = 未確認
+sender-dmarc-pass = { $domain } がこの送信者を確認しています。
+sender-dmarc-fail = このメールは、{ $domain } が示す送信方法と一致しません。
+sender-dmarc-none = { $domain } はメールに関するルールを公開していません。
+sender-dkim-pass = { $domain } が署名しています。
+sender-dkim-fail = { $domain } の署名がメールと一致しません。
+sender-dkim-none = このメールには署名がありません。
+sender-spf-pass = { $domain } が登録しているサーバーから送信されました。
+sender-spf-fail = { $domain } が登録していないサーバーから送信されました。
+sender-spf-none = { $domain } は送信サーバーを登録していません。
+sender-check-unsure = チェックで明確な結果が得られませんでした。
+sender-unconfirmed = { $provider } は、このメールが { $domain } から送られたことを確認できませんでした。送信者は誰でも自由に書けます。
+sender-link-title = このリンクを開きますか？
+sender-link-body = このメールは送信者チェックに合格しませんでした。リンク先は { $host } です:
+sender-link-cancel = キャンセル
+sender-link-open = 開く
 
 ## Open and click tracking and read receipts (the eye's popover beside a
 ## sent message's star, and the line above a read receipt)
@@ -108,6 +192,7 @@ tracking-receipt-other = 開封確認: { $who } はあなたのメッセージ�
 
 remote-hidden = このメールの画像は表示されていません。
 remote-hidden-unconfirmed = 画像を表示していません。送信者を確認できませんでした。
+remote-hidden-failed = 画像を表示していません。このメールは送信者チェックに合格しませんでした。
 remote-show = 画像を表示
 remote-always-show = この送信者からの画像を常に表示
 remote-picture-use = 使用

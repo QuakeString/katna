@@ -20,6 +20,13 @@ compose-show-trimmed = کاٹا گیا مواد دکھائیں
 compose-hide-trimmed = کاٹا گیا مواد چھپائیں
 compose-remove-trimmed = حوالہ دیا گیا متن ہٹائیں
 compose-trimmed-removed = حوالہ دیا گیا متن ہٹا دیا گیا
+compose-quote-header = { $date } کو { $from } نے لکھا:
+compose-forward-header = ---------- آگے بھیجا گیا پیغام ---------
+compose-forward-from = منجانب: { $from }
+compose-forward-date = تاریخ: { $date }
+compose-forward-subject = موضوع: { $subject }
+compose-forward-to = بنام: { $to }
+compose-forward-cc = Cc: { $cc }
 
 ## Recipients and subject
 

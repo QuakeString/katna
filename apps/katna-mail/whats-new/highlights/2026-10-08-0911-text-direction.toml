@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Mail in Arabic and Hebrew reads its own way"
+text = """
+Each paragraph of a message now reads in its own direction: Arabic,
+Hebrew, Persian and Urdu from the right, English from the left, in the same
+mail and in any window. When writing, the Left-to-right and Right-to-left
+buttons in the formatting bar (or Ctrl+Shift+X) turn a paragraph around,
+and a line you start in Arabic or Hebrew turns by itself. The message goes
+out the way you wrote it.
+"""

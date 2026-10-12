@@ -6,6 +6,7 @@
 //! "4 older messages" fold in long threads, the newest open) and, pinned
 //! at the foot, Reply, Reply all and Forward, or the reply being written.
 
+use crate::widgets::Tip as _;
 use std::cell::Cell;
 use std::collections::HashSet;
 use std::rc::Rc;
@@ -22,9 +23,9 @@ use katna_render::MessageView;
 use katna_render::html::Document;
 use katna_store::{FolderId, MessageFlags, MessageId};
 use katna_ui::motion::lerp;
-use katna_ui::px;
 use katna_ui::tokens::{radius, space};
 use katna_ui::unpx;
+use katna_ui::{Direction, directed, px};
 
 use super::compose::{Kind, SentCard};
 use super::list::separator;
@@ -35,12 +36,14 @@ use crate::data::{self, EntryKey, Mail, Row};
 use crate::format;
 use crate::sidebar::Role;
 use crate::theme::{Theme, fade};
-use crate::widgets::{card_outline, icon, icon_button, icon_button_colored, tip, toolbar};
+use crate::widgets::{card_outline, icon, icon_button, icon_button_colored, toolbar};
 
 mod chat;
 pub(in crate::window) use chat::{LONG_PRESS, PRESS_SLOP};
 mod invite;
+pub(super) mod keys;
 mod security;
+pub(super) mod sender;
 mod summary;
 mod ticks;
 mod tracking;
@@ -136,6 +139,9 @@ struct Part {
     body: Option<Body>,
     /// The "to me, Bob ▾" details are open.
     details: bool,
+    /// What each sender check found is shown, under the banner of mail
+    /// that failed them.
+    checks_open: bool,
     /// How tall it was when last drawn, to grow or shrink it smoothly.
     height: Rc<Cell<f32>>,
     /// Its height when it was last opened or folded, and how many times
@@ -168,6 +174,7 @@ impl Part {
             expanded,
             body: None,
             details: false,
+            checks_open: false,
             height: Rc::default(),
             from: 0.0,
             turns: 0,
@@ -206,10 +213,10 @@ struct Body {
     remote: Vec<String>,
     /// The SVG pictures `doc` carries, drawn to bitmaps before they show.
     svgs: Vec<Arc<[u8]>>,
-    /// The mail provider vouched for the `From` address (DMARC or aligned
-    /// DKIM passed), so "Always show images from" this sender holds. Only
-    /// looked at when `doc` has remote images.
-    authenticated: bool,
+    /// What the mail provider found of the sender: whether it vouched for
+    /// the `From` address (DMARC or aligned DKIM passed), so "Always show
+    /// images from" this sender holds, or found it forged.
+    checks: Option<katna_render::SenderChecks>,
     /// Encrypted or signed: what opening it found.
     security: Option<Secured>,
     /// The raw message, until it is handed to GnuPG.
@@ -224,6 +231,21 @@ struct Body {
 }
 
 impl Body {
+    /// The provider vouched for the sender.
+    fn authenticated(&self) -> bool {
+        self.verdict() == Some(katna_render::Verdict::Passed)
+    }
+
+    /// The sender failed the provider's checks: its pictures stay hidden
+    /// and its links ask first.
+    fn failed(&self) -> bool {
+        self.verdict() == Some(katna_render::Verdict::Failed)
+    }
+
+    fn verdict(&self) -> Option<katna_render::Verdict> {
+        self.checks.as_ref().map(|checks| checks.verdict)
+    }
+
     /// Encrypted (being opened, or opened): remote content stays blocked.
     fn encrypted(&self) -> bool {
         match &self.security {
@@ -352,7 +374,8 @@ impl Conversation {
                     view: body.view.clone(),
                     doc: body.doc.clone().filter(|_| !sealed),
                     encrypted: body.encrypted(),
-                    authenticated: body.authenticated,
+                    authenticated: body.authenticated(),
+                    failed: body.failed(),
                     sealed,
                 }
             })
@@ -672,7 +695,8 @@ impl Conversation {
                 Some(RemoteContent {
                     id: p.id,
                     sender,
-                    authenticated: body.authenticated,
+                    authenticated: body.authenticated(),
+                    failed: body.failed(),
                     urls: body.remote.clone(),
                 })
             })
@@ -705,6 +729,8 @@ pub(super) struct RemoteContent {
     pub sender: String,
     /// The provider vouched for `sender` ([`Body::authenticated`]).
     pub authenticated: bool,
+    /// The sender failed the provider's checks ([`Body::failed`]).
+    pub failed: bool,
     pub urls: Vec<String>,
 }
 
@@ -720,6 +746,8 @@ pub(super) struct Printable {
     pub encrypted: bool,
     /// The provider vouched for its sender ([`Body::authenticated`]).
     pub authenticated: bool,
+    /// Its sender failed the provider's checks ([`Body::failed`]).
+    pub failed: bool,
     /// Encrypted or signed, and its text not opened.
     pub sealed: bool,
 }
@@ -888,6 +916,25 @@ impl MailWindow {
         self.reader.as_ref()?.parts.get(ix).map(|p| p.id)
     }
 
+    /// What a screen reader hears of the open conversation: its subject as
+    /// the name and, while one listens, its newest message's text.
+    pub(super) fn spoken_reader<E: StatefulInteractiveElement>(&self, el: E) -> E {
+        let Some(reader) = self.reader.as_ref() else {
+            return el;
+        };
+        let text = self
+            .a11y_on
+            .then(|| reader.parts.last().and_then(|p| self.plain_text_of(p.id)))
+            .flatten();
+        let el = el
+            .role(gpui::Role::Document)
+            .aria_label(reader.subject.clone());
+        match text {
+            Some(text) => el.aria_description(text),
+            None => el,
+        }
+    }
+
     /// The plain text of message `id` in the open conversation, unless it
     /// is encrypted or empty.
     pub(super) fn plain_text_of(&self, id: MessageId) -> Option<String> {
@@ -971,14 +1018,14 @@ impl MailWindow {
                 th,
             )
             .when(on, |d| d.bg(rgba(th.hover)))
-            .tooltip(tip(
+            .tip(
                 if on {
                     tr!("reader-dark-colors")
                 } else {
                     tr!("reader-original-colors")
                 },
                 th,
-            ))
+            )
             .on_click(cx.listener(|this, _, _, cx| {
                 if let Some(reader) = &mut this.reader {
                     reader.original_colors = !reader.original_colors;
@@ -1003,6 +1050,7 @@ impl MailWindow {
             .id("reader-card")
             .key_context(READER_CONTEXT)
             .track_focus(&self.reader_focus)
+            .map(|d| self.spoken_reader(d))
             .size_full()
             .flex()
             .flex_col()
@@ -1125,9 +1173,9 @@ impl MailWindow {
         }
         let count = self.entries.len();
         let back = if self.split() {
-            icon_button("reader-close", "close", 20.0, th).tooltip(tip(tr!("reader-close"), th))
+            icon_button("reader-close", "close", 20.0, th).tip(tr!("reader-close"), th)
         } else {
-            icon_button("reader-back", "back", 20.0, th).tooltip(tip(tr!("reader-back"), th))
+            icon_button("reader-back", "back", 20.0, th).tip(tr!("reader-back"), th)
         }
         .on_click(
             cx.listener(|this, _, window, cx| this.close_message(&super::CloseMessage, window, cx)),
@@ -1147,7 +1195,7 @@ impl MailWindow {
                         self.menu,
                         Some(Menu::ReaderMore | Menu::MoveTo | Menu::LabelAs)
                     ),
-                    |d| d.tooltip(tip(tr!("reader-more"), th)),
+                    |d| d.tip(tr!("reader-more"), th),
                 )
                 .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::ReaderMore, cx)));
             let more = self.with_menu(more, Menu::ReaderMore, th, cx);
@@ -1177,7 +1225,7 @@ impl MailWindow {
             .when(!squeeze.unread, |d| {
                 d.child(
                     icon_button("reader-unread", "mark-unread", 20.0, th)
-                        .tooltip(tip(tr!("reader-mark-unread"), th))
+                        .tip(tr!("reader-mark-unread"), th)
                         .on_click(cx.listener(|this, _, window, cx| {
                             this.mark_unread(&super::MarkUnread, window, cx)
                         })),
@@ -1187,7 +1235,7 @@ impl MailWindow {
                 d.child({
                     let move_to = icon_button("reader-move", "move-to", 20.0, th)
                         .when(self.menu != Some(Menu::MoveTo), |d| {
-                            d.tooltip(tip(tr!("reader-move-to"), th))
+                            d.tip(tr!("reader-move-to"), th)
                         })
                         .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::MoveTo, cx)));
                     self.with_menu(move_to, Menu::MoveTo, th, cx)
@@ -1195,7 +1243,7 @@ impl MailWindow {
                 .when(gmail, |d| {
                     let label_as = icon_button("reader-label-as", "tag", 20.0, th)
                         .when(self.menu != Some(Menu::LabelAs), |d| {
-                            d.tooltip(tip(tr!("menu-label-as"), th))
+                            d.tip(tr!("menu-label-as"), th)
                         })
                         .on_click(
                             cx.listener(|this, _, _, cx| this.toggle_menu(Menu::LabelAs, cx)),
@@ -1207,7 +1255,7 @@ impl MailWindow {
                 let key = self.reader.as_ref().map(|r| r.key);
                 d.child(
                     icon_button("reader-snooze", "snooze", 20.0, th)
-                        .tooltip(tip(tr!("reader-snooze"), th))
+                        .tip(tr!("reader-snooze"), th)
                         .on_click(cx.listener(move |this, e: &gpui::ClickEvent, _, cx| {
                             this.open_mail_times(
                                 key.into_iter().collect(),
@@ -1219,7 +1267,7 @@ impl MailWindow {
                 )
                 .child(
                     icon_button("reader-remind", "bell-plus", 20.0, th)
-                        .tooltip(tip(tr!("reader-remind"), th))
+                        .tip(tr!("reader-remind"), th)
                         .on_click(cx.listener(move |this, e: &gpui::ClickEvent, _, cx| {
                             this.open_mail_times(key.into_iter().collect(), true, e.position(), cx);
                         })),
@@ -1240,7 +1288,7 @@ impl MailWindow {
             .when(!squeeze.print, |d| {
                 d.child(
                     icon_button("reader-print", "print", 20.0, th)
-                        .tooltip(tip(tr!("reader-print-all"), th))
+                        .tip(tr!("reader-print-all"), th)
                         .on_click(
                             cx.listener(|this, _, window, cx| this.print_conversation(window, cx)),
                         ),
@@ -1249,7 +1297,7 @@ impl MailWindow {
             .when(!self.detached && !squeeze.new_window, |d| {
                 d.child(
                     icon_button("reader-new-window", "open-external", 20.0, th)
-                        .tooltip(tip(tr!("reader-new-window"), th))
+                        .tip(tr!("reader-new-window"), th)
                         .on_click(cx.listener(|this, _, _, cx| this.open_reader_in_window(cx))),
                 )
             });
@@ -1272,7 +1320,7 @@ impl MailWindow {
                 })
                 .child(
                     icon_button("newer", "chevron-left", 20.0, th)
-                        .tooltip(tip(tr!("reader-newer"), th))
+                        .tip(tr!("reader-newer"), th)
                         .when(ix == 0, |d| d.opacity(0.4))
                         .on_click(cx.listener(|this, _, window, cx| {
                             this.select_previous(&SelectPrevious, window, cx)
@@ -1280,7 +1328,7 @@ impl MailWindow {
                 )
                 .child(
                     icon_button("older", "chevron-right", 20.0, th)
-                        .tooltip(tip(tr!("reader-older"), th))
+                        .tip(tr!("reader-older"), th)
                         .when(ix + 1 >= count, |d| d.opacity(0.4))
                         .on_click(cx.listener(|this, _, window, cx| {
                             this.select_next(&SelectNext, window, cx)
@@ -1313,6 +1361,7 @@ impl MailWindow {
 
     pub(super) fn render_reader(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         self.open_sealed(cx);
+        self.learn_keys(cx);
         self.fetch_remote(cx);
         self.download_bodies(cx);
         self.prepare_chat();
@@ -1417,14 +1466,14 @@ impl MailWindow {
                         if all_expanded { th.accent } else { th.text_dim },
                         th,
                     )
-                    .tooltip(tip(
+                    .tip(
                         if all_expanded {
                             tr!("reader-collapse-all")
                         } else {
                             tr!("reader-expand-all")
                         },
                         th,
-                    ))
+                    )
                     .on_click(cx.listener(move |this, _, _, cx| {
                         if let (Some(reader), Ok(mail)) = (&mut this.reader, &this.mail) {
                             reader.set_all(!all_expanded, mail);
@@ -1677,25 +1726,37 @@ impl MailWindow {
                 .filter(|a| seen.insert(a.email.to_lowercase()))
                 .map(|a| (self.is_me(&a.email), a))
                 .collect();
-            recipient_names(&people, full_names).join(", ")
+            recipient_names(&people, full_names).join(&tr!("row-names-separator"))
         };
+        let blind = view
+            .map(|v| self.blind_copies(v, part.row.as_ref().map(|r| r.account)))
+            .unwrap_or_default();
         let recipients = view.map(|v| {
             let mut all = v.to.clone();
             all.extend(v.cc.iter().cloned());
             if part.ticks.is_empty() {
-                return div()
-                    .min_w_0()
-                    .truncate()
-                    .child(tr!("reader-to", names = names(&all)))
-                    .into_any_element();
+                let line = match (all.is_empty(), blind.is_empty()) {
+                    (_, true) => tr!("reader-to", names = names(&all)),
+                    (true, false) => tr!("reader-bcc", names = names(&blind)),
+                    (false, false) => {
+                        tr!("reader-to-bcc", names = names(&all), bcc = names(&blind))
+                    }
+                };
+                return div().min_w_0().truncate().child(line).into_any_element();
             }
-            // Each name with its delivered or read tick.
+            // Each name with its delivered or read tick, Bcc last after
+            // its label.
             let mut seen = std::collections::HashSet::new();
             let people: Vec<(bool, &katna_render::Address)> = all
                 .iter()
+                .chain(&blind)
                 .filter(|a| seen.insert(a.email.to_lowercase()))
                 .map(|a| (self.is_me(&a.email), a))
                 .collect();
+            let first_blind = people
+                .iter()
+                .position(|(_, a)| blind.iter().any(|b| b.email.eq_ignore_ascii_case(&a.email)))
+                .filter(|_| !blind.is_empty());
             let labels = recipient_names(&people, full_names);
             let count = labels.len();
             div()
@@ -1714,6 +1775,9 @@ impl MailWindow {
                             .flex()
                             .flex_row()
                             .items_center()
+                            .when(first_blind == Some(i), |d| {
+                                d.child(div().mr(px(space::S2)).child(tr!("reader-bcc-label")))
+                            })
                             .child(label)
                             .children(self.render_tick(tick, ("part-tick", ix * 1000 + i), th))
                             .when(i + 1 < count, |d| d.child(div().mr(px(4.0)).child(",")))
@@ -1826,14 +1890,14 @@ impl MailWindow {
                         th,
                     )
                     .size(px(32.0))
-                    .tooltip(tip(
+                    .tip(
                         if flagged {
                             tr!("reader-starred")
                         } else {
                             tr!("reader-not-starred")
                         },
                         th,
-                    ))
+                    )
                     .on_click(cx.listener(move |this, _, _, cx| {
                         cx.stop_propagation();
                         this.star_message(ix, id, !flagged, cx);
@@ -1849,7 +1913,7 @@ impl MailWindow {
                         (Kind::Reply, "reply", tr!("reply-reply"))
                     };
                     icon_button(("part-reply", ix), name, 20.0, th)
-                        .tooltip(tip(label, th))
+                        .tip(label, th)
                         .size(px(32.0))
                         .on_click(cx.listener(move |this, _, window, cx| {
                             cx.stop_propagation();
@@ -1954,6 +2018,7 @@ impl MailWindow {
             let from = addresses("from", &view.from);
             let to = (!view.to.is_empty()).then(|| addresses("to", &view.to));
             let copy = (!view.cc.is_empty()).then(|| addresses("cc", &view.cc));
+            let hidden = (!blind.is_empty()).then(|| addresses("bcc", &blind));
             let mut plain = |text: String| -> AnyElement {
                 let (styled, holder) = pieces.piece(text.into(), Vec::new());
                 holder.child(styled).into_any_element()
@@ -1974,6 +2039,7 @@ impl MailWindow {
                 .child(line(tr!("reader-details-from"), from))
                 .children(to.map(|to| line(tr!("reader-details-to"), to)))
                 .children(copy.map(|cc| line(tr!("reader-details-cc"), cc)))
+                .children(hidden.map(|bcc| line(tr!("reader-details-bcc"), bcc)))
                 .child(line(tr!("reader-details-date"), date))
                 .child(line(tr!("reader-details-subject"), subject));
             self.selectable_body(super::select::DETAILS_PART + slot, details, cx)
@@ -1991,9 +2057,11 @@ impl MailWindow {
                 blocks,
                 cut,
                 doc,
-                authenticated,
                 ..
             }) => {
+                let shown_body = part.body.as_ref();
+                let authenticated = shown_body.is_some_and(Body::authenticated);
+                let failed = self.sender_failed(part);
                 let too_long = match doc {
                     Some(doc) => doc.truncated,
                     None => *cut || view.truncated,
@@ -2004,11 +2072,11 @@ impl MailWindow {
                     too_long.then(|| tr!("reader-too-long")),
                     blocked.then(|| tr!("reader-encrypted-images")),
                 ];
-                let allowed = !encrypted && self.remote.allowed(id, &email, *authenticated);
+                let allowed = !encrypted && self.remote.allowed(id, &email, authenticated, failed);
                 let banner = doc
                     .as_ref()
                     .filter(|doc| doc.remote_images > 0 && !allowed && !encrypted)
-                    .map(|_| self.images_banner(ix, id, &email, th, cx));
+                    .map(|_| self.images_banner(ix, id, &email, failed, th, cx));
                 // Images the body shows are not listed again.
                 let listed: Vec<_> = view
                     .attachments
@@ -2075,6 +2143,7 @@ impl MailWindow {
                             window: cx.weak_entity(),
                             conversation: key_number(r.key),
                             part: slot,
+                            careful: failed,
                         });
                         let text = match doc.as_ref().filter(|_| translated.is_none()) {
                             Some(doc) => div().child(
@@ -2095,12 +2164,14 @@ impl MailWindow {
                             // links do.
                             None => div().children(blocks.iter().enumerate().map(
                                 |(n, (quoted, text))| {
+                                    // Each paragraph reads its own way.
+                                    let dir = katna_core::bidi::first_strong(text);
                                     rich::linked_piece(
                                         &mut pieces,
                                         text.clone(),
                                         &[],
                                         |d| {
-                                            d.when(*quoted, |d| {
+                                            directed(d, dir).when(*quoted, |d| {
                                                 d.pl(px(12.0))
                                                     .border_l_2()
                                                     .border_color(rgba(th.outline))
@@ -2145,7 +2216,7 @@ impl MailWindow {
                             .id(("part-picture", ix))
                             .relative()
                             .cursor_pointer()
-                            .tooltip(crate::widgets::tip(tr!("chat-show-card"), th))
+                            .tip(tr!("chat-show-card"), th)
                             .on_hover({
                                 let pick = pick.clone();
                                 cx.listener(move |this, hovered: &bool, _, cx| {
@@ -2159,7 +2230,13 @@ impl MailWindow {
                                 this.show_person(&pick, at, cx);
                             }))
                             .child(self.person_spot(("part-picture", ix)))
-                            .child(self.person_avatar(&name, &email, 40.0))
+                            .child(
+                                div()
+                                    .relative()
+                                    .size(px(40.0))
+                                    .child(self.person_avatar(&name, &email, 40.0))
+                                    .children(self.unconfirmed_badge(ix, part, th)),
+                            )
                     }),
             )
             .child(turn_fade(
@@ -2174,6 +2251,7 @@ impl MailWindow {
                         div()
                             .ml(px(-PICTURE_COLUMN_INSET * self.reader_compact()))
                             .children(details_box)
+                            .children(self.sender_banner(ix, part, th, cx))
                             .children(self.security_banner(part, th, cx))
                             .children(self.tracking_banner(part, th))
                             .child(body),
@@ -2369,10 +2447,7 @@ impl MailWindow {
                                         .child(icon("close", th.text_dim, 12.0)),
                                 ),
                         )
-                        .tooltip(tip(
-                            tr!("reader-chip-remove", label = chip.text.as_str()),
-                            th,
-                        ))
+                        .tip(tr!("reader-chip-remove", label = chip.text.as_str()), th)
                         .on_click(cx.listener(move |this, _, _, cx| match &remove {
                             ChipRemove::Act(act) => this.act(*act, vec![key], cx),
                             ChipRemove::Label(label, name) => {
@@ -2417,6 +2492,33 @@ impl MailWindow {
         self.accounts
             .iter()
             .any(|a| a.address.eq_ignore_ascii_case(email))
+    }
+
+    /// Who got a message as Bcc: the list the user's own sent copy keeps,
+    /// or else the user, when it reached `account` though none of their
+    /// addresses is in its To or Cc (\u{201c}bcc: me\u{201d}, as Gmail
+    /// shows it). List and bulk mail is addressed to the list, not Bcc.
+    fn blind_copies(
+        &self,
+        view: &katna_render::MessageView,
+        account: Option<katna_core::AccountId>,
+    ) -> Vec<katna_render::Address> {
+        if !view.bcc.is_empty() {
+            return view.bcc.clone();
+        }
+        let mine = |list: &[katna_render::Address]| list.iter().any(|a| self.is_me(&a.email));
+        if view.bulk || view.list || mine(&view.from) || mine(&view.to) || mine(&view.cc) {
+            return Vec::new();
+        }
+        account
+            .and_then(|id| self.accounts.iter().find(|a| a.id == id))
+            .map(|a| {
+                vec![katna_render::Address {
+                    name: None,
+                    email: a.address.clone(),
+                }]
+            })
+            .unwrap_or_default()
     }
 }
 
@@ -2565,7 +2667,7 @@ fn read(mail: &Mail, id: MessageId) -> Body {
             doc: None,
             remote: Vec::new(),
             svgs: Vec::new(),
-            authenticated: false,
+            checks: None,
             security: None,
             sealed: None,
             opened: None,
@@ -2601,7 +2703,7 @@ fn shown(raw: &[u8], security: Option<Secured>) -> Body {
     };
     let remote = doc.as_ref().map(rich::remote_urls).unwrap_or_default();
     let svgs = doc.as_ref().map(rich::carried_svgs).unwrap_or_default();
-    let authenticated = !remote.is_empty() && katna_render::sender_authenticated(raw);
+    let checks = katna_render::sender_checks(raw);
     let invite = invite::invite(raw);
     // An invitation's card has its own Join.
     let calls = if invite.is_some() {
@@ -2617,7 +2719,7 @@ fn shown(raw: &[u8], security: Option<Secured>) -> Body {
         doc,
         remote,
         svgs,
-        authenticated,
+        checks,
         security,
         sealed: None,
         opened: None,
@@ -2628,25 +2730,41 @@ fn shown(raw: &[u8], security: Option<Secured>) -> Body {
 
 /// Splits a body into runs of quoted (`>`) and unquoted lines, at most
 /// `max_lines` lines in all. Returns whether lines were left out.
+///
+/// A paragraph that reads the other way from the one before it (its first
+/// strong character, `katna_core::bidi`) starts a run of its own, so each
+/// is drawn in its own direction; the blank line between them stays at
+/// the end of the first.
 pub(super) fn body_blocks(body: &str, max_lines: usize) -> (Vec<(bool, SharedString)>, bool) {
-    let mut blocks: Vec<(bool, String)> = Vec::new();
+    let mut blocks: Vec<(bool, Option<Direction>, String)> = Vec::new();
     let mut lines = body.lines();
+    let mut paragraph_start = true;
     for line in lines.by_ref().take(max_lines) {
         let line = line.trim_end();
         let quoted = line.starts_with('>');
+        let words = line.trim_start_matches(['>', ' ']);
+        let dir = katna_core::bidi::first_strong(words);
         match blocks.last_mut() {
-            Some((q, text)) if *q == quoted => {
+            Some((q, block_dir, text))
+                if *q == quoted
+                    && !(paragraph_start
+                        && dir.is_some()
+                        && block_dir.is_some()
+                        && dir != *block_dir) =>
+            {
                 text.push('\n');
                 text.push_str(line);
+                *block_dir = block_dir.or(dir);
             }
-            _ => blocks.push((quoted, line.to_owned())),
+            _ => blocks.push((quoted, dir, line.to_owned())),
         }
+        paragraph_start = words.is_empty();
     }
     let cut = lines.next().is_some();
     (
         blocks
             .into_iter()
-            .map(|(quoted, text)| (quoted, text.into()))
+            .map(|(quoted, _, text)| (quoted, text.into()))
             .collect(),
         cut,
     )
@@ -2709,6 +2827,25 @@ mod tests {
         let (blocks, cut) = body_blocks(body, 2);
         assert_eq!(blocks.len(), 1);
         assert!(cut);
+    }
+
+    #[test]
+    fn paragraphs_turning_the_other_way_start_blocks() {
+        let body = "Hi Ravi,\nthanks.\n\nشكرًا\nRavi معك\n\n123\n\nBye\n> نعم\n>\n> Yes";
+        let (blocks, _) = body_blocks(body, 100);
+        let blocks: Vec<(bool, &str)> = blocks.iter().map(|(q, t)| (*q, t.as_ref())).collect();
+        assert_eq!(
+            blocks,
+            [
+                (false, "Hi Ravi,\nthanks.\n"),
+                // Its second line starts in English, but the paragraph
+                // reads as its first line does.
+                (false, "شكرًا\nRavi معك\n\n123\n"),
+                (false, "Bye"),
+                (true, "> نعم\n>"),
+                (true, "> Yes"),
+            ]
+        );
     }
 
     #[test]

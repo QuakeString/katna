@@ -1,0 +1,13 @@
+# Katna Mail, Hindi (हिन्दी).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## The mail list
+
+a11y-mail-list = मेल
+a11y-unread = नहीं पढ़ा गया
+
+## The folder pane
+
+a11y-folders = फ़ोल्डर
+a11y-folder-unread = { $name }, { $count } नहीं पढ़े गए

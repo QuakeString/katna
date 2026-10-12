@@ -92,6 +92,7 @@ notes-link-note = Liên kết ghi chú
 notes-link-new = Ghi chú mới “{ $title }”
 notes-linked-from = Được liên kết từ
 notes-link-gone = Ghi chú đó không còn ở đây nữa
+notes-new-note-gone = Ghi chú mới không còn nữa.
 
 ## Version history
 

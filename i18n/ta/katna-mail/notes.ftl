@@ -94,6 +94,7 @@ notes-link-note = குறிப்பை இணை
 notes-link-new = புதிய குறிப்பு "{ $title }"
 notes-linked-from = இவற்றிலிருந்து இணைக்கப்பட்டது
 notes-link-gone = அந்தக் குறிப்பு இனி இங்கு இல்லை
+notes-new-note-gone = புதிய குறிப்பு காணவில்லை.
 
 ## Version history
 

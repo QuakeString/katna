@@ -21,6 +21,7 @@ mod select;
 
 pub(super) use line_tasks::note_of_task;
 
+use crate::widgets::Tip as _;
 use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
@@ -45,7 +46,7 @@ use super::MailWindow;
 use crate::daemon::{self, Command};
 use crate::data::EntryKey;
 use crate::theme::{Theme, fade};
-use crate::widgets::{ScaledEdge, elevation, icon, icon_button, icon_button_colored, tip};
+use crate::widgets::{ScaledEdge, elevation, icon, icon_button, icon_button_colored};
 
 /// A card's width on the board, as Keep's.
 const CARD_WIDTH: f32 = 240.0;
@@ -1062,14 +1063,14 @@ impl MailWindow {
         .bg(rgba(tint))
         .cursor_pointer()
         .hover(|s| s.bg(rgba(chip_hover(tint, th))))
-        .tooltip(tip(
+        .tip(
             if event.is_some() {
                 tr!("notes-open-event")
             } else {
                 tr!("notes-open-mail")
             },
             th,
-        ))
+        )
         .on_click(cx.listener(move |this, _, window, cx| {
             cx.stop_propagation();
             match event {
@@ -1171,7 +1172,7 @@ impl MailWindow {
             .bg(rgba(bg.unwrap_or(th.surface)))
             .cursor_pointer()
             .hover(|s| s.shadow(elevation(th, 1.0)))
-            .tooltip(tip(tr!("notes-open-note"), th))
+            .tip(tr!("notes-open-note"), th)
             .on_click(cx.listener(move |this, _, window, cx| {
                 this.open_note(Some(&open), false, None, window, cx)
             }))
@@ -2060,7 +2061,7 @@ impl MailWindow {
                 )
                 .child(
                     icon_button("notes-new-list", "checkbox-checked", 22.0, th)
-                        .tooltip(tip(tr!("notes-new-list"), th))
+                        .tip(tr!("notes-new-list"), th)
                         .on_click(cx.listener(|this, _, window, cx| {
                             cx.stop_propagation();
                             this.open_note(None, true, None, window, cx)
@@ -2170,7 +2171,7 @@ impl MailWindow {
         let footer = |name: &'static str, tip_text: String| {
             icon_button(("note-act", id as usize ^ name.len()), name, 18.0, th)
                 .size(px(34.0))
-                .tooltip(tip(tip_text, th))
+                .tip(tip_text, th)
         };
         let actions = if trashed {
             div()
@@ -2242,14 +2243,14 @@ impl MailWindow {
                         th,
                     )
                     .size(px(34.0))
-                    .tooltip(tip(
+                    .tip(
                         if note.pinned {
                             tr!("notes-unpin")
                         } else {
                             tr!("notes-pin")
                         },
                         th,
-                    ))
+                    )
                     .on_click(cx.listener(move |this, _, _, cx| {
                         cx.stop_propagation();
                         this.change_note(item.clone(), cx)
@@ -2276,7 +2277,7 @@ impl MailWindow {
                     .group_hover(group.clone(), |s| s.opacity(0.85))
             })
             .cursor_pointer()
-            .tooltip(tip(tr!("notes-select"), th))
+            .tip(tr!("notes-select"), th)
             .on_click(cx.listener(move |this, _, _, cx| {
                 cx.stop_propagation();
                 this.toggle_note_check(id, cx)
@@ -2506,7 +2507,7 @@ impl MailWindow {
                 th,
             )
             .size(px(34.0))
-            .tooltip(tip(tip_text, th))
+            .tip(tip_text, th)
         };
         let palette = editor.palette.then(|| {
             let current = editor.color;
@@ -2545,7 +2546,7 @@ impl MailWindow {
                         }))
                         .cursor_pointer()
                         .hover(|s| s.border_color(rgba(th.text_dim)))
-                        .tooltip(tip(name, th))
+                        .tip(name, th)
                         .on_click(cx.listener(move |this, _, _, cx| {
                             if item.id == 0 {
                                 if let Some(editor) =
@@ -2628,14 +2629,14 @@ impl MailWindow {
                                     th.text_dim,
                                     th,
                                 )
-                                .tooltip(tip(
+                                .tip(
                                     if pinned {
                                         tr!("notes-unpin")
                                     } else {
                                         tr!("notes-pin")
                                     },
                                     th,
-                                ))
+                                )
                                 .on_click(cx.listener(
                                     move |this, _, _, cx| {
                                         if for_pin.id == 0 {
@@ -2705,7 +2706,7 @@ impl MailWindow {
                             .cursor_pointer()
                             .relative()
                             .child(crate::widgets::hover_fade("hover-glow", Some(6.0), th))
-                            .tooltip(tip(tr!("notes-where"), th))
+                            .tip(tr!("notes-where"), th)
                             .on_click(cx.listener(|this, _, _, cx| {
                                 if let Some(editor) =
                                     this.notes.as_mut().and_then(|p| p.editor.as_mut())

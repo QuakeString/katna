@@ -70,6 +70,7 @@ shortcut-navigation = メニューを表示/折りたたむ
 shortcut-quick-settings = クイック設定
 shortcut-settings = すべての設定
 shortcut-shortcuts = キーボード ショートカット
+shortcut-palette = コマンドパレット
 shortcut-reload = 新着メールを確認
 shortcut-quit = 終了
 

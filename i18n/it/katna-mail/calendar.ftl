@@ -118,6 +118,7 @@ calendar-add-meet = Aggiungi videoconferenza Google Meet
 calendar-add-teams = Aggiungi riunione Teams
 calendar-has-call = Videoconferenza aggiunta
 calendar-weekday-day = { $weekday }, { $day }
+calendar-schedule-day = { $weekday }, { $month }
 calendar-all-day-box = Tutto il giorno
 calendar-more-options = Altre opzioni
 calendar-save = Salva

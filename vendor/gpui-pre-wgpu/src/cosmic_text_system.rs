@@ -683,7 +683,38 @@ impl CosmicTextSystemState {
         layout.descent = layout.descent.max(segment.descent);
     }
 
+    /// Katna: cosmic-text 0.19 drops the glyphs of the numbers (and
+    /// whatever else has no direction of its own) at the start of a
+    /// right-to-left line, such as an Arabic time, `١٠:٣٠ ص`: its
+    /// `layout_to_buffer` loses that first run. With a right-to-left mark
+    /// in front, which draws nothing, the run is no longer first; the
+    /// mark's glyph is left out again and the indices are the text's.
     fn layout_line_no_separators(
+        &mut self,
+        text: &str,
+        font_size: Pixels,
+        font_runs: &[FontRun],
+    ) -> LineLayout {
+        if !starts_weak_in_rtl(text) || font_runs.is_empty() {
+            return self.layout_line_shaped(text, font_size, font_runs);
+        }
+        const MARK: &str = "\u{200f}";
+        let marked = format!("{MARK}{text}");
+        let mut marked_runs = font_runs.to_vec();
+        marked_runs[0].len += MARK.len();
+        let mut layout = self.layout_line_shaped(&marked, font_size, &marked_runs);
+        for run in &mut layout.runs {
+            run.glyphs.retain(|glyph| glyph.index >= MARK.len());
+            for glyph in &mut run.glyphs {
+                glyph.index -= MARK.len();
+            }
+        }
+        layout.runs.retain(|run| !run.glyphs.is_empty());
+        layout.len = text.len();
+        layout
+    }
+
+    fn layout_line_shaped(
         &mut self,
         text: &str,
         font_size: Pixels,
@@ -1195,6 +1226,24 @@ fn face_info_into_properties(
 fn check_is_known_emoji_font(postscript_name: &str) -> bool {
     // TODO: Include other common emoji fonts
     postscript_name == "NotoColorEmoji"
+}
+
+/// Katna: whether `text` reads right to left (its first letter is
+/// Arabic, Hebrew, ...) and starts with something of no direction of its
+/// own (digits, punctuation, spaces).
+fn starts_weak_in_rtl(text: &str) -> bool {
+    use unicode_bidi::BidiClass::{AL, L, R};
+    let mut chars = text.chars();
+    let Some(first) = chars.next() else {
+        return false;
+    };
+    if matches!(unicode_bidi::bidi_class(first), L | R | AL) {
+        return false;
+    }
+    chars
+        .map(unicode_bidi::bidi_class)
+        .find(|class| matches!(class, L | R | AL))
+        .is_some_and(|class| class != L)
 }
 
 #[cfg(test)]

@@ -93,6 +93,7 @@ notes-link-note = ربط ملاحظة
 notes-link-new = ملاحظة جديدة «{ $title }»
 notes-linked-from = مرتبطة من
 notes-link-gone = لم تعد تلك الملاحظة موجودة
+notes-new-note-gone = اختفت الملاحظة الجديدة.
 notes-versions = الإصدارات
 notes-version-now = الآن
 notes-version-here = أنت، على هذا الكمبيوتر

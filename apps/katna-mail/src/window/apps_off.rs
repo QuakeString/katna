@@ -8,6 +8,7 @@
 //! the snackbar after offers Undo. Right-clicking an app in the rail
 //! offers the same.
 
+use crate::widgets::Tip as _;
 use gpui::{
     AnimationExt, AnyElement, Context, FontWeight, MouseButton, Pixels, Point, Window, deferred,
     div, prelude::*, rgba,
@@ -496,7 +497,7 @@ impl MailWindow {
                 // Mail is the one app that can't be turned off.
                 None => row
                     .cursor_default()
-                    .tooltip(crate::widgets::tip(tr!("settings-apps-mail-always"), th))
+                    .tip(tr!("settings-apps-mail-always"), th)
                     .child(icon("lock", th.text_faint, 16.0))
                     .child(
                         div()

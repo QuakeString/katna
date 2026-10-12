@@ -84,6 +84,7 @@ notes-link-note = Not bağla
 notes-link-new = Yeni not "{ $title }"
 notes-linked-from = Şuradan bağlantı verilmiş
 notes-link-gone = O not artık burada değil
+notes-new-note-gone = Yeni not artık yok.
 notes-versions = Sürümler
 notes-version-now = Şimdi
 notes-version-here = Siz, bu bilgisayarda

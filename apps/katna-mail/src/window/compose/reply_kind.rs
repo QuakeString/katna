@@ -6,6 +6,7 @@
 //! the reply icon turns the message into a reply, a reply to all or a
 //! forward, keeping what was written.
 
+use crate::widgets::Tip as _;
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 use std::time::{Duration, Instant};
@@ -26,10 +27,8 @@ use super::tools::Popup;
 use super::{Kind, Original, Threading, draft, trim_quote};
 use crate::format;
 use crate::theme::Theme;
-use crate::widgets::{icon, menu, menu_item_icon, tip};
+use crate::widgets::{icon, menu, menu_item_icon};
 
-/// The line a forward starts its copy of the message with.
-const FORWARDED: &str = "---------- Forwarded message ---------";
 /// The height of the notch on the kind menu, pointing at its button.
 const NOTCH: f32 = 8.0;
 
@@ -101,10 +100,9 @@ fn trim_forward(blocks: &mut Vec<Block>) {
             _ => None,
         }
     }
-    let Some(at) = blocks
-        .iter()
-        .rposition(|b| para(b).is_some_and(|p| p.style.quote == 0 && p.text.trim() == FORWARDED))
-    else {
+    let Some(at) = blocks.iter().rposition(|b| {
+        para(b).is_some_and(|p| p.style.quote == 0 && crate::quoting::is_forward_header(&p.text))
+    }) else {
         return;
     };
     let blank = at > 1
@@ -330,7 +328,7 @@ impl MailWindow {
             .cursor_pointer()
             .when(open, |d| d.bg(rgba(th.hover)))
             .hover(|s| s.bg(rgba(th.hover)))
-            .when(!open, |d| d.tooltip(tip(label, th)))
+            .when(!open, |d| d.tip(label, th))
             .on_click(cx.listener(|this, _, _, cx| this.toggle_popup(Popup::Kind, cx)))
             .child(icon(name, th.text_dim, 20.0))
             .child(icon("drop-down", th.text_dim, 18.0))
@@ -377,7 +375,7 @@ impl MailWindow {
             .cursor_pointer()
             .relative()
             .child(crate::widgets::hover_fade("hover-glow", Some(6.0), th))
-            .tooltip(tip(tr!("compose-edit-recipients"), th))
+            .tip(tr!("compose-edit-recipients"), th)
             .on_click(cx.listener(|this, _, window, cx| this.open_reply_header(window, cx)))
             .child(
                 div()

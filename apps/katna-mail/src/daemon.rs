@@ -7,7 +7,7 @@
 
 use std::collections::HashMap;
 
-use futures_lite::{Stream, StreamExt};
+use futures_lite::{FutureExt, Stream, StreamExt};
 use katna_core::OAuthProvider;
 use katna_dbus::zbus::Connection;
 use katna_dbus::{
@@ -72,6 +72,12 @@ pub enum Command {
     /// Opens the outbox: the button of "… wasn't sent". The app does this
     /// itself.
     OpenOutbox,
+    /// Takes the keys just imported (by fingerprint) out of the user's
+    /// GnuPG keyring again. The app does this itself.
+    RemoveKeys(Vec<String>),
+    /// Opens a folder in the file manager: the button of "Restored your
+    /// data". The app does this itself.
+    RevealPath(String),
     /// Shows a server's own words in the note: the button of a note that
     /// said what went wrong in plain ones. The app does this itself.
     ShowDetails(String),
@@ -260,6 +266,8 @@ impl Command {
             | Self::RestoreScheme(..)
             | Self::TurnAppOn(_)
             | Self::OpenOutbox
+            | Self::RemoveKeys(_)
+            | Self::RevealPath(_)
             | Self::ShowDetails(_)
             | Self::ContactLabels(_)
             | Self::RenameContactLabel(..)
@@ -293,19 +301,21 @@ impl Command {
 }
 
 /// What [`describe`] says when the daemon is not running.
-pub const NOT_RUNNING: &str = "The Katna background service is not running.";
+pub fn not_running() -> String {
+    katna_i18n::tr!("service-not-running")
+}
 
 /// Why a change could not be sent.
 pub fn describe(err: &katna_dbus::zbus::Error) -> String {
     match err {
         katna_dbus::zbus::Error::MethodError(name, detail, _) => {
             if name.as_str() == "org.freedesktop.DBus.Error.ServiceUnknown" {
-                NOT_RUNNING.to_owned()
+                not_running()
             } else {
                 detail.clone().unwrap_or_else(|| name.to_string())
             }
         }
-        err => format!("The Katna background service did not answer: {err}"),
+        err => katna_i18n::tr!("service-no-answer", error = err.to_string()),
     }
 }
 
@@ -355,7 +365,7 @@ impl AccountState {
 pub async fn connect() -> Result<Connection, String> {
     let connection = katna_dbus::session()
         .await
-        .map_err(|err| format!("No D-Bus session: {err}"))?;
+        .map_err(|err| katna_i18n::tr!("service-no-session", error = err.to_string()))?;
     katna_dbus::ensure_daemon(&connection).await;
     Ok(connection)
 }
@@ -481,6 +491,8 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
         | Command::RestoreScheme(..)
         | Command::TurnAppOn(_)
         | Command::OpenOutbox
+        | Command::RemoveKeys(_)
+        | Command::RevealPath(_)
         | Command::ShowDetails(_) => {
             return Ok(());
         }
@@ -817,6 +829,21 @@ pub async fn server_hold_limit(connection: &Connection, account: i64) -> Result<
         .map_err(|err| describe(&err))
 }
 
+/// Searches the mail servers of `account` (every account when 0) for
+/// `query`, for mail not downloaded ("More results on server").
+pub async fn search_server(
+    connection: &Connection,
+    query: &str,
+    account: i64,
+) -> Result<Vec<i64>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.search_server(query, account)
+        .await
+        .map_err(|err| describe(&err))
+}
+
 /// Whether the SMTP server of `account` sends delivery receipts.
 pub async fn server_delivery_receipts(
     connection: &Connection,
@@ -1026,6 +1053,28 @@ pub async fn ai_key_saved(connection: &Connection) -> Result<bool, String> {
     pim.ai_key_saved().await.map_err(|err| describe(&err))
 }
 
+/// Has the daemon send feedback from the Send feedback form: `text`
+/// exactly as the form showed it. Returns why it could not be sent.
+pub async fn send_feedback(
+    connection: &Connection,
+    text: &str,
+    kind: &str,
+    reply_to: &str,
+) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    let problem = pim
+        .send_feedback(text, kind, reply_to)
+        .await
+        .map_err(|err| describe(&err))?;
+    if problem.is_empty() {
+        Ok(())
+    } else {
+        Err(problem)
+    }
+}
+
 /// The models the user's own AI service `provider` offers to the saved
 /// key, or a `katna_ai::wire::problem`.
 pub async fn ai_models(
@@ -1108,9 +1157,64 @@ pub async fn sign_in(
     let pim = PimProxy::new(connection)
         .await
         .map_err(|err| AddError::Other(describe(&err)))?;
-    pim.sign_in(provider.as_str(), account.unwrap_or(0), address)
-        .await
-        .map_err(|err| add_error(&err))
+    let account = account.unwrap_or(0);
+    // The page goes to this app's windows to open: from the daemon, a
+    // service in the background, the desktop may leave the browser
+    // behind Katna, so nothing seems to happen.
+    let ticket = ticket();
+    let result = match pim.receive_sign_in_page().await {
+        Ok(mut pages) => {
+            let forward = async {
+                while let Some(page) = pages.next().await {
+                    if let Ok(args) = page.args()
+                        && args.ticket == ticket.as_str()
+                    {
+                        let _ = sign_in_pages().0.try_send(args.url.to_string());
+                    }
+                }
+                std::future::pending::<katna_dbus::zbus::Result<i64>>().await
+            };
+            pim.sign_in_from_app(provider.as_str(), account, address, &ticket)
+                .or(forward)
+                .await
+        }
+        Err(err) => Err(err),
+    };
+    match result {
+        // A daemon from before it opens the page itself.
+        Err(katna_dbus::zbus::Error::MethodError(name, _, _))
+            if name.as_str() == "org.freedesktop.DBus.Error.UnknownMethod" =>
+        {
+            pim.sign_in(provider.as_str(), account, address).await
+        }
+        result => result,
+    }
+    .map_err(|err| add_error(&err))
+}
+
+/// The sign-in pages the daemon handed this app ([`sign_in`]), which the
+/// app opens in the browser as they come.
+pub fn sign_in_pages() -> &'static (
+    async_channel::Sender<String>,
+    async_channel::Receiver<String>,
+) {
+    static PAGES: std::sync::OnceLock<(
+        async_channel::Sender<String>,
+        async_channel::Receiver<String>,
+    )> = std::sync::OnceLock::new();
+    PAGES.get_or_init(async_channel::unbounded)
+}
+
+/// A ticket no other sign-in has.
+fn ticket() -> String {
+    let mut bytes = [0u8; 16];
+    if getrandom::fill(&mut bytes).is_err() {
+        let nanos = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map_or(0, |d| d.as_nanos());
+        bytes = nanos.to_le_bytes();
+    }
+    bytes.iter().map(|b| format!("{b:02x}")).collect()
 }
 
 /// Ends a sign-in that still waits for the browser.
@@ -1231,6 +1335,23 @@ pub async fn fetch_image(connection: &Connection, url: &str) -> Result<Vec<u8>, 
         .await
         .map_err(|err| describe(&err))?;
     pim.fetch_image(url).await.map_err(|err| describe(&err))
+}
+
+/// Asks the daemon to keep the Autocrypt key of message `id`, just opened.
+pub async fn learn_key(connection: &Connection, id: i64) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.learn_key(id).await.map_err(|err| describe(&err))
+}
+
+/// Asks the daemon to look up a key for `address` in its Web Key
+/// Directory: its fingerprint, or empty when there is none.
+pub async fn look_up_key(connection: &Connection, address: &str) -> Result<String, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.look_up_key(address).await.map_err(|err| describe(&err))
 }
 
 /// Asks the daemon for the picture of the sender `address` (empty: none).
@@ -1355,6 +1476,14 @@ pub async fn delete_folder(connection: &Connection, folder: i64) -> Result<u32, 
     pim.delete_folder(folder)
         .await
         .map_err(|err| describe(&err))
+}
+
+/// Stops the daemon so its next start runs a safe mode request.
+pub async fn restart_daemon(connection: &Connection) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.restart().await.map_err(|err| describe(&err))
 }
 
 /// Has the daemon delete everything Katna keeps on this computer. It exits

@@ -52,6 +52,7 @@ mod detached;
 mod download;
 mod event_edit;
 mod event_window;
+mod feedback_form;
 mod feedback_page;
 mod files_page;
 mod folder_pick;
@@ -76,6 +77,7 @@ mod notes;
 mod nudge;
 mod offline;
 mod onboarding;
+mod palette;
 mod popovers;
 mod print;
 mod print_preview;
@@ -85,16 +87,19 @@ mod reader;
 mod remind;
 mod remote;
 mod reply_row;
+mod restart;
 mod rich;
 mod row_reorder;
 mod row_swipe;
 mod rule_editor;
+mod safe_mode;
 mod scale_slider;
 mod scheme_color;
 mod scheme_editor;
 mod scheme_picker;
 mod search_panel;
 mod select;
+mod server_search;
 mod service;
 mod settings;
 mod settings_page;
@@ -116,6 +121,7 @@ mod viewer;
 mod waiting;
 mod whats_new;
 
+use crate::widgets::Tip as _;
 use std::collections::{HashMap, HashSet};
 use std::ops::Range;
 use std::path::PathBuf;
@@ -144,7 +150,7 @@ use crate::data::{self, Entry, EntryKey, Mail, OpenError};
 use crate::sidebar::{self, Role, Tree};
 use crate::tabs::{self, Provider, Tab};
 use crate::theme::{Accent, Theme};
-use crate::widgets::{elevation, icon, tip};
+use crate::widgets::{elevation, icon};
 
 use apps::{App as RailApp, People};
 use reader::Conversation;
@@ -218,8 +224,10 @@ actions!(
         ShowFiles,
         OpenSettings,
         ShowShortcuts,
+        ShowPalette,
         ShowWhatsNew,
         CheckForUpdates,
+        SendFeedback,
         ShowAbout,
     ]
 );
@@ -667,6 +675,8 @@ pub struct MailWindow {
     /// Search this text as typed, not corrected ("Search instead for …").
     search_verbatim: Option<String>,
     search_task: Option<Task<()>>,
+    /// "More results on server" for the search shown.
+    server_search: Option<server_search::ServerSearch>,
     search_panel: Option<SearchPanel>,
     search_panel_spring: Spring,
     menu: Option<Menu>,
@@ -750,8 +760,15 @@ pub struct MailWindow {
     problems: problems::Problems,
     /// Katna's background service, started again when it isn't running.
     service: service::Service,
+    restart: restart::Restart,
+    safe: safe_mode::SafeMode,
     /// Settings > User feedback's list of crash reports, as last read.
     saved_reports: Option<feedback_page::SavedReports>,
+    /// Settings > User feedback shows this week's usage report.
+    usage_report_open: bool,
+    /// The week and the features already noted for usage statistics, so
+    /// noting one again reads no file.
+    usage_noted: (i64, std::collections::BTreeSet<katna_core::usage::Feature>),
     /// Settings > Subscription (the Katna account), once shown.
     katna: Option<katna_account::KatnaPage>,
     compose: Option<compose::Compose>,
@@ -764,8 +781,12 @@ pub struct MailWindow {
     whats_new: Option<whats_new::WhatsNew>,
     /// Help > Keyboard shortcuts, while open.
     shortcuts_dialog: Option<shortcuts_dialog::ShortcutsDialog>,
+    /// The command palette (Ctrl+Shift+P), while open.
+    palette: Option<palette::Palette>,
     /// "Help improve Katna", asked once after an update.
     share_ask: Option<share_ask::ShareAsk>,
+    /// Help > Send feedback, while open.
+    feedback_form: Option<feedback_form::FeedbackForm>,
     /// The print preview, before the desktop's print dialog.
     print_preview: Option<print_preview::PrintPreview>,
     /// Ask it once What's new is closed.
@@ -826,6 +847,8 @@ pub struct MailWindow {
     danger: Option<accounts::Danger>,
     /// The question before deleting several lines, or deleting for good.
     delete_ask: Option<delete_ask::DeleteAsk>,
+    /// Mail that failed its sender checks: what the user said of it.
+    sender_checks: reader::sender::SenderState,
     /// The question before turning an app off (Settings > Apps).
     app_off_ask: Option<apps_off::AppOffAsk>,
     /// The right-click menu of an app in the rail.
@@ -843,6 +866,11 @@ pub struct MailWindow {
     /// Bodies being downloaded because their message or an attachment
     /// chip of it was opened.
     downloads: HashMap<MessageId, download::Download>,
+    /// Open messages already handed to the daemon for their Autocrypt key
+    /// (`reader/security.rs`).
+    learned_keys: std::collections::HashSet<MessageId>,
+    /// The popover with a signature's key, or a key to import.
+    key_card: Option<reader::keys::KeyCard>,
     /// The attachment chip waiting for its message to download.
     chip_download: Option<download::ChipDownload>,
     /// Navigation openness at this frame, for the folder rows.
@@ -860,6 +888,9 @@ pub struct MailWindow {
     /// Whether the conversation beside the list has the keys, as of this
     /// frame: the list's cursor dims and the pane's outline lights.
     reader_keys: bool,
+    /// A screen reader is listening, so the open mail's text is handed to
+    /// it (read each frame only then).
+    a11y_on: bool,
     /// A dialog without fields of its own to focus (the delete question),
     /// and any dialog's frame that keeps Tab inside it.
     dialog_focus: FocusHandle,
@@ -1071,6 +1102,7 @@ impl MailWindow {
             search_error: None,
             search_verbatim: None,
             search_task: None,
+            server_search: None,
             search_panel: None,
             search_panel_spring: Spring::new(motion::SMOOTH, 0.0),
             menu: None,
@@ -1114,7 +1146,11 @@ impl MailWindow {
             crash_notice: None,
             problems: problems::Problems::default(),
             service: service::Service::default(),
+            restart: restart::Restart::default(),
+            safe: safe_mode::SafeMode::default(),
             saved_reports: None,
+            usage_report_open: false,
+            usage_noted: (0, Default::default()),
             katna: None,
             compose: None,
             files: attachments::Files::default(),
@@ -1122,7 +1158,9 @@ impl MailWindow {
             onboarding: None,
             whats_new: None,
             shortcuts_dialog: None,
+            palette: None,
             share_ask: None,
+            feedback_form: None,
             print_preview: None,
             share_ask_later: false,
             about: None,
@@ -1151,6 +1189,7 @@ impl MailWindow {
             settings_page: None,
             danger: None,
             delete_ask: None,
+            sender_checks: Default::default(),
             app_off_ask: None,
             rail_menu: None,
             delete_confirmed: false,
@@ -1159,6 +1198,8 @@ impl MailWindow {
             folder_pick: None,
             mail_dragging: Vec::new(),
             downloads: HashMap::new(),
+            learned_keys: Default::default(),
+            key_card: None,
             chip_download: None,
             nav_t: 1.0,
             daemon: None,
@@ -1170,6 +1211,7 @@ impl MailWindow {
             list_focus: cx.focus_handle(),
             reader_focus: cx.focus_handle(),
             reader_keys: false,
+            a11y_on: false,
             dialog_focus: cx.focus_handle(),
             scheme_editor: None,
             color_picker: None,
@@ -1279,7 +1321,7 @@ impl MailWindow {
     fn needs_account(&self) -> bool {
         match &self.mail {
             Err(OpenError::NoStore { .. }) => true,
-            Err(OpenError::Migrating(_) | OpenError::Other(_)) => false,
+            Err(OpenError::Migrating(_) | OpenError::TooNew(_) | OpenError::Other(_)) => false,
             Ok(_) => self.accounts.is_empty(),
         }
     }
@@ -1480,6 +1522,27 @@ impl MailWindow {
         )
     }
 
+    /// A page's card beside the rail: the cards' hairline edge and short
+    /// shadow, and the faint line around them, as strong as on Mail's list
+    /// while it has the keys, since the page is the only card on show
+    /// (`docs/DESIGN.md`, Cards). Every app page and Settings draw their
+    /// card here so none misses its edge; on a phone the card runs edge to
+    /// edge with none.
+    fn page_frame(&self, th: &Theme, fill: u32, content: impl IntoElement) -> gpui::Div {
+        let (radius, outline) = (
+            self.layout.shape.card_radius(),
+            self.layout.shape.card_outline(),
+        );
+        let (shadow, edge) = self.card_edges(1.0, outline);
+        div()
+            .relative()
+            .size_full()
+            .overflow_hidden()
+            .map(|d| crate::widgets::card(d, th, fill, radius, shadow))
+            .child(content)
+            .children(crate::widgets::card_outline(th, radius, edge))
+    }
+
     /// How far the list (`reader` false) or the conversation beside it has
     /// the keys, following them as they move.
     fn card_keys(&self, reader: bool) -> f32 {
@@ -1499,6 +1562,22 @@ impl MailWindow {
 
     /// The lines the folder pane shows now.
     fn nav_rows_now(&self) -> Vec<sidebar::Row> {
+        // One account with the unified inbox on: the unified lists, then
+        // what they leave out.
+        let mut rows = if self.config.mail.unified_inbox && self.tree.accounts.len() == 1 {
+            let mut rows = self.tree.unified_rows(&self.expanded, true);
+            rows.extend(self.tree.lone_rows(&self.expanded));
+            rows
+        } else {
+            self.account_nav_rows()
+        };
+        self.add_waiting_rows(&mut rows);
+        rows
+    }
+
+    /// The folder pane's lines of the accounts, under the unified lists
+    /// when they show.
+    fn account_nav_rows(&self) -> Vec<sidebar::Row> {
         let only = self.shown_account();
         // With one account on show its folders stand alone, never folded.
         let single = only.is_some() || self.tree.accounts.len() == 1;
@@ -1519,6 +1598,12 @@ impl MailWindow {
             all.append(&mut rows);
             rows = all;
         }
+        rows
+    }
+
+    /// Scheduled mail, the outbox, waiting and reminders, under the first
+    /// Sent line.
+    fn add_waiting_rows(&self, rows: &mut Vec<sidebar::Row>) {
         // Scheduled mail and the outbox show under the first Sent folder
         // while there is some.
         let scheduled = self.writing.scheduled_count();
@@ -1559,19 +1644,46 @@ impl MailWindow {
                 expanded: false,
             };
             if outbox > 0 {
-                rows.insert(at, row(compose::OUTBOX_NAV_KEY, "Outbox", outbox));
+                rows.insert(
+                    at,
+                    row(
+                        compose::OUTBOX_NAV_KEY,
+                        &katna_i18n::tr!("folder-outbox"),
+                        outbox,
+                    ),
+                );
             }
             if scheduled > 0 {
-                rows.insert(at, row(compose::SCHEDULED_NAV_KEY, "Scheduled", scheduled));
+                rows.insert(
+                    at,
+                    row(
+                        compose::SCHEDULED_NAV_KEY,
+                        &katna_i18n::tr!("folder-scheduled"),
+                        scheduled,
+                    ),
+                );
             }
             if reminders > 0 {
-                rows.insert(at, row(remind::NAV_KEY, "Reminders", reminders));
+                rows.insert(
+                    at,
+                    row(
+                        remind::NAV_KEY,
+                        &katna_i18n::tr!("folder-reminders"),
+                        reminders,
+                    ),
+                );
             }
             if waiting > 0 {
-                rows.insert(at, row(waiting::NAV_KEY, "Waiting for reply", waiting));
+                rows.insert(
+                    at,
+                    row(
+                        waiting::NAV_KEY,
+                        &katna_i18n::tr!("folder-waiting"),
+                        waiting,
+                    ),
+                );
             }
         }
-        rows
     }
 
     /// The folder the list shows; `None` for search results.
@@ -2158,7 +2270,7 @@ impl MailWindow {
             .account()
             .and_then(|account| self.tree.role_folder(account, role))
         else {
-            self.show_snackbar("This account has no such folder.", None, cx);
+            self.show_snackbar(katna_i18n::tr!("folder-not-on-account"), None, cx);
             return;
         };
         self.settings_page = None;
@@ -2500,6 +2612,7 @@ impl MailWindow {
 
     fn clear_search(&mut self, cx: &mut Context<Self>) {
         self.search_task = None;
+        self.drop_server_search();
         self.search_error = None;
         self.search.update(cx, |search, cx| {
             if !search.text().is_empty() {
@@ -2547,7 +2660,10 @@ impl MailWindow {
                 }
                 self.start_search(text, cx);
             }
-            InputEvent::Submit => self.focus_list(&FocusList, window, cx),
+            InputEvent::Submit => {
+                self.search_server_now(cx);
+                self.focus_list(&FocusList, window, cx);
+            }
             InputEvent::Cancel => {
                 if search.read(cx).text().is_empty() {
                     window.focus(&self.list_focus, cx);
@@ -2563,6 +2679,7 @@ impl MailWindow {
         let keep_open = std::mem::take(&mut self.clear_keeps_open);
         if text.is_empty() {
             self.search_task = None;
+            self.drop_server_search();
             if matches!(self.listing, Some(Listing::Search { .. })) {
                 // Only the X keeps a result open; text deleted away goes back.
                 let opened = (keep_open && self.reading)
@@ -2696,11 +2813,13 @@ impl MailWindow {
                     Ok(mail) => mail.hit_entries(&hits, self.config.mail.conversations, only),
                     Err(_) => Vec::new(),
                 };
+                let searched = query.clone();
                 self.listing = Some(Listing::Search {
                     query,
                     total: results.total,
                     corrected,
                 });
+                self.after_local_results(&searched, cx);
                 if again {
                     self.selected =
                         selected_key.and_then(|key| self.entries.iter().position(|e| e.key == key));
@@ -3116,6 +3235,7 @@ impl MailWindow {
         quiet: bool,
         cx: &mut Context<Self>,
     ) {
+        self.note_command_usage(&command);
         let connection = self.daemon.clone();
         let notes = command.touches_notes();
         let drive = command.drive();
@@ -3227,8 +3347,16 @@ impl MailWindow {
             self.set_app_on(app, true, cx);
             return;
         }
+        if let Command::RemoveKeys(fingerprints) = undo {
+            self.remove_imported_keys(fingerprints, cx);
+            return;
+        }
         if let Command::ShowDetails(details) = undo {
             self.show_snackbar_for(details, None, FAILURE_TIME, cx);
+            return;
+        }
+        if let Command::RevealPath(path) = &undo {
+            safe_mode::reveal(path, cx);
             return;
         }
         if undo == Command::OpenOutbox {
@@ -3354,7 +3482,9 @@ impl MailWindow {
             return;
         }
         let width = (self.cards_width - SPLIT_GAP).max(1.0);
+        // The reader is at the end: toward it is smaller.
         let dx = unpx(event.position.x) - start_x;
+        let dx = if self.layout.shape.rtl { -dx } else { dx };
         let share = (start_share - dx / width).clamp(0.25, 0.75);
         self.config.mail.reading_pane_share = share;
         cx.notify();
@@ -3461,7 +3591,7 @@ impl MailWindow {
                         .rounded_full()
                         .cursor_pointer()
                         .hover(|s| s.bg(rgba(0xffffff1f)))
-                        .tooltip(tip(katna_i18n::tr!("toast-close"), th))
+                        .tip(katna_i18n::tr!("toast-close"), th)
                         .on_click(cx.listener(|this, _, _, cx| this.hide_snackbar(cx)))
                         .child(icon("close", th.snackbar_text, 18.0)),
                 )
@@ -3486,6 +3616,16 @@ impl MailWindow {
             OpenError::Migrating(_) if !self.migration_overdue() => {
                 return self.render_skeleton(th, cx);
             }
+            // A newer Katna moved the store on while this one ran: the
+            // restart pill offers the new one.
+            OpenError::TooNew(_) => {
+                return div()
+                    .size_full()
+                    .relative()
+                    .child(self.render_skeleton(th, cx))
+                    .children(self.render_restart(th, cx))
+                    .into_any_element();
+            }
             OpenError::Migrating(err) | OpenError::Other(err) => err.clone(),
         };
         let card = page_card(th)
@@ -3494,7 +3634,7 @@ impl MailWindow {
                 div()
                     .text_size(px(22.0))
                     .text_color(rgba(th.text))
-                    .child("The mail store could not be opened"),
+                    .child(katna_i18n::tr!("list-store-unreadable")),
             )
             .child(
                 div()
@@ -3634,6 +3774,7 @@ impl MailWindow {
 
 impl Render for MailWindow {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        crate::widgets::follow_direction(window);
         // Text without a size of its own follows Settings > Appearance > Scaling.
         window.set_rem_size(px(16.0));
         // Before anything draws text that can be selected.
@@ -3649,6 +3790,7 @@ impl Render for MailWindow {
         if self.event_only {
             return self.render_event_window(window, cx);
         }
+        self.note_usage_each_frame(window);
         self.tour_new_frame();
         self.measure_pill_text(window);
         let th = self.theme(window);
@@ -3694,6 +3836,7 @@ impl Render for MailWindow {
             && self.delete_ask.is_none()
             && self.app_off_ask.is_none()
             && !self.service_details_open()
+            && !self.restore_open()
             && self.new_label.is_none()
             && self.rule_editor.is_none()
             && self.add_account.is_none()
@@ -3708,6 +3851,7 @@ impl Render for MailWindow {
         let pane_open = self.pane_open();
         self.pane_spring.set(if pane_open { 1.0 } else { 0.0 });
         self.reader_keys = pane_open && self.reader_focus.contains_focused(window, cx);
+        self.a11y_on = window.is_a11y_active();
         self.keys_spring
             .set(if self.reader_keys { 1.0 } else { 0.0 });
         self.nav_keys_shown = self.nav_focus.is_focused(window);
@@ -3814,6 +3958,7 @@ impl Render for MailWindow {
         self.compose_dock
             .set(if self.nav_docked() { 1.0 } else { 0.0 });
         self.compose_dock.tick(window, reduce);
+        self.tick_restart(window, reduce);
         self.reader_bar.tick(&self.reader_scroll, window, cx);
         self.title_roll.tick(window, reduce);
         let (primary_icon, primary_label) = self.primary_button();
@@ -4027,6 +4172,7 @@ impl Render for MailWindow {
         let delete_ask = self.render_delete_ask(&th, window, reduce, cx);
         let app_off_ask = self.render_app_off_ask(&th, window, reduce, cx);
         let service_details = self.render_service_details(&th, window, reduce, cx);
+        let restore = self.render_restore(&th, window, reduce, cx);
         let rail_menu = self.render_rail_menu(&th, cx);
         let new_label = self.render_new_label(&th, window, reduce, cx);
         let rule_editor = self.render_rule_editor(&th, window, reduce, cx);
@@ -4036,12 +4182,14 @@ impl Render for MailWindow {
         let contact_qr = self.render_contact_qr(&th, window, reduce, cx);
         let whats_new = self.render_whats_new(&th, window, reduce, cx);
         let shortcuts_dialog = self.render_shortcuts_dialog(&th, window, reduce, cx);
+        let palette = self.render_palette(&th, window, reduce, cx);
         let share_ask = if onboarding {
             None
         } else {
             self.render_share_ask(&th, window, reduce, cx)
         };
         let about = self.render_about(&th, window, reduce, cx);
+        let feedback_form = self.render_feedback_form(&th, window, reduce, cx);
         let gallery = self.render_gallery(cx);
         let update_dialog = self.render_update_dialog(&th, window, reduce, cx);
         let print_preview = self.render_print_preview(&th, window, reduce, cx);
@@ -4049,6 +4197,7 @@ impl Render for MailWindow {
         let summary_peek = self.render_summary_peek(&th, window, cx);
         let contact_sheet = self.render_contact_sheet(&th, window, cx);
         let contact_peek = self.render_contact_peek(&th, window, cx);
+        let key_card = self.render_key_card(&th, window, cx);
         let nav_menu = self.render_nav_menu(&th, cx);
         // An account's own color, from Settings > Accounts or its
         // right-click menu.
@@ -4069,6 +4218,7 @@ impl Render for MailWindow {
             self.render_crash_notice(&th, window, reduce, cx)
         };
         let password_card = self.render_password_card(&th, window, cx);
+        let link_ask = self.render_link_ask(&th, window, cx);
         let tour = self.render_tour(&th, window, cx);
         // GPUI does not clip to the frame's rounded corners, so the
         // backdrop rounds its own bottom ones.
@@ -4116,6 +4266,7 @@ impl Render for MailWindow {
             .children(context_menu)
             .children(contact_sheet)
             .children(contact_peek)
+            .children(key_card)
             .children(nav_menu)
             .children(rail_menu)
             .children(snooze_menu)
@@ -4124,6 +4275,7 @@ impl Render for MailWindow {
             .children(delete_ask)
             .children(app_off_ask)
             .children(service_details)
+            .children(restore)
             .children(new_label)
             .children(rule_editor)
             .children(contact_label)
@@ -4132,10 +4284,13 @@ impl Render for MailWindow {
             .children(contact_qr)
             .children(crash_notice)
             .children(password_card)
+            .children(link_ask)
             .children(whats_new)
             .children(shortcuts_dialog)
+            .children(palette)
             .children(share_ask)
             .children(about)
+            .children(feedback_form)
             .children(gallery)
             .children(update_dialog)
             .children(print_preview)
@@ -4273,9 +4428,11 @@ impl Render for MailWindow {
             }))
             .on_action(cx.listener(Self::open_settings))
             .on_action(cx.listener(Self::show_shortcuts))
+            .on_action(cx.listener(Self::show_palette))
             .on_action(cx.listener(Self::show_whats_new_action))
             .on_action(cx.listener(Self::check_for_updates_action))
-            .on_action(cx.listener(Self::show_about));
+            .on_action(cx.listener(Self::show_about))
+            .on_action(cx.listener(Self::send_feedback_action));
         match &self.font {
             Some(font) => frame.font_family(font.clone()).into_any_element(),
             None => frame.into_any_element(),

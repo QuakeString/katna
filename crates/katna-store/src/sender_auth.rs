@@ -41,6 +41,18 @@ impl Store {
             )?
             .query_row([domain], |row| row.get(0))?)
     }
+
+    /// Whether the user's provider authenticated the `From` of `message`
+    /// (`aligned`, as for [`Self::sender_domain_authenticated`]).
+    pub fn message_authenticated(&self, message: MessageId) -> Result<bool> {
+        Ok(self
+            .mail
+            .prepare_cached(
+                "SELECT EXISTS (SELECT 1 FROM message
+                     WHERE id = ?1 AND json_extract(auth_results_json, '$.aligned') = 1)",
+            )?
+            .query_row([message.0], |row| row.get(0))?)
+    }
 }
 
 #[cfg(test)]
@@ -66,6 +78,7 @@ mod tests {
         };
         let signed = [from("news@shop.example", "shop.example")];
         let forged = [from("ceo@bank.example", "bank.example")];
+        let mut ids = Vec::new();
         let mut batch = store.mail_batch().unwrap();
         let inbox = batch
             .upsert_folder(account, "INBOX", Some(FolderRole::Inbox))
@@ -97,6 +110,7 @@ mod tests {
             else {
                 panic!("a new message");
             };
+            ids.push(id);
             if let Some(json) = json {
                 batch.set_auth_results(id, json).unwrap();
             }
@@ -105,5 +119,10 @@ mod tests {
         assert!(store.sender_domain_authenticated("shop.example").unwrap());
         assert!(!store.sender_domain_authenticated("bank.example").unwrap());
         assert!(!store.sender_domain_authenticated("other.example").unwrap());
+        let authenticated: Vec<bool> = ids
+            .iter()
+            .map(|id| store.message_authenticated(*id).unwrap())
+            .collect();
+        assert_eq!(authenticated, [true, false, false]);
     }
 }

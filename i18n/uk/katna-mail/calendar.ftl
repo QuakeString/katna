@@ -120,6 +120,7 @@ calendar-add-meet = Додати відеоконференцію Google Meet
 calendar-add-teams = Додати зустріч у Teams
 calendar-has-call = Відеозв’язок додано
 calendar-weekday-day = { $weekday }, { $day }
+calendar-schedule-day = { $weekday }, { $month }
 calendar-all-day-box = Увесь день
 calendar-more-options = Інші опції
 calendar-save = Зберегти

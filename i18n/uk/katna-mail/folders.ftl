@@ -53,6 +53,7 @@ folder-waiting-short = Очікують
 folder-reminders = Нагадування
 folder-outbox = Вихідні
 folder-activity = Активність
+folder-not-on-account = У цьому обліковому записі такої папки немає.
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

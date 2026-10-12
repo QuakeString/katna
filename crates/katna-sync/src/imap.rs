@@ -15,6 +15,7 @@ use std::{
     time::{Duration, Instant},
 };
 
+use crate::server_search::Criterion;
 use async_io::Timer;
 use futures_lite::FutureExt;
 use imap_codec::{
@@ -982,6 +983,62 @@ impl MailBackend for ImapBackend {
         Ok(Some(uids))
     }
 
+    async fn search(&mut self, criterion: &Criterion) -> Result<Option<Vec<u32>>> {
+        // Gmail's own syntax says more (attachments, labels); its plain
+        // ASCII goes in a quoted string.
+        if self.is_gmail()
+            && let Some(query) = criterion.gmail()
+        {
+            let query = if query.is_empty() {
+                "in:anywhere".into()
+            } else {
+                query
+            };
+            let escaped = query.replace('\\', "\\\\").replace('"', "\\\"");
+            let lines = self
+                .raw_command(&format!("UID SEARCH X-GM-RAW \"{escaped}\""))
+                .await?;
+            let mut uids: Vec<u32> = lines
+                .iter()
+                .filter_map(|line| search_results(line))
+                .flatten()
+                .collect();
+            uids.sort_unstable();
+            uids.dedup();
+            return Ok(Some(uids));
+        }
+        let Some(key) = search_key(criterion) else {
+            return Ok(None);
+        };
+        let utf8 = !format!("{criterion:?}").is_ascii();
+        let charset = utf8
+            .then(|| Atom::try_from("UTF-8").map(Into::into))
+            .transpose()
+            .map_err(protocol)?;
+        let criteria = match key {
+            SearchKey::And(keys) => keys,
+            key => Vec1::from(key),
+        };
+        let data = self
+            .command(CommandBody::Search {
+                charset,
+                criteria,
+                uid: true,
+            })
+            .await?;
+        let mut uids: Vec<u32> = data
+            .iter()
+            .filter_map(|data| match data {
+                Data::Search(uids, ..) => Some(uids.iter().map(|uid| uid.get())),
+                _ => None,
+            })
+            .flatten()
+            .collect();
+        uids.sort_unstable();
+        uids.dedup();
+        Ok(Some(uids))
+    }
+
     async fn gmail_message_ids(&mut self, uids: &[u32]) -> Result<Option<HashMap<u32, u64>>> {
         if !self.is_gmail() {
             return Ok(None);
@@ -1527,6 +1584,86 @@ fn fetch_tokens(text: &str) -> Vec<FetchToken> {
 }
 
 /// `SEARCH 3 5 8` (maybe followed by `(MODSEQ 99)`) → `[3, 5, 8]`.
+/// `criterion` as IMAP `SEARCH` keys; `None` when a part has no IMAP form
+/// (attachments, labels, file names).
+fn search_key(criterion: &Criterion) -> Option<SearchKey<'static>> {
+    use crate::server_search::{Field, Flag as F};
+    let string = |text: &str| AString::try_from(text.to_owned()).ok();
+    let date = |at: i64| {
+        let day = jiff::Timestamp::from_second(at)
+            .ok()?
+            .to_zoned(jiff::tz::TimeZone::UTC)
+            .date();
+        let day = chrono::NaiveDate::from_ymd_opt(
+            i32::from(day.year()),
+            u32::try_from(day.month()).ok()?,
+            u32::try_from(day.day()).ok()?,
+        )?;
+        imap_types::datetime::NaiveDate::try_from(day).ok()
+    };
+    let many = |items: &[Criterion]| -> Option<Vec<SearchKey<'static>>> {
+        items
+            .iter()
+            .filter(|c| !matches!(c, Criterion::All | Criterion::In(_)))
+            .map(search_key)
+            .collect()
+    };
+    Some(match criterion {
+        Criterion::All | Criterion::In(_) => SearchKey::All,
+        Criterion::And(items) => {
+            let keys = many(items)?;
+            match Vec1::try_from(keys) {
+                Ok(keys) if keys.as_ref().len() == 1 => keys.into_inner().remove(0),
+                Ok(keys) => SearchKey::And(keys),
+                Err(_) => SearchKey::All,
+            }
+        }
+        Criterion::Or(items) => {
+            let mut keys = many(items)?;
+            if keys.len() < items.len() {
+                // An `All` among them.
+                return Some(SearchKey::All);
+            }
+            let mut key = keys.pop()?;
+            while let Some(other) = keys.pop() {
+                key = SearchKey::Or(Box::new(other), Box::new(key));
+            }
+            key
+        }
+        Criterion::Not(inner) => SearchKey::Not(Box::new(search_key(inner)?)),
+        Criterion::Text(field, text) => {
+            let value = string(text)?;
+            match field {
+                Field::Any => SearchKey::Text(value),
+                Field::From => SearchKey::From(value),
+                Field::To => SearchKey::To(value),
+                Field::Cc => SearchKey::Cc(value),
+                Field::Bcc => SearchKey::Bcc(value),
+                Field::Subject => SearchKey::Subject(value),
+                Field::List => SearchKey::Header(string("List-Id")?, value),
+                Field::Filename => return None,
+            }
+        }
+        Criterion::Flag(flag, on) => match (flag, on) {
+            (F::Seen, true) => SearchKey::Seen,
+            (F::Seen, false) => SearchKey::Unseen,
+            (F::Answered, true) => SearchKey::Answered,
+            (F::Answered, false) => SearchKey::Unanswered,
+            (F::Flagged, true) => SearchKey::Flagged,
+            (F::Flagged, false) => SearchKey::Unflagged,
+            (F::Draft, true) => SearchKey::Draft,
+            (F::Draft, false) => SearchKey::Undraft,
+        },
+        // Whole days: the day of `at` is searched too, so nothing dated
+        // that day is missed.
+        Criterion::Before(at) => SearchKey::SentBefore(date(at.saturating_add(86_400))?),
+        Criterion::After(at) => SearchKey::SentSince(date(*at)?),
+        Criterion::Larger(bytes) => SearchKey::Larger(u32::try_from(*bytes).unwrap_or(u32::MAX)),
+        Criterion::Smaller(bytes) => SearchKey::Smaller(u32::try_from(*bytes).unwrap_or(u32::MAX)),
+        Criterion::HasAttachment | Criterion::Label(_) | Criterion::Unsupported => return None,
+    })
+}
+
 fn search_results(line: &str) -> Option<Vec<u32>> {
     let (name, rest) = line.split_once(' ').unwrap_or((line, ""));
     if !name.eq_ignore_ascii_case("SEARCH") {

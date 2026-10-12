@@ -94,6 +94,7 @@ notes-link-note = ਨੋਟ ਲਿੰਕ ਕਰੋ
 notes-link-new = ਨਵਾਂ ਨੋਟ "{ $title }"
 notes-linked-from = ਇੱਥੋਂ ਲਿੰਕ ਕੀਤਾ
 notes-link-gone = ਉਹ ਨੋਟ ਹੁਣ ਇੱਥੇ ਨਹੀਂ ਹੈ
+notes-new-note-gone = ਨਵਾਂ ਨੋਟ ਹੁਣ ਮੌਜੂਦ ਨਹੀਂ ਹੈ।
 
 ## Version history
 

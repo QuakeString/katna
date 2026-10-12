@@ -94,6 +94,7 @@ notes-link-note = ഒരു കുറിപ്പ് ലിങ്ക് ചെ�
 notes-link-new = പുതിയ കുറിപ്പ് “{ $title }”
 notes-linked-from = ഇവിടെ നിന്ന് ലിങ്ക് ചെയ്‌തത്
 notes-link-gone = ആ കുറിപ്പ് ഇപ്പോൾ ഇവിടെയില്ല
+notes-new-note-gone = പുതിയ കുറിപ്പ് ഇല്ലാതായി.
 
 ## Version history
 

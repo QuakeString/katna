@@ -94,6 +94,7 @@ notes-link-note = ଏକ ନୋଟ ଲିଙ୍କ କରନ୍ତୁ
 notes-link-new = ନୂଆ ନୋଟ "{ $title }"
 notes-linked-from = ଏଠାରୁ ଲିଙ୍କ କରାଯାଇଛି
 notes-link-gone = ସେହି ନୋଟ ଆଉ ଏଠାରେ ନାହିଁ
+notes-new-note-gone = ନୂଆ ନୋଟଟି ଆଉ ନାହିଁ।
 
 ## Version history
 

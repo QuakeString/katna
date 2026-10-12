@@ -7,6 +7,7 @@
 //! or in a chat as a small line like the day labels. The daemon finds them
 //! (`katna-meta`); Settings > Inbox > Nudges turns them off.
 
+use crate::widgets::Tip as _;
 use gpui::{AnyElement, Context, FontWeight, Window, div, prelude::*, relative, rgba};
 use jiff::Timestamp;
 use katna_i18n::tr;
@@ -18,7 +19,7 @@ use super::compose::Kind;
 use crate::daemon::Command;
 use crate::data::{LineNudge, Row};
 use crate::theme::{Theme, mix};
-use crate::widgets::{ButtonStyle, button, icon, icon_tag, line_chip, outlined_button, tip};
+use crate::widgets::{ButtonStyle, button, icon, icon_tag, line_chip, outlined_button};
 use katna_store::MessageId;
 
 const DAY: i64 = 24 * 3600;
@@ -80,7 +81,7 @@ impl MailWindow {
                         th.warning,
                         th,
                     )
-                    .tooltip(tip(tr!("nudge-row-tip"), th))
+                    .tip(tr!("nudge-row-tip"), th)
                     .on_click(cx.listener(move |this, _, window, cx| {
                         cx.stop_propagation();
                         this.follow_up_nudge(nudge, window, cx);
@@ -97,7 +98,7 @@ impl MailWindow {
                         .rounded_full()
                         .cursor_pointer()
                         .hover(|s| s.bg(rgba(th.hover)))
-                        .tooltip(tip(tr!("nudge-dismiss"), th))
+                        .tip(tr!("nudge-dismiss"), th)
                         .child(icon("close", th.text_faint, 14.0))
                         .on_click(cx.listener(move |this, _, _, cx| {
                             cx.stop_propagation();

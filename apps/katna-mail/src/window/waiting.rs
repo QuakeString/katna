@@ -6,6 +6,7 @@
 //! and in any other list, has a chip with what happens next, and the open
 //! conversation a card with Edit (the time), Send now and Stop.
 
+use crate::widgets::Tip as _;
 use gpui::{AnyElement, ClickEvent, Context, FontWeight, div, prelude::*, relative, rgba};
 use jiff::Timestamp;
 use katna_i18n::tr;
@@ -17,9 +18,7 @@ use super::{Listing, MailWindow};
 use crate::daemon::Command;
 use crate::data::{LineFollowUp, Row};
 use crate::theme::{Theme, fade, mix};
-use crate::widgets::{
-    ButtonStyle, button, icon, icon_tag, line_chip, outlined_button, tip, tonal_fill,
-};
+use crate::widgets::{ButtonStyle, button, icon, icon_tag, line_chip, outlined_button, tonal_fill};
 
 /// The folder pane line of Waiting for reply.
 pub(super) const NAV_KEY: &str = "katna:waiting";
@@ -108,7 +107,7 @@ impl MailWindow {
                 color,
                 th,
             )
-            .tooltip(tip(self.follow_up_says(&follow_up), th))
+            .tip(self.follow_up_says(&follow_up), th)
             .into_any_element(),
         )
     }

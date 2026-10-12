@@ -6,6 +6,7 @@
 
 about-tooltip = Katna பற்றி
 about-tagline = Linux டெஸ்க்டாப்புக்கான அஞ்சலும் கேலெண்டரும்
+about-version = Katna Mail { $version }
 about-copy-version = பதிப்பு விவரங்களை நகலெடு
 about-version-copied = நகலெடுக்கப்பட்டது
 about-version-built = உருவாக்கியது: { $date }
@@ -41,6 +42,8 @@ about-update-restart = புதுப்பித்து மறுதொட�
 about-update-cancel = இப்போது வேண்டாம்
 about-changelog = மாற்றப் பதிவு
 about-source = மூலக் குறியீடு
+about-debug-report = பிழைத்திருத்த அறிக்கையை நகலெடு
+about-debug-report-tip = பிழை அறிக்கைக்காகப் பதிப்புகள், புதுப்பிப்புக்குப் பிந்தைய சரிபார்ப்பு, சமீபத்திய பதிவு வரிகள். அஞ்சலோ கடவுச்சொற்களோ இல்லை.
 about-coffee = எனக்கு ஒரு காபி வாங்கிக் கொடுங்கள்
 about-coffee-coffee = காபியா?
 about-coffee-tea = டீயா?

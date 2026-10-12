@@ -156,7 +156,13 @@ pub(super) fn notch(side: Side, along: f32, th: &Theme) -> [AnyElement; 2] {
         let (bw, bh) = (20.0 * scale, NOTCH * scale);
         let reach = bh / 2.0 - inset;
         let out = |half: f32| px(-reach - half);
-        let el = svg().path("icons/notch.svg").absolute().w(px(bw)).h(px(bh));
+        // `along` and the side are on screen, whatever the direction.
+        let el = svg()
+            .path("icons/notch.svg")
+            .absolute()
+            .placed_ltr()
+            .w(px(bw))
+            .h(px(bh));
         let el = match side {
             Side::Below => el.top(out(bh / 2.0)).left(px(along - bw / 2.0)),
             Side::Above => el.bottom(out(bh / 2.0)).left(px(along - bw / 2.0)),

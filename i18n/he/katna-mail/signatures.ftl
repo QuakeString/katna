@@ -66,7 +66,6 @@ signature-layout-light = בהירה
 signature-layout-dark = כהה
 signature-layout-text = טקסט פשוט
 signature-layout-inside = התמונות נשלחות בתוך הדואר, כך שהן מוצגות גם במקומות שבהם תמונות מהאינטרנט כבויות. זו מוסיפה { $size } לכל הודעה.
-signature-layout-free = רוצים משהו אחר?
 signature-layout-edit = עריכה ידנית
 signature-layout-edit-confirm = לערוך אותה ידנית? השדות והפריסה שלה יוסרו, והיא תשמור על המראה שלה ככל שהעורך יכול.
 signature-layout-use-confirm = להשתמש בפריסה { $layout }? היא תחליף את החתימה הזו, וימולאו בה הפרטים ממנה.

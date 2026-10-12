@@ -49,3 +49,12 @@ search-dates-month-back = ເດືອນກ່ອນ
 search-dates-month-on = ເດືອນຖັດໄປ
 search-dates-year-back = ປີກ່ອນ
 search-dates-year-on = ປີຖັດໄປ
+
+## mail server, for mail that is not downloaded to this computer yet.
+
+search-server-more = ຜົນລັບເພີ່ມເຕີມໃນເຊີບເວີ
+search-server-searching = ກຳລັງຊອກຫາອີເມວໃນເຊີບເວີ…
+search-server-empty-searching = ຍັງບໍ່ມີຫຍັງ. ກຳລັງຊອກຫາອີເມວໃນເຊີບເວີ…
+search-server-nothing = ບໍ່ມີຜົນລັບເພີ່ມເຕີມໃນເຊີບເວີ
+search-server-failed = ບໍ່ສາມາດຊອກຫາໃນເຊີບເວີໄດ້.
+search-server-again = ລອງໃໝ່

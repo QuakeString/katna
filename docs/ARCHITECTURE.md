@@ -568,10 +568,15 @@ metadata and index entry stay (`body_state` goes from 2 to 1).
   (RFC 7636) and a loopback redirect (RFC 8252). The daemon listens on a
   free port of `127.0.0.1` (`http://127.0.0.1:PORT/` for Google;
   `http://localhost:PORT/` for Microsoft, which registers loopback
-  redirects under `localhost`, so `::1` is listened on too), opens the
-  provider's page in the default browser (the OpenURI portal, else
-  `xdg-open`), and trades the code for tokens with our own HTTPS client
-  (rustls). Scopes: Google `https://mail.google.com/ drive.file
+  redirects under `localhost`, so `::1` is listened on too), has the
+  provider's page opened in the default browser, and trades the code for
+  tokens with our own HTTPS client
+  (rustls). Katna Mail opens the page itself (`SignInFromApp`: the
+  daemon hands it the page as a `SignInPage` signal sent only to the
+  caller), since a click in its window lets KDE and Windows bring the
+  browser to the front, where a page a background service opens can land
+  behind Katna; `SignIn` (katnactl, older apps) has the daemon open it
+  (the OpenURI portal, else `xdg-open`). Scopes: Google `https://mail.google.com/ drive.file
   drive openid email profile` (with `access_type=offline` and
   `prompt=consent`, so every sign-in brings a refresh token; `drive.file`
   is for large attachments, §6.6, `drive` for the drive in Files,
@@ -820,6 +825,11 @@ rank above loose matches. Highlighted snippets via `SnippetGenerator`.
 
 - Parse (`mail-parser`) → HTML to text → language detection → per-language
   tokenizer/stemmer → attachment text extraction → index writer.
+- Words are runs of letters and digits; Thai, Lao, Khmer and Burmese,
+  which put no spaces between words, are split with `icu_segmenter`'s
+  dictionaries for those four scripts only (about 1.8 MB, `words.rs`), at
+  index and query time, so a word is found inside an unspaced sentence and
+  a typed run of words matches as a phrase.
 - Parallel workers with a memory budget; commit in batches; tantivy commits
   are atomic, so a crash never corrupts the index.
 - Search works on the already-indexed part while initial indexing runs.
@@ -1593,6 +1603,22 @@ passing for a domain aligned with it (`katna_render::sender_authenticated`).
 Otherwise the banner says the message may not be from that sender and
 offers "Show images" for it. A provider that adds no such field leaves the
 topmost one to the sender, which is no worse than trusting `From` alone.
+
+The same fields warn about forged mail (`katna_render::sender_checks`,
+`window/reader/sender.rs`). A message *failed* when DMARC failed for its
+`From` domain, or SPF failed for an envelope domain aligned with it and no
+aligned DKIM signature passed; it is *unconfirmed* when the provider
+checked and nothing passed. Failed mail gets a soft red banner above its
+body ("This may not be from bank.example", naming the provider by its
+server, such as `mx.google.com` for Gmail) with Details (what DMARC, DKIM
+and SPF each found), Looks safe (this message only, until the window
+closes; a forged sender can fail again) and Move to spam. Its images stay
+hidden even with "Always show images" on, until "Show images", and a link
+asks first in a popover at the click that names where it really goes.
+An unconfirmed sender gets a small "?" on their picture that says so under
+the pointer; the mail list shows nothing. Mail with no
+`Authentication-Results` shows nothing, as there is nothing to go on.
+
 Images are fetched by the daemon (`FetchImage`, `https` only, `http`
 upgraded, at most 8 MB, checked to be an image by its bytes), at most 200
 different ones per message and 6 at a time; the app never uses the
@@ -2071,11 +2097,16 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   goes unseen. Each account heading has an arrow that folds its folders.
   The unified inbox (Settings > Accounts, `mail.unified_inbox`, off by
   default) puts an "All Accounts" section over the accounts, which then
-  start folded: Inbox, Unread, Starred, Important, Sent, All mail, Spam,
-  Trash and Drafts across every account (`window/unified.rs`). The special
+  start folded: Inbox, Unread, Starred, Snoozed, Important, Sent, All
+  mail, Spam, Trash and Drafts across every account (`window/unified.rs`).
+  Snoozed shows only while some account's Snoozed folder holds mail. The special
   folders list each account's folder of that role together; Unread,
   Starred and Important list mail with that flag in every folder but trash
-  and spam. Each opens to one line per account. The lists are read like
+  and spam. Each opens to one line per account. With one account the
+  lists stand alone at the top, without the heading, followed by the
+  account's folders they leave out (Snoozed, Archive), its Labels and its
+  other folders; Gmail's own `[Gmail]` label is not repeated there
+  (`Tree::lone_rows`). The lists are read like
   search results (no one listed folder), merged by date in
   `Store::spread_threads` and `spread_message_ids`, which show server
   copies of one message once. The unified Inbox has inbox tabs shared by
@@ -2445,6 +2476,34 @@ Gemini or confidential mode):
   letters still work there. Whenever
   the keys lose their place (a message sent, a menu or dialog gone) they
   come back to the list, or to the Settings page while it is open.
+- **Command palette.** Ctrl+Shift+P (as in VS Code and Zed; Ctrl+Alt+I,
+  KDE's Find Action, too) or Help → Command Palette opens one box under
+  the top bar that finds any action or setting by name
+  (`window/palette.rs`). Actions come from the shortcut list
+  (`keymap::SHORTCUTS`, less the keys for moving about), each with the
+  keys it has now, so the palette teaches them; settings come from the
+  Settings search's rows and tabs (`settings_search::candidates`) and open
+  their row as a Settings search result does. The whole query at a word's
+  start ranks first, then anywhere in a name, then every word, then the
+  letters in order ("mku" finds Mark as unread). Up, Down, Enter and Esc
+  work as in any picker. An action runs where the keys were before the
+  palette opened. With nothing typed it lists Recent (the last five run,
+  kept in `[shortcuts] recent`), then every action. No veil, as for the
+  other dialogs.
+- **Screen readers.** GPUI hands an AccessKit tree to AT-SPI (Orca) and
+  UI Automation (NVDA, Narrator). Only elements with an id and a role
+  show up, so the shared widgets set both: `widgets::Tip::tip` labels an
+  icon button with its tooltip text, text buttons and chips carry their
+  label, menu items are `MenuItem`, `FocusRing` controls are buttons,
+  Settings rows are switches, radio buttons and links, and
+  `keep_tab_inside` makes a dialog a `Dialog`. The mail list is a `List`
+  whose rows read "Unread, sender, subject, date"; the folder pane is a
+  `Tree` with levels, unread counts and fold state; the open mail is a
+  `Document` named by its subject, with its plain text as the
+  description only while a screen reader is listening
+  (`window.is_a11y_active()`). Text fields expose their placeholder and
+  value (never a password's). Spoken words not shown on screen live in
+  `i18n/en/katna-mail/a11y.ftl`.
 - **Removing an account, deleting all data.** Settings → Accounts
   (`window/accounts.rs`) lists
   the accounts, each with Remove, and has "Delete all Katna data". Both
@@ -2502,21 +2561,43 @@ Gemini or confidential mode):
   **Layouts.** A signature can instead be made from one of twelve layouts
   (Classic, Logo left, Photo, Colour band, One line, Centred, With banner,
   Underline, Side bar, Card, Monogram, Plain text): its fields (name,
-  title, company, numbers, email, website, address, pages, logo, photo,
-  banner, colour) are kept in the settings (`Signature::layout`) and the
+  title, company, mobile and office numbers, WhatsApp, Telegram, email,
+  website, address, pages, logo, photo, banner, colour) are kept in the settings (`Signature::layout`) and the
   signature is written again from them on every change
   (`signatures/layout.rs`), as a designed block of mail-safe HTML (tables
   and inline styles, which Outlook's Word engine also draws) and a plain
   text twin whose numbers are labelled "M:" and "O:", which the person card
-  reads. Pictures are made small at twice their shown size
+  reads. In the HTML each line starts with its icon (mobile, phone, mail,
+  globe, pin, WhatsApp, Telegram) in the colour on a soft circle of it, a
+  20 px PNG; a WhatsApp number that is the mobile number is only its mark
+  after the mobile number, linked to `wa.me`, and Telegram links to
+  `t.me`. Numbers never wrap; in Katna's reader a table row whose cells
+  set no width wraps its cells under each other rather than be cut off,
+  so the Card's and Colour band's two columns stack in a narrow pane.
+  Pictures are made small at twice their shown size
   (`katna_preview::signature`: a logo at most 256 × 128 px, a dark logo on
   nothing put on a soft white card, a photo cut round, 136 px), and the
   page marks (Simple Icons), monogram and underline bar are drawn as PNGs
-  in the layout's colour, so they look the same in every reader. The page
+  in the layout's colour, so they look the same in every reader. The
+  colour is one of six or any other from the shared colour wheel and
+  picker (as an account's), and the address keeps the lines it is typed
+  on (`<br>` in the HTML). The page
   shows the result in a light or dark reader or as plain text. Picking a
   layout for a signature written by hand fills the fields in from it (as
-  the person card reads it, and its first picture as the logo); Edit by
-  hand turns a layout signature back into one, and both ask first.
+  the person card reads it, and its first picture as the logo); Customise
+  turns a layout signature back into one, and both ask first. A
+  signature's right-click menu in the list has Edit, Duplicate and
+  Delete; Duplicate copies it whole, named "… (copy)", right after it,
+  and opens the copy.
+  **Per account.** The list is shared, and each account picks the
+  signature its new mail starts with and the one its replies and
+  forwards start with, under Default signature
+  (`Sending::account_signatures`, by address; an account not set yet
+  starts with the old shared `new_mail_signature` and `reply_signature`).
+  Compose, the summary card's reply and a notification's quick reply all
+  use the account the mail goes out from. Changing From while writing
+  puts in the new account's signature, with a note, unless the one there
+  was picked by hand.
 - **Grammar.** Harper (`harper-core`, Apache-2.0) checks English drafts,
   text and subject, on this computer as you write (`grammar.rs`), on by default, under
   Settings → Compose → Grammar. Paragraphs are checked off the UI thread
@@ -3105,7 +3186,10 @@ desktop's own app stays one click away.
   - **Marking up a PDF.** The pen in the viewer's top bar shows a pill of
     tools: Select, Highlight, Underline, Squiggle, Strike, Pen, Sticky
     note, Text box and Eraser, five colours each, and Undo and Redo
-    (Ctrl+Z, Ctrl+Shift+Z). Text marks are made by selecting text; the
+    (Ctrl+Z, Ctrl+Shift+Z), then drag dots at its end: dragging them
+    moves the pill anywhere over the pages (kept inside the viewer, below
+    the top bar) so it never covers what is being marked, and a double
+    click puts it back. Text marks are made by selecting text; the
     pen draws freehand; a click with the note or text tool places one and
     opens it for typing (Ctrl+Enter, Done or a click elsewhere finishes,
     Escape drops the change), and clicking one opens it again; a note's
@@ -3382,6 +3466,15 @@ A file in `$XDG_DATA_HOME/katna/i18n/<tag>/` is loaded over the built-in
 one message by message, so a reviewer can try a correction without
 building Katna.
 
+The `.desktop` files' names (`Name`, `GenericName`, `Comment`,
+`Keywords` and the actions' `Name`) are messages too, in
+`i18n/<tag>/desktop.ftl`. The checked-in files hold only English and a
+`# i18n: <prefix>` line naming their ids; `packaging/linux/
+localize-desktop.sh` adds a `Name[de]=` line and so on for every
+translated message as `stage.sh` and the PKGBUILD install them, so a
+translator edits only `desktop.ftl` and nobody regenerates files. A test
+in `katna-i18n` fails when a file's English and `desktop.ftl` disagree.
+
 **Choosing the language.**
 
 - **System default** (the default) follows the desktop: the first
@@ -3452,11 +3545,13 @@ length, so month and day names, the order (`27/09/2026`, `9/27/2026`,
 - English (India) groups numbers in lakhs (`12,34,567`), UK and US by
   thousands; India and UK write day before month, the US month first.
 - Digits follow CLDR's default for the locale (Bengali digits for Bengali,
-  Arabic-Indic for Arabic, Extended Arabic-Indic for Persian and Urdu,
-  Latin elsewhere).
+  Arabic-Indic for Arabic, Extended Arabic-Indic for Persian, Latin for
+  Urdu and elsewhere).
 - The calendar follows the locale's CLDR default: Buddhist years for Thai,
-  Solar Hijri for Persian, Gregorian elsewhere. A setting to always use
-  Gregorian comes with the date format settings later.
+  Solar Hijri for Persian, Gregorian elsewhere. Month grids stay Gregorian,
+  but their titles, years and day numbers count in that calendar (a
+  Gregorian September is "شهریور – مهر ۱۴۰۵" in Persian). A setting to
+  always use Gregorian comes with the date format settings later.
 - The first day of the week (search's date picker) follows the locale.
 - Relative times ("2 hours ago") and sizes ("12 KB") are Fluent messages
   with plural forms and a formatted number.
@@ -3538,14 +3633,22 @@ window-wide layout direction:
   the same per line, aligned to the UI's start edge, so Arabic mail reads
   right to left in an English UI and English mail left to right in an
   Arabic one.
-- Compose: each paragraph's direction follows what is typed (first strong
-  letter); the format bar has "Right to left" and "Left to right" buttons
-  when an RTL language is the UI or keyboard layout, and sent HTML carries
-  `dir`. The quote header ("On 27 Sep 2026, Rahim wrote:") and the
-  forwarded-message header are written in the UI language with its date
-  format; `Re:` and `Fwd:` stay as they are (they are protocol, and
+- Compose: a new paragraph starts in the UI's direction and turns right
+  to left when its first strong letter is RTL; the format bar's
+  "Left to right" and "Right to left" buttons (never mirrored; in left-to-right
+  UIs they are among the first to fold into the overflow menu) and Ctrl+Shift+X set it by hand.
+  Direction is stored per paragraph in the editor's document
+  (`katna_ui::rich::doc`), and sent HTML carries `dir` on the wrapper and
+  on each block that differs from it, so drafts keep it; the plain-text
+  part is unchanged. The quote header ("On 27 Sep 2026, Rahim wrote:") and
+  the forwarded-message header are written in the UI language
+  (`compose.ftl`, `katna-mail/src/quoting.rs`) with its date format, and
+  names in the other direction are isolated (FSI … PDI); the daemon's
+  quick reply uses the same wording with a numeric date, since it carries
+  no ICU data. `Re:` and `Fwd:` stay as they are (they are protocol, and
   localized prefixes are already recognised for threading,
-  `katna_core::subject`).
+  `katna_core::subject`). The shared first-strong-letter rule is
+  `katna_core::bidi`.
 - Input methods: typing Chinese, Japanese, Korean and Indic scripts goes
   through the desktop's input method (IBus or Fcitx5) via GPUI's
   `text-input-v3` (Wayland) and XIM (X11) support; every Katna text box
@@ -3802,7 +3905,9 @@ Implemented so far (`katna_dbus::PimProxy`): `Accounts() → a(xssssxs)`
 `DiscoverAccount(address) → (account, POP3 server, source, provider,
 password works)` (an empty POP3 host when there is none),
 `SignIn(provider, id, address) → id` (OAuth2 in the browser; adds the
-account, or signs one in again), `CancelSignIn() → b`, `AddImapAccount(account,
+account, or signs one in again), `SignInFromApp(provider, id, address,
+ticket) → id` (the same, with the page sent to the caller as
+`SignInPage(ticket, url)` to open; level 2), `CancelSignIn() → b`, `AddImapAccount(account,
 password) → id`, `AddPop3Account(account, password) → id` (with
 leave-on-server, days to keep, and delete-with-local), `SetPop3Keep(id,
 leave on server, days, delete with local)`,
@@ -4754,7 +4859,11 @@ are not trimmed to fit. Katna Mail's budget was 30 MiB until the fixes
 after the first real install, when the app reached it; then 50 MB, and
 100 MB since the attachment viewers (September 2026), then 150 MB when the
 chat view's company details took it past 100 MB (October 2026), so features are
-not trimmed to fit; light crates are still preferred. Crates that are not hot are built with
+not trimmed to fit; light crates are still preferred. `katnactl` reads the
+search index itself (its MCP mail search), so it carries the same Thai,
+Lao, Khmer and Burmese word dictionaries as the daemon (L.6, about 1.8 MB);
+its budget went from 10 MiB to 15 MiB then (October 2026), the same as
+`katna-search-cli`. Crates that are not hot are built with
 `opt-level = "s"` (root `Cargo.toml`): D-Bus (zbus, zvariant, oo7,
 ashpd), IMAP parsing and regex.
 
@@ -5408,18 +5517,47 @@ queued, so the outbox and Sent hold only what was sent. Details:
 
 - Keys are chosen by exact address in the local keyring
   (`katna_crypto::encryption_keys`: usable for encryption, a verified key
-  before an unverified one) and passed to GnuPG by fingerprint, so GnuPG
-  never looks a recipient up on the network (WKD) while sending. A key the
-  user has not certified is still used (`--trust-model always`); a
-  recipient without any key stops the send with "no key for …" and the
-  message comes back.
+  before an unverified one), else among the keys Katna found (below), and
+  passed to GnuPG by fingerprint or file, so GnuPG itself never looks a
+  recipient up. A key the user has not certified is still used
+  (`--trust-model always`); a recipient without any key stops the send
+  with "no key for …" and the message comes back.
 - The sender is always a recipient too, so Sent stays readable. Bcc
   recipients are hidden recipients in OpenPGP (`--hidden-recipient`); CMS
   has no such thing.
 - OpenPGP by default; S/MIME when answering S/MIME mail or when the sender
   only has an S/MIME certificate.
-- Routing headers (From, To, Subject) stay outside the protection; hiding
-  the subject (protected headers) and Autocrypt headers come later (E.3).
+- Routing headers (From, To, Cc, Date) stay outside the protection.
+  Encrypted OpenPGP mail hides its subject: the outside says `...`, and
+  the real Subject (with copies of the routing headers) goes inside, with
+  `protected-headers="v1"` on the inner Content-Type, as Thunderbird and
+  KMail send and read it. S/MIME mail keeps its subject outside.
+
+**Keys from Autocrypt and the Web Key Directory (E.3).** Keys Katna finds
+for people are kept apart from the user's GnuPG keyring, which stays the
+user's own, in `$XDG_DATA_HOME/katna/keys/` (`katna_crypto::PeerKeys`: a
+binary key and a small text file per address, written only by the daemon),
+and used only to encrypt to the address they were found for, through
+`--recipient-file`. A key is kept only when GnuPG lists exactly one key in
+it, with a user ID of exactly that address, able to encrypt, neither
+revoked nor expired.
+
+- **Autocrypt (Level 1).** Mail Katna sends carries an `Autocrypt:
+  addr=…; keydata=…` header when GnuPG has a secret key for the sender:
+  the newest usable one, exported minimal with only that address's user
+  ID and the encryption subkey. No `prefer-encrypt` is stated. When the
+  user opens a message with an Autocrypt header, the app asks the daemon
+  (`LearnKey`) to keep the key, which it does only when the user's
+  provider authenticated the message's `From` (aligned DMARC or DKIM in
+  `Authentication-Results`, §12) and `addr` is that `From`; a key from
+  older mail never replaces one from newer mail.
+- **Web Key Directory.** When Encrypt is on and a recipient has no key,
+  the app asks the daemon (`LookUpKey`) before sealing: it fetches
+  `https://openpgpkey.<domain>/.well-known/openpgpkey/<domain>/hu/<hash>`,
+  then the direct `https://<domain>/.well-known/openpgpkey/hu/<hash>`
+  (public addresses only, 256 KiB at most), so only the recipient's own
+  domain learns who is written to. Nothing is looked up while reading:
+  that would tell the sender the mail was opened.
 
 
 ### 19.2 Crash reports and feedback
@@ -5502,12 +5640,14 @@ consent.
   takes effect at once; off means the panic hook and the core-dump check
   write nothing), and the list of saved reports with
   **View**, **Copy** and **Delete** (and Delete all), each marked "Sent"
-  once it went to the crash tracker. Part 2 adds "Send crash reports"
-  (built) and later the usage statistics switch and **Send feedback**.
+  once it went to the crash tracker. Part 2 adds "Send crash reports",
+  "Send anonymous usage statistics" with the full list of what is counted,
+  and **Send feedback** (all built).
 
 **Part 2: sending, only with consent.** Reports go to a Sentry cloud
 project (decided by the owner on 27 September 2026, §25). Sending crash
-reports is built; usage statistics and the feedback form come later.
+reports, usage statistics and the feedback form are built (C.5–C.7);
+release-health sessions are not.
 
 - **Asking.** The first-run screen (onboarding) has a step, "Help improve
   Katna", between the look and the tour: what is sent, what is never sent
@@ -5540,6 +5680,22 @@ reports is built; usage statistics and the feedback form come later.
   and so on. The exact list lives in one Rust enum; each entry is described
   in Settings > User feedback so users can see what is counted. No message counts, no
   addresses, no domains, no search terms, no timestamps finer than a week.
+  Built (C.6): the switch "Send anonymous usage statistics" (config key
+  `feedback.send_usage_statistics`, off until the user turns it on, never
+  asked for in onboarding) sits under "Send crash reports"; "What is
+  counted" lists every entry of `katna_core::usage::Feature` (search
+  options, pinned mail, labels, scheduled send, snooze and reminders,
+  encrypted mail, built-in viewers, Calendar, Contacts, Tasks and Notes,
+  the phone-width layout, Katna's own window frame) and the other facts.
+  While it is on, Katna Mail notes each feature the first time it is used
+  in a week in `$XDG_STATE_HOME/katna/usage/week-N` (Monday to Sunday,
+  UTC), with the screen scale, desktop and session, which only it sees;
+  "See this week's report" shows the exact text and Copy. The daemon sends
+  a finished week once (never on a metered connection), adding the
+  version, the `ID` of `/etc/os-release` and the number of accounts in
+  bands, then deletes that week's file. Turning the switch off deletes
+  everything recorded and the install ID. Nothing is recorded while it is
+  off.
 - **Identity.** No user ID and no account ID. Each upload carries a random
   **install ID** only so that one machine's weekly reports are not counted
   twice; it is regenerated every 90 days and by "Reset" in Settings > User feedback, and it
@@ -5550,6 +5706,14 @@ reports is built; usage statistics and the feedback form come later.
   reply (clearly optional, never filled in from the account). It shows
   exactly what will be sent before sending. This is independent of the
   switches: sending feedback is itself the consent for that one message.
+  Built (C.7): chips for what it is about (Problem, Idea, Something
+  else), the message, the optional reply address and "Include Katna's
+  version and your system" (ticked; its line shown under it). "What is
+  sent" unfolds the exact text, whose field names stay English like a
+  crash report's; Katna Mail hands that text to the daemon
+  (`SendFeedback` on the Pim interface), which posts it as a User
+  Feedback item and nothing more. A dialog on wider windows; at phone
+  width it fills the window with Send in its top bar. Ctrl+Enter sends.
 - **Protocol, no SDK.** Everything uses Sentry's envelope format
   (`POST /api/<project>/envelope/`), written by hand in
   `katna_core::sentry` and posted with Katna's own small HTTPS client
@@ -5570,10 +5734,13 @@ reports is built; usage statistics and the feedback form come later.
   `contexts.os.raw_description`. Checked on 27 September 2026: Sentry
   answered 200 to a test envelope. Sentry's minidump handler
   (`sentry-rust-minidump`, an extra process) is not used unless the stacks
-  from core dumps turn out not to be enough. Later, feedback uses Sentry's
-  User Feedback item; usage statistics are one `info` event per week whose
-  tags are the feature flags above, plus release-health sessions for
-  crash-free rates.
+  from core dumps turn out not to be enough. Feedback is Sentry's User
+  Feedback item (`feedback`, the text in `contexts.feedback.message`, the
+  reply address as `contact_email` only when given;
+  `sentry::feedback_envelope`); usage statistics are one `info` event per
+  week (`sentry::usage_envelope`) whose message is the week's report text
+  and whose tags are the facts, the install ID and `f.<feature>` =
+  `yes`/`no`. Release-health sessions for crash-free rates come later.
 - **Client settings.** Nothing like the SDK's `send_default_pii`: no user
   object, no IP (the project is also set to not store IP addresses and to
   scrub data server-side), no `server_name`, no device ID; the recent log
@@ -5728,7 +5895,7 @@ it gets the most care.
 | Channel | Built from | Who it is for | How often |
 |---|---|---|---|
 | **Nightly** | every push to `main` (today's `arch-latest`) | developers and testers | every merge |
-| **Beta** | a tag `vX.Y.Z-beta.N` cut from `main` after the release checks pass | people who want new features early and report bugs | every few weeks |
+| **Beta** | a tag `vX.Y.Z-beta.N` (or an earlier `vX.Y.Z-alpha.N`, published to the same `beta-latest` and never promoted) cut from `main` after the release checks pass | people who want new features early and report bugs | every few weeks |
 | **Stable** | a beta promoted unchanged after its soak | everyone else; the default | after the soak |
 
 - Stable and beta are the **same files**: promotion copies the beta's
@@ -5752,6 +5919,21 @@ it gets the most care.
 - Moving to a safer channel (nightly → beta → stable) never downgrades. The
   installed version stays until the new channel catches up, because an older
   version may not read the newer database (§5.3, `SchemaTooNew`).
+- **Built** (U.10, 8 October 2026): `update::Channel` picks the release an
+  install's in-app updates read: nightly from each package's `*-latest`
+  pre-release with `katna-update.json`, beta and stable from `beta-latest`
+  and `stable-latest` with `katna-update-<arch|windows|linux>.json`.
+  Because beta and stable share files, a build cannot know which one it
+  came from: until the user picks (`updates.channel`), a build between
+  tags (`rN`, N above 0) stays nightly and a beta's or release's files
+  (`r0`) take stable; Nix is always nightly. A new pick is checked at once.
+  `updates.check` turns the hourly check off (Check for updates still
+  works). Manifests carry `rollout` (percent) and `pulled`, set by
+  `rollout.yml`; each install's slot is a number 0 to 99 kept in its
+  state folder. The Flatpak bundle has no remote, so the portal's update
+  monitor has nothing to watch: Flatpak keeps the channel's bundle and
+  the `flatpak install` command until a Flatpak repository is hosted. The
+  AppImage takes the channel's image the same way.
 
 #### In-app updates (built for the Arch package and Windows)
 
@@ -5928,17 +6110,26 @@ A package manager replaces binaries while Katna runs. Every combination of
 old and new daemon and app must keep working:
 
 - The daemon notices its own binary was replaced (`/proc/self/exe` ends in
-  ` (deleted)`, checked on a timer and on each D-Bus call). It restarts
-  itself only when it is idle: no send inside the undo delay, no migration
-  or index write running, the op queue flushed. With systemd it asks the
-  user manager to restart its unit; without systemd it re-executes itself.
+  ` (deleted)`, or pacman records a newer build), checked every 30 seconds
+  and whenever a program asks `Version()`. It restarts itself only when no
+  message is being handed to a server or due to be within the longest undo
+  delay; it waits for that at most 15 minutes. Everything else that waits
+  (queued changes, the index, migrations) is kept on disk or finished by
+  its shutdown. With systemd it asks the user manager to restart its unit;
+  without systemd it re-executes itself.
 - A new `Version() → (version, api, schemas)` D-Bus method lets the app and
-  the daemon find out what the other side speaks. `Pim1` only ever gains
+  the daemon find out what the other side speaks: the build, the `Pim1`
+  level (`katna_dbus::API_LEVEL`, one more each time `Pim1` gains a
+  member) and each database's schema version. Katna Mail asks it when it
+  connects and whenever the daemon comes back; a daemon older than
+  `Version()` answers `UnknownMethod` and restarts by its own timer. `Pim1` only ever gains
   members; anything else becomes `Pim2` (§14.1). A new app that meets an old
   daemon asks it to restart; an old app that meets a new daemon keeps working
   on `Pim1` and shows a "Katna was updated, restart" pill.
 - An app that opens a store and gets `SchemaTooNew` shows the same restart
-  pill instead of an error.
+  pill instead of an error. Katna Mail floats it at the bottom centre of the
+  mail list; Restart starts the installed build with `--after-update` and
+  quits, and × hides it until a later build.
 - Search index versions already rebuild in the background when they differ
   (`katna-search` deletes an index built with another `SCHEMA_VERSION`);
   search falls back to the store's plain lookups while that runs.
@@ -5946,19 +6137,22 @@ old and new daemon and app must keep working:
 #### Protecting local data
 
 - **Backup before migrating.** When the daemon is about to raise a
-  database's `user_version`, it first copies each database it will change
-  with SQLite's online backup into
-  `$XDG_DATA_HOME/katna/backup/<old version>/`, after checking there is room
-  for it. No room, no migration: the daemon stays on read-only duty and
-  says why. The last two backups are kept.
+  database's `user_version`, it first copies that database with
+  `VACUUM INTO` to `$XDG_DATA_HOME/katna/backup/<name>-v<old version>-<unix
+  time>.db`, after checking there is room for it plus 64 MiB. No room, no
+  migration: opening the store fails with `NoRoomForBackup`, which says why.
+  The last two backups of each database are kept.
 - **Expand, then contract.** A minor release's migrations only add tables,
   columns and indexes, so the previous stable release can still read the
   database. Removing or renaming happens one release later, once nothing
   reads the old shape. A migration that cannot follow this rule is only
   allowed in a major release.
-- Each database records the oldest Katna version that can open it
-  (`min_reader_version` in a small `schema_meta` table), so an older version
-  can tell "newer but still readable" from "too new".
+- Each database records the oldest schema version whose Katna can open it
+  (`min_reader_version` in a small `schema_meta` table, from mail.db v15,
+  pim.db v18 and blobs.db v2), so an older version can tell "newer but
+  still readable" from "too new". It then opens the database as it is,
+  without migrating. A migration that only adds leaves the value alone; one
+  that removes or reshapes raises it to its own version.
 - Settings: `config.toml` keys are only added; unknown keys written by a
   newer version are kept, not dropped, when an older version saves.
 - Secrets in the Secret Service keep their attributes (§9.2.1) across
@@ -5971,10 +6165,19 @@ old and new daemon and app must keep working:
   a rebuild, the Secret Service answers, D-Bus names are owned. The result
   and the version are written to `$XDG_STATE_HOME/katna/health.toml`.
 - If the daemon fails to reach "healthy" three times within ten minutes, it
-  starts in **safe mode**: no sync and no writes except the outbox, and a
-  notification with "Restore previous data" (from the backup above) and
-  "Copy debug report". Local-only data (outbox, `op_queue`, organizations,
-  metadata) is exported to a file before any restore.
+  starts in **safe mode**: no account, calendar, contacts, tasks, notes or
+  rules sync; the outbox still sends mail the user already sent, and updates
+  still arrive. Katna Mail reads `health.toml` (so it knows even when the
+  daemon can't start) and shows an amber line above the mail with Try
+  again, Restore and Details (the debug report). Only the daemon writes the
+  databases, so Try again and Restore leave
+  `$XDG_STATE_HOME/katna/safe-mode-request.toml` and restart the daemon
+  (D-Bus `Restart`), which runs the request before opening anything.
+  Restore offers the copies of the last two updates (copies made within ten
+  minutes of each other form one point); it first moves the databases as
+  they are, local-only data included, into
+  `before-restore-<unix time>/` beside them, so nothing is lost, and a note
+  offers Show folder. Copy debug report is also in About.
 - A **downgrade** (the user installs an older package after a bad update)
   meets `SchemaTooNew` only if the newer release broke the expand-then-contract
   rule; the older daemon then offers the same restore.
@@ -5992,7 +6195,7 @@ request that touches a migration, not only at release time.
 | Check | What it proves |
 |---|---|
 | Pull-request CI on the tagged commit | `fmt`, `clippy`, tests on Arch and Ubuntu 26.04, `cargo deny`, size budgets |
-| Migration fixtures | A committed `mail.db`, `pim.db` and `blobs.db` of every released schema version migrates to the new one; row counts, threads, categories and a fixed set of queries give the same answers |
+| Migration fixtures | A committed `mail.db`, `pim.db` and `blobs.db` of every released schema version (`crates/katna-store/fixtures/`, written once when a migration is added) migrates to the new one; row counts, integrity, foreign keys, the schema and a fixed set of store reads (`answers.txt`) give the same answers |
 | Upgrade test | In a container: install the previous stable (and the one before it), add an account on the dev servers (Stalwart, Dovecot), sync, queue a send, create organizations and settings; upgrade to the candidate while the daemon runs; check the daemon restarts itself, migrations apply, nothing is re-downloaded or lost, the queued send goes out once, passwords still work |
 | Rollback test | Install the candidate, then the previous stable: it opens the data (expand-then-contract), or restores the backup cleanly |
 | Mixed versions | Old app against new daemon and new app against old daemon over D-Bus |

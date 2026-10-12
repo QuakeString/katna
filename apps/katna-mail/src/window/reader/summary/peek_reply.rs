@@ -9,6 +9,7 @@
 //! The draft has no sign-off: the signature tag under it picks the
 //! signature the reply goes out with, as in Compose.
 
+use crate::widgets::Tip as _;
 use gpui::{
     AnyElement, Context, Entity, Focusable, Subscription, Task, Window, div, prelude::*, rgba,
 };
@@ -24,7 +25,7 @@ use crate::daemon;
 use crate::data::EntryKey;
 use crate::theme::Theme;
 use crate::widgets::choice_chip;
-use crate::widgets::{filled_button, icon, icon_button_colored, outlined_button, tip};
+use crate::widgets::{filled_button, icon, icon_button_colored, outlined_button};
 
 /// Writing a reply in the summary card.
 pub(super) struct PeekReply {
@@ -159,8 +160,19 @@ impl MailWindow {
         let signature = if self.reader.as_ref().is_some_and(|r| r.key == key) {
             self.signature_for(Kind::Reply)
         } else {
-            let sending = &self.config.sending;
-            sending.signature(sending.reply_signature).map(|s| s.id)
+            // The account the conversation's newest message is in.
+            let address = self
+                .mail
+                .as_ref()
+                .ok()
+                .and_then(|mail| {
+                    let newest = mail.entry_messages(key).last().copied()?;
+                    mail.message_account(newest)
+                })
+                .and_then(|id| self.accounts.iter().find(|a| a.id == id))
+                .map(|a| a.address.as_str())
+                .unwrap_or_default();
+            self.config.sending.default_signature(address, true)
         };
         // A draft kept from before comes back as it was left.
         let kept = self.summaries.kept_replies.get(&key).cloned();
@@ -340,7 +352,7 @@ impl MailWindow {
         let small = |id: &'static str, name: &str, label: String| {
             icon_button_colored(id, name, 17.0, th.text_dim, th)
                 .size(px(30.0))
-                .tooltip(tip(label, th))
+                .tip(label, th)
         };
         let title = div()
             .flex()
@@ -607,7 +619,7 @@ impl MailWindow {
         let small = |id: &'static str, name: &str, label: String| {
             icon_button_colored(id, name, 17.0, th.text_dim, th)
                 .size(px(30.0))
-                .tooltip(tip(label, th))
+                .tip(label, th)
         };
         let focus = r.area.focus_handle(cx);
         let to = (!r.request.to.is_empty()).then(|| {

@@ -116,6 +116,7 @@ calendar-add-meet = Google Meet görüntülü görüşmesi ekle
 calendar-add-teams = Teams toplantısı ekle
 calendar-has-call = Görüntülü görüşme eklendi
 calendar-weekday-day = { $weekday }, { $day }
+calendar-schedule-day = { $weekday }, { $month }
 calendar-all-day-box = Tüm gün
 calendar-more-options = Diğer seçenekler
 calendar-save = Kaydet

@@ -92,6 +92,7 @@ notes-link-note = ລິ້ງບັນທຶກ
 notes-link-new = ບັນທຶກໃໝ່ “{ $title }”
 notes-linked-from = ລິ້ງມາຈາກ
 notes-link-gone = ບັນທຶກນັ້ນບໍ່ມີຢູ່ແລ້ວ
+notes-new-note-gone = ບັນທຶກໃໝ່ບໍ່ມີແລ້ວ.
 
 ## Version history
 

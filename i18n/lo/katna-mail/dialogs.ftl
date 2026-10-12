@@ -6,6 +6,7 @@
 
 about-tooltip = ກ່ຽວກັບ Katna
 about-tagline = ອີເມວ ແລະ ປະຕິທິນສຳລັບເດັສທັອບ Linux
+about-version = Katna Mail { $version }
 about-copy-version = ສຳເນົາລາຍລະອຽດເວີຊັນ
 about-version-copied = ສຳເນົາແລ້ວ
 about-version-built = ສ້າງເມື່ອ: { $date }
@@ -41,6 +42,8 @@ about-update-restart = ອັບເດດ ແລະ ເລີ່ມໃໝ່
 about-update-cancel = ບໍ່ເອົາຕອນນີ້
 about-changelog = ບັນທຶກການປ່ຽນແປງ
 about-source = ຊອສໂຄດ
+about-debug-report = ສຳເນົາລາຍງານດີບັກ
+about-debug-report-tip = ເວີຊັນ, ການກວດຫຼັງອັບເດດ ແລະ ບັນທຶກລ່າສຸດ ສຳລັບລາຍງານບັກ. ບໍ່ມີອີເມວ ຫຼື ລະຫັດຜ່ານ.
 about-coffee = ລ້ຽງກາເຟຂ້ອຍຈອກໜຶ່ງ
 about-coffee-coffee = ກາເຟບໍ?
 about-coffee-tea = ຊາບໍ?

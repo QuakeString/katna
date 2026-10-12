@@ -33,3 +33,7 @@ update-dialog-compare = So sánh trên GitHub
 update-dialog-no-service = Dịch vụ nền của Katna không chạy.
 update-dialog-later = Để sau
 update-dialog-close = Đóng
+restart-updated = Katna đã được cập nhật
+restart-button = Khởi động lại
+restart-close = Để sau
+restart-failed = Không thể khởi động Katna Mail mới: { $error }

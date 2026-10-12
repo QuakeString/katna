@@ -78,3 +78,28 @@ service-details-title = Dlaczego usługa się nie uruchamia
 service-details-body = Skopiuj to i wyślij razem ze zgłoszeniem. Nie zawiera poczty ani haseł.
 service-details-copy = Kopiuj
 service-details-close = Zamknij
+service-not-running = Usługa Katna działająca w tle nie jest uruchomiona.
+service-no-answer = Usługa Katna działająca w tle nie odpowiedziała: { $error }
+service-no-session = Brak sesji D-Bus: { $error }
+
+## Safe mode: an update left Katna's background service unable to start
+
+safe-line = Katna działa w trybie awaryjnym po problemie z aktualizacją, więc poczta się nie synchronizuje.
+safe-try-again = Spróbuj ponownie
+safe-restore = Przywróć
+safe-restoring = Przywracanie Twoich danych z { $when }…
+safe-restored = Przywrócono Twoje dane z { $when }. To, co było wcześniej, zachowano w folderze.
+safe-show-folder = Pokaż folder
+safe-restore-failed = Nie udało się przywrócić Twoich danych: { $error }
+safe-restore-title = Przywrócić Twoje dane sprzed aktualizacji?
+safe-restore-body = Katna wraca do wybranej kopii. Poczta, która przyszła później, zostanie ponownie pobrana z Twoich kont.
+safe-restore-none = Nie ma jeszcze żadnych kopii. Katna tworzy kopię przed każdą aktualizacją, która zmienia Twoje dane.
+safe-restore-keep = To, co jest teraz, łącznie z niewysłaną pocztą, wersjami roboczymi i niezsynchronizowanymi zmianami, najpierw zostaje zachowane w folderze, więc nic nie zginie.
+safe-restore-cancel = Anuluj
+safe-restore-mail = Poczta
+safe-restore-pim = Konta i kontakty
+safe-restore-blobs = Załączniki
+safe-report-title = Raport debugowania
+safe-report-body = Skopiuj to i dołącz do zgłoszenia błędu. Nie zawiera poczty, adresów ani haseł.
+safe-report-restore = Przywróć…
+safe-report-copied = Skopiowano raport debugowania

@@ -133,7 +133,7 @@ pub fn load(paths: &Paths, hidden: &HashSet<AccountId>) -> Result<Board, String>
             labels,
         })
     };
-    read().map_err(|err| format!("Reading tasks failed: {err}"))
+    read().map_err(|err| katna_i18n::tr!("store-tasks-failed", error = err.to_string()))
 }
 
 /// Where each account's task sync stands, by account.

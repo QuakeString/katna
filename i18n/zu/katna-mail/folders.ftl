@@ -53,6 +53,7 @@ folder-waiting-short = Kulindiwe
 folder-reminders = Izikhumbuzo
 folder-outbox = Ibhokisi eliphumayo
 folder-activity = Umsebenzi
+folder-not-on-account = Le akhawunti ayinayo ifolda enjalo.
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

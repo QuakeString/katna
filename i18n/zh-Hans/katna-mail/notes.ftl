@@ -92,6 +92,7 @@ notes-link-note = 链接笔记
 notes-link-new = 新建笔记“{ $title }”
 notes-linked-from = 链接来源
 notes-link-gone = 该笔记已不存在
+notes-new-note-gone = 新笔记已不存在。
 
 ## Version history
 

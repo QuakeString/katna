@@ -57,3 +57,13 @@ search-dates-month-back = 上个月
 search-dates-month-on = 下个月
 search-dates-year-back = 上一年
 search-dates-year-on = 下一年
+
+## More results on server: under the results, mail found by asking the
+## mail server, for mail that is not downloaded to this computer yet.
+
+search-server-more = 服务器上的更多结果
+search-server-searching = 正在服务器上搜索邮件…
+search-server-empty-searching = 这里还没有内容。正在服务器上搜索邮件…
+search-server-nothing = 服务器上没有更多结果
+search-server-failed = 无法搜索服务器。
+search-server-again = 重试

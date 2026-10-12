@@ -8,8 +8,9 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 
 use katna_crypto::{
-    Decryption, Failure, Gnupg, Protect, ProtectError, Protection, Recipients, SignatureState,
-    Standard, Validity, encryption_keys, open, protect, protection,
+    Decryption, Failure, Gnupg, KeySource, PeerKeys, Protect, ProtectError, Protection, Recipients,
+    SignatureState, Standard, Validity, autocrypt, delete_key, encryption_keys, import_keys,
+    key_info, open, protect, protection, show_keys,
 };
 use mail_parser::MessageParser;
 
@@ -702,6 +703,17 @@ fn send_signed_and_encrypted_openpgp() {
         "{:?}",
         opened.security
     );
+    let details = opened.security.signatures[0]
+        .details
+        .as_ref()
+        .expect("the key's details");
+    assert_eq!(details.name.as_deref(), Some("Ada Lovelace"));
+    assert_eq!(details.emails, [ADA]);
+    assert!(
+        details
+            .fingerprint
+            .ends_with(opened.security.signatures[0].key.as_deref().unwrap())
+    );
     assert_eq!(
         text_of(&opened.raw).trim(),
         "Grüße,\r\nthis went both ways."
@@ -718,9 +730,17 @@ fn send_signed_and_encrypted_openpgp() {
         &gnupg,
     )
     .expect("encrypted");
-    assert!(!String::from_utf8_lossy(&both).contains("went both ways"));
+    let text = String::from_utf8_lossy(&both);
+    assert!(!text.contains("went both ways"));
+    // The subject is hidden, and back once opened.
+    assert!(
+        text.contains("Subject: ...\r\n") && !text.contains("Round trip"),
+        "{text}"
+    );
     let opened = open(&both, &gnupg).expect("protected");
     assert!(opened.security.decrypted());
+    let message = MessageParser::default().parse(&opened.raw).expect("parses");
+    assert_eq!(message.subject(), Some("Round trip"));
     assert!(opened.security.signatures[0].verified());
     assert_eq!(
         text_of(&opened.raw).trim(),
@@ -802,9 +822,139 @@ fn send_smime() {
             "{:?}",
             opened.security
         );
+        let details = opened.security.signatures[0]
+            .details
+            .as_ref()
+            .expect("details");
+        assert_eq!(details.fingerprint, SMIME_FINGERPRINT);
+        assert_eq!(details.name.as_deref(), Some("Bob Tester"));
+        assert!(details.issuer.is_some());
         assert_eq!(
             text_of(&opened.raw).trim(),
             "Grüße,\r\nthis went both ways."
         );
     }
+}
+
+#[test]
+fn show_import_and_delete_keys() {
+    let Some(home) = Home::new("gpg") else { return };
+    let Some(dave) = Home::new("gpg") else { return };
+    dave.new_key("Dave Example (laptop) <Dave@example.net>");
+    let public = dave.gpg(&["--armor", "--export", "dave@example.net"], b"");
+    let gnupg = home.gnupg();
+
+    let shown = show_keys(&gnupg, &public);
+    assert_eq!(shown.len(), 1, "{shown:?}");
+    let key = &shown[0];
+    assert_eq!(key.name.as_deref(), Some("Dave Example"));
+    assert_eq!(key.emails, ["dave@example.net"]);
+    assert_eq!(key.fingerprint.len(), 40);
+    assert!(key.can_encrypt && !key.revoked && !key.expired);
+    assert!(!key.algorithm.is_empty() && key.created.is_some());
+    // Showing imports nothing.
+    assert!(key_info(&gnupg, Standard::OpenPgp, &key.fingerprint).is_none());
+
+    let imported = import_keys(&gnupg, &public).expect("imported");
+    assert_eq!(
+        imported.fingerprints,
+        std::slice::from_ref(&key.fingerprint)
+    );
+    assert_eq!(imported.new, std::slice::from_ref(&key.fingerprint));
+    let info = key_info(&gnupg, Standard::OpenPgp, &key.fingerprint).expect("in the keyring");
+    assert_eq!(info.emails, ["dave@example.net"]);
+    let again = import_keys(&gnupg, &public).expect("imported");
+    assert!(again.new.is_empty() && again.fingerprints.len() == 1);
+
+    assert!(delete_key(&gnupg, &key.fingerprint));
+    assert!(key_info(&gnupg, Standard::OpenPgp, &key.fingerprint).is_none());
+
+    let secret = dave.gpg(&["--export-secret-keys", "dave@example.net"], b"");
+    assert!(import_keys(&gnupg, &secret).is_err());
+    assert!(key_info(&gnupg, Standard::OpenPgp, &key.fingerprint).is_none());
+    assert!(import_keys(&gnupg, b"no key here").is_err());
+}
+
+#[test]
+fn autocrypt_keys_encrypt_without_the_keyring() {
+    let Some(ada) = Home::new("gpg") else { return };
+    let Some(bob) = Home::new("gpg") else { return };
+    ada.new_key(&format!("Ada Lovelace <{ADA}>"));
+    ada.new_key("Ada at home <ada@home.example>");
+    bob.new_key(&format!("Bob <{BOB}>"));
+
+    let header = autocrypt::header(&ada.gnupg(), "Ada@Example.org").expect("a header");
+    assert!(
+        header.starts_with("Autocrypt: addr=ada@example.org; keydata="),
+        "{header}"
+    );
+    assert!(header.split("\r\n").all(|line| line.len() <= 78));
+    assert!(autocrypt::header(&bob.gnupg(), ADA).is_none());
+
+    let mail = format!(
+        "From: Ada <{ADA}>\r\nTo: {BOB}\r\nDate: Thu, 08 Oct 2026 06:00:00 +0000\r\n{header}\
+Subject: Hi\r\n\r\nHello\r\n"
+    );
+    let received = autocrypt::in_message(mail.as_bytes()).expect("a key");
+    assert_eq!(received.address, ADA);
+    // Only the one address and the encryption subkey went out.
+    let shown = show_keys(&bob.gnupg(), &received.key);
+    assert_eq!(shown.len(), 1);
+    assert_eq!(shown[0].emails, [ADA]);
+    assert!(shown[0].can_encrypt);
+
+    let dir = tempfile::tempdir().expect("tempdir");
+    let peers = PeerKeys::new(dir.path().join("keys"));
+    let kept = peers
+        .remember(
+            &bob.gnupg(),
+            ADA,
+            &received.key,
+            KeySource::Autocrypt,
+            received.date,
+        )
+        .expect("kept");
+    assert_eq!(kept.fingerprint, shown[0].fingerprint);
+    assert!(
+        peers
+            .remember(
+                &bob.gnupg(),
+                "eve@example.org",
+                &received.key,
+                KeySource::Autocrypt,
+                0
+            )
+            .is_err()
+    );
+    // Older mail does not replace it.
+    let older = peers
+        .remember(&bob.gnupg(), ADA, &received.key, KeySource::Autocrypt, 5)
+        .expect("kept");
+    assert_eq!(older.seen, received.date);
+
+    let gnupg = bob.gnupg().with_peer_keys(dir.path().join("keys"));
+    let keys = encryption_keys(&gnupg, Standard::OpenPgp, &[ADA.to_owned()]);
+    let key = keys[0].as_ref().expect("the kept key");
+    assert!(key.file.is_some() && !key.verified);
+    let sealed = protect(
+        &outgoing(BOB, ADA),
+        Protect {
+            standard: Standard::OpenPgp,
+            sign: true,
+            encrypt: true,
+        },
+        &recipients(BOB, &[ADA], &[]),
+        &gnupg,
+    )
+    .expect("encrypted");
+    let opened = open(&sealed, &ada.gnupg()).expect("protected");
+    assert!(opened.security.decrypted(), "{:?}", opened.security);
+    assert_eq!(
+        text_of(&opened.raw).trim(),
+        "Grüße,\r\nthis went both ways."
+    );
+    // Bob's keyring never got Ada's key.
+    assert!(key_info(&bob.gnupg(), Standard::OpenPgp, &kept.fingerprint).is_none());
+    peers.forget(ADA);
+    assert!(peers.get(ADA).is_none());
 }

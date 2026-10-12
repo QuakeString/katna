@@ -67,6 +67,7 @@ shortcut-navigation = إظهار القائمة أو طيّها
 shortcut-quick-settings = الإعدادات السريعة
 shortcut-settings = كل الإعدادات
 shortcut-shortcuts = اختصارات لوحة المفاتيح
+shortcut-palette = لوحة الأوامر
 shortcut-reload = التحقق من وجود بريد جديد
 shortcut-quit = إنهاء
 

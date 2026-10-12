@@ -8,6 +8,7 @@
 //! was clicked: for an hour, until tomorrow morning, or until turned back
 //! on. Every change has Undo.
 
+use crate::widgets::Tip as _;
 use gpui::{
     AnyElement, Context, MouseButton, Pixels, Point, SharedString, deferred, div, prelude::*,
 };
@@ -24,7 +25,7 @@ use super::{Listing, MailWindow, Menu};
 use crate::daemon::{Command, Muted};
 use crate::sidebar::Role;
 use crate::theme::Theme;
-use crate::widgets::{icon, icon_button, menu, menu_item_icon, tip};
+use crate::widgets::{icon, icon_button, menu, menu_item_icon};
 
 /// What a bell or mute is set on, from the app's side.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -425,7 +426,7 @@ impl MailWindow {
         let open = self.menu == Some(Menu::Quiet);
         let button = if state.rings() {
             icon_button("list-bell", "bell", 20.0, th)
-                .when(!open, |d| d.tooltip(tip(tr!("quiet-tip-rings"), th)))
+                .when(!open, |d| d.tip(tr!("quiet-tip-rings"), th))
                 .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::Quiet, cx)))
         } else {
             let text = match state.muted {
@@ -436,7 +437,7 @@ impl MailWindow {
                 _ => tr!("quiet-tip-off"),
             };
             icon_button("list-bell", "bell-off", 20.0, th)
-                .tooltip(tip(text, th))
+                .tip(text, th)
                 .on_click(cx.listener(move |this, _, _, cx| this.unquiet(target.clone(), cx)))
         };
         Some(self.with_menu(button, Menu::Quiet, th, cx))
@@ -568,7 +569,7 @@ impl MailWindow {
             div()
                 .id(SharedString::from(format!("muted-{address}")))
                 .flex_none()
-                .tooltip(tip(tr!("quiet-row-muted"), th))
+                .tip(tr!("quiet-row-muted"), th)
                 .child(icon("bell-off", th.text_dim, size))
                 .into_any_element()
         })
@@ -759,7 +760,7 @@ impl MailWindow {
             ("bell", tr!("quiet-mute-conversation"))
         };
         icon_button("reader-mute", glyph, 20.0, th)
-            .tooltip(tip(text, th))
+            .tip(text, th)
             .on_click(cx.listener(|this, _, _, cx| {
                 if let Some(key) = this.reader.as_ref().map(|r| r.key) {
                     let mute = !this.lines_muted(&[key]);

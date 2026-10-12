@@ -100,6 +100,9 @@ folder-reminders = Reminders
 folder-outbox = Outbox
 # How mail sent with open and click tracking did.
 folder-activity = Activity
+# A note at the bottom when a Go to shortcut (Go to Sent, Drafts…) names a
+# folder the account does not have.
+folder-not-on-account = This account has no such folder.
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

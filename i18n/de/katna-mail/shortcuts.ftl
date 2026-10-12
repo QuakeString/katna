@@ -70,6 +70,7 @@ shortcut-navigation = Menü ein- oder ausblenden
 shortcut-quick-settings = Schnelleinstellungen
 shortcut-settings = Alle Einstellungen
 shortcut-shortcuts = Tastenkombinationen
+shortcut-palette = Befehlspalette
 shortcut-reload = Auf neue E-Mails prüfen
 shortcut-quit = Beenden
 

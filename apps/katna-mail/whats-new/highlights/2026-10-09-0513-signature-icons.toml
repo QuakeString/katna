@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Icons and WhatsApp in signatures"
+text = """
+Layout signatures now start each line with an icon in your colour, on a
+soft circle: mobile, office, email, website and address. There are new
+WhatsApp and Telegram fields; when your WhatsApp number is your mobile
+number, its mark sits beside the number. On a narrow screen the Card's
+two columns go under each other instead of being cut off.
+"""

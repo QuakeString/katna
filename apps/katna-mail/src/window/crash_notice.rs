@@ -5,6 +5,7 @@
 //! or copy (`docs/ARCHITECTURE.md` §19.2). The reports stay on this
 //! computer; nothing is sent.
 
+use crate::widgets::Tip as _;
 use gpui::{AnyElement, ClipboardItem, Context, Window, div, prelude::*, rgba};
 use katna_core::crash::{self, Report};
 use katna_i18n::tr;
@@ -13,7 +14,7 @@ use katna_ui::px;
 
 use super::MailWindow;
 use crate::theme::Theme;
-use crate::widgets::{elevation, icon, tip};
+use crate::widgets::{elevation, icon};
 
 /// The programs whose crashes the note tells about.
 const APPS: [&str; 2] = ["katna-mail", "katna-daemon"];
@@ -180,12 +181,12 @@ impl MailWindow {
                         .items_center()
                         .child(
                             action("crash-view", tr!("crash-view"))
-                                .tooltip(tip(tr!("crash-view-tooltip"), th))
+                                .tip(tr!("crash-view-tooltip"), th)
                                 .on_click(cx.listener(|this, _, _, cx| this.view_crash_report(cx))),
                         )
                         .child(
                             action("crash-copy", tr!("crash-copy"))
-                                .tooltip(tip(tr!("feedback-copy-tooltip"), th))
+                                .tip(tr!("feedback-copy-tooltip"), th)
                                 .on_click(cx.listener(|this, _, _, cx| this.copy_crash_report(cx))),
                         )
                         .child(
@@ -198,7 +199,7 @@ impl MailWindow {
                                 .rounded_full()
                                 .cursor_pointer()
                                 .hover(|s| s.bg(rgba(0xffffff1f)))
-                                .tooltip(tip(tr!("crash-close"), th))
+                                .tip(tr!("crash-close"), th)
                                 .on_click(cx.listener(|this, _, _, cx| this.close_crash_notice(cx)))
                                 .child(icon("close", th.snackbar_text, 18.0)),
                         ),

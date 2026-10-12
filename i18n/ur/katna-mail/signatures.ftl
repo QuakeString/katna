@@ -66,7 +66,6 @@ signature-layout-light = ہلکی
 signature-layout-dark = گہری
 signature-layout-text = سادہ متن
 signature-layout-inside = تصاویر میل کے اندر بھیجی جاتی ہیں، اس لیے وہاں بھی دکھتی ہیں جہاں ویب سے تصاویر بند ہوں۔ یہ ہر میل میں { $size } کا اضافہ کرتا ہے۔
-signature-layout-free = کچھ اور چاہیے؟
 signature-layout-edit = خود ترمیم کریں
 signature-layout-edit-confirm = اسے خود ترمیم کریں؟ اس کے فیلڈز اور ترتیب ختم ہو جاتے ہیں، اور جہاں تک ایڈیٹر سنبھال سکے اس کی شکل برقرار رہتی ہے۔
 signature-layout-use-confirm = { $layout } ترتیب استعمال کریں؟ یہ اس دستخط کی جگہ لے لیتی ہے، اسی سے بھری ہوئی۔

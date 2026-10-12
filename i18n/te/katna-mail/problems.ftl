@@ -65,3 +65,28 @@ service-details-title = సర్వీస్ ఎందుకు ప్రార
 service-details-body = దీన్ని కాపీ చేసి మీ రిపోర్ట్‌తో పంపండి. ఇందులో మెయిల్ గానీ పాస్‌వర్డ్‌లు గానీ ఉండవు.
 service-details-copy = కాపీ చేయండి
 service-details-close = మూసివేయండి
+service-not-running = Katna బ్యాక్‌గ్రౌండ్ సర్వీస్ నడవడం లేదు.
+service-no-answer = Katna బ్యాక్‌గ్రౌండ్ సర్వీస్ స్పందించలేదు: { $error }
+service-no-session = D-Bus సెషన్ లేదు: { $error }
+
+## Safe mode: an update left Katna's background service unable to start
+
+safe-line = అప్‌డేట్‌లో సమస్య వల్ల Katna సేఫ్ మోడ్‌లో ఉంది, కాబట్టి మెయిల్ సింక్ కావడం లేదు.
+safe-try-again = మళ్లీ ప్రయత్నించండి
+safe-restore = పునరుద్ధరించండి
+safe-restoring = { $when } నాటి మీ డేటాను పునరుద్ధరిస్తోంది…
+safe-restored = { $when } నాటి మీ డేటా పునరుద్ధరించబడింది. ఇంతకు ముందు ఉన్నది ఒక ఫోల్డర్‌లో ఉంచబడింది.
+safe-show-folder = ఫోల్డర్‌ను చూపండి
+safe-restore-failed = మీ డేటాను పునరుద్ధరించలేకపోయాము: { $error }
+safe-restore-title = అప్‌డేట్‌కు ముందు నాటి మీ డేటాను పునరుద్ధరించాలా?
+safe-restore-body = మీరు ఎంచుకున్న కాపీకి Katna తిరిగి వెళ్తుంది. దాని తర్వాత వచ్చిన మెయిల్ మీ ఖాతాల నుండి మళ్లీ డౌన్‌లోడ్ అవుతుంది.
+safe-restore-none = ఇంకా కాపీలు లేవు. ప్రతి అప్‌డేట్ మీ డేటాను మార్చే ముందు Katna ఒక కాపీ తయారు చేస్తుంది.
+safe-restore-keep = పంపని మెయిల్, డ్రాఫ్ట్‌లు, ఇంకా సింక్ కాని మార్పులతో సహా ఇప్పుడు ఉన్నదంతా ముందుగా ఒక ఫోల్డర్‌లో ఉంచబడుతుంది, కాబట్టి ఏదీ పోదు.
+safe-restore-cancel = రద్దు చేయండి
+safe-restore-mail = మెయిల్
+safe-restore-pim = ఖాతాలు, కాంటాక్ట్‌లు
+safe-restore-blobs = అటాచ్‌మెంట్‌లు
+safe-report-title = డీబగ్ రిపోర్ట్
+safe-report-body = దీన్ని కాపీ చేసి మీ బగ్ రిపోర్ట్‌కు జోడించండి. ఇందులో మెయిల్, అడ్రస్‌లు లేదా పాస్‌వర్డ్‌లు ఉండవు.
+safe-report-restore = పునరుద్ధరించండి…
+safe-report-copied = డీబగ్ రిపోర్ట్ కాపీ అయింది

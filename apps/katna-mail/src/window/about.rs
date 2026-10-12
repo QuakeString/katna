@@ -9,6 +9,7 @@
 
 mod coffee;
 
+use crate::widgets::Tip as _;
 use std::sync::LazyLock;
 use std::time::{Duration, Instant};
 
@@ -26,7 +27,7 @@ use super::select::{ABOUT_SLOT, Pieces, selectable};
 use super::{MailWindow, PANEL_RADIUS, ShowAbout, ShowWhatsNew};
 use crate::theme::{Theme, fade};
 use crate::widgets::{
-    FocusRing, elevation, filled_button, icon, icon_button_with, outlined_button, ring_style, tip,
+    FocusRing, elevation, filled_button, icon, icon_button_with, outlined_button, ring_style,
 };
 use crate::{format, whats_new};
 
@@ -310,14 +311,14 @@ impl MailWindow {
             .cursor_pointer()
             .relative()
             .child(crate::widgets::hover_fade("hover-glow", None, th))
-            .tooltip(tip(tr!("about-tooltip"), th))
+            .tip(tr!("about-tooltip"), th)
             .on_click(cx.listener(|this, _, window, cx| this.open_about(window, cx)))
             .group(VERSION_GROUP)
             .child(icon("info", th.text_dim, 18.0))
             .child(
                 div()
                     .truncate()
-                    .child(format!("Katna Mail {}", whats_new::VERSION)),
+                    .child(tr!("about-version", version = whats_new::VERSION)),
             )
             .child(self.copy_version_button("settings-version-copy", 24.0, th, cx))
             .into_any_element()
@@ -350,14 +351,14 @@ impl MailWindow {
             .group_hover(VERSION_GROUP, |s| s.opacity(1.0))
             .tab_index(0)
             .focus_visible(move |s| ring(s).opacity(1.0))
-            .tooltip(tip(
+            .tip(
                 if copied {
                     tr!("about-version-copied")
                 } else {
                     tr!("about-copy-version")
                 },
                 th,
-            ))
+            )
             // A click here is not one on the pill around it.
             .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
             .on_click(cx.listener(|this, _, _, cx| {
@@ -451,7 +452,13 @@ impl MailWindow {
                 tr!("about-source"),
                 SOURCE_URL.to_owned(),
                 th,
-            ));
+            ))
+            .child(
+                outlined_button("about-debug-report", tr!("about-debug-report"), th)
+                    .focus_ring(th)
+                    .tip(tr!("about-debug-report-tip"), th)
+                    .on_click(cx.listener(|this, _, _, cx| this.copy_debug_report(cx))),
+            );
 
         // Buy Me a Coffee's yellow, softer, with the theme's text on it.
         let alpha = |(light, dark): (u32, u32)| COFFEE_YELLOW | if th.dark { dark } else { light };
@@ -491,9 +498,7 @@ impl MailWindow {
                 .hover(move |s| s.bg(rgba(hover)))
                 .active(move |s| s.bg(rgba(hover)))
                 .on_click(move |_, _, cx| cx.open_url(url)),
-            None => button
-                .opacity(0.55)
-                .tooltip(tip(tr!("about-coming-soon"), th)),
+            None => button.opacity(0.55).tip(tr!("about-coming-soon"), th),
         };
         // One wide button across the content, like the box below it.
         let coffee = div()
@@ -801,7 +806,7 @@ impl MailWindow {
                         .cursor_pointer()
                         .relative()
                         .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
-                        .tooltip(tip(lib.repository.clone(), th))
+                        .tip(lib.repository.clone(), th)
                         .on_click(move |_, _, cx| cx.open_url(&url))
                         .child(
                             div()
@@ -974,7 +979,7 @@ const COPIED_FOR: Duration = Duration::from_millis(1500);
 /// The version details a bug report wants: Katna Mail's version, when
 /// this build was made and the system it runs on.
 pub(super) fn version_details() -> String {
-    let mut lines = vec![format!("Katna Mail {}", whats_new::VERSION)];
+    let mut lines = vec![tr!("about-version", version = whats_new::VERSION)];
     if let Some(date) =
         whats_new::built().and_then(|unix| format::local(unix, &jiff::tz::TimeZone::system()))
     {
@@ -1108,7 +1113,7 @@ fn header(
                         .child(div().flex_none().w(px((chip_h + space::S1) * (1.0 - t))))
                         .child(
                             pieces
-                                .words(format!("Katna Mail {}", whats_new::VERSION))
+                                .words(tr!("about-version", version = whats_new::VERSION))
                                 .min_w_0()
                                 .truncate()
                                 .px(px(chip_x))

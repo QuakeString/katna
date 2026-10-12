@@ -69,7 +69,6 @@ signature-layout-light = 밝게
 signature-layout-dark = 어둡게
 signature-layout-text = 일반 텍스트
 signature-layout-inside = 사진은 메일 안에 포함되어 전송되므로 웹 이미지를 끈 곳에서도 표시됩니다. 이 사진으로 메일마다 { $size }가 늘어납니다.
-signature-layout-free = 다른 것을 원하세요?
 signature-layout-edit = 직접 편집
 signature-layout-edit-confirm = 직접 편집할까요? 입력란과 레이아웃은 없어지며, 편집기가 지원하는 범위에서 모양은 유지됩니다.
 signature-layout-use-confirm = { $layout } 레이아웃을 사용할까요? 이 서명의 내용으로 채운 레이아웃이 이 서명을 대체합니다.

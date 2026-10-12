@@ -19,7 +19,9 @@ pub mod agenda;
 mod session;
 pub use session::session;
 mod start;
-pub use start::{daemon_running, ensure_daemon, start_daemon};
+pub use start::{daemon_running, ensure_daemon, start_daemon, use_data_dir};
+mod version;
+pub use version::{DaemonVersion, daemon_version};
 
 /// One server of a new account. An empty `host` means "none".
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
@@ -686,11 +688,38 @@ pub mod mute {
     pub const SENDER: &str = "sender";
 }
 
+/// The level of `Pim1` this build speaks, the second field of
+/// `Version()`. It goes up by one whenever `Pim1` gains a member, which is
+/// the only change `Pim1` takes; anything else becomes `Pim2`
+/// (`docs/ARCHITECTURE.md` §14.1, §21.2).
+pub const API_LEVEL: u32 = 2;
+
+/// The names in `Version()`'s schema versions.
+pub mod schema {
+    /// `mail.db`
+    pub const MAIL: &str = "mail";
+    /// `pim.db`
+    pub const PIM: &str = "pim";
+    /// `blobs.db`
+    pub const BLOBS: &str = "blobs";
+    /// The search index.
+    pub const SEARCH: &str = "search";
+}
+
 macro_rules! pim_proxy {
     ($interface:tt, $bus_name:tt, $path:tt) => {
         /// Client side of `in.invenia.katna.Pim1`.
         #[zbus::proxy(interface = $interface, default_service = $bus_name, default_path = $path)]
         pub trait Pim {
+            /// The daemon's version (`0.0.0.r765.g3928dee`), its
+            /// [`API_LEVEL`], and the schema version of each database by
+            /// [`schema`] name. Daemons before it answer `UnknownMethod`.
+            /// Asking also has the daemon check whether an update replaced
+            /// it, and restart once idle if so.
+            fn version(
+                &self,
+            ) -> zbus::Result<(String, u32, std::collections::HashMap<String, u32>)>;
+
             /// All accounts with their sync state.
             fn accounts(&self) -> zbus::Result<Vec<AccountStatus>>;
 
@@ -729,6 +758,19 @@ macro_rules! pim_proxy {
             /// its password.
             fn sign_in(&self, provider: &str, account: i64, address: &str) -> zbus::Result<i64>;
 
+            /// `SignIn`, but the daemon does not open the browser: it sends
+            /// the page to the caller as `SignInPage` with `ticket`, for
+            /// the window that was clicked to open, so the desktop brings
+            /// the browser to the front. Level 2; daemons before it answer
+            /// `UnknownMethod`.
+            fn sign_in_from_app(
+                &self,
+                provider: &str,
+                account: i64,
+                address: &str,
+                ticket: &str,
+            ) -> zbus::Result<i64>;
+
             /// Ends a `SignIn` still waiting for the browser. Returns
             /// whether one was.
             fn cancel_sign_in(&self) -> zbus::Result<bool>;
@@ -763,6 +805,11 @@ macro_rules! pim_proxy {
             /// the next call starts a new one with nothing stored.
             fn delete_all_data(&self) -> zbus::Result<()>;
 
+            /// Stops the daemon once it answers, so the next start runs
+            /// what Katna Mail asked of safe mode in
+            /// `safe-mode-request.toml` (`docs/ARCHITECTURE.md` §21.2).
+            fn restart(&self) -> zbus::Result<()>;
+
             /// Deletes what was downloaded and can be downloaded again: the
             /// bodies and attachments of mail still on its IMAP server, the
             /// search index (rebuilt at once), sender pictures and
@@ -783,6 +830,13 @@ macro_rules! pim_proxy {
             /// Downloads the full message `message` if it is not stored yet.
             /// Returns once it is in the store (`MailChanged` follows).
             fn fetch_body(&self, message: i64) -> zbus::Result<()>;
+
+            /// Searches the mail servers of `account` (every account when
+            /// 0) for `query`, a search box query, for mail that is not
+            /// downloaded and so not searchable here by its text ("More
+            /// results on server"). Returns the messages found, newest
+            /// first, at most 100; empty for a query with no free words.
+            fn search_server(&self, query: &str, account: i64) -> zbus::Result<Vec<i64>>;
 
             /// Adds and removes flags (names from [`flag`]) on messages.
             /// Like every change below, it shows in the store at once
@@ -1269,6 +1323,17 @@ macro_rules! pim_proxy {
             /// user's provider (DMARC or aligned DKIM).
             fn sender_picture(&self, address: &str) -> zbus::Result<Vec<u8>>;
 
+            /// Keeps the Autocrypt key of a message the user opened, to
+            /// encrypt to its sender later; only when the user's provider
+            /// authenticated the message's `From`. Kept apart from the
+            /// user's GnuPG keyring (`Paths::peer_keys_dir`).
+            fn learn_key(&self, message: i64) -> zbus::Result<()>;
+
+            /// Looks up a public key for `address` in its own domain's Web
+            /// Key Directory and keeps it like [`Self::learn_key`]. Returns
+            /// its fingerprint, or empty when there is none.
+            fn look_up_key(&self, address: &str) -> zbus::Result<String>;
+
             /// The company of the person at `address`, as JSON
             /// (`katna_sync::pictures::Company`): the one at `website` (the
             /// site their signature names; may be empty), else the one
@@ -1369,6 +1434,13 @@ macro_rules! pim_proxy {
             /// the daemon uses (`sync.metered`).
             fn reload_config(&self) -> zbus::Result<()>;
 
+            /// Sends feedback from the Send feedback form: `text` exactly
+            /// as the form showed it, `kind` (`problem`, `idea` or
+            /// `other`) and an optional reply address. Returns why it
+            /// could not be sent, or an empty string once sent.
+            fn send_feedback(&self, text: &str, kind: &str, reply_to: &str)
+            -> zbus::Result<String>;
+
             /// Deletes what app `app` (`calendar`, `contacts`, `tasks`,
             /// `notes` or `files`), turned off, downloaded from the
             /// accounts; its next sync downloads it again. Whatever is on
@@ -1444,6 +1516,11 @@ macro_rules! pim_proxy {
             /// `UpdateStatus` changed.
             #[zbus(signal)]
             fn update_changed(&self) -> zbus::Result<()>;
+
+            /// The sign-in page of the caller's `SignInFromApp` with
+            /// `ticket`, to open in the browser. Sent only to that caller.
+            #[zbus(signal)]
+            fn sign_in_page(&self, ticket: &str, url: &str) -> zbus::Result<()>;
 
             /// `KatnaAccount` changed.
             #[zbus(signal)]

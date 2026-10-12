@@ -53,6 +53,7 @@ folder-waiting-short = Zinasubiri
 folder-reminders = Vikumbusho
 folder-outbox = Kikasha toezi
 folder-activity = Shughuli
+folder-not-on-account = Akaunti hii haina folda kama hiyo.
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

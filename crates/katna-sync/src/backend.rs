@@ -451,6 +451,17 @@ pub trait MailBackend: Send + 'static {
         async { Ok(None) }
     }
 
+    /// UIDs of the messages in the selected folder that match
+    /// `criterion`, ascending (IMAP `SEARCH`, or `X-GM-RAW` on Gmail).
+    /// `Ok(None)` when the server cannot say the search.
+    fn search(
+        &mut self,
+        criterion: &crate::server_search::Criterion,
+    ) -> impl Future<Output = Result<Option<Vec<u32>>>> + Send {
+        let _ = criterion;
+        async { Ok(None) }
+    }
+
     /// Gmail's `X-GM-MSGID` of the messages at `uids` in the selected
     /// folder. `Ok(None)` when the server is not Gmail (no `X-GM-EXT-1`).
     fn gmail_message_ids(

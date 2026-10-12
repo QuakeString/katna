@@ -6,6 +6,7 @@
 
 about-tooltip = Kuhusu Katna
 about-tagline = Barua na kalenda kwa kompyuta ya mezani ya Linux
+about-version = Katna Mail { $version }
 about-copy-version = Nakili maelezo ya toleo
 about-version-copied = Imenakiliwa
 about-version-built = Imejengwa: { $date }
@@ -38,6 +39,8 @@ about-update-restart = Sasisha na uanzishe upya
 about-update-cancel = Si sasa
 about-changelog = Orodha ya mabadiliko
 about-source = Msimbo chanzo
+about-debug-report = Nakili ripoti ya hitilafu
+about-debug-report-tip = Matoleo, ukaguzi baada ya masasisho na mistari ya kumbukumbu ya hivi karibuni, kwa ripoti ya hitilafu. Hakuna barua wala manenosiri.
 about-coffee = Ninunulie kahawa
 about-coffee-coffee = Kahawa?
 about-coffee-tea = Chai?

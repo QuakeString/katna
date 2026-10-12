@@ -92,6 +92,7 @@ notes-link-note = Jikọọ ndetu
 notes-link-new = Ndetu ọhụrụ "{ $title }"
 notes-linked-from = Ejikọrọ site na
 notes-link-gone = Ndetu ahụ anọghịzi ebe a
+notes-new-note-gone = Ndetu ọhụrụ ahụ apụọla.
 
 ## Version history
 

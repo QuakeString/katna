@@ -94,6 +94,7 @@ notes-link-note = टिपोट लिङ्क गर्नुहोस्
 notes-link-new = नयाँ टिपोट “{ $title }”
 notes-linked-from = यहाँबाट लिङ्क गरिएको
 notes-link-gone = त्यो टिपोट अब यहाँ छैन
+notes-new-note-gone = नयाँ टिपोट हराइसक्यो।
 
 ## Version history
 

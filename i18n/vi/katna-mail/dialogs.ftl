@@ -6,6 +6,7 @@
 
 about-tooltip = Giới thiệu về Katna
 about-tagline = Thư và lịch cho máy tính Linux
+about-version = Katna Mail { $version }
 about-copy-version = Sao chép thông tin phiên bản
 about-version-copied = Đã sao chép
 about-version-built = Ngày dựng: { $date }
@@ -42,6 +43,8 @@ about-update-restart = Cập nhật và khởi động lại
 about-update-cancel = Để sau
 about-changelog = Nhật ký thay đổi
 about-source = Mã nguồn
+about-debug-report = Sao chép báo cáo gỡ lỗi
+about-debug-report-tip = Phiên bản, kết quả kiểm tra sau khi cập nhật và các dòng nhật ký gần đây, dùng cho báo cáo lỗi. Không có thư hay mật khẩu.
 about-coffee = Mời tôi một ly cà phê
 about-coffee-coffee = Cà phê nhé?
 about-coffee-tea = Trà nhé?

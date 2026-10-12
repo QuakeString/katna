@@ -61,3 +61,13 @@ search-dates-month-back = Inyanga edlule
 search-dates-month-on = Inyanga ezayo
 search-dates-year-back = Unyaka odlule
 search-dates-year-on = Unyaka ozayo
+
+## More results on server: under the results, mail found by asking the
+## mail server, for mail that is not downloaded to this computer yet.
+
+search-server-more = Imiphumela eyengeziwe kuseva
+search-server-searching = Isesha imeyili kuseva…
+search-server-empty-searching = Akukabikho lutho lapha. Isesha imeyili kuseva…
+search-server-nothing = Ayikho eminye imiphumela kuseva
+search-server-failed = Ayikwazanga ukusesha kuseva.
+search-server-again = Zama futhi

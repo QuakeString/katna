@@ -94,6 +94,7 @@ notes-link-note = Xhumanisa inothi
 notes-link-new = Inothi elisha elithi "{ $title }"
 notes-linked-from = Kuxhunywe kusuka ku-
 notes-link-gone = Lelo nothi alisekho lapha
+notes-new-note-gone = Inothi elisha alisekho.
 
 ## Version history
 

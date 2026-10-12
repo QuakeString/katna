@@ -69,7 +69,6 @@ signature-layout-light = આછું
 signature-layout-dark = ઘેરું
 signature-layout-text = સાદું લખાણ
 signature-layout-inside = ચિત્રો મેઇલની અંદર જ મોકલાય છે, તેથી વેબ પરની છબીઓ બંધ હોય ત્યાં પણ દેખાય છે. આ દરેક મેઇલમાં { $size } ઉમેરે છે.
-signature-layout-free = કંઈક બીજું જોઈએ છે?
 signature-layout-edit = જાતે સંપાદિત કરો
 signature-layout-edit-confirm = તેને જાતે સંપાદિત કરવું છે? તેનાં ફીલ્ડ અને લેઆઉટ જતાં રહેશે, અને એડિટર જાળવી શકે ત્યાં સુધી તેનો દેખાવ જળવાશે.
 signature-layout-use-confirm = { $layout } લેઆઉટ વાપરવું છે? તે આ સિગ્નેચરને બદલે છે, તેમાંથી ભરીને.

@@ -1106,6 +1106,7 @@ impl Focusable for CaptureCard {
 
 impl Render for CaptureCard {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        crate::widgets::follow_direction(window);
         let th = self.theme(window);
         let accent = rgba(th.accent).into();
         self.input.update(cx, |input, _| input.set_accent(accent));

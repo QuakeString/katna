@@ -98,6 +98,7 @@ notes-link-note = Połącz z notatką
 notes-link-new = Nowa notatka „{ $title }”
 notes-linked-from = Odwołują się tutaj
 notes-link-gone = Tej notatki już tu nie ma
+notes-new-note-gone = Nowa notatka zniknęła.
 
 ## Version history
 

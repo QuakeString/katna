@@ -67,6 +67,7 @@ shortcut-navigation = Показати або згорнути меню
 shortcut-quick-settings = Швидкі налаштування
 shortcut-settings = Усі налаштування
 shortcut-shortcuts = Комбінації клавіш
+shortcut-palette = Палітра команд
 shortcut-reload = Перевірити пошту
 shortcut-quit = Вийти
 

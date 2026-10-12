@@ -31,3 +31,58 @@ feedback-deleted-all = Imibiko yokuphahlazeka isusiwe.
 feedback-read-failed = Ayikwazanga ukufunda umbiko wokuphahlazeka: { $error }
 feedback-delete-failed = Ayikwazanga ukususa umbiko wokuphahlazeka: { $error }
 feedback-delete-all-failed = Ayikwazanga ukususa imibiko yokuphahlazeka: { $error }
+
+## Settings > User feedback (usage statistics)
+
+feedback-usage = Thumela izibalo zokusetshenziswa ezingaziwa
+feedback-usage-detail = Kanye ngeviki: yiziphi izici ozisebenzisile, yebo noma cha. Akuthunyelwa izibalo, amakheli, amagama noma amagama osesho
+feedback-intro-sending-usage = Imibiko yokuphahlazeka nezibalo zokusetshenziswa zamasonto onke ziyathunyelwa. Akukho okunye okuphuma kule khompyutha.
+feedback-intro-usage-only = Izibalo zokusetshenziswa zamasonto onke ziyathunyelwa. Imibiko yokuphahlazeka ihlala kule khompyutha.
+feedback-counted = Okubalwayo
+feedback-counted-detail = Ngakunye kuyebo noma cha kuleli viki.
+feedback-counted-also = Futhi: inguqulo ye-Katna, umndeni we-Linux, ideskithophu, isikali sesikrini nokuthi mangaki ama-akhawunti (1, 2–3, 4+)
+feedback-see-report = Bona umbiko waleli viki
+feedback-hide-report = Fihla umbiko waleli viki
+feedback-report-goes = Uthunyelwa ngemva kokuphela kweviki, ngo-{ $date }, uma izibalo zokusetshenziswa zisavuliwe.
+feedback-install-id = I-ID yokufaka { $id }
+feedback-install-id-tooltip = Ingahleliwe, ukuze ikhompyutha eyodwa ingabalwa kabili evikini. Iyashintsha njalo ezinsukwini ezingu-90 futhi ayithunyelwa neze nemibiko yokuphahlazeka noma nempendulo
+feedback-install-id-reset = Setha kabusha
+feedback-install-id-new = I-ID yokufaka entsha yenziwe.
+feedback-report-copied = Umbiko ukopishiwe.
+feedback-send-feedback = Impendulo
+feedback-send-feedback-detail = Inkinga, umbono, noma yini.
+feedback-send-feedback-button = Thumela impendulo…
+usage-feature-search-options = Okukhethwa kukho kosesho
+usage-feature-pins = Imeyili ephiniwe
+usage-feature-labels = Amalebula
+usage-feature-scheduled-send = Ukuthumela okuhleliwe
+usage-feature-snooze = Ukulibazisa nezikhumbuzo
+usage-feature-encrypted = Imeyili ebethelwe
+usage-feature-viewers = Izibukisi ezakhelwe ngaphakathi
+usage-feature-calendar = Ikhalenda
+usage-feature-contacts = Oxhumana nabo
+usage-feature-tasks-notes = Imisebenzi Namanothi
+usage-feature-phone-layout = Isakhiwo sobubanzi befoni
+usage-feature-own-frame = Uhlaka lwewindi lwe-Katna uqobo
+
+## Help > Send feedback
+
+send-feedback-title = Thumela impendulo
+send-feedback-about = Mayelana
+send-feedback-problem = Inkinga
+send-feedback-idea = Umbono
+send-feedback-other = Okunye
+send-feedback-message = Umlayezo wakho
+send-feedback-message-placeholder = Kwenzekeni, noma ungathanda ini?
+send-feedback-reply = I-imeyili yokuphendulwa (akuphoqelekile)
+send-feedback-reply-placeholder = you@example.org
+send-feedback-system = Faka inguqulo ye-Katna nesistimu yakho
+send-feedback-what-is-sent = Okuthunyelwayo
+send-feedback-show = Bonisa
+send-feedback-hide = Fihla
+send-feedback-where = Kuthunyelwa ebhokisini lempendulo le-Katna ku-Sentry (e-EU). Alikho ikheli le-IP, ama-akhawunti, imilayezo noma i-ID yokufaka.
+send-feedback-cancel = Khansela
+send-feedback-send = Thumela
+send-feedback-sending = Iyathumela…
+send-feedback-sent = Impendulo ithunyelwe. Siyabonga
+send-feedback-failed = Ayikwazanga ukuthumela impendulo: { $error }

@@ -94,6 +94,7 @@ notes-link-note = Länka en anteckning
 notes-link-new = Ny anteckning ”{ $title }”
 notes-linked-from = Länkad från
 notes-link-gone = Den anteckningen finns inte längre här
+notes-new-note-gone = Den nya anteckningen finns inte längre.
 
 ## Version history
 

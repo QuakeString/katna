@@ -3,7 +3,8 @@
 //! A thin scrollbar over a [`gpui::list`] or a scrolling `div`, like
 //! KDE's overlay scrollbars: it shows while the list scrolls and while
 //! the pointer is over the list, then fades out. It is a hairline at rest
-//! and grows as the pointer nears the right edge. Its thumb drags, and a
+//! and grows as the pointer nears the right edge (the left one in a
+//! right-to-left layout, where GPUI mirrors its place). Its thumb drags, and a
 //! click on the track above or below it jumps there.
 
 use std::cell::RefCell;
@@ -252,7 +253,13 @@ impl ScrollBar {
                 let Some(track) = inner.track else {
                     return;
                 };
-                let away = unpx(track.right() - event.position.x).max(0.0);
+                // The bar is on the left in a right-to-left layout.
+                let away = if window.layout_direction().is_rtl() {
+                    unpx(event.position.x - track.left())
+                } else {
+                    unpx(track.right() - event.position.x)
+                }
+                .max(0.0);
                 let near = (1.0 - away / REACH).clamp(0.0, 1.0);
                 if (near - inner.near).abs() > 0.01 {
                     inner.near = near;

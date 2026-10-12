@@ -69,7 +69,6 @@ signature-layout-light = পোহৰ
 signature-layout-dark = গাঢ়
 signature-layout-text = সাধাৰণ পাঠ
 signature-layout-inside = ছবিবোৰ মেইলৰ ভিতৰতে পঠিওৱা হয়, সেয়ে ৱেবৰ ছবি অফ থকা ঠাইতো দেখা যায়। এইটোৱে প্ৰতিটো মেইলত { $size } যোগ কৰে।
-signature-layout-free = আন কিবা বিচাৰে নেকি?
 signature-layout-edit = নিজে সম্পাদনা কৰক
 signature-layout-edit-confirm = নিজে সম্পাদনা কৰিবনে? ইয়াৰ ফিল্ড আৰু সজ্জা নাথাকিব, আৰু সম্পাদকে যিমান পাৰে সিমান ইয়াৰ ৰূপ ৰাখিব।
 signature-layout-use-confirm = { $layout } সজ্জা ব্যৱহাৰ কৰিবনে? ই এই চিগনেচাৰটো সলনি কৰিব, ইয়াৰ পৰাই পূৰণ কৰি।

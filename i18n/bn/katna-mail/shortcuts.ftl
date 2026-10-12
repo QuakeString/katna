@@ -70,6 +70,7 @@ shortcut-navigation = মেনু দেখান বা লুকান
 shortcut-quick-settings = দ্রুত সেটিংস
 shortcut-settings = সব সেটিংস
 shortcut-shortcuts = কীবোর্ড শর্টকাট
+shortcut-palette = কমান্ড প্যালেট
 shortcut-reload = নতুন মেল দেখুন
 shortcut-quit = প্রস্থান
 

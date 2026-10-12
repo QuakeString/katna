@@ -5,6 +5,7 @@
 //! between two, typed or from a calendar. The dates become `after:`/
 //! `before:` at local midnight.
 
+use crate::widgets::Tip as _;
 use std::cell::Cell;
 use std::rc::Rc;
 use std::time::Instant;
@@ -24,7 +25,7 @@ use katna_ui::unpx;
 use super::super::notched::{self, Side, notch};
 use super::MailWindow;
 use crate::theme::Theme;
-use crate::widgets::{choice_chip, filled_button, icon_button, tip};
+use crate::widgets::{choice_chip, filled_button, icon_button};
 
 /// What a custom date filter finds.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
@@ -480,6 +481,8 @@ impl MailWindow {
         let popover = div()
             .id("custom-dates")
             .absolute()
+            // Placed on screen, by what it points at.
+            .placed_ltr()
             .left(px(x))
             .top(px(y))
             .w(px(WIDTH))
@@ -550,7 +553,7 @@ impl MailWindow {
         };
         let turn = |id: &'static str, name: &'static str, months: i32, label: String| {
             icon_button(id, name, 18.0, th)
-                .tooltip(tip(label, th))
+                .tip(label, th)
                 .on_click(cx.listener(move |this, _, _, cx| this.turn_calendar(months, cx)))
         };
         // 4 × 40 px arrows + 90 + 44 = 294 px, the width of the days.
@@ -569,7 +572,7 @@ impl MailWindow {
             ))
             .child(
                 div()
-                    .w(px(90.0))
+                    .min_w(px(90.0))
                     .flex()
                     .justify_center()
                     .child(format::month_name(custom.month)),
@@ -588,7 +591,7 @@ impl MailWindow {
             ))
             .child(
                 div()
-                    .w(px(44.0))
+                    .min_w(px(44.0))
                     .flex()
                     .justify_center()
                     .child(format::year(custom.year)),
@@ -641,7 +644,7 @@ impl MailWindow {
                 // Set once: GPUI panics on a second hover style.
                 .hover(move |s| s.bg(rgba(if on { th_accent } else { th_hover })))
                 .on_click(cx.listener(move |this, _, window, cx| this.pick_day(day, window, cx)))
-                .child(number.to_string());
+                .child(format::day_number(day));
             if on {
                 element = element.bg(rgba(th.accent));
             } else if inside {

@@ -61,3 +61,13 @@ search-dates-month-back = Mwezi uliopita
 search-dates-month-on = Mwezi ujao
 search-dates-year-back = Mwaka uliopita
 search-dates-year-on = Mwaka ujao
+
+## More results on server: under the results, mail found by asking the
+## mail server, for mail that is not downloaded to this computer yet.
+
+search-server-more = Matokeo zaidi kwenye seva
+search-server-searching = Inatafuta barua kwenye seva…
+search-server-empty-searching = Bado hakuna kitu hapa. Inatafuta barua kwenye seva…
+search-server-nothing = Hakuna matokeo zaidi kwenye seva
+search-server-failed = Imeshindwa kutafuta kwenye seva.
+search-server-again = Jaribu tena

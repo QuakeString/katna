@@ -6,6 +6,7 @@
 
 about-tooltip = Katna hakkında
 about-tagline = Linux masaüstü için posta ve takvim
+about-version = Katna Mail { $version }
 about-copy-version = Sürüm ayrıntılarını kopyala
 about-version-copied = Kopyalandı
 about-version-built = Derlenme: { $date }
@@ -38,6 +39,8 @@ about-update-restart = Güncelle ve yeniden başlat
 about-update-cancel = Şimdi değil
 about-changelog = Değişiklik günlüğü
 about-source = Kaynak kodu
+about-debug-report = Hata ayıklama raporunu kopyala
+about-debug-report-tip = Bir hata raporu için sürümler, güncellemelerden sonraki denetim ve son günlük satırları. Posta veya parola içermez.
 about-coffee = Bana bir kahve ısmarla
 about-coffee-coffee = Kahve?
 about-coffee-tea = Çay?

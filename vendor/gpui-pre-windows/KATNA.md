@@ -33,6 +33,14 @@ shadow is drawn only outside its element, as in CSS, so it does not
 darken a translucent element. Upstream draws it under the whole element,
 which an opaque element hides.
 
+## Shortcuts on non-Latin layouts
+
+`get_key_from_vkey` (`src/keyboard.rs`) names a letter key by its
+virtual-key code (`VK_A` is `a`) instead of the character the layout
+gives it, so a binding on `j` works with an Arabic, Hebrew, Russian or
+Greek layout. A Latin layout's letters have their own labels' codes
+(AZERTY's A is `VK_A`), so nothing changes there.
+
 The first commit that added this directory holds the crate unchanged, so
 `git diff` against it shows the whole patch. When GPUI is upgraded, copy
 the new version here and apply the same change, or drop the patch once

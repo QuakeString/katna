@@ -69,7 +69,6 @@ signature-layout-light = Sáng
 signature-layout-dark = Tối
 signature-layout-text = Văn bản thuần
 signature-layout-inside = Hình ảnh được gửi bên trong thư, nên vẫn hiện ra cả khi hình ảnh từ web bị tắt. Chữ ký này làm mỗi thư nặng thêm { $size }.
-signature-layout-free = Muốn kiểu khác?
 signature-layout-edit = Sửa thủ công
 signature-layout-edit-confirm = Sửa thủ công? Các trường và bố cục sẽ mất, còn giao diện được giữ nguyên trong khả năng của trình soạn thảo.
 signature-layout-use-confirm = Dùng bố cục { $layout }? Bố cục này sẽ thay thế chữ ký hiện tại, với nội dung lấy từ chữ ký đó.

@@ -56,6 +56,8 @@ pub(crate) struct Status {
     pub invalid_signer: bool,
     /// `INV_RECP`: recipients whose key was not usable.
     pub invalid_recipients: Vec<String>,
+    /// `IMPORT_OK`: what was imported (GnuPG's flags) and its fingerprint.
+    pub imported: Vec<(u32, String)>,
 }
 
 impl Status {
@@ -98,6 +100,14 @@ impl Status {
             "INV_RECP" => {
                 if let Some(spec) = fields.get(1) {
                     self.invalid_recipients.push((*spec).to_owned());
+                }
+            }
+            "IMPORT_OK" => {
+                if let (Some(flags), Some(fpr)) = (
+                    fields.first().and_then(|flags| flags.parse().ok()),
+                    fields.get(1).filter(|fpr| !fpr.is_empty()),
+                ) {
+                    self.imported.push((flags, (*fpr).to_owned()));
                 }
             }
             "BADMDC" | "NODATA" => self.damaged = true,
@@ -228,7 +238,7 @@ impl Status {
 }
 
 /// A status-line time: Unix seconds (gpg) or `20260926T134134` (gpgsm).
-fn timestamp(text: &str) -> Option<i64> {
+pub(crate) fn timestamp(text: &str) -> Option<i64> {
     if text.is_empty() || text == "0" {
         return None;
     }

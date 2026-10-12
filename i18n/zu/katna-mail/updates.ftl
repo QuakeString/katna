@@ -34,3 +34,7 @@ update-dialog-compare = Qhathanisa ku-GitHub
 update-dialog-no-service = Isevisi yasemuva ye-Katna ayisebenzi.
 update-dialog-later = Kamuva
 update-dialog-close = Vala
+restart-updated = I-Katna ibuyekeziwe
+restart-button = Qala kabusha
+restart-close = Hhayi manje
+restart-failed = Ayikwazanga ukuqala i-Katna Mail entsha: { $error }

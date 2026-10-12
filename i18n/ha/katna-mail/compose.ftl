@@ -21,6 +21,16 @@ compose-hide-trimmed = Ɓoye abin da aka taƙaita
 compose-remove-trimmed = Cire rubutun da aka ambato
 compose-trimmed-removed = An cire rubutun da aka ambato
 
+## The quoted or forwarded message, in the mail itself
+
+compose-quote-header = A ranar { $date }, { $from } ya rubuta:
+compose-forward-header = ---------- Saƙon da aka tura ---------
+compose-forward-from = Daga: { $from }
+compose-forward-date = Kwanan wata: { $date }
+compose-forward-subject = Jigo: { $subject }
+compose-forward-to = Zuwa: { $to }
+compose-forward-cc = Kwafi: { $cc }
+
 ## Recipients and subject
 
 compose-to = Zuwa

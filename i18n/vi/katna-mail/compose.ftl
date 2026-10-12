@@ -21,6 +21,16 @@ compose-hide-trimmed = Ẩn nội dung bị rút gọn
 compose-remove-trimmed = Xóa phần trích dẫn
 compose-trimmed-removed = Đã xóa phần trích dẫn
 
+## The quoted or forwarded message, in the mail itself
+
+compose-quote-header = Vào { $date }, { $from } đã viết:
+compose-forward-header = ---------- Thư được chuyển tiếp ---------
+compose-forward-from = Từ: { $from }
+compose-forward-date = Ngày: { $date }
+compose-forward-subject = Tiêu đề: { $subject }
+compose-forward-to = Tới: { $to }
+compose-forward-cc = Cc: { $cc }
+
 ## Recipients and subject
 
 compose-to = Tới

@@ -70,6 +70,7 @@ shortcut-navigation = મેનૂ બતાવો કે સંકુચિત 
 shortcut-quick-settings = ઝડપી સેટિંગ
 shortcut-settings = બધાં સેટિંગ
 shortcut-shortcuts = કીબોર્ડ શૉર્ટકટ
+shortcut-palette = કમાન્ડ પૅલેટ
 shortcut-reload = નવા મેઇલ માટે તપાસો
 shortcut-quit = બહાર નીકળો
 

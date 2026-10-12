@@ -69,7 +69,6 @@ signature-layout-light = Jasny
 signature-layout-dark = Ciemny
 signature-layout-text = Zwykły tekst
 signature-layout-inside = Obrazy są wysyłane wewnątrz wiadomości, więc wyświetlają się nawet tam, gdzie obrazy z internetu są wyłączone. Ten dodaje { $size } do każdej wiadomości.
-signature-layout-free = Chcesz czegoś innego?
 signature-layout-edit = Edytuj ręcznie
 signature-layout-edit-confirm = Edytować ręcznie? Pola i układ znikną, a podpis zachowa wygląd na tyle, na ile pozwala edytor.
 signature-layout-use-confirm = Użyć układu { $layout }? Zastąpi ten podpis i zostanie wypełniony jego danymi.

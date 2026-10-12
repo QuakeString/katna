@@ -5,6 +5,7 @@
 //! reminds, colours, labels, archives or deletes them all. The ⋮ menus of
 //! the bar and of an open note are here too.
 
+use crate::widgets::Tip as _;
 use std::rc::Rc;
 
 use gpui::{
@@ -19,7 +20,7 @@ use super::labels::LabelPicker;
 use super::{COLORS, MailWindow, NotesView, item_of, note_color};
 use crate::daemon::Command;
 use crate::theme::Theme;
-use crate::widgets::{Check, icon, icon_button, menu_item_icon, raised, tip};
+use crate::widgets::{Check, icon, icon_button, menu_item_icon, raised};
 
 /// A ⋮ menu: the open note's or the ticked cards'.
 pub(in crate::window) struct MoreMenu {
@@ -330,7 +331,7 @@ impl MailWindow {
         let tool = |id: &'static str, name: &'static str, tip_text: String| {
             icon_button(id, name, 20.0, th)
                 .size(px(36.0))
-                .tooltip(tip(tip_text, th))
+                .tip(tip_text, th)
         };
         let all_pinned = notes.iter().all(|n| n.pinned);
         let all_archived = notes.iter().all(|n| n.archived);
@@ -541,7 +542,7 @@ impl MailWindow {
                 }))
                 .cursor_pointer()
                 .hover(|s| s.border_color(rgba(th.text_dim)))
-                .tooltip(tip(name, th))
+                .tip(name, th)
                 .on_click(cx.listener(move |this, _, _, cx| this.color_checked(color, cx)))
                 .when(ix == 0, |d| d.child(icon("close", th.text_dim, 16.0)))
                 .when(Some(color) == current && ix != 0, |d| {

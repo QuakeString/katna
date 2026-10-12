@@ -190,9 +190,9 @@ impl MailWindow {
             if let Some(reason) = failed {
                 this.update(cx, |this, cx| {
                     this.show_snackbar(
-                        format!(
-                            "Could not download this message. {}",
-                            format::sentence(&reason)
+                        tr!(
+                            "reader-download-failed-reason",
+                            reason = format::sentence(&reason)
                         ),
                         None,
                         cx,
@@ -211,7 +211,7 @@ impl MailWindow {
                     this.open_row_file(&file, window, cx);
                 } else {
                     // Never download it again and again.
-                    this.show_snackbar("Could not download this message.", None, cx);
+                    this.show_snackbar(tr!("reader-download-failed"), None, cx);
                 }
                 cx.notify();
             })

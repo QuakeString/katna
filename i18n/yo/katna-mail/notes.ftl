@@ -92,6 +92,7 @@ notes-link-note = So àkọsílẹ̀ kan pọ̀
 notes-link-new = Àkọsílẹ̀ tuntun "{ $title }"
 notes-linked-from = Tí a so pọ̀ láti
 notes-link-gone = Àkọsílẹ̀ yẹn kò sí níbí mọ́
+notes-new-note-gone = Àkọsílẹ̀ tuntun náà kò sí mọ́.
 
 ## Version history
 

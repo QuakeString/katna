@@ -53,6 +53,7 @@ folder-waiting-short = སྒུག་དོ
 folder-reminders = དྲན་སྐུལ་ཚུ
 folder-outbox = ཕྱིར་གཏང་སྒྲོམ
 folder-activity = ལཱ་གི་རྣམ་པ
+folder-not-on-account = རྩིས་ཐོ་འདི་ལུ་ སྣོད་འཛིན་དེ་བཟུམ་མེད།
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

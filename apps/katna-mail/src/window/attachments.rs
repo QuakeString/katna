@@ -7,15 +7,16 @@
 //! its "Open with" list. Settings → Default apps says, for each kind of
 //! file, whether clicking a card opens the viewer or another app.
 
+use crate::widgets::Tip as _;
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
 
 use gpui::{
-    Animation, AnimationExt, AnyElement, Context, Entity, FocusHandle, FontWeight, ImageSource,
-    ObjectFit, PathPromptOptions, RenderImage, SharedString, Subscription, Task, Window, div,
-    ease_out_quint, img, prelude::*, rgba,
+    Animation, AnimationExt, AnyElement, ClickEvent, Context, ElementId, Entity, FocusHandle,
+    FontWeight, ImageSource, ObjectFit, PathPromptOptions, RenderImage, SharedString, Subscription,
+    Task, Window, div, ease_out_quint, img, prelude::*, rgba,
 };
 use katna_core::config::{FileGroup, OpenIn};
 use katna_i18n::tr;
@@ -30,11 +31,12 @@ use katna_ui::tokens::{duration, elevation, radius};
 
 use super::MailWindow;
 use super::reader::AttachmentSource;
+use super::reader::keys;
 use super::viewer::{Viewer, ViewerEvent};
 use crate::data::RowFile;
 use crate::format;
 use crate::theme::{Theme, fade};
-use crate::widgets::{icon, tip};
+use crate::widgets::icon;
 
 const CARD_WIDTH: f32 = 180.0;
 const THUMB_HEIGHT: f32 = 84.0;
@@ -206,6 +208,15 @@ pub(super) fn kind_badge(kind: Kind, size: f32) -> AnyElement {
         .into_any_element()
 }
 
+/// [`kind_badge`] for a named file, with the key badge for OpenPGP keys.
+pub(super) fn file_badge(name: &str, mime: &str, size: f32) -> AnyElement {
+    if keys::is_key_file(name, mime) {
+        keys::key_badge(size)
+    } else {
+        kind_badge(katna_preview::kind(mime, name), size)
+    }
+}
+
 /// Whether the cards show a thumbnail of this kind.
 pub(super) fn has_thumbnail(kind: Kind) -> bool {
     match kind {
@@ -311,7 +322,7 @@ pub(super) fn corner_button(
         .shadow(crate::widgets::elevation(th, elevation::FLOAT))
         .cursor_pointer()
         .child(crate::widgets::hover_fade(glow, None, th))
-        .tooltip(tip(label, th))
+        .tip(label, th)
         .child(icon(name, th.text, 18.0))
 }
 
@@ -726,7 +737,15 @@ impl MailWindow {
                 .filter(|_| self.config.mail.attachment_previews)
                 .cloned();
             let name = item.name.clone();
-            let top = card_top(thumb, item.kind, 36.0, th);
+            // A public key: a click offers to import it.
+            let key_file = keys::is_key_attachment(attachment);
+            let top = if key_file {
+                keys::key_card_top(36.0, th)
+            } else {
+                card_top(thumb, item.kind, 36.0, th)
+            };
+            let spot: ElementId = ("attachment-key", ix).into();
+            let open = spot.clone();
             let save_name = name.clone();
             let save = corner_button(
                 ("attachment-save", ix),
@@ -760,9 +779,14 @@ impl MailWindow {
                 .map(|d| crate::widgets::tile(d, th))
                 .cursor_pointer()
                 .child(crate::widgets::tile_hover(th))
-                .on_click(cx.listener(move |this, _, window, cx| {
+                .when(key_file, |card| card.child(self.person_spot(spot)))
+                .on_click(cx.listener(move |this, e: &ClickEvent, window, cx| {
                     cx.stop_propagation();
-                    this.open_attachment(id, ix, window, cx);
+                    if key_file {
+                        this.open_key_attachment(id, ix, open.clone(), e.position(), window, cx);
+                    } else {
+                        this.open_attachment(id, ix, window, cx);
+                    }
                 }))
                 .child(div().h(px(THUMB_HEIGHT)).w_full().child(top))
                 .child(
@@ -775,7 +799,11 @@ impl MailWindow {
                         .gap(px(8.0))
                         .border_t_1()
                         .border_color(rgba(th.divider))
-                        .child(kind_badge(item.kind, 18.0))
+                        .child(if key_file {
+                            keys::key_badge(18.0)
+                        } else {
+                            kind_badge(item.kind, 18.0)
+                        })
                         .child(
                             div()
                                 .min_w_0()
@@ -827,7 +855,7 @@ impl MailWindow {
                                     .text_color(rgba(th.text_dim))
                                     .relative()
                                     .child(crate::widgets::hover_fade("hover-glow", None, th))
-                                    .tooltip(tip(tr!("attachment-save-all-tooltip"), th))
+                                    .tip(tr!("attachment-save-all-tooltip"), th)
                                     .on_click(cx.listener(move |this, _, _, cx| {
                                         cx.stop_propagation();
                                         this.save_all(id, indices.clone(), cx);
@@ -974,6 +1002,7 @@ impl MailWindow {
             viewer
         });
         self.files._viewer_events = Some(cx.subscribe_in(&viewer, window, Self::on_viewer));
+        self.note_usage(katna_core::usage::Feature::Viewers);
         self.files.viewer = Some(viewer);
         cx.notify();
     }
@@ -998,6 +1027,7 @@ impl MailWindow {
             viewer
         });
         self.files._viewer_events = Some(cx.subscribe_in(&viewer, window, Self::on_viewer));
+        self.note_usage(katna_core::usage::Feature::Viewers);
         self.files.viewer = Some(viewer.clone());
         cx.notify();
         viewer

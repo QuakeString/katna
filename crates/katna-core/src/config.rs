@@ -4,7 +4,7 @@
 //!
 //! Every field has a default, so a missing file or a missing key is not an
 //! error. Unknown keys are ignored, so an older Katna can read a file written
-//! by a newer one.
+//! by a newer one, and kept: saving writes them back unchanged.
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
@@ -47,6 +47,85 @@ pub struct Config {
     pub hidden_accounts: HiddenAccounts,
     pub offline: OfflineAccounts,
     pub apps: AppsOn,
+    /// Keys this version does not know, written by a newer one.
+    #[serde(skip)]
+    pub unknown_keys: UnknownKeys,
+}
+
+/// Settings a newer Katna wrote that this version does not know, by their
+/// path of table names. [`Config::save`] writes them back, so going back to
+/// an older version and changing a setting keeps them. Keys inside arrays
+/// of tables (signatures) are not kept.
+#[derive(Debug, Clone, Default, PartialEq)]
+pub struct UnknownKeys(Vec<(Vec<String>, toml::Value)>);
+
+impl UnknownKeys {
+    /// Whether every key was known.
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+
+    /// The dotted paths of the keys, for logs.
+    pub fn paths(&self) -> impl Iterator<Item = String> + '_ {
+        self.0.iter().map(|(path, _)| path.join("."))
+    }
+
+    /// Collects the values at `paths` from the parsed file.
+    fn collect(text: &str, paths: Vec<Vec<String>>) -> Self {
+        let Ok(table) = text.parse::<toml::Table>() else {
+            return Self::default();
+        };
+        let found = paths
+            .into_iter()
+            .filter_map(|path| {
+                let (last, parents) = path.split_last()?;
+                let mut at = &table;
+                for key in parents {
+                    at = at.get(key)?.as_table()?;
+                }
+                let value = at.get(last)?.clone();
+                Some((path, value))
+            })
+            .collect();
+        Self(found)
+    }
+
+    /// Puts the keys back into `table` where nothing else took their place.
+    fn restore(&self, table: &mut toml::Table) {
+        'keys: for (path, value) in &self.0 {
+            let Some((last, parents)) = path.split_last() else {
+                continue;
+            };
+            let mut at = &mut *table;
+            for key in parents {
+                let next = at
+                    .entry(key.clone())
+                    .or_insert_with(|| toml::Value::Table(toml::Table::new()));
+                match next.as_table_mut() {
+                    Some(inner) => at = inner,
+                    None => continue 'keys,
+                }
+            }
+            at.entry(last.clone()).or_insert_with(|| value.clone());
+        }
+    }
+}
+
+/// The table path of an ignored key, or `None` when it is inside an array.
+fn key_path(path: &serde_ignored::Path<'_>) -> Option<Vec<String>> {
+    use serde_ignored::Path;
+    match path {
+        Path::Root => Some(Vec::new()),
+        Path::Map { parent, key } => {
+            let mut keys = key_path(parent)?;
+            keys.push(key.clone());
+            Some(keys)
+        }
+        Path::Some { parent }
+        | Path::NewtypeStruct { parent }
+        | Path::NewtypeVariant { parent } => key_path(parent),
+        Path::Seq { .. } => None,
+    }
 }
 
 impl Config {
@@ -317,15 +396,24 @@ impl Default for Meetings {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(default)]
 pub struct Updates {
+    /// Look for a new version every hour and after waking (never on a
+    /// metered connection). Off, Katna looks only when asked.
+    pub check: bool,
     /// Download a new version as soon as the daemon finds it (never on a
     /// metered connection), so Update only has to install it.
     pub auto_download: bool,
+    /// The builds this install takes; `None` until picked, which keeps
+    /// the build's own ([`crate::update::Channel::default_for`]).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub channel: Option<crate::update::Channel>,
 }
 
 impl Default for Updates {
     fn default() -> Self {
         Self {
+            check: true,
             auto_download: true,
+            channel: None,
         }
     }
 }
@@ -345,6 +433,9 @@ pub struct Feedback {
     /// ([`crate::ids::SENTRY_DSN`]): a self-hosted Sentry or GlitchTip.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub dsn: Option<String>,
+    /// Send anonymous usage statistics once a week (`katna_core::usage`).
+    /// Off until the user turns it on; nothing is recorded while off.
+    pub send_usage_statistics: bool,
 }
 
 impl Feedback {
@@ -365,6 +456,7 @@ impl Default for Feedback {
             save_crash_reports: true,
             send_crash_reports: None,
             dsn: None,
+            send_usage_statistics: false,
         }
     }
 }
@@ -860,6 +952,11 @@ pub struct Sending {
     /// The [`Signature::id`] replies and forwards start with, unless the
     /// conversation shows which one the user signed with before.
     pub reply_signature: Option<u32>,
+    /// Each account's own defaults, by lowercase address; an account
+    /// without an entry starts with [`Self::new_mail_signature`] and
+    /// [`Self::reply_signature`].
+    #[serde(skip_serializing_if = "BTreeMap::is_empty")]
+    pub account_signatures: BTreeMap<String, AccountSignatures>,
     /// New messages open full screen.
     pub compose_full_screen: bool,
     /// Messages are written and sent as plain text, without formatting.
@@ -894,6 +991,7 @@ impl Default for Sending {
             signatures: Vec::new(),
             new_mail_signature: None,
             reply_signature: None,
+            account_signatures: BTreeMap::new(),
             compose_full_screen: false,
             plain_text: false,
             spell_check: true,
@@ -932,10 +1030,45 @@ impl Sending {
     /// Removes a signature, and it as a default.
     pub fn remove_signature(&mut self, id: u32) {
         self.signatures.retain(|s| s.id != id);
-        for default in [&mut self.new_mail_signature, &mut self.reply_signature] {
+        let accounts = self
+            .account_signatures
+            .values_mut()
+            .flat_map(|a| [&mut a.new_mail, &mut a.reply]);
+        for default in [&mut self.new_mail_signature, &mut self.reply_signature]
+            .into_iter()
+            .chain(accounts)
+        {
             if *default == Some(id) {
                 *default = None;
             }
+        }
+    }
+
+    /// The signature mail from `address` starts with: for replies and
+    /// forwards when `replies`, else for new mail. `None` for none, or
+    /// when that signature is gone.
+    pub fn default_signature(&self, address: &str, replies: bool) -> Option<u32> {
+        let id = match self.account_signatures.get(&address.to_lowercase()) {
+            Some(own) if replies => own.reply,
+            Some(own) => own.new_mail,
+            None if replies => self.reply_signature,
+            None => self.new_mail_signature,
+        };
+        self.signature(id).map(|s| s.id)
+    }
+
+    /// Makes `id` (or none) the signature mail from `address` starts
+    /// with, for replies and forwards when `replies`, else for new mail.
+    pub fn set_default_signature(&mut self, address: &str, replies: bool, id: Option<u32>) {
+        let (new_mail, reply) = (self.new_mail_signature, self.reply_signature);
+        let own = self
+            .account_signatures
+            .entry(address.to_lowercase())
+            .or_insert(AccountSignatures { new_mail, reply });
+        if replies {
+            own.reply = id;
+        } else {
+            own.new_mail = id;
         }
     }
 
@@ -946,6 +1079,17 @@ impl Sending {
             self.add_signature("My signature".to_owned(), old);
         }
     }
+}
+
+/// The signatures one account's mail starts with
+/// ([`Sending::account_signatures`]).
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AccountSignatures {
+    /// The [`Signature::id`] new mail starts with; `None` for none.
+    pub new_mail: Option<u32>,
+    /// The [`Signature::id`] replies and forwards start with.
+    pub reply: Option<u32>,
 }
 
 /// A named signature ([`Sending::signatures`]).
@@ -980,6 +1124,12 @@ pub struct SignatureLayout {
     pub company: String,
     pub mobile: String,
     pub office: String,
+    /// The WhatsApp number; shown beside the mobile number when the same.
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub whatsapp: String,
+    /// The Telegram username, as `@name`, `name` or a `t.me` link.
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub telegram: String,
     pub email: String,
     pub website: String,
     pub address: String,
@@ -1644,6 +1794,10 @@ pub struct Shortcuts {
     /// `reply`, ...): each a list of keystrokes such as `ctrl-shift-a` or
     /// `g i`. An empty list turns the shortcut off.
     pub keys: BTreeMap<String, Vec<String>>,
+    /// What was last run from the command palette, the latest first: a
+    /// shortcut's name or a setting's key.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub recent: Vec<String>,
 }
 
 impl Default for Shortcuts {
@@ -1652,6 +1806,7 @@ impl Default for Shortcuts {
             single_keys: true,
             set: ShortcutSet::Katna,
             keys: BTreeMap::new(),
+            recent: Vec::new(),
         }
     }
 }
@@ -1793,7 +1948,15 @@ impl Config {
 
     /// Parses and validates TOML text.
     fn parse(text: &str) -> Result<Self, ParseError> {
-        let mut config: Self = toml::from_str(text).map_err(ParseError::Toml)?;
+        let deserializer = toml::Deserializer::parse(text).map_err(ParseError::Toml)?;
+        let mut ignored = Vec::new();
+        let mut config: Self = serde_ignored::deserialize(deserializer, |path| {
+            ignored.extend(key_path(&path));
+        })
+        .map_err(ParseError::Toml)?;
+        if !ignored.is_empty() {
+            config.unknown_keys = UnknownKeys::collect(text, ignored);
+        }
         config.sending.upgrade();
         config.upgrade_sounds();
         config.validate().map_err(ParseError::Invalid)?;
@@ -1859,7 +2022,13 @@ impl Config {
     /// over it, so readers never see a half-written file.
     pub fn save(&self, path: &Path) -> Result<()> {
         self.validate()?;
-        let text = toml::to_string_pretty(self)?;
+        let text = if self.unknown_keys.is_empty() {
+            toml::to_string_pretty(self)?
+        } else {
+            let mut table = toml::Table::try_from(self)?;
+            self.unknown_keys.restore(&mut table);
+            toml::to_string_pretty(&table)?
+        };
         let dir = path
             .parent()
             .filter(|dir| !dir.as_os_str().is_empty())
@@ -2204,6 +2373,46 @@ mod tests {
     }
 
     #[test]
+    fn signatures_per_account() {
+        let mut sending = Sending::default();
+        let work = sending.add_signature("Work".into(), "Kay, Enron".into());
+        let home = sending.add_signature("Home".into(), "Kay".into());
+        // An account not set yet starts with the shared defaults.
+        assert_eq!(
+            sending.default_signature("kay@enron.example", false),
+            Some(work)
+        );
+        assert_eq!(
+            sending.default_signature("kay@enron.example", true),
+            Some(work)
+        );
+        sending.set_default_signature("Kay@Home.example", false, Some(home));
+        sending.set_default_signature("kay@home.example", true, None);
+        assert_eq!(
+            sending.default_signature("kay@home.example", false),
+            Some(home)
+        );
+        assert_eq!(sending.default_signature("KAY@HOME.EXAMPLE", true), None);
+        assert_eq!(
+            sending.default_signature("kay@enron.example", false),
+            Some(work)
+        );
+        let config = Config {
+            sending: sending.clone(),
+            ..Config::default()
+        };
+        let text = toml::to_string_pretty(&config).unwrap();
+        assert_eq!(Config::parse(&text).unwrap(), config);
+        // Deleting a signature takes it out of every account.
+        sending.remove_signature(home);
+        assert_eq!(sending.default_signature("kay@home.example", false), None);
+        assert_eq!(
+            sending.account_signatures["kay@home.example"].new_mail,
+            None
+        );
+    }
+
+    #[test]
     fn signatures() {
         let mut sending = Sending::default();
         let work = sending.add_signature("Work".into(), "Kay, Enron".into());
@@ -2312,7 +2521,10 @@ mod tests {
 
     #[test]
     fn unknown_keys_are_ignored() {
-        let config = Config::parse("future = 1\n[general]\nnew_option = \"x\"\n").unwrap();
+        let mut config = Config::parse("future = 1\n[general]\nnew_option = \"x\"\n").unwrap();
+        let paths: Vec<_> = config.unknown_keys.paths().collect();
+        assert_eq!(paths, ["future", "general.new_option"]);
+        config.unknown_keys = UnknownKeys::default();
         assert_eq!(config, Config::default());
     }
 
@@ -2387,6 +2599,32 @@ mod tests {
         // No temporary files are left behind.
         let entries: Vec<_> = fs::read_dir(path.parent().unwrap()).unwrap().collect();
         assert_eq!(entries.len(), 1);
+    }
+
+    #[test]
+    fn save_keeps_keys_a_newer_version_wrote() {
+        let tmp = tempfile::tempdir().unwrap();
+        let path = tmp.path().join("config.toml");
+        let newer = "future_switch = true\n\n[general]\nshow_in_tray = false\nfuture_mode = \"bright\"\n\n[future_page]\nwidth = 3\n";
+        fs::write(&path, newer).unwrap();
+        let mut config = Config::load(&path).unwrap();
+        assert!(!config.general.show_in_tray);
+        let mut paths: Vec<_> = config.unknown_keys.paths().collect();
+        paths.sort();
+        assert_eq!(
+            paths,
+            ["future_page", "future_switch", "general.future_mode"]
+        );
+        config.general.show_in_tray = true;
+        config.save(&path).unwrap();
+        let saved: toml::Table = fs::read_to_string(&path).unwrap().parse().unwrap();
+        assert_eq!(saved["future_switch"].as_bool(), Some(true));
+        assert_eq!(saved["general"]["future_mode"].as_str(), Some("bright"));
+        assert_eq!(saved["general"]["show_in_tray"].as_bool(), Some(true));
+        assert_eq!(saved["future_page"]["width"].as_integer(), Some(3));
+        let again = Config::load(&path).unwrap();
+        assert!(again.general.show_in_tray);
+        assert_eq!(again.unknown_keys, config.unknown_keys);
     }
 
     #[test]

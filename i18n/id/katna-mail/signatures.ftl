@@ -69,7 +69,6 @@ signature-layout-light = Terang
 signature-layout-dark = Gelap
 signature-layout-text = Teks biasa
 signature-layout-inside = Gambar dikirim di dalam email, jadi tetap tampil meski gambar dari web dinonaktifkan. Gambar ini menambah { $size } ke setiap email.
-signature-layout-free = Ingin yang lain?
 signature-layout-edit = Edit manual
 signature-layout-edit-confirm = Edit secara manual? Kolom dan tata letaknya hilang, dan tampilannya dipertahankan sejauh yang dapat ditampung editor.
 signature-layout-use-confirm = Gunakan tata letak { $layout }? Tata letak ini menggantikan tanda tangan ini, diisi dari isinya.

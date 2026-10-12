@@ -94,6 +94,7 @@ notes-link-note = සටහනක් සම්බන්ධ කරන්න
 notes-link-new = නව සටහන “{ $title }”
 notes-linked-from = සම්බන්ධ කර ඇත්තේ
 notes-link-gone = එම සටහන තවදුරටත් මෙහි නැත
+notes-new-note-gone = නව සටහන නැති වී ඇත.
 
 ## Version history
 

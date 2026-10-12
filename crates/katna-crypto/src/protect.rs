@@ -6,7 +6,7 @@
 use std::ffi::OsStr;
 
 use crate::gnupg::Run;
-use crate::keys::encryption_keys;
+use crate::keys::{Key, encryption_keys};
 use crate::mime::{field_name, header_fields};
 use crate::{Gnupg, Standard};
 
@@ -65,6 +65,20 @@ impl std::fmt::Display for ProtectError {
 
 impl std::error::Error for ProtectError {}
 
+/// The headers copied inside an encrypted message whose subject is
+/// hidden (draft-autocrypt-lamps-protected-headers).
+const PROTECTED_HEADERS: &[&str] = &[
+    "subject",
+    "from",
+    "to",
+    "cc",
+    "reply-to",
+    "date",
+    "message-id",
+    "references",
+    "in-reply-to",
+];
+
 /// Signs and/or encrypts `raw`, an RFC 5322 message with CRLF line ends
 /// whose body is 7-bit (quoted-printable or plain ASCII) so a signature
 /// survives transport. The routing headers (From, To, Subject, …) stay
@@ -82,19 +96,52 @@ pub fn protect(
         return Ok(raw.to_vec());
     }
     let (fields, body_at) = header_fields(raw);
+    // Encrypted OpenPGP mail hides its subject: the real one goes inside,
+    // with copies of the other headers (protected headers, as Thunderbird
+    // and KMail send and read them), and the outside says "...".
+    let hide_subject = how.standard == Standard::OpenPgp && how.encrypt;
     let mut outer = Vec::new();
-    let mut entity = Vec::new();
+    let mut content = Vec::new();
+    let mut inner = Vec::new();
     for field in &fields {
         let name = field_name(field);
         if name.starts_with("content-") {
-            entity.extend_from_slice(field);
+            content.push(*field);
         } else if name != "mime-version" {
-            outer.extend_from_slice(field);
+            if hide_subject && PROTECTED_HEADERS.contains(&name.as_str()) {
+                inner.extend_from_slice(field);
+            }
+            if hide_subject && name == "subject" {
+                outer.extend_from_slice(b"Subject: ...\r\n");
+            } else {
+                outer.extend_from_slice(field);
+            }
         }
     }
-    if entity.is_empty() {
-        entity.extend_from_slice(b"Content-Type: text/plain; charset=utf-8\r\n");
+    let mut entity = Vec::new();
+    if content.is_empty() {
+        content.push(b"Content-Type: text/plain; charset=utf-8\r\n");
     }
+    for field in content {
+        // A message opened and sealed again (the outbox's tracked copies)
+        // may be marked already.
+        let marked = String::from_utf8_lossy(field)
+            .to_ascii_lowercase()
+            .contains("protected-headers=");
+        if hide_subject && !marked && field_name(field) == "content-type" {
+            let end = field.len()
+                - field
+                    .iter()
+                    .rev()
+                    .take_while(|b| b.is_ascii_whitespace())
+                    .count();
+            entity.extend_from_slice(&field[..end]);
+            entity.extend_from_slice(b"; protected-headers=\"v1\"\r\n");
+        } else {
+            entity.extend_from_slice(field);
+        }
+    }
+    entity.extend_from_slice(&inner);
     entity.extend_from_slice(b"\r\n");
     entity.extend_from_slice(&crlf(&raw[body_at..]));
 
@@ -155,16 +202,19 @@ fn pgp_encrypted(
     let mut args: Vec<String> = ["--armor", "--trust-model", "always", "--encrypt"]
         .map(str::to_owned)
         .to_vec();
-    for (fingerprint, hidden) in keys {
-        args.push(
-            if hidden {
-                "--hidden-recipient"
-            } else {
-                "--recipient"
-            }
-            .to_owned(),
-        );
-        args.push(fingerprint);
+    for (key, hidden) in keys {
+        let (option, value) = match key.file {
+            // A key Katna found for the address, outside the keyring.
+            Some(file) => ("-file", file.to_string_lossy().into_owned()),
+            None => ("", key.fingerprint),
+        };
+        let kind = if hidden {
+            "--hidden-recipient"
+        } else {
+            "--recipient"
+        };
+        args.push(format!("{kind}{option}"));
+        args.push(value);
     }
     if sign {
         args.extend([
@@ -221,9 +271,9 @@ fn smime_encrypted(entity: &[u8], to: &Recipients, gnupg: &Gnupg) -> Result<Vec<
     // CMS has no hidden recipients: Bcc recipients are listed like the
     // others.
     let mut args: Vec<String> = vec!["--encrypt".to_owned()];
-    for (fingerprint, _) in keys {
+    for (key, _) in keys {
         args.push("--recipient".to_owned());
-        args.push(fingerprint);
+        args.push(key.fingerprint);
     }
     let args: Vec<&str> = args.iter().map(String::as_str).collect();
     let run = checked(gnupg.run(Standard::Smime, &os(&args), entity), true)?;
@@ -236,13 +286,13 @@ Content-Disposition: attachment; filename=\"smime.p7m\"\r\n\r\n{}\r\n",
     .into_bytes())
 }
 
-/// The key fingerprint for the sender and every recipient, and whether it
-/// is a hidden (Bcc) one. Fails with the addresses that have no key.
+/// The key for the sender and every recipient, and whether it is a hidden
+/// (Bcc) one. Fails with the addresses that have no key.
 fn resolve(
     standard: Standard,
     to: &Recipients,
     gnupg: &Gnupg,
-) -> Result<Vec<(String, bool)>, ProtectError> {
+) -> Result<Vec<(Key, bool)>, ProtectError> {
     let mut emails: Vec<(String, bool)> = std::iter::once((to.sender.clone(), false))
         .chain(to.visible.iter().map(|e| (e.clone(), false)))
         .chain(to.hidden.iter().map(|e| (e.clone(), true)))
@@ -264,7 +314,7 @@ fn resolve(
     Ok(keys
         .into_iter()
         .zip(emails)
-        .filter_map(|(key, (_, hidden))| Some((key?.fingerprint, hidden)))
+        .filter_map(|(key, (_, hidden))| Some((key?, hidden)))
         .collect())
 }
 

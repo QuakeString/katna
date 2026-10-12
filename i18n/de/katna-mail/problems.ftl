@@ -66,3 +66,28 @@ service-details-title = Warum der Dienst nicht startet
 service-details-body = Kopieren Sie dies und senden Sie es mit Ihrem Bericht. Es enthält keine E-Mails oder Passwörter.
 service-details-copy = Kopieren
 service-details-close = Schließen
+service-not-running = Der Hintergrunddienst von Katna läuft nicht.
+service-no-answer = Der Hintergrunddienst von Katna hat nicht geantwortet: { $error }
+service-no-session = Keine D-Bus-Sitzung: { $error }
+
+## Safe mode: an update left Katna's background service unable to start
+
+safe-line = Katna ist nach einem Problem mit dem Update im abgesicherten Modus, daher werden keine E-Mails synchronisiert.
+safe-try-again = Erneut versuchen
+safe-restore = Wiederherstellen
+safe-restoring = Ihre Daten vom { $when } werden wiederhergestellt…
+safe-restored = Ihre Daten vom { $when } wurden wiederhergestellt. Der vorherige Stand wird in einem Ordner aufbewahrt.
+safe-show-folder = Ordner anzeigen
+safe-restore-failed = Ihre Daten konnten nicht wiederhergestellt werden: { $error }
+safe-restore-title = Ihre Daten von vor einem Update wiederherstellen?
+safe-restore-body = Katna kehrt zu der gewählten Kopie zurück. E-Mails, die danach eingegangen sind, werden erneut von Ihren Konten heruntergeladen.
+safe-restore-none = Es gibt noch keine Kopien. Katna erstellt eine, bevor ein Update Ihre Daten ändert.
+safe-restore-keep = Der aktuelle Stand, einschließlich nicht gesendeter E-Mails, Entwürfe und noch nicht synchronisierter Änderungen, wird zuerst in einem Ordner aufbewahrt, sodass nichts verloren geht.
+safe-restore-cancel = Abbrechen
+safe-restore-mail = E-Mails
+safe-restore-pim = Konten und Kontakte
+safe-restore-blobs = Anhänge
+safe-report-title = Debug-Bericht
+safe-report-body = Kopieren Sie dies und hängen Sie es Ihrem Fehlerbericht an. Es enthält keine E-Mails, Adressen oder Passwörter.
+safe-report-restore = Wiederherstellen…
+safe-report-copied = Debug-Bericht kopiert

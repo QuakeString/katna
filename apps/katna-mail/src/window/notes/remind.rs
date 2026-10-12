@@ -5,6 +5,7 @@
 //! and the daemon shows a notification with Open and Snooze at that time
 //! (`katna-daemon`'s alarms), even with the app closed.
 
+use crate::widgets::Tip as _;
 use gpui::{AnyElement, Context, ElementId, div, prelude::*, rgba};
 use jiff::Timestamp;
 use jiff::tz::TimeZone;
@@ -13,7 +14,6 @@ use katna_i18n::{format, tr};
 use super::{MailWindow, item_of};
 use crate::daemon::Command;
 use crate::theme::Theme;
-use crate::widgets::tip;
 
 /// When a reminder is, as its chip says it: "Today, 18:00",
 /// "Tomorrow, 09:00", "Mon, 10:30", "27 Sept, 08:00".
@@ -135,7 +135,7 @@ impl MailWindow {
         .bg(rgba(tint))
         .cursor_pointer()
         .hover(|s| s.bg(rgba(super::chip_hover(tint, th))))
-        .tooltip(tip(super::super::snooze::describe(at, &self.tz), th))
+        .tip(super::super::snooze::describe(at, &self.tz), th)
         .on_click(cx.listener(move |this, event: &gpui::ClickEvent, _, cx| {
             cx.stop_propagation();
             this.open_remind_menu(vec![note], true, event.position(), cx);

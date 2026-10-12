@@ -53,6 +53,7 @@ folder-waiting-short = Menunggu
 folder-reminders = Peringatan
 folder-outbox = Peti Keluar
 folder-activity = Aktiviti
+folder-not-on-account = Akaun ini tiada folder sedemikian.
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

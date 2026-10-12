@@ -21,6 +21,16 @@ compose-hide-trimmed = Versteek verkorte inhoud
 compose-remove-trimmed = Verwyder aangehaalde teks
 compose-trimmed-removed = Aangehaalde teks verwyder
 
+## The quoted or forwarded message, in the mail itself
+
+compose-quote-header = Op { $date } het { $from } geskryf:
+compose-forward-header = ---------- Aangestuurde boodskap ---------
+compose-forward-from = Van: { $from }
+compose-forward-date = Datum: { $date }
+compose-forward-subject = Onderwerp: { $subject }
+compose-forward-to = Aan: { $to }
+compose-forward-cc = Cc: { $cc }
+
 ## Recipients and subject
 
 compose-to = Aan

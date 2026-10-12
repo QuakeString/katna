@@ -66,3 +66,28 @@ service-details-title = ਸੇਵਾ ਸ਼ੁਰੂ ਕਿਉਂ ਨਹੀਂ �
 service-details-body = ਇਸਨੂੰ ਕਾਪੀ ਕਰੋ ਅਤੇ ਆਪਣੀ ਰਿਪੋਰਟ ਨਾਲ ਭੇਜੋ। ਇਸ ਵਿੱਚ ਕੋਈ ਮੇਲ ਜਾਂ ਪਾਸਵਰਡ ਨਹੀਂ ਹੈ।
 service-details-copy = ਕਾਪੀ ਕਰੋ
 service-details-close = ਬੰਦ ਕਰੋ
+service-not-running = Katna ਦੀ ਬੈਕਗ੍ਰਾਊਂਡ ਸੇਵਾ ਨਹੀਂ ਚੱਲ ਰਹੀ।
+service-no-answer = Katna ਦੀ ਬੈਕਗ੍ਰਾਊਂਡ ਸੇਵਾ ਨੇ ਜਵਾਬ ਨਹੀਂ ਦਿੱਤਾ: { $error }
+service-no-session = ਕੋਈ D-Bus ਸੈਸ਼ਨ ਨਹੀਂ: { $error }
+
+## Safe mode: an update left Katna's background service unable to start
+
+safe-line = ਅੱਪਡੇਟ ਵਿੱਚ ਸਮੱਸਿਆ ਤੋਂ ਬਾਅਦ Katna ਸੁਰੱਖਿਅਤ ਮੋਡ ਵਿੱਚ ਹੈ, ਇਸ ਲਈ ਮੇਲ ਸਿੰਕ ਨਹੀਂ ਹੋ ਰਹੀ।
+safe-try-again = ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ
+safe-restore = ਬਹਾਲ ਕਰੋ
+safe-restoring = { $when } ਤੋਂ ਤੁਹਾਡਾ ਡਾਟਾ ਬਹਾਲ ਹੋ ਰਿਹਾ ਹੈ…
+safe-restored = { $when } ਤੋਂ ਤੁਹਾਡਾ ਡਾਟਾ ਬਹਾਲ ਹੋ ਗਿਆ। ਪਹਿਲਾਂ ਜੋ ਸੀ ਉਹ ਇੱਕ ਫੋਲਡਰ ਵਿੱਚ ਰੱਖਿਆ ਗਿਆ ਹੈ।
+safe-show-folder = ਫੋਲਡਰ ਦਿਖਾਓ
+safe-restore-failed = ਤੁਹਾਡਾ ਡਾਟਾ ਬਹਾਲ ਨਹੀਂ ਹੋ ਸਕਿਆ: { $error }
+safe-restore-title = ਕੀ ਅੱਪਡੇਟ ਤੋਂ ਪਹਿਲਾਂ ਵਾਲਾ ਆਪਣਾ ਡਾਟਾ ਬਹਾਲ ਕਰਨਾ ਹੈ?
+safe-restore-body = Katna ਤੁਹਾਡੀ ਚੁਣੀ ਕਾਪੀ ’ਤੇ ਵਾਪਸ ਜਾਂਦਾ ਹੈ। ਉਸ ਤੋਂ ਬਾਅਦ ਆਈ ਮੇਲ ਤੁਹਾਡੇ ਖਾਤਿਆਂ ਤੋਂ ਦੁਬਾਰਾ ਡਾਊਨਲੋਡ ਹੁੰਦੀ ਹੈ।
+safe-restore-none = ਅਜੇ ਕੋਈ ਕਾਪੀ ਨਹੀਂ ਹੈ। ਹਰ ਅੱਪਡੇਟ ਵੱਲੋਂ ਤੁਹਾਡਾ ਡਾਟਾ ਬਦਲਣ ਤੋਂ ਪਹਿਲਾਂ Katna ਇੱਕ ਕਾਪੀ ਬਣਾਉਂਦਾ ਹੈ।
+safe-restore-keep = ਹੁਣ ਜੋ ਹੈ, ਨਾ ਭੇਜੀ ਮੇਲ, ਡ੍ਰਾਫ਼ਟ ਅਤੇ ਅਜੇ ਸਿੰਕ ਨਾ ਹੋਈਆਂ ਤਬਦੀਲੀਆਂ ਸਮੇਤ, ਪਹਿਲਾਂ ਇੱਕ ਫੋਲਡਰ ਵਿੱਚ ਰੱਖਿਆ ਜਾਂਦਾ ਹੈ, ਤਾਂ ਜੋ ਕੁਝ ਵੀ ਨਾ ਗੁਆਚੇ।
+safe-restore-cancel = ਰੱਦ ਕਰੋ
+safe-restore-mail = ਮੇਲ
+safe-restore-pim = ਖਾਤੇ ਅਤੇ ਸੰਪਰਕ
+safe-restore-blobs = ਨੱਥੀਆਂ
+safe-report-title = ਡੀਬੱਗ ਰਿਪੋਰਟ
+safe-report-body = ਇਸਨੂੰ ਕਾਪੀ ਕਰੋ ਅਤੇ ਆਪਣੀ ਬੱਗ ਰਿਪੋਰਟ ਨਾਲ ਨੱਥੀ ਕਰੋ। ਇਸ ਵਿੱਚ ਕੋਈ ਮੇਲ, ਪਤੇ ਜਾਂ ਪਾਸਵਰਡ ਨਹੀਂ ਹਨ।
+safe-report-restore = ਬਹਾਲ ਕਰੋ…
+safe-report-copied = ਡੀਬੱਗ ਰਿਪੋਰਟ ਕਾਪੀ ਹੋ ਗਈ

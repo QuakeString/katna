@@ -69,7 +69,6 @@ signature-layout-light = ലൈറ്റ്
 signature-layout-dark = ഡാർക്ക്
 signature-layout-text = പ്ലെയിൻ ടെക്സ്റ്റ്
 signature-layout-inside = ചിത്രങ്ങൾ മെയിലിനുള്ളിൽ തന്നെ അയയ്ക്കുന്നു, അതിനാൽ റിമോട്ട് ചിത്രങ്ങൾ ഓഫായിരിക്കുന്നിടത്തും അവ കാണാം. ഇത് ഓരോ മെയിലിനും { $size } കൂട്ടുന്നു.
-signature-layout-free = മറ്റെന്തെങ്കിലും വേണോ?
 signature-layout-edit = സ്വയം എഡിറ്റ് ചെയ്യുക
 signature-layout-edit-confirm = സ്വയം എഡിറ്റ് ചെയ്യണോ? ഇതിന്റെ ഫീൽഡുകളും ലേഔട്ടും ഇല്ലാതാകും, എഡിറ്ററിന് കഴിയുന്നിടത്തോളം ഇതിന്റെ രൂപം നിലനിൽക്കും.
 signature-layout-use-confirm = { $layout } ലേഔട്ട് ഉപയോഗിക്കണോ? ഇത് ഈ ഒപ്പിന് പകരമാകും, ഇതിൽ നിന്നുള്ള വിവരങ്ങൾ നിറച്ച്.

@@ -133,6 +133,16 @@
       "repository": "https://github.com/mdsteele/rust-cfb"
     },
     {
+      "name": "chrono",
+      "version": "0.4.45",
+      "description": "Date and time library for Rust",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "chronotope"
+      ],
+      "repository": "https://github.com/chronotope/chrono"
+    },
+    {
       "name": "deadpool-postgres",
       "version": "0.14.2",
       "description": "Dead simple async pool for tokio-postgres",
@@ -174,6 +184,17 @@
         "Yevhenii Reizner"
       ],
       "repository": "https://github.com/RazrFalcon/fontdb"
+    },
+    {
+      "name": "fs4",
+      "version": "0.13.1",
+      "description": "No libc, pure Rust cross-platform file locks. Original fs2, now supports async and replace libc by rustix.",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "Al Liu",
+        "Dan Burkert"
+      ],
+      "repository": "https://github.com/al8n/fs4-rs"
     },
     {
       "name": "futures-lite",
@@ -352,6 +373,16 @@
       "name": "icu_provider",
       "version": "2.3.1",
       "description": "Trait and struct definitions for the ICU data provider",
+      "license": "Unicode-3.0",
+      "authors": [
+        "The ICU4X Project Developers"
+      ],
+      "repository": "https://github.com/unicode-org/icu4x"
+    },
+    {
+      "name": "icu_segmenter",
+      "version": "2.3.0",
+      "description": "Unicode line breaking and text segmentation algorithms for text boundaries analysis",
       "license": "Unicode-3.0",
       "authors": [
         "The ICU4X Project Developers"
@@ -618,6 +649,16 @@
       "repository": "https://github.com/serde-rs/serde"
     },
     {
+      "name": "serde_ignored",
+      "version": "0.1.14",
+      "description": "Find out about keys that are ignored when deserializing data",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "David Tolnay"
+      ],
+      "repository": "https://github.com/dtolnay/serde-ignored"
+    },
+    {
       "name": "serde_json",
       "version": "1.0.151",
       "description": "A JSON serialization file format",
@@ -773,6 +814,16 @@
         "Zibi Braniecki"
       ],
       "repository": "https://github.com/zbraniecki/unic-locale"
+    },
+    {
+      "name": "unicode-bidi",
+      "version": "0.3.18",
+      "description": "Implementation of the Unicode Bidirectional Algorithm",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "The Servo Project Developers"
+      ],
+      "repository": "https://github.com/servo/unicode-bidi"
     },
     {
       "name": "unicode-segmentation",

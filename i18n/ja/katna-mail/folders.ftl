@@ -53,6 +53,7 @@ folder-waiting-short = 返信待ち
 folder-reminders = リマインダー
 folder-outbox = 送信トレイ
 folder-activity = アクティビティ
+folder-not-on-account = このアカウントにはそのフォルダがありません。
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

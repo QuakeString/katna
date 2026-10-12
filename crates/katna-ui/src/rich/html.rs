@@ -13,6 +13,7 @@ use super::doc::{
     Align, Block, CharStyle, Doc, Font, HtmlBlock, Image, ImageSize, List, MAX_INDENT, Para,
     ParaStyle, Size, Table, image_size, list_marker, list_numbers,
 };
+use katna_core::bidi::Direction;
 
 /// Widest an image is sent at when it fits the text.
 const BEST_FIT_WIDTH: f32 = 600.0;
@@ -28,14 +29,27 @@ const PICTURE_SRC: &str = "cid:katna-";
 
 /// The document as the body of an HTML message. `image_src` gives each
 /// image's address (a `cid:` in mail, a `data:` URI when stored).
+///
+/// The whole message reads as its first paragraph that has a direction
+/// (`dir` on the outer `div`), and a paragraph reading the other way, as
+/// set or as its first strong character gives, says so with its own `dir`.
 pub fn to_html(doc: &Doc, image_src: &dyn Fn(&Image) -> String) -> String {
-    let mut out = String::from("<div dir=\"ltr\">");
+    let base = doc
+        .blocks
+        .iter()
+        .find_map(|b| match b {
+            Block::Para(p) => p.own_direction(),
+            _ => None,
+        })
+        .unwrap_or_default();
+    let mut out = format!("<div dir=\"{}\">", base.html());
     let numbers = list_numbers(doc);
     let mut writer = Writer {
         out: &mut out,
         lists: Vec::new(),
         quote: 0,
         signature: false,
+        base,
     };
     for (ix, block) in doc.blocks.iter().enumerate() {
         let style = match block {
@@ -176,9 +190,19 @@ struct Writer<'a> {
     lists: Vec<(List, u8)>,
     quote: u8,
     signature: bool,
+    /// The direction of the whole message.
+    base: Direction,
 }
 
 impl Writer<'_> {
+    /// ` dir="…"` for text reading `dir`, when that is not the message's.
+    fn dir_attr(&self, dir: Option<Direction>) -> String {
+        match dir {
+            Some(d) if d != self.base => format!(" dir=\"{}\"", d.html()),
+            _ => String::new(),
+        }
+    }
+
     /// Opens and closes quotes, the signature and lists for a block of
     /// `style`.
     fn enter(&mut self, style: &ParaStyle) {
@@ -224,18 +248,22 @@ impl Writer<'_> {
             Align::Center => "text-align:center",
             Align::Right => "text-align:right",
         };
+        let dir = para.own_direction();
+        let dir_attr = self.dir_attr(dir);
+        let rtl = dir.unwrap_or(self.base).is_rtl();
         if para.style.list == List::None {
             let mut css = align.to_owned();
             if para.style.indent > 0 {
                 if !css.is_empty() {
                     css.push(';');
                 }
-                let _ = write!(css, "margin-left:{}px", 40 * u32::from(para.style.indent));
+                let side = if rtl { "right" } else { "left" };
+                let _ = write!(css, "margin-{side}:{}px", 40 * u32::from(para.style.indent));
             }
             if css.is_empty() {
-                self.out.push_str("<div>");
+                let _ = write!(self.out, "<div{dir_attr}>");
             } else {
-                let _ = write!(self.out, "<div style=\"{css}\">");
+                let _ = write!(self.out, "<div{dir_attr} style=\"{css}\">");
             }
             inline(self.out, para);
             self.out.push_str("</div>");
@@ -249,19 +277,21 @@ impl Writer<'_> {
             Some(&(k, l)) if l == level && k == kind => self.out.push_str("</li>"),
             Some(&(_, l)) if l == level => {
                 self.close_lists(self.lists.len() - 1);
-                self.open_list(kind, level, number);
+                self.open_list(kind, level, number, rtl);
             }
-            _ => self.open_list(kind, level, number),
+            _ => self.open_list(kind, level, number, rtl),
         }
         if align.is_empty() {
-            self.out.push_str("<li>");
+            let _ = write!(self.out, "<li{dir_attr}>");
         } else {
-            let _ = write!(self.out, "<li style=\"{align}\">");
+            let _ = write!(self.out, "<li{dir_attr} style=\"{align}\">");
         }
         inline(self.out, para);
     }
 
-    fn open_list(&mut self, kind: List, level: u8, number: usize) {
+    /// Opens a list; `rtl` when its first item reads right to left, so its
+    /// markers stand on the right.
+    fn open_list(&mut self, kind: List, level: u8, number: usize, rtl: bool) {
         let tag = if kind == List::Numbered { "ol" } else { "ul" };
         let kind_css = match (kind, level % 3) {
             (List::Numbered, 1) => ";list-style-type:lower-alpha",
@@ -275,11 +305,19 @@ impl Writer<'_> {
         } else {
             String::new()
         };
-        let _ = write!(
-            self.out,
-            "<{tag}{start} style=\"margin:0 0 0 {}px;padding-left:1.2em{kind_css}\">",
-            if self.lists.is_empty() { 15 } else { 0 },
-        );
+        let margin = if self.lists.is_empty() { 15 } else { 0 };
+        let dir = self.dir_attr(Some(if rtl { Direction::Rtl } else { Direction::Ltr }));
+        let _ = if rtl {
+            write!(
+                self.out,
+                "<{tag}{start}{dir} style=\"margin:0 {margin}px 0 0;padding-right:1.2em{kind_css}\">",
+            )
+        } else {
+            write!(
+                self.out,
+                "<{tag}{start}{dir} style=\"margin:0 0 0 {margin}px;padding-left:1.2em{kind_css}\">",
+            )
+        };
         self.lists.push((kind, level));
     }
 
@@ -300,7 +338,8 @@ impl Writer<'_> {
                     .fill
                     .map(|c| format!(";background-color:#{c:06x}"))
                     .unwrap_or_default();
-                let _ = write!(self.out, "<td style=\"{CELL_STYLE}{align}{fill}\">");
+                let dir = self.dir_attr(cell.own_direction());
+                let _ = write!(self.out, "<td{dir} style=\"{CELL_STYLE}{align}{fill}\">");
                 inline(self.out, cell);
                 self.out.push_str("</td>");
             }
@@ -623,8 +662,26 @@ fn read_html(html: &str, next_id: &mut u64, pasted: bool) -> Doc {
     if reader.blocks.is_empty() {
         reader.blocks.push(Block::Para(Para::default()));
     }
+    for block in &mut reader.blocks {
+        match block {
+            Block::Para(p) => follow_text(p),
+            Block::Table(t) => t.rows.iter_mut().flatten().for_each(follow_text),
+            _ => {}
+        }
+    }
     Doc {
         blocks: reader.blocks,
+    }
+}
+
+/// Leaves a paragraph's direction to its text where the text gives the
+/// same (as a left-to-right `dir` around everything does), so it still
+/// follows what is typed into it; a direction set against the text, or a
+/// right-to-left one on a blank line, stays.
+fn follow_text(para: &mut Para) {
+    let auto = katna_core::bidi::first_strong(&para.text).unwrap_or_default();
+    if para.style.dir == Some(auto) {
+        para.style.dir = None;
     }
 }
 
@@ -1036,6 +1093,7 @@ impl Reader<'_> {
                 let signature = attr(attrs, "class").is_some_and(|c| c.contains("signature"));
                 let mut block = self.block_style();
                 block.signature |= signature;
+                apply_dir(&mut block, attrs);
                 apply_block_css(&mut block, &css);
                 if let Some(level) = word_list_level(&css) {
                     block.list = List::Bullet;
@@ -1078,6 +1136,7 @@ impl Reader<'_> {
                 let mut block = self.block_style();
                 block.list = self.lists.last().copied().unwrap_or(List::Bullet);
                 block.indent = self.lists.len().saturating_sub(1).min(8) as u8;
+                apply_dir(&mut block, attrs);
                 apply_block_css(&mut block, &css);
                 if self.table.is_none() {
                     self.start_para(block);
@@ -1128,6 +1187,8 @@ impl Reader<'_> {
                 if let Some(c) = attr(attrs, "bgcolor").as_deref().and_then(parse_color) {
                     block.fill = Some(c);
                 }
+                block.dir = self.block_style().dir;
+                apply_dir(&mut block, attrs);
                 apply_block_css(&mut block, &css);
                 if self.pasted && block.fill.is_some_and(is_default_page) {
                     block.fill = None;
@@ -1489,9 +1550,18 @@ fn css_px(value: &str) -> Option<f32> {
     Some(number * scale)
 }
 
+/// A `dir` attribute: `ltr` and `rtl` set the direction, `auto` leaves it
+/// to the text.
+fn apply_dir(style: &mut ParaStyle, attrs: &str) {
+    if let Some(dir) = attr(attrs, "dir") {
+        style.dir = Direction::from_html(&dir);
+    }
+}
+
 fn apply_block_css(style: &mut ParaStyle, css: &str) {
     for (key, value) in css_pairs(css) {
         match key.as_str() {
+            "direction" => style.dir = Direction::from_html(&value),
             "text-align" => {
                 style.align = match value.to_ascii_lowercase().as_str() {
                     "center" | "middle" => Align::Center,
@@ -1499,7 +1569,10 @@ fn apply_block_css(style: &mut ParaStyle, css: &str) {
                     _ => Align::Left,
                 }
             }
-            "margin-left" => {
+            // The indent is on the start side.
+            "margin-left" | "margin-right"
+                if (key == "margin-right") == style.dir.is_some_and(Direction::is_rtl) =>
+            {
                 if let Some(px) = css_px(&value)
                     && px >= 40.0
                     && style.list == List::None
@@ -1777,6 +1850,61 @@ mod tests {
         assert!(html.contains("<ul style=\"margin:0 0 0 15px;padding-left:1.2em\"><li>a<ol style=\"margin:0 0 0 0px;padding-left:1.2em;list-style-type:lower-alpha\"><li>b</li></ol></li><li>c</li></ul><div><br></div><blockquote"), "{html}");
         let plain = to_plain(&d);
         assert_eq!(plain, "\u{2022} a\n   a. b\n\u{2022} c\n\n> q\n");
+    }
+
+    #[test]
+    fn paragraphs_say_which_way_they_read() {
+        let mut set = Para::plain("For your records: TRX-58213");
+        set.style.dir = Some(Direction::Ltr);
+        let mut list = Para::plain("بند");
+        list.style.list = List::Bullet;
+        let mut indented = Para::plain("فقرة");
+        indented.style.indent = 1;
+        let d = doc(vec![
+            Para::plain("شكرًا يا رافي"),
+            set,
+            Para::plain("123"),
+            indented,
+            list,
+        ]);
+        let html = to_html(&d, &|_| String::new());
+        assert_eq!(
+            html,
+            "<div dir=\"rtl\"><div>شكرًا يا رافي</div><div dir=\"ltr\">For your records: TRX-58213</div>\
+             <div>123</div><div style=\"margin-right:40px\">فقرة</div>\
+             <ul style=\"margin:0 15px 0 0;padding-right:1.2em\"><li>بند</li></ul></div>"
+        );
+        // A draft reads back with its directions.
+        let mut next = 0;
+        let back = from_html(&html, &mut next);
+        let paras: Vec<(&str, Option<Direction>, u8)> = back
+            .blocks
+            .iter()
+            .filter_map(|b| match b {
+                Block::Para(p) => Some((p.text.as_str(), p.style.dir, p.style.indent)),
+                _ => None,
+            })
+            .collect();
+        use Direction::Rtl;
+        assert_eq!(
+            paras,
+            [
+                ("شكرًا يا رافي", None, 0),
+                // Set as its text reads anyway: it follows its text again.
+                ("For your records: TRX-58213", None, 0),
+                ("123", Some(Rtl), 0),
+                ("فقرة", None, 1),
+                ("بند", None, 0),
+            ]
+        );
+        // Plain text is as it was.
+        assert_eq!(
+            to_plain(&d),
+            "شكرًا يا رافي\nFor your records: TRX-58213\n123\nفقرة\n\u{2022} بند\n"
+        );
+        // English mail is written as before.
+        let html = to_html(&doc(vec![Para::plain("Hi")]), &|_| String::new());
+        assert_eq!(html, "<div dir=\"ltr\"><div>Hi</div></div>");
     }
 
     #[test]

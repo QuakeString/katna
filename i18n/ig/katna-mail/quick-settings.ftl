@@ -41,4 +41,5 @@ quick-help = Enyemaka
 quick-tour = Mee njem nlegharị anya
 quick-whats-new = Ihe ọhụrụ
 quick-check-updates = Lelee imelite
+quick-send-feedback = Zipu nzaghachi
 quick-about = Banyere Katna

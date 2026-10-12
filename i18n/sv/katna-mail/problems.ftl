@@ -66,3 +66,28 @@ service-details-title = Varför tjänsten inte startar
 service-details-body = Kopiera detta och skicka det med din rapport. Det innehåller ingen e-post och inga lösenord.
 service-details-copy = Kopiera
 service-details-close = Stäng
+service-not-running = Katnas bakgrundstjänst körs inte.
+service-no-answer = Katnas bakgrundstjänst svarade inte: { $error }
+service-no-session = Ingen D-Bus-session: { $error }
+
+## Safe mode: an update left Katna's background service unable to start
+
+safe-line = Katna är i felsäkert läge efter ett problem med uppdateringen, så e-posten synkroniseras inte.
+safe-try-again = Försök igen
+safe-restore = Återställ
+safe-restoring = Återställer dina data från { $when }…
+safe-restored = Dina data har återställts från { $when }. Det som fanns där innan sparas i en mapp.
+safe-show-folder = Visa mapp
+safe-restore-failed = Det gick inte att återställa dina data: { $error }
+safe-restore-title = Återställa dina data från före en uppdatering?
+safe-restore-body = Katna går tillbaka till kopian du väljer. E-post som kom efter den hämtas igen från dina konton.
+safe-restore-none = Det finns inga kopior än. Katna gör en innan varje uppdatering ändrar dina data.
+safe-restore-keep = Det som finns där nu, inklusive oskickad e-post, utkast och ändringar som inte har synkroniserats än, sparas först i en mapp, så att ingenting går förlorat.
+safe-restore-cancel = Avbryt
+safe-restore-mail = E-post
+safe-restore-pim = Konton och kontakter
+safe-restore-blobs = Bilagor
+safe-report-title = Felsökningsrapport
+safe-report-body = Kopiera detta och bifoga det till din felrapport. Den innehåller ingen e-post, inga adresser och inga lösenord.
+safe-report-restore = Återställ…
+safe-report-copied = Felsökningsrapporten kopierades

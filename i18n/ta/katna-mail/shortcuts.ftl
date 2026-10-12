@@ -70,6 +70,7 @@ shortcut-navigation = மெனுவைக் காட்டு அல்ல�
 shortcut-quick-settings = விரைவு அமைப்புகள்
 shortcut-settings = எல்லா அமைப்புகளும்
 shortcut-shortcuts = கீபோர்டு ஷார்ட்கட்கள்
+shortcut-palette = கட்டளைத் தட்டு
 shortcut-reload = புதிய அஞ்சலைச் சரிபார்
 shortcut-quit = வெளியேறு
 

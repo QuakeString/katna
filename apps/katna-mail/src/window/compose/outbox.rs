@@ -6,6 +6,7 @@
 //! some, and its list says why in plain words, with Try again, Edit and
 //! Delete.
 
+use crate::widgets::Tip as _;
 use gpui::{AnyElement, ClickEvent, Context, FontWeight, Window, div, prelude::*, rgba};
 use katna_core::AccountId;
 use katna_dbus::OutboxItem;
@@ -297,114 +298,113 @@ impl MailWindow {
         if !self.writing.outbox_open {
             return None;
         }
-        let rows =
-            self.writing
-                .outbox
-                .iter()
-                .enumerate()
-                .filter_map(|(ix, item)| {
-                    let why = why(item)?;
-                    let subject = if item.subject.trim().is_empty() {
-                        tr!("schedule-no-subject")
-                    } else {
-                        item.subject.clone()
-                    };
-                    let address = self.outbox_account(item.account);
-                    let line = match &why {
-                        Why::NotSent(reason) => tr!("outbox-not-sent", reason = reason.text()),
-                        Why::SignIn => match self.account_problem(AccountId(item.account)) {
-                            Some(super::super::problems::Problem::Password { .. }) => {
-                                tr!("outbox-waiting-password", address = address.as_str())
-                            }
-                            _ => tr!("outbox-waiting-sign-in", address = address.as_str()),
-                        },
-                        Why::Offline => tr!("outbox-waiting-connection"),
-                        Why::Retrying(reason) => tr!("outbox-retrying", reason = reason.text()),
-                    };
-                    let color = if why.needs_you() {
-                        th.warning
-                    } else {
-                        th.text_dim
-                    };
-                    // Signed out: the account's own fix, as on the line over the
-                    // mail list.
-                    let fix = matches!(why, Why::SignIn)
-                        .then(|| self.account_problem(AccountId(item.account)))
-                        .flatten()
-                        .filter(|p| p.needs_you());
-                    let item = item.clone();
-                    let detail = item.detail.clone();
-                    Some(
-                        div()
-                            .id(("outbox", ix))
-                            .flex_none()
-                            .px(px(space::S6))
-                            .py(px(space::S3))
-                            .flex()
-                            .flex_row()
-                            .items_start()
-                            .gap(px(space::S4))
-                            .border_b_1()
-                            .border_color(rgba(th.divider))
-                            .child(icon(
-                                if why.needs_you() {
-                                    "warning"
-                                } else {
-                                    "schedule"
-                                },
-                                color,
-                                text::SUBTITLE,
-                            ))
-                            .child(
-                                div()
-                                    .flex_1()
-                                    .min_w_0()
-                                    .flex()
-                                    .flex_col()
-                                    .gap(px(space::S1 / 2.0))
-                                    .child(
+        let rows = self
+            .writing
+            .outbox
+            .iter()
+            .enumerate()
+            .filter_map(|(ix, item)| {
+                let why = why(item)?;
+                let subject = if item.subject.trim().is_empty() {
+                    tr!("schedule-no-subject")
+                } else {
+                    item.subject.clone()
+                };
+                let address = self.outbox_account(item.account);
+                let line = match &why {
+                    Why::NotSent(reason) => tr!("outbox-not-sent", reason = reason.text()),
+                    Why::SignIn => match self.account_problem(AccountId(item.account)) {
+                        Some(super::super::problems::Problem::Password { .. }) => {
+                            tr!("outbox-waiting-password", address = address.as_str())
+                        }
+                        _ => tr!("outbox-waiting-sign-in", address = address.as_str()),
+                    },
+                    Why::Offline => tr!("outbox-waiting-connection"),
+                    Why::Retrying(reason) => tr!("outbox-retrying", reason = reason.text()),
+                };
+                let color = if why.needs_you() {
+                    th.warning
+                } else {
+                    th.text_dim
+                };
+                // Signed out: the account's own fix, as on the line over the
+                // mail list.
+                let fix = matches!(why, Why::SignIn)
+                    .then(|| self.account_problem(AccountId(item.account)))
+                    .flatten()
+                    .filter(|p| p.needs_you());
+                let item = item.clone();
+                let detail = item.detail.clone();
+                Some(
+                    div()
+                        .id(("outbox", ix))
+                        .flex_none()
+                        .px(px(space::S6))
+                        .py(px(space::S3))
+                        .flex()
+                        .flex_row()
+                        .items_start()
+                        .gap(px(space::S4))
+                        .border_b_1()
+                        .border_color(rgba(th.divider))
+                        .child(icon(
+                            if why.needs_you() {
+                                "warning"
+                            } else {
+                                "schedule"
+                            },
+                            color,
+                            text::SUBTITLE,
+                        ))
+                        .child(
+                            div()
+                                .flex_1()
+                                .min_w_0()
+                                .flex()
+                                .flex_col()
+                                .gap(px(space::S1 / 2.0))
+                                .child(
+                                    div()
+                                        .truncate()
+                                        .text_size(px(text::BODY))
+                                        .font_weight(FontWeight::MEDIUM)
+                                        .child(subject),
+                                )
+                                .child(
+                                    div()
+                                        .id(("outbox-why", ix))
+                                        .text_size(px(text::SMALL))
+                                        .text_color(rgba(color))
+                                        .child(line)
+                                        // The server's own words, for whoever
+                                        // asks its admin.
+                                        .when(!detail.is_empty(), |d| d.tip(detail.clone(), th)),
+                                )
+                                .when(!matches!(why, Why::SignIn), |d| {
+                                    d.child(
                                         div()
                                             .truncate()
-                                            .text_size(px(text::BODY))
-                                            .font_weight(FontWeight::MEDIUM)
-                                            .child(subject),
-                                    )
-                                    .child(
-                                        div()
-                                            .id(("outbox-why", ix))
                                             .text_size(px(text::SMALL))
-                                            .text_color(rgba(color))
-                                            .child(line)
-                                            // The server's own words, for whoever
-                                            // asks its admin.
-                                            .when(!detail.is_empty(), |d| {
-                                                d.tooltip(crate::widgets::tip(detail.clone(), th))
-                                            }),
+                                            .text_color(rgba(th.text_faint))
+                                            .child(address),
                                     )
-                                    .when(!matches!(why, Why::SignIn), |d| {
-                                        d.child(
-                                            div()
-                                                .truncate()
-                                                .text_size(px(text::SMALL))
-                                                .text_color(rgba(th.text_faint))
-                                                .child(address),
-                                        )
-                                    })
-                                    .child(
-                                        div()
-                                            .pt(px(space::S2))
-                                            .flex()
-                                            .flex_row()
-                                            .flex_wrap()
-                                            .items_center()
-                                            .gap(px(space::S1))
-                                            .children(fix.map(|problem| {
-                                                outlined_button(
-                                                    ("outbox-fix", ix),
-                                                    problem.action(),
-                                                    th,
-                                                )
-                                                .on_click(cx.listener(
+                                })
+                                .child(
+                                    div()
+                                        .pt(px(space::S2))
+                                        .flex()
+                                        .flex_row()
+                                        .flex_wrap()
+                                        .items_center()
+                                        .gap(px(space::S1))
+                                        .children(fix.map(|problem| {
+                                            outlined_button(
+                                                ("outbox-fix", ix),
+                                                problem.action(),
+                                                th,
+                                            )
+                                            .on_click(
+                                                cx.listener(
                                                     move |this, event: &ClickEvent, window, cx| {
                                                         this.fix_problem(
                                                             problem.clone(),
@@ -413,55 +413,56 @@ impl MailWindow {
                                                             cx,
                                                         )
                                                     },
-                                                ))
-                                            }))
-                                            .when(matches!(why, Why::NotSent(_)), |d| {
-                                                let id = item.id;
-                                                d.child(
-                                                    outlined_button(
-                                                        ("outbox-retry", ix),
-                                                        tr!("outbox-try-again"),
-                                                        th,
-                                                    )
-                                                    .on_click(cx.listener(move |this, _, _, cx| {
-                                                        this.retry_outbox(id, cx)
-                                                    })),
+                                                ),
+                                            )
+                                        }))
+                                        .when(matches!(why, Why::NotSent(_)), |d| {
+                                            let id = item.id;
+                                            d.child(
+                                                outlined_button(
+                                                    ("outbox-retry", ix),
+                                                    tr!("outbox-try-again"),
+                                                    th,
                                                 )
-                                            })
-                                            .child({
-                                                let item = item.clone();
-                                                button(("outbox-edit", ix), ButtonStyle::Text, th)
-                                                    .child(tr!("outbox-edit"))
-                                                    .on_click(cx.listener(
-                                                        move |this, _, window, cx| {
-                                                            this.take_out_of_outbox(
-                                                                item.clone(),
-                                                                true,
-                                                                window,
-                                                                cx,
-                                                            )
-                                                        },
-                                                    ))
-                                            })
-                                            .child({
-                                                let item = item.clone();
-                                                button(("outbox-delete", ix), ButtonStyle::Text, th)
-                                                    .child(tr!("outbox-delete"))
-                                                    .on_click(cx.listener(
-                                                        move |this, _, window, cx| {
-                                                            this.take_out_of_outbox(
-                                                                item.clone(),
-                                                                false,
-                                                                window,
-                                                                cx,
-                                                            )
-                                                        },
-                                                    ))
-                                            }),
-                                    ),
-                            ),
-                    )
-                });
+                                                .on_click(cx.listener(move |this, _, _, cx| {
+                                                    this.retry_outbox(id, cx)
+                                                })),
+                                            )
+                                        })
+                                        .child({
+                                            let item = item.clone();
+                                            button(("outbox-edit", ix), ButtonStyle::Text, th)
+                                                .child(tr!("outbox-edit"))
+                                                .on_click(cx.listener(
+                                                    move |this, _, window, cx| {
+                                                        this.take_out_of_outbox(
+                                                            item.clone(),
+                                                            true,
+                                                            window,
+                                                            cx,
+                                                        )
+                                                    },
+                                                ))
+                                        })
+                                        .child({
+                                            let item = item.clone();
+                                            button(("outbox-delete", ix), ButtonStyle::Text, th)
+                                                .child(tr!("outbox-delete"))
+                                                .on_click(cx.listener(
+                                                    move |this, _, window, cx| {
+                                                        this.take_out_of_outbox(
+                                                            item.clone(),
+                                                            false,
+                                                            window,
+                                                            cx,
+                                                        )
+                                                    },
+                                                ))
+                                        }),
+                                ),
+                        ),
+                )
+            });
         let rows: Vec<AnyElement> = rows.map(IntoElement::into_any_element).collect();
         Some(list_dialog(
             "outbox",

@@ -21,6 +21,16 @@ compose-hide-trimmed = ဖြတ်ထားသော အကြောင်း�
 compose-remove-trimmed = ကိုးကားထားသော စာသားကို ဖယ်ရှားရန်
 compose-trimmed-removed = ကိုးကားထားသော စာသားကို ဖယ်ရှားပြီးပါပြီ
 
+## The quoted or forwarded message, in the mail itself
+
+compose-quote-header = { $date } တွင် { $from } က ရေးခဲ့သည်-
+compose-forward-header = ---------- ထပ်ဆင့်ပို့ထားသော မက်ဆေ့ဂျ် ---------
+compose-forward-from = မှ- { $from }
+compose-forward-date = ရက်စွဲ- { $date }
+compose-forward-subject = ခေါင်းစဉ်- { $subject }
+compose-forward-to = သို့- { $to }
+compose-forward-cc = မိတ္တူ- { $cc }
+
 ## Recipients and subject
 
 compose-to = သို့

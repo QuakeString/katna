@@ -111,6 +111,7 @@ calendar-add-meet = Google Meet བརྙན་འབྲེལ་ཁ་སྣོ
 calendar-add-teams = Teams ཚོགས་འདུ་ཁ་སྣོན་འབད།
 calendar-has-call = བརྙན་འབྲེལ་ཁ་སྣོན་འབད་ཡི།
 calendar-weekday-day = { $weekday }, { $day }
+calendar-schedule-day = { $weekday }། { $month }
 calendar-all-day-box = ཉིན་མོ་ཧྲིལ་བུ
 calendar-more-options = གདམ་ཁ་གཞན།
 calendar-save = སྲུང་།

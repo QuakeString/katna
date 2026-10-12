@@ -116,6 +116,7 @@ calendar-add-meet = افزودن ویدیوکنفرانس Google Meet
 calendar-add-teams = افزودن جلسه Teams
 calendar-has-call = تماس ویدیویی اضافه شد
 calendar-weekday-day = { $weekday }، { $day }
+calendar-schedule-day = { $weekday }، { $month }
 calendar-all-day-box = تمام روز
 calendar-more-options = گزینه‌های بیشتر
 calendar-save = ذخیره

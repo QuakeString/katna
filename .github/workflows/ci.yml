@@ -10,9 +10,10 @@ on:
   workflow_call:
     inputs:
       platform:
-        description: "ubuntu or windows: only that platform's tests"
+        description: "ubuntu or windows: only that platform's tests; empty: Arch's, as on main (release.yml)"
         type: string
-        required: true
+        required: false
+        default: ""
 
 # A newer push to a pull request cancels its older run; runs on main all
 # finish, since they save the build caches pull requests start from.
@@ -119,6 +120,13 @@ jobs:
         if: env.CODE == 'true'
       - run: cargo test --workspace --locked
         if: env.CODE == 'true'
+      # How much of each language is translated, in the run's summary
+      # (i18n/README.md). Report only: it never fails the build. The step
+      # above built the test, so this only runs it.
+      - name: Translation coverage
+        if: env.CODE == 'true' && startsWith(matrix.image, 'archlinux')
+        continue-on-error: true
+        run: KATNA_I18N_COVERAGE="$GITHUB_STEP_SUMMARY" cargo test --workspace --locked --test translation_coverage
 
   # Katna on Windows 10 and later (docs/ARCHITECTURE.md §27): the whole
   # workspace except Katna Server builds with GPUI's Windows backend, and

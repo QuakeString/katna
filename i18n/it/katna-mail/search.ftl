@@ -65,3 +65,13 @@ search-dates-month-back = Mese precedente
 search-dates-month-on = Mese successivo
 search-dates-year-back = Anno precedente
 search-dates-year-on = Anno successivo
+
+## More results on server: under the results, mail found by asking the
+## mail server, for mail that is not downloaded to this computer yet.
+
+search-server-more = Altri risultati sul server
+search-server-searching = Ricerca della posta sul server…
+search-server-empty-searching = Ancora niente qui. Ricerca della posta sul server…
+search-server-nothing = Nessun altro risultato sul server
+search-server-failed = Impossibile cercare sul server.
+search-server-again = Riprova

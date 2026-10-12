@@ -82,6 +82,7 @@ parts:
     stage:
       - usr/bin/
       - usr/share/applications/
+      - usr/share/metainfo/
       - usr/share/icons/
       - usr/share/licenses/
       - usr/lib/

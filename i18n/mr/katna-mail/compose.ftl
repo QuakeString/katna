@@ -21,6 +21,16 @@ compose-hide-trimmed = कापलेला मजकूर लपवा
 compose-remove-trimmed = अवतरित मजकूर काढा
 compose-trimmed-removed = अवतरित मजकूर काढला
 
+## The quoted or forwarded message, in the mail itself
+
+compose-quote-header = { $date } रोजी { $from } यांनी लिहिले:
+compose-forward-header = ---------- फॉरवर्ड केलेला मेसेज ---------
+compose-forward-from = प्रेषक: { $from }
+compose-forward-date = दिनांक: { $date }
+compose-forward-subject = विषय: { $subject }
+compose-forward-to = प्रति: { $to }
+compose-forward-cc = Cc: { $cc }
+
 ## Recipients and subject
 
 compose-to = प्रति

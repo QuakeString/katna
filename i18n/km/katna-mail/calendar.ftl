@@ -110,6 +110,7 @@ calendar-add-meet = បន្ថែមកិច្ចប្រជុំវីដ
 calendar-add-teams = បន្ថែមកិច្ចប្រជុំ Teams
 calendar-has-call = បានបន្ថែមការហៅជាវីដេអូ
 calendar-weekday-day = { $weekday }, { $day }
+calendar-schedule-day = { $weekday }, { $month }
 calendar-all-day-box = ពេញមួយថ្ងៃ
 calendar-more-options = ជម្រើសបន្ថែម
 calendar-save = រក្សាទុក

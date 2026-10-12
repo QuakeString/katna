@@ -43,6 +43,7 @@ pub fn message_document(raw: &[u8]) -> Option<Document> {
                 doc.remote_images += next.remote_images;
                 doc.trackers += next.trackers;
                 doc.truncated |= next.truncated;
+                doc.dir = doc.dir.or(next.dir);
                 doc.inline_ids.extend(next.inline_ids);
                 doc.blocks.extend(next.blocks);
             }
@@ -56,6 +57,7 @@ pub fn message_document(raw: &[u8]) -> Option<Document> {
                         })],
                         align: Align::Start,
                         preformatted: true,
+                        dir: katna_core::bidi::first_strong(text),
                     }));
                 }
             }
@@ -75,6 +77,7 @@ pub fn message_document(raw: &[u8]) -> Option<Document> {
                         })],
                         align: Align::Start,
                         preformatted: false,
+                        dir: None,
                     }));
                 }
             }

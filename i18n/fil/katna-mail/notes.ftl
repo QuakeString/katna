@@ -94,6 +94,7 @@ notes-link-note = Mag-link ng tala
 notes-link-new = Bagong tala “{ $title }”
 notes-linked-from = Naka-link mula sa
 notes-link-gone = Wala na rito ang talang iyon
+notes-new-note-gone = Nawala na ang bagong tala.
 
 ## Version history
 

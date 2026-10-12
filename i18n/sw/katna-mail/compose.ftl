@@ -21,6 +21,16 @@ compose-hide-trimmed = Ficha maudhui yaliyofupishwa
 compose-remove-trimmed = Ondoa maandishi yaliyonukuliwa
 compose-trimmed-removed = Maandishi yaliyonukuliwa yameondolewa
 
+## The quoted or forwarded message, in the mail itself
+
+compose-quote-header = Mnamo { $date }, { $from } aliandika:
+compose-forward-header = ---------- Ujumbe uliosambazwa ---------
+compose-forward-from = Kutoka: { $from }
+compose-forward-date = Tarehe: { $date }
+compose-forward-subject = Mada: { $subject }
+compose-forward-to = Kwa: { $to }
+compose-forward-cc = Nakala: { $cc }
+
 ## Recipients and subject
 
 compose-to = Kwa

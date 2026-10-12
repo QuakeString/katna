@@ -25,6 +25,18 @@ use katna_sync::{
 
 use super::{CommandError, Daemon, Notice, check_credentials};
 
+/// Who opens a sign-in page in the browser.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum Page {
+    /// The daemon itself, as `SignIn` asks.
+    Open,
+    /// The app that asked (`SignInFromApp`), told by a `SignInPage` sent
+    /// to its bus name `to` with its `ticket`: a click in its window lets
+    /// the desktop bring the browser to the front, which a background
+    /// service cannot.
+    Tell { to: String, ticket: String },
+}
+
 /// How long the browser may take before the sign-in gives up.
 const SIGN_IN_TIMEOUT: Duration = Duration::from_secs(10 * 60);
 
@@ -123,12 +135,13 @@ impl Daemon {
     /// Signs in to `provider` in the browser. Adds the account that signed
     /// in, or, when an account has its address (always `account`, when
     /// given), signs that one in again. `hint` fills in the address on the
-    /// provider's page. Returns the account.
+    /// provider's page, which `page` says who opens. Returns the account.
     pub async fn sign_in(
         self: &Arc<Self>,
         provider: OAuthProvider,
         account: Option<AccountId>,
         hint: &str,
+        page: &Page,
     ) -> Result<AccountId, CommandError> {
         if self.closing.load(Ordering::SeqCst) {
             return Err(CommandError::Failed(tr!("daemon-deleting-data")));
@@ -146,14 +159,14 @@ impl Daemon {
             ))
         })?;
         if let (OAuthProvider::Zoho, Some(account)) = (provider, account) {
-            return self.link(config, account).await;
+            return self.link(config, account, page).await;
         }
         let again = account.map(|id| self.account(id)).transpose()?;
         let hint = again
             .as_ref()
             .map_or(hint.trim(), |account| account.address.as_str())
             .to_owned();
-        let grant = self.browser_grant(&config, &hint).await?;
+        let grant = self.browser_grant(&config, &hint, page).await?;
         let mail_refused = provider == OAuthProvider::Google
             && grant.scope.as_deref().is_some_and(|granted| {
                 !granted
@@ -258,13 +271,14 @@ impl Daemon {
         Ok(id)
     }
 
-    /// Shows `config`'s sign-in page in the browser and waits for its
-    /// answer, until [`Self::cancel_sign_in`], a newer sign-in or
-    /// [`SIGN_IN_TIMEOUT`].
+    /// Shows `config`'s sign-in page in the browser, or has the app that
+    /// asked show it (`page`), and waits for its answer, until
+    /// [`Self::cancel_sign_in`], a newer sign-in or [`SIGN_IN_TIMEOUT`].
     pub(super) async fn browser_grant(
         &self,
         config: &Provider,
         hint: &str,
+        page: &Page,
     ) -> Result<Grant, CommandError> {
         let provider = config.kind;
         // Only what the apps turned on use (Settings › Apps); turning one
@@ -280,7 +294,16 @@ impl Daemon {
             let _ = old.try_send(());
         }
         tracing::info!(%provider, "signing in in the browser");
-        open_in_browser(flow.url(), None).await;
+        match page {
+            Page::Open => open_in_browser(flow.url(), None).await,
+            Page::Tell { to, ticket } => {
+                let _ = self.notices.try_send(Notice::SignInPage {
+                    to: to.clone(),
+                    ticket: ticket.clone(),
+                    url: flow.url().to_owned(),
+                });
+            }
+        }
         let pages = Pages {
             signed_in: tr!("daemon-signed-in", provider = provider.name()),
             failed: tr!("daemon-sign-in-failed", provider = provider.name()),

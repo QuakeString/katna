@@ -69,7 +69,6 @@ signature-layout-light = Cerah
 signature-layout-dark = Gelap
 signature-layout-text = Teks biasa
 signature-layout-inside = Gambar dihantar di dalam mel, jadi ia kelihatan walaupun imej jauh dimatikan. Yang ini menambah { $size } pada setiap mel.
-signature-layout-free = Mahu sesuatu yang lain?
 signature-layout-edit = Sunting sendiri
 signature-layout-edit-confirm = Sunting sendiri? Medan dan susun aturnya hilang, dan rupanya dikekalkan setakat yang boleh disokong oleh penyunting.
 signature-layout-use-confirm = Gunakan susun atur { $layout }? Ia menggantikan tandatangan ini, diisi daripadanya.

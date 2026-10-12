@@ -92,6 +92,7 @@ notes-link-note = ភ្ជាប់កំណត់ចំណាំ
 notes-link-new = កំណត់ចំណាំថ្មី “{ $title }”
 notes-linked-from = បានភ្ជាប់ពី
 notes-link-gone = កំណត់ចំណាំនោះលែងមាននៅទីនេះទៀតហើយ
+notes-new-note-gone = កំណត់ចំណាំថ្មីបានបាត់ហើយ។
 
 ## Version history
 

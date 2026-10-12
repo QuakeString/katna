@@ -92,6 +92,7 @@ notes-link-note = メモをリンク
 notes-link-new = 新しいメモ「{ $title }」
 notes-linked-from = リンク元
 notes-link-gone = そのメモはもうありません
+notes-new-note-gone = 新しいメモが見つかりません。
 
 ## Version history
 

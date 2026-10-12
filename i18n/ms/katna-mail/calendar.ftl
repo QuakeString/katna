@@ -111,6 +111,7 @@ calendar-add-meet = Tambah persidangan video Google Meet
 calendar-add-teams = Tambah mesyuarat Teams
 calendar-has-call = Persidangan video ditambahkan
 calendar-weekday-day = { $weekday }, { $day }
+calendar-schedule-day = { $weekday }, { $month }
 calendar-all-day-box = Sepanjang hari
 calendar-more-options = Lagi pilihan
 calendar-save = Simpan

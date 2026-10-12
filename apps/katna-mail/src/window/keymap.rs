@@ -17,8 +17,8 @@ use super::{
     READER_CONTEXT, Reload, RemindMail, RephraseSelection, Reply, ReplyAll, ReportSpam,
     SEARCH_CONTEXT, ScrollDown, ScrollPageDown, ScrollPageUp, ScrollUp, SelectAll, SelectFirst,
     SelectLast, SelectNext, SelectNone, SelectPrevious, SendMail, ShowCalendar, ShowContacts,
-    ShowFiles, ShowMail, ShowNotes, ShowShortcuts, ShowTasks, SnoozeMail, Summarize, ToggleCheck,
-    ToggleMute, ToggleNavigation, ToggleSettings, ToggleStar, Undo, WINDOW_CONTEXT,
+    ShowFiles, ShowMail, ShowNotes, ShowPalette, ShowShortcuts, ShowTasks, SnoozeMail, Summarize,
+    ToggleCheck, ToggleMute, ToggleNavigation, ToggleSettings, ToggleStar, Undo, WINDOW_CONTEXT,
 };
 
 /// Where a shortcut works.
@@ -115,6 +115,11 @@ impl Shortcut {
         katna_i18n::english(&self.message())
     }
 
+    /// The action it runs.
+    pub(super) fn action(&self) -> Box<dyn Action> {
+        (self.action)()
+    }
+
     fn message(&self) -> String {
         format!("shortcut-{}", self.name.replace('_', "-"))
     }
@@ -205,6 +210,14 @@ pub(super) static SHORTCUTS: &[Shortcut] = &[
     shortcut!("quick_settings", App, Anywhere, ["ctrl-,"], ToggleSettings),
     shortcut!("settings", App, Anywhere, [], OpenSettings),
     shortcut!("shortcuts", App, Anywhere, ["?"], ShowShortcuts),
+    // VS Code's and Zed's keys, and KDE's Find Action.
+    shortcut!(
+        "palette",
+        App,
+        Anywhere,
+        ["ctrl-shift-p", "ctrl-alt-i"],
+        ShowPalette
+    ),
     shortcut!("reload", App, Anywhere, ["f5", "ctrl-r"], Reload),
     shortcut!("quit", App, Anywhere, ["ctrl-q"], Quit),
 ];
@@ -522,8 +535,14 @@ pub(super) fn label(keys: &str) -> String {
 }
 
 fn stroke_label(stroke: &str) -> String {
+    stroke_parts(stroke).join("+")
+}
+
+/// The keys pressed together for one keystroke, as they read on key caps:
+/// `ctrl-shift-a` is "Ctrl", "Shift", "A".
+pub(super) fn stroke_parts(stroke: &str) -> Vec<String> {
     let Ok(stroke) = Keystroke::parse(stroke) else {
-        return stroke.to_owned();
+        return vec![stroke.to_owned()];
     };
     let m = stroke.modifiers;
     let mut parts: Vec<String> = Vec::new();
@@ -566,7 +585,7 @@ fn stroke_label(stroke: &str) -> String {
         }
     };
     parts.push(key);
-    parts.join("+")
+    parts
 }
 
 /// Keys as GPUI writes them, from a pressed keystroke; `None` for a
@@ -583,6 +602,73 @@ pub(super) fn from_stroke(stroke: &Keystroke) -> Option<String> {
 mod tests {
     use super::*;
     use std::collections::HashSet;
+
+    /// What each letter key types on Arabic and Russian keyboards, by its
+    /// place on a US one.
+    const ARABIC: &str = "ضصثقفغعهخحشسيبلاتنمئءؤرلاىة";
+    const LETTERS: &str = "qwertyuiopasdfghjklzxcvbnm";
+    const RUSSIAN: &str = "йцукенгшщзфывапролдячсмить";
+
+    /// A key as GPUI's Linux and Windows backends report it on a layout
+    /// that types `typed` with it: the key named by its place (the letter
+    /// a US keyboard has there), the character as typed.
+    fn pressed(key: &str, shift: bool, typed: &str) -> Keystroke {
+        Keystroke {
+            modifiers: gpui::Modifiers {
+                shift,
+                ..Default::default()
+            },
+            key: key.to_owned(),
+            key_char: Some(typed.to_owned()),
+        }
+    }
+
+    #[test]
+    fn letter_shortcuts_work_by_key_on_non_latin_layouts() {
+        let arabic: Vec<char> = ARABIC.chars().collect();
+        // "لا" (B on an Arabic keyboard) is two letters.
+        let arabic_at = |ix: usize| -> String {
+            match ix.cmp(&23) {
+                std::cmp::Ordering::Less => arabic[ix].to_string(),
+                std::cmp::Ordering::Equal => "لا".to_owned(),
+                std::cmp::Ordering::Greater => arabic[ix + 1].to_string(),
+            }
+        };
+        let russian: Vec<char> = RUSSIAN.chars().collect();
+        let mut checked = 0;
+        for shortcut in SHORTCUTS {
+            for keys in shortcut.defaults {
+                for stroke in keys.split_whitespace() {
+                    let Ok(target) = Keystroke::parse(stroke) else {
+                        continue;
+                    };
+                    let m = target.modifiers;
+                    let Some(ix) = LETTERS
+                        .find(target.key.as_str())
+                        .filter(|_| target.key.len() == 1 && !(m.control || m.alt || m.platform))
+                    else {
+                        continue;
+                    };
+                    let binding = gpui::KeybindingKeystroke::from_keystroke(target.clone());
+                    let shift = m.shift;
+                    let ru = russian[ix].to_string();
+                    let ru = if shift { ru.to_uppercase() } else { ru };
+                    for typed in [arabic_at(ix), ru] {
+                        assert!(
+                            pressed(&target.key, shift, &typed).should_match(&binding),
+                            "{}: {stroke} typed as {typed}",
+                            shortcut.name
+                        );
+                    }
+                    checked += 1;
+                }
+            }
+        }
+        assert!(checked > 20, "{checked}");
+        // Russian types "№" with Shift+3; the key still says "#".
+        let delete = gpui::KeybindingKeystroke::from_keystroke(Keystroke::parse("#").unwrap());
+        assert!(pressed("#", false, "№").should_match(&delete));
+    }
 
     #[test]
     fn names_are_unique_and_defaults_parse() {

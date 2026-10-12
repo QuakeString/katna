@@ -160,6 +160,13 @@ pub(crate) fn get_keystroke_key(
 }
 
 fn get_key_from_vkey(vkey: VIRTUAL_KEY) -> Option<String> {
+    // Katna: a letter key is its letter whatever the layout types with it
+    // (Arabic, Hebrew, Russian or Greek letters), so single-letter
+    // shortcuts work by key on those layouts too. Virtual-key codes of
+    // letters follow a Latin layout's own labels (AZERTY's A is VK_A).
+    if (0x41..=0x5a).contains(&vkey.0) {
+        return Some(char::from(vkey.0 as u8).to_ascii_lowercase().to_string());
+    }
     let key_data = unsafe { MapVirtualKeyW(vkey.0 as u32, MAPVK_VK_TO_CHAR) };
     if key_data == 0 {
         return None;

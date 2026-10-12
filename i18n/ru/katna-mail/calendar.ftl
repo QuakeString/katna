@@ -120,6 +120,7 @@ calendar-add-meet = Добавить видеовстречу Google Meet
 calendar-add-teams = Добавить встречу в Teams
 calendar-has-call = Видеовстреча добавлена
 calendar-weekday-day = { $weekday }, { $day }
+calendar-schedule-day = { $weekday }, { $month }
 calendar-all-day-box = Весь день
 calendar-more-options = Другие параметры
 calendar-save = Сохранить

@@ -21,6 +21,16 @@ compose-hide-trimmed = Fi àkóónú tí a gé kúrú pamọ́
 compose-remove-trimmed = Yọ ọ̀rọ̀ tí a fà yọ kúrò
 compose-trimmed-removed = A ti yọ ọ̀rọ̀ tí a fà yọ kúrò
 
+## The quoted or forwarded message, in the mail itself
+
+compose-quote-header = Ní { $date }, { $from } kọ̀wé pé:
+compose-forward-header = ---------- Ìfiránṣẹ́ tí a fi ránṣẹ́ síwájú ---------
+compose-forward-from = Láti: { $from }
+compose-forward-date = Ọjọ́: { $date }
+compose-forward-subject = Àkọlé: { $subject }
+compose-forward-to = Sí: { $to }
+compose-forward-cc = Ẹ̀dà: { $cc }
+
 ## Recipients and subject
 
 compose-to = Sí

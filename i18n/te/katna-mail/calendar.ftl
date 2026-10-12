@@ -112,6 +112,7 @@ calendar-add-meet = Google Meet వీడియో కాల్‌ను జో�
 calendar-add-teams = Teams మీటింగ్‌ను జోడించండి
 calendar-has-call = వీడియో కాల్ జోడించబడింది
 calendar-weekday-day = { $weekday }, { $day }
+calendar-schedule-day = { $weekday }, { $month }
 calendar-all-day-box = రోజంతా
 calendar-more-options = మరిన్ని ఎంపికలు
 calendar-save = సేవ్ చేయండి

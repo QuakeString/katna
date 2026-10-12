@@ -94,6 +94,7 @@ notes-link-note = এটা টোকা লিংক কৰক
 notes-link-new = নতুন টোকা "{ $title }"
 notes-linked-from = ইয়াৰ পৰা লিংক কৰা
 notes-link-gone = সেই টোকাটো আৰু ইয়াত নাই
+notes-new-note-gone = নতুন টোকাটো আৰু নাই।
 
 ## Version history
 

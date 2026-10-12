@@ -7,6 +7,7 @@
 //! photo, signature and more options; the right-click menu and the link
 //! bubble.
 
+use crate::widgets::Tip as _;
 use std::rc::Rc;
 
 use gpui::{
@@ -15,6 +16,7 @@ use gpui::{
     Subscription, Window, canvas, deferred, div, point, prelude::*, rgba,
 };
 use katna_i18n::tr;
+use katna_ui::Direction;
 use katna_ui::anchored;
 use katna_ui::px;
 use katna_ui::rich::{Align, Font, GrammarIssue, List, Pos, RichEditor, Size, TableEdit, html};
@@ -26,7 +28,7 @@ use super::checks::{Passed, SendCheck};
 use super::recipients::Field;
 use super::{Mode, follow_up, schedule};
 use crate::theme::{Theme, fade, mix};
-use crate::widgets::{filled_button, icon, icon_button, icon_button_colored, menu, menu_item, tip};
+use crate::widgets::{filled_button, icon, icon_button, icon_button_colored, menu, menu_item};
 
 /// The open menu or dialog of the compose window.
 #[derive(Debug, Clone, PartialEq)]
@@ -781,14 +783,14 @@ impl MailWindow {
                     .rounded_l_full()
                     .cursor_pointer()
                     .hover(|s| s.bg(rgba(0xffffff1f)))
-                    .tooltip(tip(
+                    .tip(
                         if archives {
                             tr!("compose-tool-send-archive-tip")
                         } else {
                             tr!("compose-tool-send-tip")
                         },
                         th,
-                    ))
+                    )
                     .on_click(
                         cx.listener(|this, _, window, cx| this.send_compose_default(window, cx)),
                     )
@@ -816,7 +818,7 @@ impl MailWindow {
                     .rounded_r_full()
                     .cursor_pointer()
                     .hover(|s| s.bg(rgba(0xffffff1f)))
-                    .tooltip(tip(tr!("compose-tool-send-more"), th))
+                    .tip(tr!("compose-tool-send-more"), th)
                     .on_click(cx.listener(|this, _, _, cx| this.toggle_popup(Popup::Send, cx)))
                     .child(icon("drop-down", th.on_accent, 20.0)),
             )
@@ -832,7 +834,7 @@ impl MailWindow {
         let tool = |id: &'static str, name: &'static str, label: String| {
             icon_button(id, name, TRAY_ICON, th)
                 .size(px(TRAY_TOOL))
-                .tooltip(tip(label, th))
+                .tip(label, th)
         };
         let format = icon_button_colored(
             "compose-format",
@@ -847,7 +849,7 @@ impl MailWindow {
         )
         .size(px(TRAY_TOOL))
         .when(compose.format_bar, |d| d.bg(rgba(format_active(th))))
-        .tooltip(tip(tr!("compose-tool-formatting"), th))
+        .tip(tr!("compose-tool-formatting"), th)
         .on_click(cx.listener(|this, _, window, cx| {
             if let Some(c) = &mut this.compose {
                 c.format_bar = !c.format_bar;
@@ -891,7 +893,7 @@ impl MailWindow {
                 th,
             )
             .size(px(TRAY_TOOL))
-            .tooltip(tip(label, th))
+            .tip(label, th)
             .when(!works && compose.rephrase.is_none(), |d| {
                 d.opacity(0.4).cursor_default()
             })
@@ -996,7 +998,7 @@ impl MailWindow {
                 |d| {
                     d.child(
                         icon_button_colored("compose-dock", "close-full", 20.0, th.text_dim, th)
-                            .tooltip(tip(tr!("compose-tool-dock"), th))
+                            .tip(tr!("compose-tool-dock"), th)
                             .on_click(cx.listener(|this, _, _, cx| this.dock_compose(cx))),
                     )
                 },
@@ -1004,7 +1006,7 @@ impl MailWindow {
             .when(!bin_folds, |d| {
                 d.child(
                     icon_button_colored("compose-discard", "trash", 20.0, th.text_dim, th)
-                        .tooltip(tip(tr!("compose-tool-discard"), th))
+                        .tip(tr!("compose-tool-discard"), th)
                         .on_click(cx.listener(|this, _, _, cx| this.discard_compose(cx))),
                 )
             })
@@ -1358,6 +1360,7 @@ impl MailWindow {
         }
         let style = editor.current_style();
         let para = editor.para_style();
+        let reads = editor.direction();
         let (can_undo, can_redo, in_table) =
             (editor.can_undo(), editor.can_redo(), editor.in_table());
         let popup = compose.popup.clone();
@@ -1388,14 +1391,14 @@ impl MailWindow {
             .relative()
             .child(
                 format_button("format-table", "table", in_table, th)
-                    .tooltip(tip(
+                    .tip(
                         if in_table {
                             tr!("compose-tool-table")
                         } else {
                             tr!("compose-tool-insert-table")
                         },
                         th,
-                    ))
+                    )
                     .on_click(table_click),
             )
             .children(table_popup);
@@ -1403,11 +1406,14 @@ impl MailWindow {
         // into ⋮ More on a bar too narrow for all of them: the least used
         // first (0 never folds). `None` is a line between groups.
         let tool = |el: AnyElement, width: f32, fold: u8| Some((el, width, fold));
+        // Mostly used where the interface reads right to left, where they
+        // fold late; elsewhere early.
+        let fold_direction = if katna_i18n::rtl() { FOLD_ALIGN } else { 2 };
         let tools: Vec<Option<(AnyElement, f32, u8)>> = vec![
             tool(
                 format_button("format-undo", "undo", false, th)
                     .when(!can_undo, |d| d.opacity(0.4))
-                    .tooltip(tip(tr!("compose-tool-undo"), th))
+                    .tip(tr!("compose-tool-undo"), th)
                     .on_click(self.on_body(cx, |e, cx| e.undo(cx)))
                     .into_any_element(),
                 FORMAT_TOOL,
@@ -1416,7 +1422,7 @@ impl MailWindow {
             tool(
                 format_button("format-redo", "redo", false, th)
                     .when(!can_redo, |d| d.opacity(0.4))
-                    .tooltip(tip(tr!("compose-tool-redo"), th))
+                    .tip(tr!("compose-tool-redo"), th)
                     .on_click(self.on_body(cx, |e, cx| e.redo(cx)))
                     .into_any_element(),
                 FORMAT_TOOL,
@@ -1429,7 +1435,7 @@ impl MailWindow {
             None,
             tool(
                 format_button("format-bold", "format-bold", style.bold, th)
-                    .tooltip(tip(tr!("compose-tool-bold"), th))
+                    .tip(tr!("compose-tool-bold"), th)
                     .on_click(self.on_body(cx, |e, cx| e.toggle_bold(cx)))
                     .into_any_element(),
                 FORMAT_TOOL,
@@ -1437,7 +1443,7 @@ impl MailWindow {
             ),
             tool(
                 format_button("format-italic", "format-italic", style.italic, th)
-                    .tooltip(tip(tr!("compose-tool-italic"), th))
+                    .tip(tr!("compose-tool-italic"), th)
                     .on_click(self.on_body(cx, |e, cx| e.toggle_italic(cx)))
                     .into_any_element(),
                 FORMAT_TOOL,
@@ -1445,7 +1451,7 @@ impl MailWindow {
             ),
             tool(
                 format_button("format-underline", "format-underline", style.underline, th)
-                    .tooltip(tip(tr!("compose-tool-underline"), th))
+                    .tip(tr!("compose-tool-underline"), th)
                     .on_click(self.on_body(cx, |e, cx| e.toggle_underline(cx)))
                     .into_any_element(),
                 FORMAT_TOOL,
@@ -1461,7 +1467,7 @@ impl MailWindow {
                     para.list == List::Numbered,
                     th,
                 )
-                .tooltip(tip(tr!("compose-tool-numbered-list"), th))
+                .tip(tr!("compose-tool-numbered-list"), th)
                 .on_click(self.on_body(cx, |e, cx| e.toggle_list(List::Numbered, cx)))
                 .into_any_element(),
                 FORMAT_TOOL,
@@ -1474,7 +1480,7 @@ impl MailWindow {
                     para.list == List::Bullet,
                     th,
                 )
-                .tooltip(tip(tr!("compose-tool-bulleted-list"), th))
+                .tip(tr!("compose-tool-bulleted-list"), th)
                 .on_click(self.on_body(cx, |e, cx| e.toggle_list(List::Bullet, cx)))
                 .into_any_element(),
                 FORMAT_TOOL,
@@ -1482,7 +1488,7 @@ impl MailWindow {
             ),
             tool(
                 format_button("format-indent-less", "indent-less", false, th)
-                    .tooltip(tip(tr!("compose-tool-indent-less"), th))
+                    .tip(tr!("compose-tool-indent-less"), th)
                     .on_click(self.on_body(cx, |e, cx| e.indent(false, cx)))
                     .into_any_element(),
                 FORMAT_TOOL,
@@ -1490,15 +1496,38 @@ impl MailWindow {
             ),
             tool(
                 format_button("format-indent-more", "indent-more", false, th)
-                    .tooltip(tip(tr!("compose-tool-indent-more"), th))
+                    .tip(tr!("compose-tool-indent-more"), th)
                     .on_click(self.on_body(cx, |e, cx| e.indent(true, cx)))
                     .into_any_element(),
                 FORMAT_TOOL,
                 6,
             ),
+            None,
+            // Which way the paragraph reads. The buttons keep their
+            // drawing in a right-to-left window: an arrow to the right is
+            // left to right there too.
+            tool(
+                format_button("format-ltr", "text-ltr", reads == Direction::Ltr, th)
+                    .layout_ltr()
+                    .tip(tr!("compose-tool-ltr"), th)
+                    .on_click(self.on_body(cx, |e, cx| e.set_direction(Direction::Ltr, cx)))
+                    .into_any_element(),
+                FORMAT_TOOL,
+                fold_direction,
+            ),
+            tool(
+                format_button("format-rtl", "text-rtl", reads == Direction::Rtl, th)
+                    .layout_ltr()
+                    .tip(tr!("compose-tool-rtl"), th)
+                    .on_click(self.on_body(cx, |e, cx| e.set_direction(Direction::Rtl, cx)))
+                    .into_any_element(),
+                FORMAT_TOOL,
+                fold_direction,
+            ),
+            None,
             tool(
                 format_button("format-quote", "quote", para.quote > 0, th)
-                    .tooltip(tip(tr!("compose-tool-quote"), th))
+                    .tip(tr!("compose-tool-quote"), th)
                     .on_click(self.on_body(cx, |e, cx| e.toggle_quote(cx)))
                     .into_any_element(),
                 FORMAT_TOOL,
@@ -1506,7 +1535,7 @@ impl MailWindow {
             ),
             tool(
                 format_button("format-strike", "format-strike", style.strike, th)
-                    .tooltip(tip(tr!("compose-tool-strikethrough"), th))
+                    .tip(tr!("compose-tool-strikethrough"), th)
                     .on_click(self.on_body(cx, |e, cx| e.toggle_strike(cx)))
                     .into_any_element(),
                 FORMAT_TOOL,
@@ -1514,7 +1543,7 @@ impl MailWindow {
             ),
             tool(
                 format_button("format-clear", "clear-format", false, th)
-                    .tooltip(tip(tr!("compose-tool-remove-formatting"), th))
+                    .tip(tr!("compose-tool-remove-formatting"), th)
                     .on_click(self.on_body(cx, |e, cx| e.clear_formatting(cx)))
                     .into_any_element(),
                 FORMAT_TOOL,
@@ -1541,7 +1570,7 @@ impl MailWindow {
                 .relative()
                 .child(
                     format_button("format-more", "more", more_open, th)
-                        .tooltip(tip(tr!("compose-tool-more-formatting"), th))
+                        .tip(tr!("compose-tool-more-formatting"), th)
                         .on_click(
                             cx.listener(|this, _, _, cx| this.toggle_popup(Popup::MoreFormat, cx)),
                         ),
@@ -1591,14 +1620,14 @@ impl MailWindow {
             .child(
                 tall_dropdown("format-font", tall, th)
                     .w(px(100.0))
-                    .tooltip(tip(tr!("compose-tool-font"), th))
+                    .tip(tr!("compose-tool-font"), th)
                     .on_click(cx.listener(|this, _, _, cx| this.toggle_popup(Popup::Font, cx)))
                     .child(div().flex_1().min_w_0().truncate().child(current.label()))
                     .child(icon("drop-down", th.text_dim, 18.0)),
             )
             .when(open(Popup::Font), |d| {
                 let items = Font::ALL.into_iter().enumerate().map(|(ix, font)| {
-                    menu_item(("font", ix), font.label(), th)
+                    menu_item(("font", ix), &font.label(), th)
                         .when(font == current, |d| {
                             d.child(div().flex_1())
                                 .child(icon("check", th.text_dim, 18.0))
@@ -1626,7 +1655,7 @@ impl MailWindow {
             .relative()
             .child(
                 tall_dropdown("format-size", tall, th)
-                    .tooltip(tip(tr!("compose-tool-size"), th))
+                    .tip(tr!("compose-tool-size"), th)
                     .on_click(cx.listener(|this, _, _, cx| this.toggle_popup(Popup::Size, cx)))
                     .child(icon("text-size", th.text_dim, 18.0))
                     .child(icon("drop-down", th.text_dim, 18.0)),
@@ -1672,7 +1701,7 @@ impl MailWindow {
             .relative()
             .child(
                 tall_dropdown("format-color", tall, th)
-                    .tooltip(tip(tr!("compose-tool-colors"), th))
+                    .tip(tr!("compose-tool-colors"), th)
                     .on_click(cx.listener(|this, _, _, cx| this.toggle_popup(Popup::Colors, cx)))
                     .child(color_swatch(color, background, th))
                     // The chat's bar shows it as a square button, as drawn.
@@ -1708,7 +1737,7 @@ impl MailWindow {
                 tall_dropdown("format-align", tall, th)
                     // Centred or right-aligned text shows as on, like Bold.
                     .when(current != Align::Left, |d| d.bg(rgba(format_active(th))))
-                    .tooltip(tip(tr!("compose-tool-align"), th))
+                    .tip(tr!("compose-tool-align"), th)
                     .on_click(cx.listener(|this, _, _, cx| this.toggle_popup(Popup::Align, cx)))
                     .child(icon(
                         align_icon,
@@ -1724,7 +1753,7 @@ impl MailWindow {
             .when(open(Popup::Align), |d| {
                 let mut button = |id, name, value: Align, label: String| {
                     format_button(id, name, current == value, th)
-                        .tooltip(tip(label, th))
+                        .tip(label, th)
                         .on_click(self.on_body(cx, move |e, cx| e.set_align(value, cx)))
                 };
                 d.child(above(
@@ -1779,7 +1808,7 @@ impl MailWindow {
         let para = editor.para_style();
         let (can_undo, can_redo) = (editor.can_undo(), editor.can_redo());
         let button = |id: &'static str, name: &'static str, on: bool, label: String| {
-            chat_format_button(id, name, on, th).tooltip(tip(label, th))
+            chat_format_button(id, name, on, th).tip(label, th)
         };
         let group = || div().flex().flex_row().items_center().gap(px(2.0));
         div()
@@ -2151,7 +2180,7 @@ impl MailWindow {
                     .cursor_pointer()
                     .when(selected, |d| d.bg(rgba(th.chip)))
                     .hover(|s| s.bg(rgba(th.hover)))
-                    .tooltip(tip(emoji_group_name(kind), th))
+                    .tip(emoji_group_name(kind), th)
                     .on_click(cx.listener(move |this, _, _, cx| {
                         if let Some(c) = &mut this.compose {
                             c.dialog.emoji_group = ix;
@@ -2175,7 +2204,7 @@ impl MailWindow {
                 .cursor_pointer()
                 .relative()
                 .child(crate::widgets::hover_fade("hover-glow", Some(6.0), th))
-                .tooltip(tip(emoji.name().to_owned(), th))
+                .tip(emoji.name().to_owned(), th)
                 .on_click(self.on_body(cx, move |e, cx| e.insert(text, cx)))
                 .child(text)
         });
@@ -3430,7 +3459,7 @@ impl MailWindow {
             .child(
                 icon_button("compose-signature", "signature", TRAY_ICON, th)
                     .size(px(TRAY_TOOL))
-                    .tooltip(tip(tr!("compose-tool-signature"), th))
+                    .tip(tr!("compose-tool-signature"), th)
                     .on_click(
                         cx.listener(|this, _, _, cx| this.toggle_popup(Popup::Signature, cx)),
                     ),

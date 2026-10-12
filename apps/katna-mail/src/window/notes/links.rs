@@ -248,7 +248,7 @@ impl MailWindow {
                                 .into_iter()
                                 .find(|n| n.id == id)
                                 .map(|n| n.uuid)
-                                .ok_or_else(|| String::from("The new note is gone."))
+                                .ok_or_else(|| tr!("notes-new-note-gone"))
                         })
                         .await;
                     this.update(cx, |this, cx| match saved {

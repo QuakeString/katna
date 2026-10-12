@@ -70,6 +70,7 @@ shortcut-navigation = Mostra o comprimi il menu
 shortcut-quick-settings = Impostazioni rapide
 shortcut-settings = Tutte le impostazioni
 shortcut-shortcuts = Scorciatoie da tastiera
+shortcut-palette = Tavolozza dei comandi
 shortcut-reload = Controlla se c’è nuova posta
 shortcut-quit = Esci
 

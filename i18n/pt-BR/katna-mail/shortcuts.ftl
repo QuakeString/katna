@@ -70,6 +70,7 @@ shortcut-navigation = Mostrar ou recolher o menu
 shortcut-quick-settings = Configurações rápidas
 shortcut-settings = Todas as configurações
 shortcut-shortcuts = Atalhos do teclado
+shortcut-palette = Paleta de comandos
 shortcut-reload = Verificar novos e-mails
 shortcut-quit = Sair
 

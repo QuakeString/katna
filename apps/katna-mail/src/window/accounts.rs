@@ -7,6 +7,7 @@
 //! General) asks in the same dialog, saying what is downloaded again and
 //! what is kept.
 
+use crate::widgets::Tip as _;
 use gpui::{
     AnyElement, ClickEvent, Context, Div, DragMoveEvent, ElementId, Entity, Focusable, FontWeight,
     MouseButton, MouseDownEvent, SharedString, Stateful, Subscription, Window, deferred, div,
@@ -351,14 +352,14 @@ impl MailWindow {
                     18.0,
                     th,
                 )
-                .tooltip(crate::widgets::tip(
+                .tip(
                     if dir == "pop3-days-less" {
                         tr!("accounts-pop3-days-less")
                     } else {
                         tr!("accounts-pop3-days-more")
                     },
                     th,
-                ));
+                );
                 match to.filter(|_| now == Pop3Choice::AfterDays) {
                     Some(to) => button
                         .map(|d| self.page_control(d, th, cx))
@@ -520,6 +521,7 @@ impl MailWindow {
             )
             // What is wrong with it, as the line over the mail list says.
             .children(problem.as_ref().map(|problem| {
+                let busy = self.signing_in(id.0);
                 div()
                     .pt(px(space::S1))
                     .flex()
@@ -537,9 +539,14 @@ impl MailWindow {
                         div()
                             .flex_1()
                             .min_w_0()
-                            .child(problem.text())
-                            // Its fix, as on the line over the mail list.
-                            .child(
+                            .child(if busy {
+                                format!("{} {}", problem.text(), tr!("sign-in-again-waiting"))
+                            } else {
+                                problem.text()
+                            })
+                            // Its fix, as on the line over the mail list,
+                            // which waits for the browser like it.
+                            .children((!busy).then(|| {
                                 div()
                                     .id(("account-fix", ix))
                                     .font_weight(FontWeight::MEDIUM)
@@ -558,8 +565,8 @@ impl MailWindow {
                                                 cx,
                                             )
                                         })
-                                    }),
-                            ),
+                                    })
+                            })),
                     )
             }));
         let own = self.remote.has_own_picture(id);
@@ -650,7 +657,7 @@ impl MailWindow {
                 20.0,
                 th,
             )
-            .tooltip(crate::widgets::tip(label, th));
+            .tip(label, th);
             match to {
                 Some(to) => button
                     .map(|d| self.page_control(d, th, cx))
@@ -678,7 +685,7 @@ impl MailWindow {
             .cursor_grab()
             .relative()
             .child(crate::widgets::hover_fade("hover-glow", None, th))
-            .tooltip(crate::widgets::tip(tr!("accounts-drag"), th))
+            .tip(tr!("accounts-drag"), th)
             .on_mouse_down(
                 MouseButton::Left,
                 cx.listener(move |this, event: &MouseDownEvent, _, _| {

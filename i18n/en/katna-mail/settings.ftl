@@ -206,6 +206,14 @@ sound-default = Notification
 # The row about updates of Katna (only in packages that update themselves).
 settings-general-updates = Updates
 settings-general-updates-detail = Install a new version from About, or from the notification that it is ready.
+settings-update-stable = Stable
+settings-update-beta = Beta
+settings-update-nightly = Nightly
+settings-update-stable-detail = Tested releases, a few times a year. Best for most people.
+settings-update-beta-detail = The next release early, every few weeks. It may have bugs; please report them.
+settings-update-nightly-detail = Every change as soon as it is made. For testing; things may break.
+settings-general-check-updates = Check for updates automatically
+settings-general-check-updates-detail = Every hour and after waking. Off, Katna looks only when you press Check for Updates.
 settings-general-auto-download = Download updates automatically
 settings-general-auto-download-detail = Never on a metered connection. Nothing is installed until you press Update.
 settings-general-reset-cache = Reset cache
@@ -217,6 +225,9 @@ settings-general-start-at-login-detail = Syncs mail and shows new-mail notificat
 # Under "Start Katna at login", while it is on.
 settings-general-login-window = Open the Katna Mail window too
 settings-general-login-window-detail = The window opens at login as well
+# The comment of the login entry this setting writes, which the desktop's
+# own list of programs started at login shows.
+settings-general-login-entry = Started at login (Settings > General > Desktop)
 settings-general-tray = Show Katna in the system tray
 settings-general-tray-detail = With the unread count and a menu
 # Under "Show Katna in the system tray", while it is on.
@@ -532,7 +543,13 @@ settings-compose-signature-name = Name, such as Work
 settings-compose-signature-first = My signature
 # The name given to a new signature. $number: how many there are with it.
 settings-compose-signature-numbered = Signature { $number }
+# The right-click menu item that opens a signature to edit.
+settings-compose-signature-edit = Edit
 settings-compose-signature-delete = Delete
+# The button that makes a copy of the signature being edited, and opens it.
+settings-compose-signature-duplicate = Duplicate
+# The name of a duplicated signature. $name: the original's name.
+settings-compose-signature-copy-name = { $name } (copy)
 settings-compose-signature-deleted = Signature deleted
 # The button that makes a new signature.
 settings-compose-signature-new = Create new
@@ -544,9 +561,12 @@ settings-compose-signature-import = Import
 settings-compose-signature-edit-html = Edit HTML
 settings-compose-no-signatures = No signatures yet.
 settings-compose-no-signature = No signature
-settings-compose-for-new-mail = For new mail
-settings-compose-for-replies = For replies and forwards
-settings-compose-for-replies-detail = In a conversation where you signed a message, a reply starts with that signature instead.
+# The row choosing, for each account, the signature its mail starts with.
+settings-compose-default-signature = Default signature
+settings-compose-default-signature-detail = Changing From while writing puts in that account's signature. In a conversation where you signed a message, a reply starts with that signature instead.
+# Over the two choices of each account in that row.
+settings-compose-default-new-mail = New mail
+settings-compose-default-replies = Replies and forwards
 # The row choosing between plain text and formatted mail.
 settings-compose-format = Format
 settings-compose-plain-text = Write in plain text
@@ -684,8 +704,7 @@ settings-app-accounts-summary = Leave an account out of this app, while its item
 settings-compose-send-from-summary = The account new mail goes out from: the first one, another one, or the one you are in
 settings-compose-send-on-replies-summary = Send, or Send and archive the conversation, on replies and forwards
 settings-compose-signatures-summary = Added below your message, after a “--” line
-settings-compose-for-new-mail-summary = The signature new mail starts with
-settings-compose-for-replies-summary = The signature replies and forwards start with
+settings-compose-default-signature-summary = The signature each account's new mail, replies and forwards start with
 settings-compose-format-summary = Write new mail in plain text
 settings-compose-spelling-summary = Check spelling while writing, and the dictionary's language
 settings-general-search-triggers-summary = Words that search your mail from KRunner or the GNOME search

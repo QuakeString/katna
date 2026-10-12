@@ -64,3 +64,28 @@ service-details-title = Mengapa layanan tidak mau berjalan
 service-details-body = Salin ini dan kirimkan bersama laporan Anda. Isinya tidak memuat email atau sandi.
 service-details-copy = Salin
 service-details-close = Tutup
+service-not-running = Layanan latar belakang Katna tidak berjalan.
+service-no-answer = Layanan latar belakang Katna tidak menjawab: { $error }
+service-no-session = Tidak ada sesi D-Bus: { $error }
+
+## Safe mode: an update left Katna's background service unable to start
+
+safe-line = Katna berada dalam mode aman setelah ada masalah dengan pembaruan, jadi email tidak disinkronkan.
+safe-try-again = Coba lagi
+safe-restore = Pulihkan
+safe-restoring = Memulihkan data Anda dari { $when }…
+safe-restored = Data Anda dari { $when } telah dipulihkan. Isi sebelumnya disimpan di sebuah folder.
+safe-show-folder = Tampilkan folder
+safe-restore-failed = Tidak dapat memulihkan data Anda: { $error }
+safe-restore-title = Pulihkan data Anda dari sebelum pembaruan?
+safe-restore-body = Katna kembali ke salinan yang Anda pilih. Email yang tiba setelahnya diunduh lagi dari akun Anda.
+safe-restore-none = Belum ada salinan. Katna membuatnya sebelum setiap pembaruan mengubah data Anda.
+safe-restore-keep = Isi yang ada sekarang, termasuk email yang belum terkirim, draf, dan perubahan yang belum disinkronkan, disimpan dulu di sebuah folder, jadi tidak ada yang hilang.
+safe-restore-cancel = Batal
+safe-restore-mail = Email
+safe-restore-pim = Akun dan kontak
+safe-restore-blobs = Lampiran
+safe-report-title = Laporan debug
+safe-report-body = Salin ini dan lampirkan ke laporan bug Anda. Isinya tidak memuat email, alamat, atau sandi.
+safe-report-restore = Pulihkan…
+safe-report-copied = Laporan debug disalin

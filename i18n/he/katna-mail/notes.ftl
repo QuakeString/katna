@@ -87,6 +87,7 @@ notes-link-note = קישור להערה
 notes-link-new = הערה חדשה "{ $title }"
 notes-linked-from = מקושרת מ־
 notes-link-gone = ההערה הזו כבר לא כאן
+notes-new-note-gone = ההערה החדשה כבר לא קיימת.
 notes-versions = גרסאות
 notes-version-now = עכשיו
 notes-version-here = את/ה, במחשב הזה

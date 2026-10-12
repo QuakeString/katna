@@ -55,6 +55,7 @@ reader-details-subject = ប្រធានបទ៖
 
 reader-downloading = កំពុងទាញយកសារនេះពីម៉ាស៊ីនមេ…
 reader-download-failed = មិនអាចទាញយកសារនេះបានទេ។
+reader-download-failed-reason = មិនអាចទាញយកសារនេះបានទេ។ { $reason }
 reader-download-offline = គណនីនេះស្ថិតនៅក្រៅបណ្ដាញ។ សូមចូលលើបណ្ដាញ ដើម្បីទាញយកសារនេះ។
 reader-try-again = ព្យាយាមម្ដងទៀត
 
@@ -90,6 +91,86 @@ security-missing-key = ចុះហត្ថលេខាដោយសោដែល
 security-missing-key-id = ចុះហត្ថលេខាដោយសោដែលអ្នកមិនមាន ({ $key }) ដូច្នេះមិនអាចពិនិត្យបានទេ
 security-signature-unavailable = មានហត្ថលេខា។ ដំឡើង { $tool } ដើម្បីពិនិត្យហត្ថលេខា
 security-signature-error = មិនអាចពិនិត្យហត្ថលេខាបានទេ។
+security-look-up-key = រកមើលសោ
+
+## a key to import (looked up, or attached to the message)
+
+key-card-verified = ហត្ថលេខាដែលបានផ្ទៀងផ្ទាត់
+key-card-verified-detail = ហត្ថលេខាត្រឹមត្រូវ ហើយអ្នកទុកចិត្តសោនេះ។
+key-card-unverified = ហត្ថលេខាមិនទាន់បានផ្ទៀងផ្ទាត់
+key-card-unverified-detail = ហត្ថលេខាត្រឹមត្រូវ ប៉ុន្តែគ្មានអ្វីបញ្ជាក់ថាសោនេះជារបស់ពួកគេទេ។ សូមប្រៀបធៀបស្នាមម្រាមដៃជាមួយពួកគេ រួចទុកចិត្តសោនៅក្នុង GnuPG (Kleopatra ឬ gpg --edit-key)។
+key-card-not-sender = ចុះហត្ថលេខាដោយអ្នកផ្សេង
+key-card-not-sender-detail = ហត្ថលេខាត្រឹមត្រូវ ប៉ុន្តែសោមិនមែនជារបស់អ្នកផ្ញើទេ។
+key-card-untrusted = សោមិនគួរទុកចិត្ត
+key-card-untrusted-detail = អ្នកបានសម្គាល់សោនេះថាមិនគួរទុកចិត្តនៅក្នុង GnuPG។
+key-card-signature-expired = ហត្ថលេខាបានផុតកំណត់
+key-card-signature-expired-detail = ហត្ថលេខាធ្លាប់ត្រឹមត្រូវ ប៉ុន្តែវាបានផុតកំណត់ហើយ។
+key-card-key-expired = សោបានផុតកំណត់
+key-card-key-expired-detail = ហត្ថលេខាត្រឹមត្រូវ ប៉ុន្តែសោបានផុតកំណត់តាំងពីពេលនោះមក។
+key-card-key-revoked = សោត្រូវបានដកហូត
+key-card-key-revoked-detail = ម្ចាស់របស់វាបានដកហូតសោនេះ ដូច្នេះហត្ថលេខាមិនអាចទុកចិត្តបានទេ។
+key-card-bad = ហត្ថលេខាមិនត្រឹមត្រូវ
+key-card-bad-detail = សារនេះត្រូវបានកែប្រែបន្ទាប់ពីចុះហត្ថលេខា ឬហត្ថលេខាត្រូវបានក្លែងបន្លំ។
+key-card-signed-by = ចុះហត្ថលេខាដោយ
+key-card-belongs-to = ជារបស់
+key-card-fingerprint = ស្នាមម្រាមដៃ
+key-card-signed = បានចុះហត្ថលេខា
+key-card-key = សោ
+key-card-kind = { $standard }, { $algorithm }
+key-card-created = បានបង្កើត
+key-card-expires = ផុតកំណត់
+key-card-never = មិនដែល
+key-card-issued-by = ចេញដោយ
+key-card-found-in = រកឃើញនៅក្នុង
+key-card-keyring = បណ្ដុំសោ GnuPG របស់អ្នក
+key-card-copy = ចម្លងស្នាមម្រាមដៃ
+key-card-import-title = នាំចូលសោនេះឬ?
+key-card-from-directory = រកឃើញនៅក្នុងបញ្ជីសោរបស់ { $domain }។
+key-card-from-attachment = ពីឯកសារភ្ជាប់ { $name }។
+key-card-import-note = បន្ទាប់មក Katna អាចពិនិត្យហត្ថលេខារបស់មនុស្សនេះ និងអ៊ិនគ្រីបសំបុត្រទៅពួកគេបាន។ ដើម្បីទុកចិត្តសោទាំងស្រុង សូមប្រៀបធៀបស្នាមម្រាមដៃជាមួយពួកគេ។
+key-card-cancel = បោះបង់
+key-card-import = នាំចូលសោ
+key-card-looking-up = កំពុងរកមើលសោ…
+key-card-looking-up-detail = កំពុងសួរបញ្ជីសោរបស់ { $domain }។
+key-card-not-found = រកមិនឃើញសោ
+key-card-not-found-detail = { $domain } មិនបានផ្សាយសោសម្រាប់អាសយដ្ឋាននេះទេ។ សូមស្នើឱ្យអ្នកផ្ញើផ្ញើសោរបស់ពួកគេមកអ្នក។
+key-card-not-kept = សោដែលរកឃើញមិនអាចប្រើបានទេ។
+key-card-failed = មិនអាចយកសោបានទេ
+
+## of a sender nothing confirmed
+
+sender-failed-title = សំបុត្រនេះប្រហែលជាមិនមែនមកពី { $domain } ទេ
+sender-failed-body = វាមិនបានឆ្លងកាត់ការពិនិត្យអ្នកផ្ញើរបស់ { $provider } ទេ។ សូមប្រយ័ត្នជាមួយតំណ ឯកសារភ្ជាប់ និងការឆ្លើយតប។
+sender-provider-unknown = អ្នកផ្ដល់សេវាសំបុត្ររបស់អ្នក
+sender-details = ព័ត៌មានលម្អិត
+sender-details-hide = លាក់ព័ត៌មានលម្អិត
+sender-looks-safe = មើលទៅមានសុវត្ថិភាព
+sender-move-to-spam = ផ្លាស់ទីទៅសារឥតបានការ
+sender-checked-by = បានពិនិត្យដោយ { $provider }
+sender-checked-by-server = បានពិនិត្យដោយ { $provider } ({ $server })
+sender-dmarc = ដែនរបស់អ្នកផ្ញើ (DMARC)
+sender-dkim = ហត្ថលេខា (DKIM)
+sender-spf = ម៉ាស៊ីនមេដែលផ្ញើ (SPF)
+sender-result-pass = បានឆ្លងកាត់
+sender-result-fail = បរាជ័យ
+sender-result-unsure = មិនប្រាកដ
+sender-result-none = គ្មាន
+sender-result-missing = មិនបានពិនិត្យ
+sender-dmarc-pass = { $domain } បញ្ជាក់អ្នកផ្ញើនេះ។
+sender-dmarc-fail = សំបុត្រនេះមិនត្រូវនឹងរបៀបដែល { $domain } និយាយថាសំបុត្ររបស់ខ្លួនត្រូវបានផ្ញើទេ។
+sender-dmarc-none = { $domain } មិនផ្សាយច្បាប់ណាមួយសម្រាប់សំបុត្ររបស់ខ្លួនទេ។
+sender-dkim-pass = ចុះហត្ថលេខាដោយ { $domain }។
+sender-dkim-fail = ហត្ថលេខាពី { $domain } មិនត្រូវនឹងសំបុត្រទេ។
+sender-dkim-none = សារនេះមិនត្រូវបានចុះហត្ថលេខាទេ។
+sender-spf-pass = បានផ្ញើពីម៉ាស៊ីនមេដែល { $domain } រាយបញ្ជី។
+sender-spf-fail = បានផ្ញើពីម៉ាស៊ីនមេដែល { $domain } មិនរាយបញ្ជី។
+sender-spf-none = { $domain } មិនរាយបញ្ជីម៉ាស៊ីនមេរបស់ខ្លួនទេ។
+sender-check-unsure = ការពិនិត្យមិនអាចផ្ដល់ចម្លើយច្បាស់លាស់បានទេ។
+sender-unconfirmed = { $provider } មិនអាចបញ្ជាក់ថាសំបុត្រនេះមកពី { $domain } បានទេ។ នរណាក៏អាចសរសេរអ្នកផ្ញើអ្វីក៏បាន។
+sender-link-title = បើកតំណនេះឬ?
+sender-link-body = សំបុត្រនេះមិនបានឆ្លងកាត់ការពិនិត្យអ្នកផ្ញើទេ។ តំណនេះទៅកាន់ { $host }៖
+sender-link-cancel = បោះបង់
+sender-link-open = បើក
 
 ## sent message's star, and the line above a read receipt)
 
@@ -107,6 +188,7 @@ tracking-receipt-other = បង្កាន់ដៃអាន៖ { $who } បា
 
 remote-hidden = រូបភាពក្នុងសារនេះត្រូវបានលាក់។
 remote-hidden-unconfirmed = រូបភាពត្រូវបានលាក់៖ មិនអាចបញ្ជាក់អ្នកផ្ញើបានទេ។
+remote-hidden-failed = រូបភាពត្រូវបានលាក់៖ សំបុត្រនេះមិនបានឆ្លងកាត់ការពិនិត្យអ្នកផ្ញើទេ។
 remote-show = បង្ហាញរូបភាព
 remote-always-show = បង្ហាញជានិច្ចពីអ្នកផ្ញើនេះ
 remote-picture-use = ប្រើ

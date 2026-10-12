@@ -69,7 +69,6 @@ signature-layout-light = Hell
 signature-layout-dark = Dunkel
 signature-layout-text = Nur Text
 signature-layout-inside = Bilder werden in der E-Mail mitgesendet und erscheinen daher auch dort, wo Bilder aus dem Web aus sind. Dieses fügt jeder E-Mail { $size } hinzu.
-signature-layout-free = Etwas anderes gewünscht?
 signature-layout-edit = Von Hand bearbeiten
 signature-layout-edit-confirm = Von Hand bearbeiten? Felder und Layout entfallen; das Aussehen bleibt erhalten, soweit der Editor es darstellen kann.
 signature-layout-use-confirm = Das Layout { $layout } verwenden? Es ersetzt diese Signatur und wird aus ihr ausgefüllt.

@@ -94,6 +94,7 @@ notes-link-note = ಟಿಪ್ಪಣಿಗೆ ಲಿಂಕ್ ಮಾಡಿ
 notes-link-new = ಹೊಸ ಟಿಪ್ಪಣಿ “{ $title }”
 notes-linked-from = ಇವುಗಳಿಂದ ಲಿಂಕ್ ಮಾಡಲಾಗಿದೆ
 notes-link-gone = ಆ ಟಿಪ್ಪಣಿ ಈಗ ಇಲ್ಲಿಲ್ಲ
+notes-new-note-gone = ಹೊಸ ಟಿಪ್ಪಣಿ ಕಾಣೆಯಾಗಿದೆ.
 
 ## Version history
 

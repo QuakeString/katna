@@ -89,6 +89,7 @@ notes-link-note = Связать с заметкой
 notes-link-new = Новая заметка «{ $title }»
 notes-linked-from = Ссылаются сюда
 notes-link-gone = Этой заметки больше нет
+notes-new-note-gone = Новая заметка исчезла.
 notes-versions = Версии
 notes-version-now = Сейчас
 notes-version-here = Вы, на этом компьютере

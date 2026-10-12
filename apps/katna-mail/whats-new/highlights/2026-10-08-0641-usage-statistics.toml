@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Anonymous usage statistics, if you like"
+text = """
+Settings > User feedback has a new switch, off until you turn it on: once
+a week it sends which features you used, yes or no, so the most used ones
+get the most care. The page lists everything counted and shows this week's
+report.
+"""

@@ -7,6 +7,7 @@
 //! card, or, where the window leaves no room there (a phone), as a page of
 //! its own.
 
+use crate::widgets::Tip as _;
 use gpui::{AnyElement, Context, FontWeight, KeyDownEvent, MouseButton, div, prelude::*, rgba};
 use katna_i18n::tr;
 use katna_platform::dbusmenu::MenuItem;
@@ -17,7 +18,7 @@ use super::MailWindow;
 use super::MenuKey;
 use super::desktop;
 use crate::theme::Theme;
-use crate::widgets::{icon, icon_button, raised, tip};
+use crate::widgets::{icon, icon_button, raised};
 
 /// As wide as the account card it replaces.
 const WIDTH: f32 = 340.0;
@@ -39,7 +40,7 @@ impl MailWindow {
     pub(super) fn app_menu_button(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         icon_button("app-menu", "menu", 22.0, th)
             .ml_auto()
-            .tooltip(tip(tr!("app-menu"), th))
+            .tip(tr!("app-menu"), th)
             .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
             .on_click(cx.listener(|this, _, _, cx| {
                 cx.stop_propagation();
@@ -111,7 +112,7 @@ impl MailWindow {
                 .gap(px(2.0))
                 // Left goes back from a menu open in the card; Right opens
                 // the one whose row has the keys.
-                .on_key_down(cx.listener(move |this, event: &KeyDownEvent, _, cx| {
+                .on_key_down(cx.listener(move |this, event: &KeyDownEvent, window, cx| {
                     if event.keystroke.modifiers.modified() {
                         return;
                     }
@@ -120,7 +121,10 @@ impl MailWindow {
                     } else {
                         "right"
                     };
-                    if event.keystroke.key == back
+                    if katna_ui::direction::arrow(
+                        &event.keystroke.key,
+                        katna_ui::direction::is_rtl(window),
+                    ) == back
                         && this.app_menu.as_ref().is_some_and(|m| m.open.is_some())
                     {
                         this.open_app_submenu(None, cx);
@@ -201,13 +205,18 @@ impl MailWindow {
                         }
                     }))
                 })
-                .on_key_down(cx.listener(move |this, event: &KeyDownEvent, _, cx| {
+                .on_key_down(cx.listener(move |this, event: &KeyDownEvent, window, cx| {
                     let open = if this.app_menu_drills() {
                         "right"
                     } else {
                         "left"
                     };
-                    if !event.keystroke.modifiers.modified() && event.keystroke.key == open {
+                    if !event.keystroke.modifiers.modified()
+                        && katna_ui::direction::arrow(
+                            &event.keystroke.key,
+                            katna_ui::direction::is_rtl(window),
+                        ) == open
+                    {
                         this.open_app_submenu(Some(ix), cx);
                         cx.stop_propagation();
                     }

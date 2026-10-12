@@ -5,11 +5,13 @@
 
 pub mod account;
 pub mod api_off;
+pub mod bidi;
 pub mod category;
 pub mod config;
 pub mod contact;
 pub mod crash;
 pub mod error;
+pub mod health;
 pub mod ids;
 pub mod image;
 pub mod logging;
@@ -21,6 +23,7 @@ pub mod quick_add;
 pub mod sentry;
 pub mod subject;
 pub mod update;
+pub mod usage;
 pub mod wildcard;
 pub mod window;
 

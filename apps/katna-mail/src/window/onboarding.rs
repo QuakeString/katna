@@ -7,6 +7,7 @@
 //! or Skip; Share asks whether to send crash reports (`share_ask`); Ready
 //! offers the tour of the window (`tour`).
 
+use crate::widgets::Tip as _;
 use std::time::Duration;
 
 use gpui::{
@@ -25,7 +26,7 @@ use super::settings::Change;
 use super::{MailWindow, share_ask};
 use crate::daemon;
 use crate::theme::{Theme, fade};
-use crate::widgets::{choice_chip, filled_button, icon, tip};
+use crate::widgets::{choice_chip, filled_button, icon};
 
 /// How long a page takes to slide in.
 const PAGE_IN: Duration = Duration::from_millis(360);
@@ -783,7 +784,7 @@ impl MailWindow {
     fn ready_apps(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         let mail = choice_chip("onboarding-app-mail", tr!("rail-mail"), true, th)
             .cursor_default()
-            .tooltip(tip(tr!("settings-apps-mail-always"), th));
+            .tip(tr!("settings-apps-mail-always"), th);
         let others = AppKind::ALL.into_iter().map(|app| {
             let on = self.config.app_on(app);
             choice_chip(("onboarding-app", app as usize), app_name(app), on, th)

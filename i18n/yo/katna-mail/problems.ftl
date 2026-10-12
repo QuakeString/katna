@@ -60,3 +60,28 @@ service-details-title = Ìdí tí iṣẹ́ náà kò fi bẹ̀rẹ̀
 service-details-body = Ṣẹ̀dà èyí kí o sì fi ránṣẹ́ pẹ̀lú ìròyìn rẹ. Kò sí lẹ́tà tàbí ọ̀rọ̀ aṣínà kankan nínú rẹ̀.
 service-details-copy = Ṣẹ̀dà
 service-details-close = Pa á dé
+service-not-running = Iṣẹ́ ẹ̀yìn Katna kò ṣiṣẹ́.
+service-no-answer = Iṣẹ́ ẹ̀yìn Katna kò dáhùn: { $error }
+service-no-session = Kò sí ìgbà D-Bus: { $error }
+
+## Safe mode: an update left Katna's background service unable to start
+
+safe-line = Katna wà ní ipò ààbò lẹ́yìn ìṣòro kan pẹ̀lú ìmúdójúìwọ̀n, nítorí náà lẹ́tà kò ní ìbámu.
+safe-try-again = Gbìyànjú lẹ́ẹ̀kan sí i
+safe-restore = Dá padà
+safe-restoring = À ń dá dátà rẹ padà láti { $when }…
+safe-restored = A ti dá dátà rẹ padà láti { $when }. Ohun tó wà níbẹ̀ tẹ́lẹ̀ wà nínú fódà kan.
+safe-show-folder = Fi fódà hàn
+safe-restore-failed = A kò lè dá dátà rẹ padà: { $error }
+safe-restore-title = Dá dátà rẹ padà sí bó ṣe wà ṣáájú ìmúdójúìwọ̀n?
+safe-restore-body = Katna ń padà sí ẹ̀dà tí o bá yàn. Lẹ́tà tó dé lẹ́yìn rẹ̀ yóò tún wá láti àwọn àkáǹtì rẹ.
+safe-restore-none = Kò tíì sí ẹ̀dà kankan. Katna ń ṣe ọ̀kan kí ìmúdójúìwọ̀n kọ̀ọ̀kan tó yí dátà rẹ padà.
+safe-restore-keep = Ohun tó wà níbẹ̀ báyìí, pẹ̀lú lẹ́tà tí a kò tíì fi ránṣẹ́, àwọn àkọ̀pamọ́ àti àwọn àyípadà tí kò tíì ní ìbámu, ni a ó kọ́kọ́ fi pamọ́ sínú fódà kan, nítorí náà kò sí ohun tó máa sọnù.
+safe-restore-cancel = Fagilé
+safe-restore-mail = Lẹ́tà
+safe-restore-pim = Àwọn àkáǹtì àti olùbásọ̀rọ̀
+safe-restore-blobs = Àwọn àfikún
+safe-report-title = Ìròyìn àṣìṣe
+safe-report-body = Ṣẹ̀dà èyí kí o sì so ó mọ́ ìròyìn àṣìṣe rẹ. Kò sí lẹ́tà, àdírẹ́sì tàbí ọ̀rọ̀ aṣínà kankan nínú rẹ̀.
+safe-report-restore = Dá padà…
+safe-report-copied = A ti ṣẹ̀dà ìròyìn àṣìṣe

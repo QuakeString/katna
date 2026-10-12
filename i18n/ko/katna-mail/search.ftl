@@ -49,3 +49,13 @@ search-dates-month-back = 이전 달
 search-dates-month-on = 다음 달
 search-dates-year-back = 이전 연도
 search-dates-year-on = 다음 연도
+
+## More results on server: under the results, mail found by asking the
+## mail server, for mail that is not downloaded to this computer yet.
+
+search-server-more = 서버의 추가 결과
+search-server-searching = 서버에서 메일을 검색하는 중…
+search-server-empty-searching = 아직 결과가 없습니다. 서버에서 메일을 검색하는 중…
+search-server-nothing = 서버에 더 이상 결과가 없습니다
+search-server-failed = 서버를 검색할 수 없습니다.
+search-server-again = 다시 시도

@@ -92,6 +92,7 @@ notes-link-note = မှတ်စု ချိတ်ရန်
 notes-link-new = မှတ်စုအသစ် “{ $title }”
 notes-linked-from = ချိတ်ထားသည့် မှတ်စုများ
 notes-link-gone = ထိုမှတ်စု မရှိတော့ပါ
+notes-new-note-gone = မှတ်စုအသစ် မရှိတော့ပါ။
 
 ## Version history
 

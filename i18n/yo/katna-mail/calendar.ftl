@@ -114,6 +114,7 @@ calendar-add-meet = Fi ìpàdé fídíò Google Meet kún
 calendar-add-teams = Fi ìpàdé Teams kún
 calendar-has-call = A ti fi ìpè fídíò kún
 calendar-weekday-day = { $weekday }, { $day }
+calendar-schedule-day = { $weekday }, { $month }
 calendar-all-day-box = Ní gbogbo ọjọ́
 calendar-more-options = Àwọn àṣàyàn mìíràn
 calendar-save = Fi pamọ́

@@ -11,6 +11,7 @@
 //! signature is kept out of sight and added on Send. Replying to an
 //! older bubble aims the reply at that mail, keeping what was written.
 
+use crate::widgets::Tip as _;
 use gpui::{
     AnyElement, Context, ExternalPaths, Focusable, FontWeight, Window, canvas, div, prelude::*,
     rgba,
@@ -27,7 +28,7 @@ use super::{Kind, Mode, Original, SendMail, Threading, draft, para, quote, trim_
 use crate::data::EntryKey;
 use crate::format;
 use crate::theme::Theme;
-use crate::widgets::{icon, icon_button_colored, menu, menu_item_icon, tip};
+use crate::widgets::{icon, icon_button_colored, menu, menu_item_icon};
 use crate::window::RephraseSelection;
 use crate::window::reader::{LONG_PRESS, PRESS_SLOP};
 
@@ -231,7 +232,7 @@ impl MailWindow {
             .child(
                 icon_button_colored("chat-attach", "attachment", 20.0, th.text_faint, th)
                     .size(px(28.0))
-                    .tooltip(tip(tr!("chat-attach"), th))
+                    .tip(tr!("chat-attach"), th)
                     .on_click(cx.listener(move |this, _, window, cx| {
                         start(this, window, cx);
                         this.toggle_popup(Popup::ChatAttach, cx);
@@ -260,7 +261,7 @@ impl MailWindow {
             .text_color(rgba(if format_on { th.text } else { th.text_faint }))
             .when(format_on, |d| d.bg(rgba(format_active(th))))
             .hover(|s| s.text_color(rgba(th.text)))
-            .tooltip(tip(tr!("compose-tool-formatting"), th))
+            .tip(tr!("compose-tool-formatting"), th)
             .on_click(cx.listener(move |this, _, window, cx| {
                 start(this, window, cx);
                 if let Some(c) = &mut this.compose {
@@ -277,7 +278,7 @@ impl MailWindow {
             .child(
                 icon_button_colored("chat-emoji", "emoji", 20.0, th.text_faint, th)
                     .size(px(28.0))
-                    .tooltip(tip(tr!("compose-tool-emoji"), th))
+                    .tip(tr!("compose-tool-emoji"), th)
                     .on_click(cx.listener(move |this, _, window, cx| {
                         start(this, window, cx);
                         this.toggle_popup(Popup::Emoji, cx);
@@ -316,7 +317,7 @@ impl MailWindow {
                 th,
             )
             .size(px(28.0))
-            .tooltip(tip(label, th))
+            .tip(label, th)
             // The text keeps its selection.
             .on_mouse_down(gpui::MouseButton::Left, |_, _, cx| cx.stop_propagation())
             .on_click(cx.listener(move |this, _, window, cx| {
@@ -402,7 +403,7 @@ impl MailWindow {
             .bg(rgba(th.accent))
             .cursor_pointer()
             .hover(|s| s.opacity(0.9))
-            .when(popup.is_none(), |d| d.tooltip(tip(tr!("chat-send"), th)))
+            .when(popup.is_none(), |d| d.tip(tr!("chat-send"), th))
             .on_mouse_down(
                 gpui::MouseButton::Left,
                 cx.listener(move |this, e: &gpui::MouseDownEvent, window, cx| {
@@ -497,7 +498,7 @@ impl MailWindow {
                 .child(
                     icon_button_colored("chat-aim-newest", "close", 18.0, th.text_dim, th)
                         .size(px(28.0))
-                        .tooltip(tip(tr!("chat-reply-newest"), th))
+                        .tip(tr!("chat-reply-newest"), th)
                         .on_click(cx.listener(|this, _, _, cx| {
                             this.aim_chat_reply(None, Kind::ReplyAll, cx);
                         })),

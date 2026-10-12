@@ -70,6 +70,7 @@ shortcut-navigation = Bonisa noma goqa imenyu
 shortcut-quick-settings = Izilungiselelo ezisheshayo
 shortcut-settings = Zonke izilungiselelo
 shortcut-shortcuts = Izinqamuleli zekhibhodi
+shortcut-palette = Iphalethi yemiyalo
 shortcut-reload = Hlola imeyili entsha
 shortcut-quit = Phuma
 

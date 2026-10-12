@@ -6,6 +6,7 @@
 //! bubble and moves on to the next, and the list button shows them all,
 //! to reorder or unpin. A sixth asks which one it replaces.
 
+use crate::widgets::Tip as _;
 use std::cell::{Cell, RefCell};
 use std::collections::HashMap;
 use std::rc::Rc;
@@ -26,7 +27,7 @@ use super::day_label;
 use crate::daemon::Command;
 use crate::format;
 use crate::theme::Theme;
-use crate::widgets::{icon, icon_button_colored, raised, tip};
+use crate::widgets::{icon, icon_button_colored, raised};
 
 /// The longest label a pin keeps.
 const LABEL: usize = 120;
@@ -504,7 +505,7 @@ impl MailWindow {
             .child(
                 icon_button_colored("chat-pin-list", "list-bulleted", 18.0, th.text_dim, th)
                     .size(px(28.0))
-                    .tooltip(tip(tr!("chat-pins-all"), th))
+                    .tip(tr!("chat-pins-all"), th)
                     .on_click(cx.listener(|this, _, _, cx| {
                         cx.stop_propagation();
                         this.toggle_pin_list(cx);
@@ -675,7 +676,7 @@ impl MailWindow {
                 .child(
                     icon_button_colored(("chat-unpin", slot), "close", 16.0, th.text_faint, th)
                         .size(px(26.0))
-                        .tooltip(tip(tr!("chat-unpin"), th))
+                        .tip(tr!("chat-unpin"), th)
                         .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
                         .on_click(cx.listener(move |this, _, _, cx| {
                             cx.stop_propagation();

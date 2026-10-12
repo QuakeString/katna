@@ -66,3 +66,28 @@ service-details-title = አገልግሎቱ ለምን እንደማይጀምር
 service-details-body = ይህን ይቅዱ እና ከሪፖርትዎ ጋር ይላኩት። ምንም ደብዳቤ ወይም የይለፍ ቃል አልያዘም።
 service-details-copy = ቅዳ
 service-details-close = ዝጋ
+service-not-running = የKatna የጀርባ አገልግሎት እየሠራ አይደለም።
+service-no-answer = የKatna የጀርባ አገልግሎት አልመለሰም፦ { $error }
+service-no-session = የD-Bus ክፍለ ጊዜ የለም፦ { $error }
+
+## Safe mode: an update left Katna's background service unable to start
+
+safe-line = Katna ከዝማኔው ጋር በተፈጠረ ችግር ምክንያት በደህንነት ሁነታ ላይ ነው፣ ስለዚህ ደብዳቤ እየተመሳሰለ አይደለም።
+safe-try-again = እንደገና ሞክር
+safe-restore = ወደነበረበት መልስ
+safe-restoring = ውሂብዎን ከ{ $when } በመመለስ ላይ…
+safe-restored = ውሂብዎ ከ{ $when } ተመልሷል። ከዚህ በፊት የነበረው በአንድ አቃፊ ውስጥ ተቀምጧል።
+safe-show-folder = አቃፊውን አሳይ
+safe-restore-failed = ውሂብዎን መመለስ አልተቻለም፦ { $error }
+safe-restore-title = ውሂብዎን ከዝማኔ በፊት ወደነበረው ይመልሱ?
+safe-restore-body = Katna ወደሚመርጡት ቅጂ ይመለሳል። ከዚያ በኋላ የደረሰ ደብዳቤ ከመለያዎችዎ እንደገና ይወርዳል።
+safe-restore-none = እስካሁን ምንም ቅጂ የለም። Katna እያንዳንዱ ዝማኔ ውሂብዎን ከመቀየሩ በፊት አንድ ቅጂ ይሠራል።
+safe-restore-keep = አሁን ያለው፣ ያልተላከ ደብዳቤ፣ ረቂቆች እና ገና ያልተመሳሰሉ ለውጦችን ጨምሮ፣ መጀመሪያ በአንድ አቃፊ ውስጥ ይቀመጣል፣ ስለዚህ ምንም አይጠፋም።
+safe-restore-cancel = ይቅር
+safe-restore-mail = ደብዳቤ
+safe-restore-pim = መለያዎች እና እውቂያዎች
+safe-restore-blobs = አባሪዎች
+safe-report-title = የማረሚያ ሪፖርት
+safe-report-body = ይህን ይቅዱ እና ከስህተት ሪፖርትዎ ጋር ያያይዙት። ምንም ደብዳቤ፣ አድራሻ ወይም የይለፍ ቃል አልያዘም።
+safe-report-restore = ወደነበረበት መልስ…
+safe-report-copied = የማረሚያ ሪፖርት ተቀድቷል

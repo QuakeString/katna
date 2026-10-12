@@ -69,7 +69,6 @@ signature-layout-light = Ìhè
 signature-layout-dark = Ọchịchịrị
 signature-layout-text = Ederede nkịtị
 signature-layout-inside = A na-ezipu foto n'ime ozi ahụ, ya mere ha na-egosi ọbụna ebe agbanyụrụ foto dị anya. Nke a na-agbakwunye { $size } n'ozi ọ bụla.
-signature-layout-free = Ị chọrọ ihe ọzọ?
 signature-layout-edit = Dezie ya n'aka
 signature-layout-edit-confirm = Dezie ya n'aka? Mpaghara ya na nhazi ya ga-apụ, ọ ga-ejigidekwa ọdịdị ya ruo n'ókè onye ndezi nwere ike ijide ya.
 signature-layout-use-confirm = Jiri nhazi { $layout }? Ọ na-edochi mbinye aka a, ejiri ihe si na ya mejupụta ya.

@@ -116,6 +116,7 @@ calendar-add-meet = Ƙara taron bidiyo na Google Meet
 calendar-add-teams = Ƙara taron Teams
 calendar-has-call = An ƙara kiran bidiyo
 calendar-weekday-day = { $weekday }, { $day }
+calendar-schedule-day = { $weekday }, { $month }
 calendar-all-day-box = Duk rana
 calendar-more-options = Ƙarin zaɓuɓɓuka
 calendar-save = Ajiye

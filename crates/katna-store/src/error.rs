@@ -38,6 +38,22 @@ pub enum Error {
         supported: u32,
     },
 
+    /// The disk has no room to back up a database before migrating it, so
+    /// it was left as it was.
+    #[error(
+        "{path}: not enough free disk space to back it up before updating it \
+         ({needed} bytes needed, {available} free)"
+    )]
+    NoRoomForBackup {
+        path: PathBuf,
+        needed: u64,
+        available: u64,
+    },
+
+    /// No backups were made at this time (Unix seconds).
+    #[error("no backup made at {0}")]
+    NoSuchBackup(i64),
+
     /// A read-only database has an older schema; the daemon must migrate it
     /// first.
     #[error("{path}: schema version {found} needs migration to {expected} by katna-daemon")]

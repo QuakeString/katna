@@ -5,6 +5,7 @@
 //! click on a finished one to see it in its folder
 //! (`docs/ARCHITECTURE.md` §13.8). It stays until closed.
 
+use crate::widgets::Tip as _;
 use std::time::Instant;
 
 use gpui::{AnyElement, Context, MouseButton, Window, div, prelude::*, rgba};
@@ -17,7 +18,7 @@ use super::super::super::apps::App;
 use super::{DriveView, Going, Upload};
 use crate::format;
 use crate::theme::{Theme, fade};
-use crate::widgets::{elevation, icon, icon_button, ring, tip};
+use crate::widgets::{elevation, icon, icon_button, ring};
 
 /// The tray's corner radius.
 const RADIUS: f32 = 14.0;
@@ -168,14 +169,14 @@ impl MailWindow {
                     20.0,
                     th,
                 )
-                .tooltip(tip(
+                .tip(
                     if folded {
                         tr!("files-tray-unfold")
                     } else {
                         tr!("files-tray-fold")
                     },
                     th,
-                ))
+                )
                 .on_click(cx.listener(|this, _, _, cx| {
                     this.library.cloud.tray_folded = !this.library.cloud.tray_folded;
                     cx.notify();
@@ -184,7 +185,7 @@ impl MailWindow {
             .when(going.is_empty(), |d| {
                 d.child(
                     icon_button("files-tray-close", "close", 20.0, th)
-                        .tooltip(tip(tr!("files-tray-close"), th))
+                        .tip(tr!("files-tray-close"), th)
                         .on_click(cx.listener(|this, _, _, cx| {
                             this.library.cloud.uploads.clear();
                             cx.notify();
@@ -365,7 +366,7 @@ impl MailWindow {
                 d.child(
                     div().invisible().group_hover(group, |s| s.visible()).child(
                         icon_button(("files-tray-cancel", id as u64), "close", 18.0, th)
-                            .tooltip(tip(tr!("files-tray-cancel"), th))
+                            .tip(tr!("files-tray-cancel"), th)
                             .on_click(cx.listener(move |this, _, _, cx| {
                                 cx.stop_propagation();
                                 this.cancel_uploads(Some(id), cx);

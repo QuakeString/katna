@@ -59,3 +59,28 @@ service-details-title = 服务无法启动的原因
 service-details-body = 复制以下内容并随报告一起发送。其中不含任何邮件或密码。
 service-details-copy = 复制
 service-details-close = 关闭
+service-not-running = Katna 后台服务未在运行。
+service-no-answer = Katna 后台服务没有响应：{ $error }
+service-no-session = 没有 D-Bus 会话：{ $error }
+
+## Safe mode: an update left Katna's background service unable to start
+
+safe-line = 更新出现问题后，Katna 已进入安全模式，因此邮件未在同步。
+safe-try-again = 重试
+safe-restore = 恢复
+safe-restoring = 正在从 { $when } 的副本恢复你的数据…
+safe-restored = 已从 { $when } 的副本恢复你的数据。之前的数据保留在一个文件夹中。
+safe-show-folder = 显示文件夹
+safe-restore-failed = 无法恢复你的数据：{ $error }
+safe-restore-title = 要恢复更新前的数据吗？
+safe-restore-body = Katna 会回到你选择的副本。此后收到的邮件会从你的账号重新下载。
+safe-restore-none = 还没有副本。每次更新更改你的数据之前，Katna 都会创建一个副本。
+safe-restore-keep = 当前的数据（包括未发送的邮件、草稿和尚未同步的更改）会先保留在一个文件夹中，因此不会丢失任何内容。
+safe-restore-cancel = 取消
+safe-restore-mail = 邮件
+safe-restore-pim = 账号和联系人
+safe-restore-blobs = 附件
+safe-report-title = 调试报告
+safe-report-body = 复制此内容并附加到你的错误报告中。其中不含任何邮件、地址或密码。
+safe-report-restore = 恢复…
+safe-report-copied = 已复制调试报告

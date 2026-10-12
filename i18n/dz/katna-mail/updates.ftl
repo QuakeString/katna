@@ -33,3 +33,7 @@ update-dialog-compare = GitHub ནང་ ཁ་བསྡུར་འབད།
 update-dialog-no-service = Katna གི་ རྒྱབ་ལྗོངས་ཞབས་ཏོག་འདི་ གཡོག་བཀོལ་མི་འདུག
 update-dialog-later = ཤུལ་ལས།
 update-dialog-close = ཁ་བསྡམ།
+restart-updated = Katna དུས་མཐུན་བཟོ་ཡི
+restart-button = ལོག་འགོ་བཙུགས།
+restart-close = ད་ལྟོ་མེན།
+restart-failed = Katna Mail གསརཔ་ འགོ་བཙུགས་མ་ཚུགས: { $error }

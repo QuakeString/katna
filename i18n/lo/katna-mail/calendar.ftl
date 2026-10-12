@@ -110,6 +110,7 @@ calendar-add-meet = ເພີ່ມການປະຊຸມວິດີໂອ Go
 calendar-add-teams = ເພີ່ມການປະຊຸມ Teams
 calendar-has-call = ເພີ່ມການໂທວິດີໂອແລ້ວ
 calendar-weekday-day = { $weekday }, { $day }
+calendar-schedule-day = { $weekday }, { $month }
 calendar-all-day-box = ທັງມື້
 calendar-more-options = ຕົວເລືອກເພີ່ມເຕີມ
 calendar-save = ບັນທຶກ

@@ -4287,8 +4287,6 @@ dependencies = [
 [[package]]
 name = "gpui-pre"
 version = "0.3.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a0437c0b83e636a92bd1a39fa1d05fb632ae671289537497b35871ffbe231b84"
 dependencies = [
  "accesskit",
  "anyhow",
@@ -4315,6 +4313,7 @@ dependencies = [
  "gpui-pre-util",
  "gpui-pre-util-macros",
  "heapless",
+ "icu_segmenter",
  "image",
  "inventory",
  "itertools 0.14.0",
@@ -5473,6 +5472,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "icu_segmenter"
+version = "2.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "82d07aafccd67af15d02512a6adf5896fbc5ed00f2e99b471d2efa14016db3db"
+dependencies = [
+ "icu_collections",
+ "icu_locale_fallback",
+ "icu_provider",
+ "icu_segmenter_data",
+ "potential_utf",
+ "smallvec",
+ "utf8_iter",
+ "zerovec",
+]
+
+[[package]]
+name = "icu_segmenter_data"
+version = "2.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ae293c039020f9ec10710af98d29ce6aa2051486638b49c9a6409f3b4a9e98ad"
+
+[[package]]
 name = "icu_time"
 version = "2.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5978,20 +5999,24 @@ dependencies = [
  "base64 0.22.1",
  "jiff",
  "serde",
+ "serde_ignored",
  "serde_json",
  "tempfile",
  "thiserror 2.0.21",
  "toml 1.1.6+spec-1.1.0",
  "tracing",
  "tracing-subscriber",
+ "unicode-bidi",
 ]
 
 [[package]]
 name = "katna-crypto"
 version = "0.0.0"
 dependencies = [
+ "base64 0.22.1",
  "jiff",
  "mail-parser",
+ "ring",
  "tempfile",
  "tracing",
 ]
@@ -6007,6 +6032,7 @@ dependencies = [
  "jiff",
  "katna-ai",
  "katna-core",
+ "katna-crypto",
  "katna-dav",
  "katna-dbus",
  "katna-i18n",
@@ -6212,6 +6238,8 @@ dependencies = [
 name = "katna-search"
 version = "0.0.0"
 dependencies = [
+ "icu_provider",
+ "icu_segmenter",
  "katna-core",
  "katna-crypto",
  "katna-import",
@@ -6289,6 +6317,7 @@ name = "katna-store"
 version = "0.0.0"
 dependencies = [
  "blake3",
+ "fs4",
  "katna-core",
  "regex",
  "rusqlite",
@@ -6309,6 +6338,7 @@ dependencies = [
  "async-net",
  "base64 0.22.1",
  "blocking",
+ "chrono",
  "futures-lite",
  "futures-rustls",
  "imap-codec",
@@ -6355,6 +6385,8 @@ dependencies = [
  "gpui-pre-wgpu",
  "gpui-pre-windows",
  "katna-core",
+ "katna-i18n",
+ "unicode-bidi",
  "unicode-segmentation",
 ]
 
@@ -9586,6 +9618,16 @@ version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6e497af288b3b95d067a23a4f749f2861121ffcb2f6d8379310dcda040c345ed"
 dependencies = [
+ "serde_core",
+]
+
+[[package]]
+name = "serde_ignored"
+version = "0.1.14"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "115dffd5f3853e06e746965a20dcbae6ee747ae30b543d91b0e089668bb07798"
+dependencies = [
+ "serde",
  "serde_core",
 ]
 

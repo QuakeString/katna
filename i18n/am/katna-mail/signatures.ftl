@@ -69,7 +69,6 @@ signature-layout-light = ፈካ ያለ
 signature-layout-dark = ጠቆር ያለ
 signature-layout-text = ግልጽ ጽሑፍ
 signature-layout-inside = ሥዕሎች በደብዳቤው ውስጥ ይላካሉ፣ ስለዚህ የርቀት ምስሎች በጠፉበት ቦታም ይታያሉ። ይህ በእያንዳንዱ ደብዳቤ ላይ { $size } ይጨምራል።
-signature-layout-free = ሌላ ነገር ይፈልጋሉ?
 signature-layout-edit = በእጅ አርትዕ
 signature-layout-edit-confirm = በእጅ ይርትዑት? መስኮቹ እና አቀማመጡ ይጠፋሉ፣ አርታዒው እስከቻለው ድረስ መልኩን ይይዛል።
 signature-layout-use-confirm = የ{ $layout } አቀማመጥን ይጠቀሙ? ይህን ፊርማ ይተካል፣ ከእሱ ተሞልቶ።

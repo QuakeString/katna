@@ -111,6 +111,7 @@ calendar-add-meet = 添加 Google Meet 视频会议
 calendar-add-teams = 添加 Teams 会议
 calendar-has-call = 已添加视频通话
 calendar-weekday-day = { $weekday }，{ $day }
+calendar-schedule-day = { $month }，{ $weekday }
 calendar-all-day-box = 全天
 calendar-more-options = 更多选项
 calendar-save = 保存

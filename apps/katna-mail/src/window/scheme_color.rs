@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! The color picker of the scheme editor and of Settings > Appearance >
-//! Accent's color wheel: a popover beside the clicked swatch, its notch
+//! The color picker of the scheme editor and of the color wheels after
+//! the accent's, an account's and a layout signature's colors: a popover beside the clicked swatch, its notch
 //! pointing at it, with a saturation and brightness square, a hue bar, a
 //! hex field, the scheme's other colors (in the editor) and the ones
 //! picked lately. On Linux a dropper takes a color from anywhere on the
 //! screen (the Screenshot portal's PickColor), and "System picker…" opens
 //! KDE's or GNOME's own color dialog where one is installed.
 
+use crate::widgets::Tip as _;
 use std::cell::{Cell, RefCell};
 use std::collections::HashMap;
 use std::rc::Rc;
@@ -52,6 +53,9 @@ pub(super) enum Target {
     Accent,
     /// An account's own color, from the wheel after its colors.
     Account(AccountId),
+    /// The colour of the layout signature with this id, from the wheel
+    /// after its colours in Settings > Compose > Signatures.
+    Signature(u32),
 }
 
 /// Where each swatch that opens the picker was drawn.
@@ -119,6 +123,10 @@ impl MailWindow {
             },
             Target::Account(id) => match self.account_address(id) {
                 Some(address) => self.account_light(&address),
+                None => return,
+            },
+            Target::Signature(id) => match self.layout_colour(id) {
+                Some(colour) => colour << 8 | 0xff,
                 None => return,
             },
         };
@@ -222,6 +230,7 @@ impl MailWindow {
                     self.set_account_custom(&address, color, cx);
                 }
             }
+            Target::Signature(id) => self.set_layout_colour(id, color >> 8, cx),
         }
     }
 
@@ -444,8 +453,10 @@ impl MailWindow {
             .left_0()
             .size_full()
         };
+        // Saturation from the left, as the gradients are painted.
         let square = div()
             .id("picker-square")
+            .layout_ltr()
             .relative()
             .h(px(SQUARE))
             .rounded(px(10.0))
@@ -506,8 +517,11 @@ impl MailWindow {
                     )),
             );
         }
+        // A colour strip, not a direction: red at the left in every
+        // language, as the pointer reads it.
         let hue = div()
             .id("picker-hue")
+            .layout_ltr()
             .relative()
             .flex_1()
             .h(px(14.0))
@@ -546,7 +560,7 @@ impl MailWindow {
                         .cursor_pointer()
                         .relative()
                         .child(crate::widgets::hover_fade("hover-glow", Some(10.0), th))
-                        .tooltip(crate::widgets::tip(tr!("scheme-picker-dropper"), th))
+                        .tip(tr!("scheme-picker-dropper"), th)
                         .on_click(cx.listener(|this, _, _, cx| {
                             #[cfg(not(windows))]
                             this.pick_from_screen(cx);
@@ -614,7 +628,7 @@ impl MailWindow {
                             fade(th.text, 0.25)
                         }))
                         .cursor_pointer()
-                        .tooltip(crate::widgets::tip(super::scheme_editor::hex(c), th))
+                        .tip(super::scheme_editor::hex(c), th)
                         .on_click(
                             cx.listener(move |this, _, _, cx| this.set_picker_color(c, false, cx)),
                         ),
@@ -626,6 +640,8 @@ impl MailWindow {
         let popover = div()
             .id("color-picker")
             .absolute()
+            // Placed on screen, by what it points at.
+            .placed_ltr()
             .left(px(x))
             .top(px(y))
             .w(px(WIDTH))
@@ -657,7 +673,7 @@ impl MailWindow {
                             .bg(rgba(light))
                             .when(light == color, |d| d.border_2().border_color(rgba(th.text)))
                             .cursor_pointer()
-                            .tooltip(crate::widgets::tip(color_label(name), th))
+                            .tip(color_label(name), th)
                             .on_click(cx.listener(move |this, _, _, cx| {
                                 this.set_picker_color(light, false, cx)
                             })),

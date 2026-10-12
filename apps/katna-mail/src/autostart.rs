@@ -301,13 +301,14 @@ fn entry(exe: &Path, start: Start) -> String {
         "[Desktop Entry]\n\
          Type=Application\n\
          Name=Katna Mail\n\
-         Comment=Started at login (Settings > General > Desktop)\n\
+         Comment={comment}\n\
          Exec={exec}\n\
          Icon={id}\n\
          Terminal=false\n\
          StartupWMClass={id}\n\
          X-GNOME-Autostart-enabled=true\n",
         id = ids::MAIL_APP_ID,
+        comment = katna_i18n::tr!("settings-general-login-entry").replace('\n', " "),
     )
 }
 

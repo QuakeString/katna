@@ -21,6 +21,16 @@ compose-hide-trimmed = ചുരുക്കിയ ഉള്ളടക്കം �
 compose-remove-trimmed = ഉദ്ധരിച്ച വാചകം നീക്കം ചെയ്യുക
 compose-trimmed-removed = ഉദ്ധരിച്ച വാചകം നീക്കം ചെയ്തു
 
+## The quoted or forwarded message, in the mail itself
+
+compose-quote-header = { $date }-ന്, { $from } എഴുതി:
+compose-forward-header = ---------- ഫോർവേഡ് ചെയ്‌ത സന്ദേശം ---------
+compose-forward-from = അയച്ചയാൾ: { $from }
+compose-forward-date = തീയതി: { $date }
+compose-forward-subject = വിഷയം: { $subject }
+compose-forward-to = സ്വീകർത്താവ്: { $to }
+compose-forward-cc = Cc: { $cc }
+
 ## Recipients and subject
 
 compose-to = സ്വീകർത്താവ്

@@ -9,6 +9,7 @@
 //! what reads badly. A card's right-click menu edits, duplicates, exports
 //! or deletes it, with Undo. The files are `crate::user_schemes`'.
 
+use crate::widgets::Tip as _;
 use std::path::PathBuf;
 
 use gpui::{
@@ -755,7 +756,7 @@ impl MailWindow {
                     .cursor_pointer()
                     .relative()
                     .child(crate::widgets::hover_fade("hover-glow", None, th))
-                    .tooltip(crate::widgets::tip(tr!("scheme-editor-remove-side"), th))
+                    .tip(tr!("scheme-editor-remove-side"), th)
                     .on_click(cx.listener(move |this, _, _, cx| this.remove_scheme_side(dark, cx)))
                     .child(icon("remove", th.text_dim, 18.0)),
             )

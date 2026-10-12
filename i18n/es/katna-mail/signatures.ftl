@@ -69,7 +69,6 @@ signature-layout-light = Claro
 signature-layout-dark = Oscuro
 signature-layout-text = Texto sin formato
 signature-layout-inside = Las imágenes se envían dentro del correo, así que se ven incluso donde las imágenes remotas están desactivadas. Esta añade { $size } a cada correo.
-signature-layout-free = ¿Quieres otra cosa?
 signature-layout-edit = Editar a mano
 signature-layout-edit-confirm = ¿Editarla a mano? Sus campos y su diseño desaparecen, y conserva su aspecto en la medida en que el editor pueda mantenerlo.
 signature-layout-use-confirm = ¿Usar el diseño { $layout }? Sustituye esta firma y se rellena con sus datos.

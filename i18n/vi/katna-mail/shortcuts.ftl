@@ -70,6 +70,7 @@ shortcut-navigation = Hiện hoặc thu gọn menu
 shortcut-quick-settings = Cài đặt nhanh
 shortcut-settings = Tất cả chế độ cài đặt
 shortcut-shortcuts = Phím tắt
+shortcut-palette = Bảng lệnh
 shortcut-reload = Kiểm tra thư mới
 shortcut-quit = Thoát
 

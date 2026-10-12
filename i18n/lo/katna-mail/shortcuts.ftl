@@ -70,6 +70,7 @@ shortcut-navigation = ສະແດງ ຫຼື ພັບເມນູ
 shortcut-quick-settings = ການຕັ້ງຄ່າດ່ວນ
 shortcut-settings = ການຕັ້ງຄ່າທັງໝົດ
 shortcut-shortcuts = ປຸ່ມລັດແປ້ນພິມ
+shortcut-palette = ແຜງຄຳສັ່ງ
 shortcut-reload = ກວດຫາອີເມວໃໝ່
 shortcut-quit = ອອກ
 

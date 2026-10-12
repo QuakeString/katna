@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Safe mode if an update goes wrong"
+text = """
+Katna copies your data before an update changes it. If the update leaves
+Katna unable to start, it opens in safe mode: your mail stays readable, and a
+line above it lets you try again or go back to the copy from before the
+update. What's there now is kept in a folder first, so nothing is lost. Copy
+debug report, in About too, gathers what a bug report needs.
+"""

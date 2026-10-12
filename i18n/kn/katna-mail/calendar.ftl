@@ -112,6 +112,7 @@ calendar-add-meet = Google Meet ವೀಡಿಯೊ ಕರೆ ಸೇರಿಸಿ
 calendar-add-teams = Teams ಮೀಟಿಂಗ್ ಸೇರಿಸಿ
 calendar-has-call = ವೀಡಿಯೊ ಕರೆ ಸೇರಿಸಲಾಗಿದೆ
 calendar-weekday-day = { $weekday }, { $day }
+calendar-schedule-day = { $weekday }, { $month }
 calendar-all-day-box = ಇಡೀ ದಿನ
 calendar-more-options = ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳು
 calendar-save = ಉಳಿಸಿ

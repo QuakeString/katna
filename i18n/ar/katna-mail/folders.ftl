@@ -53,6 +53,7 @@ folder-waiting-short = بانتظار الرد
 folder-reminders = التذكيرات
 folder-outbox = صندوق الصادر
 folder-activity = النشاط
+folder-not-on-account = لا يحتوي هذا الحساب على مجلد كهذا.
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

@@ -12,6 +12,7 @@
 //! Text that is not an address stays as a chip with a red outline, and
 //! Send refuses to go while one is there.
 
+use crate::widgets::Tip as _;
 use std::cell::RefCell;
 
 use gpui::{
@@ -26,7 +27,7 @@ use super::MailWindow;
 use super::recipients::{Field, last_entry, mailbox};
 use crate::outgoing;
 use crate::theme::Theme;
-use crate::widgets::{elevation, filled_button, icon, raised, tip};
+use crate::widgets::{elevation, filled_button, icon, raised};
 
 const HEIGHT: f32 = 30.0;
 /// The picture at a chip's left end.
@@ -1146,9 +1147,7 @@ impl MailWindow {
             .when(!selected && !chip.valid, |d| {
                 d.hover(|s| s.bg(rgba(th.hover)))
             })
-            .when(!chip.valid, |d| {
-                d.tooltip(tip(tr!("recipient-not-valid"), th))
-            })
+            .when(!chip.valid, |d| d.tip(tr!("recipient-not-valid"), th))
             .on_click(cx.listener(move |this, event: &ClickEvent, window, cx| {
                 if event.click_count() >= 2 {
                     this.edit_chip(field, ix, window, cx);
@@ -1187,7 +1186,7 @@ impl MailWindow {
                         .rounded_full()
                         .relative()
                         .child(crate::widgets::hover_fade("hover-glow", None, th))
-                        .when(!open, |d| d.tooltip(tip(tr!("recipient-show-address"), th)))
+                        .when(!open, |d| d.tip(tr!("recipient-show-address"), th))
                         .on_click(cx.listener(move |this, _, _, cx| {
                             cx.stop_propagation();
                             this.toggle_chip_card(field, ix, cx);
@@ -1207,7 +1206,7 @@ impl MailWindow {
                     .rounded_full()
                     .relative()
                     .child(crate::widgets::hover_fade("hover-glow", None, th))
-                    .tooltip(tip(tr!("recipient-remove"), th))
+                    .tip(tr!("recipient-remove"), th)
                     .on_click(cx.listener(move |this, _, _, cx| {
                         cx.stop_propagation();
                         this.remove_chip(field, ix, cx);

@@ -67,6 +67,7 @@ shortcut-navigation = مینیو دکھائیں یا سمیٹیں
 shortcut-quick-settings = فوری ترتیبات
 shortcut-settings = تمام ترتیبات
 shortcut-shortcuts = کی بورڈ شارٹ کٹس
+shortcut-palette = کمانڈ پیلیٹ
 shortcut-reload = نئی میل چیک کریں
 shortcut-quit = باہر نکلیں
 

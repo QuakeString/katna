@@ -182,6 +182,23 @@ impl EventSource for XDPEventSource {
     }
 }
 
+/// The desktop's color scheme, read before the first window opens, so that
+/// a dark desktop's window does not draw once in the light scheme and then
+/// switch when the portal's answer arrives (Katna). Light when the portal
+/// does not answer within a moment.
+pub(crate) fn initial_appearance() -> WindowAppearance {
+    let asked = async {
+        let settings = Settings::new().await.ok()?;
+        let scheme = settings.color_scheme().await.ok()?;
+        Some(window_appearance_from_color_scheme(scheme))
+    };
+    let waited = async {
+        smol::Timer::after(std::time::Duration::from_millis(500)).await;
+        None
+    };
+    smol::block_on(smol::future::or(asked, waited)).unwrap_or(WindowAppearance::Light)
+}
+
 fn window_appearance_from_color_scheme(cs: ColorScheme) -> WindowAppearance {
     match cs {
         ColorScheme::PreferDark => WindowAppearance::Dark,

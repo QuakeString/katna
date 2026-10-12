@@ -6,6 +6,7 @@
 
 about-tooltip = Про Katna
 about-tagline = Пошта й календар для стільниці Linux
+about-version = Katna Mail { $version }
 about-copy-version = Копіювати відомості про версію
 about-version-copied = Скопійовано
 about-version-built = Зібрано: { $date }
@@ -38,6 +39,8 @@ about-update-restart = Оновити й перезапустити
 about-update-cancel = Не зараз
 about-changelog = Журнал змін
 about-source = Вихідний код
+about-debug-report = Копіювати звіт для налагодження
+about-debug-report-tip = Версії, перевірка після оновлень і останні рядки журналу — для звіту про ваду. Без пошти й паролів.
 about-coffee = Пригостіть мене кавою
 about-coffee-coffee = Кави?
 about-coffee-tea = Чаю?

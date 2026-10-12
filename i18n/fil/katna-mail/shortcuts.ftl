@@ -70,6 +70,7 @@ shortcut-navigation = Ipakita o itiklop ang menu
 shortcut-quick-settings = Mabilisang setting
 shortcut-settings = Lahat ng setting
 shortcut-shortcuts = Mga keyboard shortcut
+shortcut-palette = Command palette
 shortcut-reload = Tingnan kung may bagong mail
 shortcut-quit = Umalis
 

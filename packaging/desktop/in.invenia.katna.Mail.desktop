@@ -1,4 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
+# Names and comments: i18n/en/desktop.ftl (desktop-mail-*); other languages are
+# added when packaging (packaging/linux/localize-desktop.sh).
+# i18n: desktop-mail
 [Desktop Entry]
 Type=Application
 Name=Katna Mail

@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Command palette"
+text = """
+Press Ctrl+Shift+P and type to find any action or setting, then press
+Enter to run it. Each action shows its keyboard shortcut, and what you
+used last is at the top.
+"""

@@ -69,7 +69,6 @@ signature-layout-light = สว่าง
 signature-layout-dark = มืด
 signature-layout-text = ข้อความธรรมดา
 signature-layout-inside = รูปภาพจะส่งไปภายในอีเมล จึงแสดงได้แม้ในที่ที่ปิดรูปภาพจากเว็บไว้ ลายเซ็นนี้จะเพิ่มขนาด { $size } ให้แต่ละอีเมล
-signature-layout-free = อยากได้แบบอื่นไหม
 signature-layout-edit = แก้ไขเอง
 signature-layout-edit-confirm = แก้ไขเองไหม ช่องข้อมูลและเลย์เอาต์จะหายไป แต่ลายเซ็นจะคงหน้าตาไว้เท่าที่ตัวแก้ไขรองรับได้
 signature-layout-use-confirm = ใช้เลย์เอาต์{ $layout }ไหม เลย์เอาต์นี้จะแทนที่ลายเซ็นนี้ โดยกรอกข้อมูลจากลายเซ็นเดิม

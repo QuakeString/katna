@@ -70,6 +70,7 @@ shortcut-navigation = Fi mẹ́nù hàn tàbí ká a
 shortcut-quick-settings = Ètò kíákíá
 shortcut-settings = Gbogbo ètò
 shortcut-shortcuts = Ọ̀nà àbùjá kíbọ́ọ̀dù
+shortcut-palette = Àpótí àṣẹ
 shortcut-reload = Wá lẹ́tà tuntun
 shortcut-quit = Jáde
 

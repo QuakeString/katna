@@ -69,7 +69,6 @@ signature-layout-light = Ìmọ́lẹ̀
 signature-layout-dark = Òkùnkùn
 signature-layout-text = Ọ̀rọ̀ lásán
 signature-layout-inside = A ń fi àwọn àwòrán ránṣẹ́ nínú lẹ́tà, nítorí náà wọ́n ń hàn kódà níbi tí a ti pa àwòrán ọ̀nà jíjìn. Èyí ń fi { $size } kún lẹ́tà kọ̀ọ̀kan.
-signature-layout-free = Ṣé o fẹ́ nǹkan mìíràn?
 signature-layout-edit = Ṣàtúnṣe rẹ̀ fúnra rẹ
 signature-layout-edit-confirm = Ṣé kí o ṣàtúnṣe rẹ̀ fúnra rẹ? Àwọn àyè àti ìtò rẹ̀ yóò lọ, yóò sì pa ìrísí rẹ̀ mọ́ dé ibi tí olóòtú bá lè gbé e dé.
 signature-layout-use-confirm = Ṣé kí a lo ìtò { $layout }? Yóò rọ́pò ìbuwọ́lù yìí, a ó sì kún un láti inú rẹ̀.

@@ -70,6 +70,7 @@ shortcut-navigation = Onyesha au kunja menyu
 shortcut-quick-settings = Mipangilio ya haraka
 shortcut-settings = Mipangilio yote
 shortcut-shortcuts = Njia za mkato za kibodi
+shortcut-palette = Paleti ya amri
 shortcut-reload = Angalia barua mpya
 shortcut-quit = Ondoka
 

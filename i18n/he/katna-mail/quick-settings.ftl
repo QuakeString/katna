@@ -49,4 +49,5 @@ quick-help = עזרה
 quick-tour = סיור מודרך
 quick-whats-new = מה חדש
 quick-check-updates = בדיקת עדכונים
+quick-send-feedback = שליחת משוב
 quick-about = מידע על Katna

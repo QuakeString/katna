@@ -69,7 +69,6 @@ signature-layout-light = ହାଲୁକା
 signature-layout-dark = ଗାଢ଼
 signature-layout-text = ସାଧା ଟେକ୍ସଟ
 signature-layout-inside = ଛବିଗୁଡ଼ିକ ମେଲ ଭିତରେ ପଠାଯାଏ, ତେଣୁ ୱେବରୁ ଛବି ବନ୍ଦ ଥିଲେ ମଧ୍ୟ ଦେଖାଯାଏ। ଏହା ପ୍ରତ୍ୟେକ ମେଲରେ { $size } ଯୋଗ କରେ।
-signature-layout-free = ଅନ୍ୟ କିଛି ଚାହୁଁଛନ୍ତି?
 signature-layout-edit = ହାତରେ ସମ୍ପାଦନ କରନ୍ତୁ
 signature-layout-edit-confirm = ଏହାକୁ ହାତରେ ସମ୍ପାଦନ କରିବେ? ଏହାର ଫିଲ୍ଡ ଓ ଲେଆଉଟ ଚାଲିଯିବ, ଏବଂ ଏଡିଟର ଯେତିକି ରଖିପାରେ ସେତିକି ଏହାର ରୂପ ରହିବ।
 signature-layout-use-confirm = { $layout } ଲେଆଉଟ ବ୍ୟବହାର କରିବେ? ଏହା ଏହି ଦସ୍ତଖତକୁ ବଦଳାଇଦିଏ, ଏଥିରୁ ତଥ୍ୟ ଭରି।

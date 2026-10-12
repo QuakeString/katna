@@ -116,6 +116,7 @@ calendar-add-meet = Google Meet ভিডিঅ' কল যোগ কৰক
 calendar-add-teams = Teams মিটিং যোগ কৰক
 calendar-has-call = ভিডিঅ' কল যোগ কৰা হ'ল
 calendar-weekday-day = { $weekday }, { $day }
+calendar-schedule-day = { $weekday }, { $month }
 calendar-all-day-box = গোটেই দিন
 calendar-more-options = অধিক বিকল্প
 calendar-save = ছেভ কৰক

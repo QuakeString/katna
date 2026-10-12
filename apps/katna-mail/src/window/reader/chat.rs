@@ -12,6 +12,7 @@
 //! The reply box at the bottom is the inline reply (`compose/chat_box.rs`);
 //! a reply just sent shows its undo countdown beside its bubble.
 
+use crate::widgets::Tip as _;
 use std::cell::{Cell, RefCell};
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
@@ -31,6 +32,7 @@ use katna_ui::{px, unpx};
 
 use super::super::attachments::{Thumb, kind_badge};
 use super::super::compose::Kind;
+use super::super::contact::{other_signer, person_name};
 use super::super::context_menu::Rows;
 use super::super::select::Pieces;
 use super::super::{MailWindow, Menu, rich};
@@ -39,7 +41,7 @@ use crate::daemon::Command;
 use crate::data::Mail;
 use crate::format;
 use crate::theme::{Theme, avatar_color, fade, mix};
-use crate::widgets::{icon, icon_button, icon_button_colored, tip};
+use crate::widgets::{icon, icon_button, icon_button_colored};
 
 mod pins;
 
@@ -847,7 +849,7 @@ impl MailWindow {
                         .cursor_pointer()
                         .shadow(crate::widgets::elevation(th, 2.0))
                         .hover(|s| s.shadow(crate::widgets::elevation(th, 3.0)))
-                        .tooltip(tip(tr!("chat-go-down"), th))
+                        .tip(tr!("chat-go-down"), th)
                         .on_mouse_move(|_, _, cx| cx.stop_propagation())
                         .on_click(cx.listener(|this, _, _, cx| this.glide_chat_to_end(cx)))
                         .child(icon("arrow-down", th.text, 22.0))
@@ -985,6 +987,20 @@ impl MailWindow {
                 .filter(|v| v.from.iter().any(|a| a.email.eq_ignore_ascii_case(email)))
                 .count()
         };
+        // The name the contact card starts from: the first one given on the
+        // newest mail, From before To before Cc (`Mail::message_people`).
+        let named = |email: &str| {
+            views
+                .iter()
+                .rev()
+                .flat_map(|v| v.from.iter().chain(&v.to).chain(&v.cc))
+                .filter(|a| a.email.trim().eq_ignore_ascii_case(email.trim()))
+                .find_map(|a| {
+                    let name = a.name.as_deref()?.trim();
+                    (!name.is_empty() && !name.eq_ignore_ascii_case(email.trim()))
+                        .then(|| name.to_owned())
+                })
+        };
         let mut seen = HashSet::new();
         let mut me: Option<Member> = None;
         let mut members = Vec::new();
@@ -994,8 +1010,16 @@ impl MailWindow {
             if !a.email.contains('@') || !seen.insert(a.email.to_lowercase()) {
                 continue;
             }
+            // As the contact card names them.
+            let known = self.contact_known_name(&a.email);
+            let header = named(&a.email);
+            let signer = reader
+                .signature_of(&a.email)
+                .and_then(|s| other_signer(&s, header.as_deref(), known.as_deref()));
+            let name = person_name(signer.as_deref(), header.as_deref(), known.as_deref())
+                .unwrap_or_else(|| a.email.clone());
             let member = Member {
-                name: a.label().to_owned(),
+                name,
                 email: a.email.clone(),
                 mails: sent(&a.email),
                 me: self.is_me(&a.email),
@@ -1065,7 +1089,7 @@ impl MailWindow {
                 .rounded(px(10.0))
                 .cursor_pointer()
                 .child(crate::widgets::hover_fade("hover-glow", Some(10.0), th))
-                .tooltip(tip(tr!("chat-show-card"), th))
+                .tip(tr!("chat-show-card"), th)
                 .on_hover({
                     let email = email.clone();
                     cx.listener(move |this, hovered: &bool, _, cx| {
@@ -1261,7 +1285,7 @@ impl MailWindow {
         let phone = self.layout.shape.is_phone();
         let back = phone.then(|| {
             icon_button("chat-back", "back", 20.0, th)
-                .tooltip(tip(tr!("reader-back"), th))
+                .tip(tr!("reader-back"), th)
                 .on_click(cx.listener(|this, _, window, cx| {
                     this.close_message(&super::super::CloseMessage, window, cx)
                 }))
@@ -1269,7 +1293,7 @@ impl MailWindow {
         let end = if phone {
             let more = icon_button("chat-more", "more", 20.0, th)
                 .when(self.menu != Some(Menu::ReaderMore), |d| {
-                    d.tooltip(tip(tr!("reader-more"), th))
+                    d.tip(tr!("reader-more"), th)
                 })
                 .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::ReaderMore, cx)));
             self.with_menu(more, Menu::ReaderMore, th, cx)
@@ -1387,7 +1411,7 @@ impl MailWindow {
                         .id(("chat-picture", bubble.ix))
                         .relative()
                         .cursor_pointer()
-                        .tooltip(tip(tr!("chat-show-card"), th))
+                        .tip(tr!("chat-show-card"), th)
                         .on_hover({
                             let pick = pick.clone();
                             cx.listener(move |this, hovered: &bool, _, cx| {
@@ -1526,6 +1550,7 @@ impl MailWindow {
             window: cx.weak_entity(),
             conversation: key_number(r.key),
             part: ix,
+            careful: r.parts.get(ix).is_some_and(|part| self.sender_failed(part)),
         });
         rich::linked_piece(
             pieces,
@@ -1633,14 +1658,14 @@ impl MailWindow {
                 .text_size(px(12.0))
                 .text_color(rgba(th.text_dim))
                 .hover(|s| s.text_color(rgba(th.text)))
-                .tooltip(tip(
+                .tip(
                     if open {
                         tr!("chat-hide-quoted")
                     } else {
                         tr!("chat-show-quoted")
                     },
                     th,
-                ))
+                )
                 .on_click(cx.listener(move |this, _, _, cx| {
                     cx.stop_propagation();
                     if let Some(reader) = &mut this.reader
@@ -2040,7 +2065,7 @@ impl MailWindow {
                     th,
                 )
                 .size(px(28.0))
-                .tooltip(tip(tr!("chat-reply-all"), th))
+                .tip(tr!("chat-reply-all"), th)
                 .on_click(cx.listener(move |this, _, window, cx| {
                     cx.stop_propagation();
                     this.chat_reply(Some(id), Kind::ReplyAll, window, cx);
@@ -2055,14 +2080,14 @@ impl MailWindow {
                     th,
                 )
                 .size(px(28.0))
-                .tooltip(tip(
+                .tip(
                     if pinned {
                         tr!("chat-unpin")
                     } else {
                         tr!("chat-pin")
                     },
                     th,
-                ))
+                )
                 .on_click(cx.listener(move |this, _, _, cx| {
                     cx.stop_propagation();
                     this.toggle_chat_pin(id, Pinned::Mail, cx);
@@ -2077,7 +2102,7 @@ impl MailWindow {
                     th,
                 )
                 .size(px(28.0))
-                .tooltip(tip(tr!("chat-more"), th))
+                .tip(tr!("chat-more"), th)
                 .on_mouse_down(
                     MouseButton::Left,
                     cx.listener(move |this, e: &MouseDownEvent, _, cx| {

@@ -69,7 +69,6 @@ signature-layout-light = ලා
 signature-layout-dark = අඳුරු
 signature-layout-text = සරල පෙළ
 signature-layout-inside = පින්තූර තැපැල තුළම යවන නිසා, වෙබයේ රූප අක්‍රිය තැන්වලද ඒවා පෙනේ. මෙය සෑම තැපැලකටම { $size } එක් කරයි.
-signature-layout-free = වෙනත් දෙයක් අවශ්‍යද?
 signature-layout-edit = අතින් සංස්කරණය කරන්න
 signature-layout-edit-confirm = එය අතින් සංස්කරණය කරන්නද? එහි ක්ෂේත්‍ර සහ පිරිසැලසුම ඉවත් වේ, සංස්කාරකයට දැරිය හැකි තරමට එහි පෙනුම රැඳේ.
 signature-layout-use-confirm = { $layout } පිරිසැලසුම භාවිත කරන්නද? එය මෙම අත්සන ප්‍රතිස්ථාපනය කර, එහි තොරතුරුවලින් පුරවයි.

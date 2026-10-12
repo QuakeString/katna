@@ -53,6 +53,7 @@ folder-waiting-short = Na-eche
 folder-reminders = Ncheta
 folder-outbox = Igbe ozi mpụta
 folder-activity = Ihe omume
+folder-not-on-account = Akaụntụ a enweghị folda dị otú ahụ.
 
 ## New label / new folder dialog (Gmail accounts have labels, others folders)
 

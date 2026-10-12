@@ -21,6 +21,16 @@ compose-hide-trimmed = ซ่อนเนื้อหาที่ตัดออ
 compose-remove-trimmed = นำข้อความที่อ้างอิงออก
 compose-trimmed-removed = นำข้อความที่อ้างอิงออกแล้ว
 
+## The quoted or forwarded message, in the mail itself
+
+compose-quote-header = เมื่อ { $date } { $from } เขียนว่า:
+compose-forward-header = ---------- ข้อความที่ส่งต่อ ---------
+compose-forward-from = จาก: { $from }
+compose-forward-date = วันที่: { $date }
+compose-forward-subject = หัวเรื่อง: { $subject }
+compose-forward-to = ถึง: { $to }
+compose-forward-cc = สำเนา: { $cc }
+
 ## Recipients and subject
 
 compose-to = ถึง

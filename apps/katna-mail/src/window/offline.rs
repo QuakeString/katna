@@ -11,6 +11,7 @@
 //! From. Its right-click menu, the account card and Settings > Accounts
 //! take it offline, for an hour, until tomorrow or until brought back.
 
+use crate::widgets::Tip as _;
 use std::time::Duration;
 
 use gpui::{
@@ -25,7 +26,7 @@ use katna_ui::{px, tokens};
 
 use super::MailWindow;
 use crate::theme::Theme;
-use crate::widgets::{icon, tip};
+use crate::widgets::icon;
 
 /// How long "For 1 hour" takes an account offline.
 const HOUR: i64 = 60 * 60;
@@ -192,7 +193,7 @@ impl MailWindow {
             .cursor_pointer()
             .hover(|s| s.bg(rgba(th.hover)))
             .child(icon("cloud-off", th.text_dim, size * 0.7))
-            .tooltip(tip(format!("{text}\n{}", tr!("offline-click-online")), th))
+            .tip(format!("{text}\n{}", tr!("offline-click-online")), th)
             .on_click(cx.listener(move |this, _, _, cx| {
                 cx.stop_propagation();
                 this.set_account_offline(account, None, cx);

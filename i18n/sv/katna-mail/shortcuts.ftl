@@ -70,6 +70,7 @@ shortcut-navigation = Visa eller fäll ihop menyn
 shortcut-quick-settings = Snabbinställningar
 shortcut-settings = Alla inställningar
 shortcut-shortcuts = Kortkommandon
+shortcut-palette = Kommandopalett
 shortcut-reload = Sök efter ny e-post
 shortcut-quit = Avsluta
 

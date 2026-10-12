@@ -325,6 +325,8 @@ impl MailWindow {
         let popover = div()
             .id("year-peek")
             .absolute()
+            // Placed on screen, by the day it points at.
+            .placed_ltr()
             .left(px(x))
             .top(px(y))
             .w(px(WIDTH))

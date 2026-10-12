@@ -61,3 +61,13 @@ search-dates-month-back = Föregående månad
 search-dates-month-on = Nästa månad
 search-dates-year-back = Föregående år
 search-dates-year-on = Nästa år
+
+## More results on server: under the results, mail found by asking the
+## mail server, for mail that is not downloaded to this computer yet.
+
+search-server-more = Fler resultat på servern
+search-server-searching = Söker i e-post på servern…
+search-server-empty-searching = Inget här än. Söker i e-post på servern…
+search-server-nothing = Inga fler resultat på servern
+search-server-failed = Det gick inte att söka på servern.
+search-server-again = Försök igen

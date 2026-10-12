@@ -12,6 +12,7 @@
 //! opens the card's summary as a popover ([`peek`]), or a sheet on a
 //! phone.
 
+use crate::widgets::Tip as _;
 use std::cell::Cell;
 use std::collections::HashMap;
 use std::rc::Rc;
@@ -43,9 +44,7 @@ use crate::data::{Entry, EntryKey, RowFile};
 use crate::format;
 use crate::profile::{self, Profile};
 use crate::theme::{Theme, mix};
-use crate::widgets::{
-    card_outline, icon, icon_button, icon_button_colored, tip, tonal_icon_button,
-};
+use crate::widgets::{card_outline, icon, icon_button, icon_button_colored, tonal_icon_button};
 
 /// The card's width.
 pub(super) const CONTACT_WIDTH: f32 = 300.0;
@@ -358,14 +357,14 @@ impl MailWindow {
                 if on { th.accent } else { th.text_dim },
                 th,
             )
-            .tooltip(tip(
+            .tip(
                 if on {
                     tr!("contact-panel-hide")
                 } else {
                     tr!("contact-panel-show")
                 },
                 th,
-            ))
+            )
             .on_click(cx.listener(|this, _, _, cx| this.toggle_contact_panel(cx)))
             .into_any_element(),
         )
@@ -406,6 +405,12 @@ impl MailWindow {
         matches!(self.contact.profiles.get(email), Some((_, None)))
     }
 
+    /// The name `email` uses most on mail, once their profile was read.
+    pub(super) fn contact_known_name(&self, email: &str) -> Option<String> {
+        let (_, profile) = self.contact.profiles.get(&email.to_lowercase())?;
+        profile.as_ref()?.summary.name.clone()
+    }
+
     fn contact_profile(&mut self, email: &str, cx: &mut Context<Self>) -> Option<Rc<Profile>> {
         let known = self.contact.profiles.get(email).cloned();
         // Being read for the first time, or read a while ago.
@@ -428,10 +433,7 @@ impl MailWindow {
                     .background_executor()
                     .spawn({
                         let address = address.clone();
-                        async move {
-                            std::thread::sleep(std::time::Duration::from_millis(1500));
-                            profile::read(&paths, &address, &task_mails)
-                        }
+                        async move { profile::read(&paths, &address, &task_mails) }
                     })
                     .await;
                 this.update(cx, |this, cx| {
@@ -639,7 +641,7 @@ impl MailWindow {
             .child(
                 div().absolute().top(px(6.0)).right(px(6.0)).child(
                     icon_button("contact-close", "close", 20.0, th)
-                        .tooltip(tip(tr!("contact-panel-hide"), th))
+                        .tip(tr!("contact-panel-hide"), th)
                         .on_click(cx.listener(|this, _, _, cx| this.toggle_contact_panel(cx))),
                 ),
             )
@@ -702,18 +704,10 @@ impl MailWindow {
             .reading
             .then(|| self.reader.as_ref()?.signature_of(email))
             .flatten();
-        // A colleague signed the open mail from a shared address
-        // ("accounts@"): the card is theirs, not that of a name the
-        // address used on other mail.
-        let signer = open_signature.as_deref().and_then(|s| {
-            let signer = signature::signer(s)?;
-            (known_name.is_none() || signature::someone_else(s, known_name.as_deref()))
-                .then_some(signer)
-        });
-        let name = signer
-            .clone()
-            .or(known_name)
-            .or_else(|| name.map(str::to_owned));
+        let signer = open_signature
+            .as_deref()
+            .and_then(|s| other_signer(s, name, known_name.as_deref()));
+        let name = person_name(signer.as_deref(), name, known_name.as_deref());
         // What older mail said of the person is not the signer's.
         let card = profile.as_ref().map(|p| match signer {
             Some(_) => profile::Card {
@@ -1048,7 +1042,7 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> gpui::Div {
         let button = |id: &'static str, name: &str, label: String| {
-            tonal_icon_button(id, name, size, false, true, th).tooltip(tip(label, th))
+            tonal_icon_button(id, name, size, false, true, th).tip(label, th)
         };
         let to = email.to_owned();
         let query = format!("from:{email} OR to:{email}");
@@ -1063,7 +1057,7 @@ impl MailWindow {
                     tr!("quiet-mute-sender")
                 };
                 tonal_icon_button("contact-mute", "bell-off", size, muted, true, th)
-                    .tooltip(tip(label, th))
+                    .tip(label, th)
                     .on_click(cx.listener(move |this, _, _, cx| {
                         this.mute_sender(address.clone(), !muted, cx)
                     }))
@@ -1116,7 +1110,7 @@ impl MailWindow {
         };
         let email = email.to_owned();
         tonal_icon_button("contact-save", glyph, size, false, !adding, th)
-            .tooltip(tip(label, th))
+            .tip(label, th)
             .when(!adding, |d| {
                 d.on_click(cx.listener(move |this, _, window, cx| {
                     if this.is_saved_contact(&email) {
@@ -1472,7 +1466,7 @@ impl MailWindow {
                     .cursor_pointer()
                     .text_color(rgba(th.accent))
                     .hover(|s| s.underline())
-                    .tooltip(tip(tr!("contact-call"), th))
+                    .tip(tr!("contact-call"), th)
                     .on_click(move |_, _, cx| cx.open_url(&dial))
                     .child(number),
             )
@@ -1498,7 +1492,7 @@ impl MailWindow {
                     .opacity(0.0)
                     .group_hover(group, |s| s.opacity(1.0))
                     .hover(|s| s.bg(rgba(th.hover)))
-                    .tooltip(tip(tr!("contact-copy-number"), th))
+                    .tip(tr!("contact-copy-number"), th)
                     .on_click(cx.listener(move |this, _, _, cx| {
                         cx.write_to_clipboard(ClipboardItem::new_string(copied.clone()));
                         this.show_snackbar(tr!("contact-number-copied"), None, cx);
@@ -1715,14 +1709,14 @@ impl MailWindow {
                             .id(("contact-task-tick", id as usize))
                             .flex_none()
                             .rounded_full()
-                            .tooltip(tip(
+                            .tip(
                                 if done {
                                     tr!("tasks-mark-open")
                                 } else {
                                     tr!("tasks-mark-done")
                                 },
                                 th,
-                            ))
+                            )
                             .child(super::tasks_page::round_tick(done, true, th))
                             .on_click(cx.listener(move |this, _, _, cx| {
                                 cx.stop_propagation();
@@ -2011,7 +2005,7 @@ fn page_chips(id: &'static str, pages: &[signature::Link], th: &Theme) -> AnyEle
                 .cursor_pointer()
                 .relative()
                 .child(crate::widgets::hover_fade("hover-glow", None, th))
-                .tooltip(tip(link.url.clone(), th))
+                .tip(link.url.clone(), th)
                 .on_click(move |_, _, cx| cx.open_url(&url));
             match brand_icon(link.site) {
                 Some(name) => chip.w(px(24.0)).child(icon(name, th.text_dim, 14.0)),
@@ -2167,4 +2161,63 @@ fn contact_placeholder(th: &Theme, reduce: bool) -> AnyElement {
                 )
         }));
     super::skeleton::breathing("contact-placeholder", rows, reduce)
+}
+
+/// Who signed `signature`, when it isn't the person the mail is from:
+/// a colleague writing from a shared address ("accounts@"). The mail's
+/// own name for its sender counts first, then the name the address uses
+/// most on other mail.
+pub(super) fn other_signer(
+    signature: &str,
+    header: Option<&str>,
+    known: Option<&str>,
+) -> Option<String> {
+    let signer = signature::signer(signature)?;
+    let named = header.filter(|n| !n.trim().is_empty()).or(known);
+    (named.is_none() || signature::someone_else(signature, named)).then_some(signer)
+}
+
+/// The name a person goes by, wherever it shows (the card, the chat's
+/// people): who signed their mail here, else the name their mail here
+/// carries, else the one the address uses most.
+pub(super) fn person_name(
+    signer: Option<&str>,
+    header: Option<&str>,
+    known: Option<&str>,
+) -> Option<String> {
+    signer
+        .or(header.filter(|n| !n.trim().is_empty()))
+        .or(known)
+        .map(str::to_owned)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{other_signer, person_name};
+
+    const SIGNED: &str = "Best Regards,\nRakib Alam\nAccounts\n+91 70447 62847";
+
+    #[test]
+    fn a_colleague_on_a_shared_address_goes_by_their_signature() {
+        let signer = other_signer(SIGNED, Some("Niyajuddin Mollick"), None);
+        assert_eq!(signer.as_deref(), Some("Rakib Alam"));
+        let name = person_name(signer.as_deref(), Some("Niyajuddin Mollick"), None);
+        assert_eq!(name.as_deref(), Some("Rakib Alam"));
+    }
+
+    #[test]
+    fn a_sender_signing_their_own_mail_keeps_the_mail_name() {
+        let signer = other_signer(SIGNED, Some("Rakib Alam"), Some("Accounts Team"));
+        assert_eq!(signer, None);
+        let name = person_name(None, Some("Rakib Alam"), Some("Accounts Team"));
+        assert_eq!(name.as_deref(), Some("Rakib Alam"));
+    }
+
+    #[test]
+    fn the_mail_name_comes_before_the_usual_one() {
+        let name = person_name(None, Some("Niyajuddin Mollick"), Some("Rakib Alam"));
+        assert_eq!(name.as_deref(), Some("Niyajuddin Mollick"));
+        let name = person_name(None, Some("  "), Some("Rakib Alam"));
+        assert_eq!(name.as_deref(), Some("Rakib Alam"));
+    }
 }

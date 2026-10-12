@@ -9,6 +9,7 @@
 //! words ([`Say`]); the shape, the states and the fixes are the same on
 //! every page.
 
+use crate::widgets::Tip as _;
 use std::collections::{HashMap, HashSet};
 
 use gpui::{
@@ -21,7 +22,6 @@ use katna_ui::px;
 use super::MailWindow;
 use crate::daemon::{self, AccountState, AddError};
 use crate::theme::Theme;
-use crate::widgets::tip;
 
 /// Where one page's accounts stand, as last read from the daemon.
 #[derive(Default)]
@@ -345,7 +345,7 @@ impl MailWindow {
                         .font_weight(FontWeight::MEDIUM)
                         .text_color(rgba(th.accent))
                         .hover(|s| s.underline())
-                        .tooltip(tip(hint, th))
+                        .tip(hint, th)
                         .on_click(cx.listener(move |this, event: &ClickEvent, window, cx| {
                             this.fix_account(of, id, fix, event.position(), window, cx)
                         }))
@@ -366,10 +366,7 @@ impl MailWindow {
                 .font_weight(FontWeight::MEDIUM)
                 .text_color(rgba(th.accent))
                 .hover(|s| s.underline())
-                .tooltip(tip(
-                    katna_i18n::tr!("google-api-turn-on-tooltip", api = api),
-                    th,
-                ))
+                .tip(katna_i18n::tr!("google-api-turn-on-tooltip", api = api), th)
                 .on_click(move |_, _, cx| cx.open_url(&url))
                 .child(katna_i18n::tr!("google-api-turn-on"))
                 .into_any_element()

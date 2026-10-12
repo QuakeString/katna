@@ -67,9 +67,11 @@ mod other_contacts;
 mod reminders;
 mod rules;
 mod rules_server;
+mod server_search;
 
 pub use mutes::MuteOf;
 pub use reminders::{SNOOZED, is_snoozed_path};
+pub use sign_in::Page;
 pub(crate) use sign_in::open_in_browser;
 mod sign_in;
 mod summaries;
@@ -118,6 +120,13 @@ pub enum Notice {
     TrackingChanged,
     /// Where an update of Katna stands changed.
     UpdateChanged,
+    /// The sign-in page of `SignInFromApp`'s `ticket`, for the app at bus
+    /// name `to` to open.
+    SignInPage {
+        to: String,
+        ticket: String,
+        url: String,
+    },
     /// A Google Drive upload moved on.
     DriveChanged(i64),
     /// Calendars, their events or the calendar sync's state changed.
@@ -279,6 +288,12 @@ pub struct Daemon {
     /// Asks the [`crate::Instance`] to delete the files and exit; it
     /// answers on the sender inside.
     delete_requests: (Sender<DeleteDone>, Receiver<DeleteDone>),
+    /// Asks the [`crate::Instance`] to stop, so the next start runs what
+    /// Katna Mail asked of safe mode.
+    restart_requests: (Sender<()>, Receiver<()>),
+    /// This start is in safe mode (`docs/ARCHITECTURE.md` §21.2): nothing
+    /// syncs; mail already in the outbox still goes out.
+    safe_mode: bool,
     /// Tells the crash report sender that settings changed.
     crash_uploads: (Sender<()>, Receiver<()>),
     /// Access tokens of the accounts that sign in with OAuth2, shared by
@@ -356,6 +371,7 @@ impl Daemon {
         let sync = saved.sync;
         let setting = sync.metered;
         let (notices, receiver) = async_channel::unbounded();
+        let safe_mode = katna_core::health::Health::load(&paths.health_file()).safe_mode;
         let daemon = Arc::new(Self {
             paths,
             store: Mutex::new(store),
@@ -386,6 +402,8 @@ impl Daemon {
             resetting: AtomicBool::new(false),
             indexer: OnceLock::new(),
             delete_requests: async_channel::bounded(1),
+            restart_requests: async_channel::bounded(1),
+            safe_mode,
             crash_uploads: async_channel::bounded(1),
             tokens: Mutex::default(),
             linked: Mutex::default(),
@@ -465,6 +483,18 @@ impl Daemon {
         // and nothing else waits for that answer.
         // Before any worker starts: an offline account never connects.
         self.apply_offline_at_start();
+        if self.safe_mode {
+            // Nothing syncs or changes; mail the user already sent goes.
+            tracing::warn!("safe mode: only the outbox runs");
+            self.start_outbox()?;
+            smol::spawn(sign_in::save_rotated(
+                Arc::downgrade(self),
+                self.rotated.1.clone(),
+            ))
+            .detach();
+            smol::spawn(crate::updates::run(Arc::downgrade(self))).detach();
+            return Ok(());
+        }
         smol::spawn(offline::run(
             Arc::downgrade(self),
             self.offline_wake.1.clone(),
@@ -820,6 +850,103 @@ impl Daemon {
         let pictures = Pictures::system(self.paths.cache_dir())
             .map_err(|err| CommandError::Failed(format!("TLS setup: {err}")))?;
         Ok(pictures.sender(address).await)
+    }
+
+    /// Keeps the Autocrypt key in `message`, which the user opened, for
+    /// encrypting to its sender later: only when the user's provider
+    /// authenticated the message's `From`, which must be the key's
+    /// address. The key goes to Katna's own directory, never the user's
+    /// GnuPG keyring.
+    pub async fn learn_key(&self, message: MessageId) -> Result<(), CommandError> {
+        let raw = {
+            let store = self.store();
+            if !store.message_authenticated(message)? {
+                return Ok(());
+            }
+            let stored = store
+                .messages_by_id(&[message])?
+                .into_iter()
+                .next()
+                .ok_or(CommandError::UnknownMessage(message.0))?;
+            match &stored.blob_hash {
+                Some(hash) => store.blobs().get(hash)?,
+                None => None,
+            }
+        };
+        let Some(raw) = raw else {
+            return Ok(());
+        };
+        let peers = katna_crypto::PeerKeys::new(self.paths.peer_keys_dir());
+        smol::unblock(move || {
+            let Some(found) = katna_crypto::autocrypt::in_message(&raw) else {
+                return;
+            };
+            // A date in the future would win over every later mail.
+            let seen = found.date.min(jiff::Timestamp::now().as_second());
+            let gnupg = katna_crypto::Gnupg::new();
+            let kept = peers.remember(
+                &gnupg,
+                &found.address,
+                &found.key,
+                katna_crypto::KeySource::Autocrypt,
+                seen,
+            );
+            if let Err(err) = kept {
+                tracing::debug!(%err, "Autocrypt key not kept");
+            }
+        })
+        .await;
+        Ok(())
+    }
+
+    /// Looks up a public key for `address` in its domain's Web Key
+    /// Directory and keeps it ([`Self::learn_key`]'s directory). Returns
+    /// its fingerprint, or empty when the domain has none. Only the
+    /// address's own domain is asked.
+    pub async fn look_up_key(&self, address: &str) -> Result<String, CommandError> {
+        let address = address.trim().to_lowercase();
+        let Some(urls) = katna_crypto::wkd::urls(&address) else {
+            return Err(CommandError::Failed(format!(
+                "{address:?} is not an address"
+            )));
+        };
+        let tls = Tls::system().map_err(|err| CommandError::Failed(format!("TLS setup: {err}")))?;
+        let mut why = String::from("no key published");
+        for url in urls {
+            let key = katna_sync::autoconfig::http::get_public(
+                &url,
+                &tls,
+                std::time::Duration::from_secs(15),
+                katna_crypto::MAX_KEY,
+            )
+            .await;
+            let key = match key {
+                Ok(Some(key)) if !key.is_empty() => key,
+                Ok(_) => continue,
+                Err(err) => {
+                    tracing::debug!(%err, %url, "Web Key Directory");
+                    continue;
+                }
+            };
+            let peers = katna_crypto::PeerKeys::new(self.paths.peer_keys_dir());
+            let address = address.clone();
+            let kept = smol::unblock(move || {
+                peers.remember(
+                    &katna_crypto::Gnupg::new(),
+                    &address,
+                    &key,
+                    katna_crypto::KeySource::Wkd,
+                    jiff::Timestamp::now().as_second(),
+                )
+            })
+            .await;
+            match kept {
+                Ok(peer) => return Ok(peer.fingerprint),
+                Err(err) => why = err,
+            }
+        }
+        tracing::debug!(%address, %why, "no key in the Web Key Directory");
+        Ok(String::new())
     }
 
     /// The company of the person at `address`, as JSON, or empty; under
@@ -1200,6 +1327,22 @@ impl Daemon {
             let _ = self.notices.try_send(Notice::MailChanged(account.id));
         }
         forgotten
+    }
+
+    /// Stops the daemon, so the next start runs a safe mode request.
+    pub fn restart(&self) {
+        tracing::info!("stopping for a safe mode request");
+        let _ = self.restart_requests.0.try_send(());
+    }
+
+    /// Requests from [`Daemon::restart`].
+    pub(crate) fn restart_requests(&self) -> Receiver<()> {
+        self.restart_requests.1.clone()
+    }
+
+    /// Whether this start is in safe mode.
+    pub fn safe_mode(&self) -> bool {
+        self.safe_mode
     }
 
     /// Requests from [`Daemon::delete_all_data`].
@@ -2220,6 +2363,48 @@ impl Daemon {
         let _ = self.notices.try_send(Notice::StatusChanged(id));
     }
 
+    /// What `Version()` answers: this build's version, the `Pim1` level
+    /// it speaks and the schema version of each database.
+    pub fn version(&self) -> (String, u32, HashMap<String, u32>) {
+        use katna_dbus::schema;
+        use katna_store::DbKind;
+        let schemas = [
+            (schema::MAIL, DbKind::Mail.schema_version()),
+            (schema::PIM, DbKind::Pim.schema_version()),
+            (schema::BLOBS, DbKind::Blobs.schema_version()),
+            (schema::SEARCH, katna_search::SCHEMA_VERSION),
+        ]
+        .into_iter()
+        .map(|(name, version)| (name.to_owned(), version))
+        .collect();
+        (
+            katna_core::update::VERSION.to_owned(),
+            katna_dbus::API_LEVEL,
+            schemas,
+        )
+    }
+
+    /// What a restart after an update waits for, if anything: a message
+    /// being handed to its server, or due to be within the longest undo
+    /// delay. Everything else waiting is kept on disk and picked up again
+    /// (`docs/ARCHITECTURE.md` §21.2, Running while updated).
+    pub fn restart_waits_for(&self) -> Option<&'static str> {
+        let longest_undo = katna_core::config::UNDO_SEND_CHOICES
+            .iter()
+            .max()
+            .copied()
+            .unwrap_or(0);
+        let until = unix_now() + i64::from(longest_undo) + 5;
+        match self.store().sending_before(until) {
+            Ok(true) => Some("a message is being sent"),
+            Ok(false) => None,
+            Err(err) => {
+                tracing::warn!(%err, "checking the outbox before restarting");
+                None
+            }
+        }
+    }
+
     pub(crate) fn store(&self) -> MutexGuard<'_, Store> {
         self.store.lock().unwrap()
     }
@@ -2390,6 +2575,14 @@ impl Outgoing for SmtpAccounts {
 
     fn tracking(&self) -> Option<tracking::Client> {
         self.0.upgrade()?.tracking_client()
+    }
+
+    fn gnupg(&self) -> katna_crypto::Gnupg {
+        let gnupg = katna_crypto::Gnupg::new();
+        match self.0.upgrade() {
+            Some(daemon) => gnupg.with_peer_keys(daemon.paths.peer_keys_dir()),
+            None => gnupg,
+        }
     }
 
     async fn tracking_token(&self) -> katna_sync::Result<String> {

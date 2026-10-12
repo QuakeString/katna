@@ -65,6 +65,13 @@ fn google_reads_every_page_then_changes() {
                 r#"{"connections":[{"resourceName":"people/c2","metadata":{"deleted":true}}],"nextSyncToken":"sync-2"}"#.into(),
             );
         }
+        if path.contains("syncToken=expired") {
+            return (
+                400,
+                vec![],
+                r#"{"error":{"code":400,"message":"Sync token is expired. Clear local cache and retry call without the sync token.","status":"FAILED_PRECONDITION","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"EXPIRED_SYNC_TOKEN"}]}}"#.into(),
+            );
+        }
         if path.contains("syncToken=old") {
             return (
                 410,
@@ -125,6 +132,11 @@ fn google_reads_every_page_then_changes() {
     let again = smol::block_on(google.sync(Some("old"))).unwrap();
     assert!(again.full);
     assert_eq!(again.contacts.len(), 2);
+    // As the People API says it now: 400, not 410.
+    let again = smol::block_on(google.sync(Some("expired"))).unwrap();
+    assert!(again.full);
+    assert_eq!(again.contacts.len(), 2);
+    assert_eq!(again.sync_token.as_deref(), Some("sync-1"));
 }
 
 #[test]
@@ -400,12 +412,19 @@ fn microsoft_sets_categories() {
 
 #[test]
 fn google_reads_and_saves_other_contacts() {
-    let (api, seen) = serve(|req, _| match (req.method.as_str(), req.path.as_str()) {
+    let (api, seen) = serve(|req, _| {
+        match (req.method.as_str(), req.path.as_str()) {
         ("GET", p) if p.starts_with("/v1/otherContacts?") && p.contains("syncToken=o1") => (
             200,
             vec![],
             r#"{"otherContacts":[{"resourceName":"otherContacts/c7","metadata":{"deleted":true}}],
                "nextSyncToken":"o2"}"#
+                .into(),
+        ),
+        ("GET", p) if p.starts_with("/v1/otherContacts?") && p.contains("syncToken=gone") => (
+            400,
+            vec![],
+            r#"{"error":{"code":400,"message":"Sync token is expired. Clear local cache and retry call without the sync token.","status":"FAILED_PRECONDITION"}}"#
                 .into(),
         ),
         ("GET", p) if p.starts_with("/v1/otherContacts?") => (
@@ -430,6 +449,7 @@ fn google_reads_and_saves_other_contacts() {
                 .into(),
         ),
         _ => (400, vec![], "{}".into()),
+    }
     });
     let google = google(&api, GOOGLE_OTHER_CONTACTS);
     assert!(smol::block_on(google.other_allowed()).unwrap());
@@ -440,6 +460,10 @@ fn google_reads_and_saves_other_contacts() {
     assert_eq!(all.sync_token.as_deref(), Some("o1"));
     assert_eq!(all.contacts[0].remote_id, "otherContacts/c7");
     assert_eq!(all.contacts[0].card.display_name(), "Ravi Kumar");
+    // An expired token reads them all again.
+    let again = smol::block_on(google.other_contacts(Some("gone"))).unwrap();
+    assert!(again.full);
+    assert_eq!(again.sync_token.as_deref(), Some("o1"));
     let change = smol::block_on(google.other_contacts(Some("o1"))).unwrap();
     assert_eq!(change.deleted, ["otherContacts/c7"]);
 

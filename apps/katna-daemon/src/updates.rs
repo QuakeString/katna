@@ -17,6 +17,7 @@
 //! Packages that do not update themselves ([`Package::Other`]) are never
 //! checked.
 
+use std::hash::BuildHasher;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::sync::{Mutex, Weak};
@@ -24,7 +25,7 @@ use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
 use async_channel::{Receiver, Sender};
 use futures_lite::FutureExt;
-use katna_core::update::{self, MAX_SIZE, Manifest, Package};
+use katna_core::update::{self, Channel, MAX_SIZE, Manifest, Package};
 use katna_dbus::{UpdateStatus, update_state as state};
 use katna_sync::autoconfig::http;
 use katna_sync::net::Tls;
@@ -81,9 +82,9 @@ pub(crate) struct Updates {
 
 impl Default for Updates {
     fn default() -> Self {
-        let first = match Package::current().manifest_url() {
-            Some(_) => state::IDLE,
-            None => state::UNSUPPORTED,
+        let first = match Package::current().updates() {
+            true => state::IDLE,
+            false => state::UNSUPPORTED,
         };
         Self {
             status: Mutex::new(UpdateStatus {
@@ -154,7 +155,7 @@ impl Updates {
 /// Checks now and then, and when asked, until the daemon is gone.
 pub(crate) async fn run(daemon: Weak<Daemon>) {
     let package = Package::current();
-    if package.manifest_url().is_none() {
+    if !package.updates() {
         tracing::debug!("this build does not update itself");
         return;
     }
@@ -162,6 +163,8 @@ pub(crate) async fn run(daemon: Weak<Daemon>) {
         return;
     };
     let mut schedule = Schedule::new(SystemTime::now(), Instant::now());
+    // The channel the last check read, to look again when it changes.
+    let mut checked_on = None;
     loop {
         let why = async { wake.recv().await.unwrap_or(Wake::Timer) }
             .or(async {
@@ -184,12 +187,23 @@ pub(crate) async fn run(daemon: Weak<Daemon>) {
                 schedule.checked(SystemTime::now());
                 continue;
             }
+            Wake::Timer if !settings(daemon.paths()).updates.check => {
+                tracing::debug!("update checks are off");
+                schedule.checked(SystemTime::now());
+                continue;
+            }
             Wake::Timer | Wake::Check => {
                 schedule.checked(SystemTime::now());
+                checked_on = Some(channel(&daemon, package));
                 check(&daemon, package, why == Wake::Check).await;
             }
             Wake::Download if package.downloads() => download(&daemon, package).await,
             Wake::Download => {}
+            Wake::Settings if checked_on.is_some_and(|on| on != channel(&daemon, package)) => {
+                // Another channel: what it offers replaces the last offer.
+                checked_on = Some(channel(&daemon, package));
+                check(&daemon, package, false).await;
+            }
             Wake::Settings => {
                 if daemon.updates().state() == state::AVAILABLE && may_download(&daemon) {
                     download(&daemon, package).await;
@@ -239,6 +253,36 @@ impl Schedule {
     }
 }
 
+/// The channel this install takes: the one picked in the settings, else
+/// the build's own.
+fn channel(daemon: &Daemon, package: Package) -> Channel {
+    Channel::of(
+        package,
+        &update::installed(package),
+        settings(daemon.paths()).updates.channel,
+    )
+}
+
+/// This install's place in a staged rollout, 0 to 99: drawn once and kept
+/// in the state folder, never sent anywhere.
+fn rollout_slot(daemon: &Daemon) -> u8 {
+    let path = daemon.paths().state_dir().join("update-slot");
+    if let Some(slot) = std::fs::read_to_string(&path)
+        .ok()
+        .and_then(|text| text.trim().parse::<u8>().ok())
+        .filter(|slot| *slot < 100)
+    {
+        return slot;
+    }
+    let slot =
+        (std::collections::hash_map::RandomState::new().hash_one(path.as_os_str()) % 100) as u8;
+    let _ = std::fs::create_dir_all(daemon.paths().state_dir());
+    if let Err(err) = std::fs::write(&path, slot.to_string()) {
+        tracing::debug!(%err, "the rollout slot could not be kept");
+    }
+    slot
+}
+
 /// Whether to download without being asked.
 fn may_download(daemon: &Daemon) -> bool {
     Package::current().downloads()
@@ -260,7 +304,7 @@ async fn check(daemon: &Daemon, package: Package, asked: bool) {
         s.state = state::CHECKING.to_owned();
         s.detail.clear();
     });
-    let manifest = match fetch_manifest(package).await {
+    let manifest = match fetch_manifest(package, channel(daemon, package)).await {
         Ok(manifest) => manifest,
         Err(err) => {
             tracing::info!(%err, "no update check");
@@ -281,10 +325,18 @@ async fn check(daemon: &Daemon, package: Package, asked: bool) {
     };
     let checked = unix_now();
     let installed = update::installed(package);
-    if !manifest.newer_than(&installed) {
+    let held = if manifest.pulled {
+        Some("the newest build was pulled")
+    } else if !manifest.reaches(rollout_slot(daemon), asked) {
+        Some("the newest build has not reached this install yet")
+    } else {
+        None
+    };
+    if held.is_some() || !manifest.newer_than(&installed) {
         tracing::info!(
             installed = installed.as_str(),
             newest = manifest.version,
+            held,
             "up to date"
         );
         *updates.offered.lock().unwrap() = None;
@@ -344,9 +396,9 @@ async fn check(daemon: &Daemon, package: Package, asked: bool) {
     }
 }
 
-async fn fetch_manifest(package: Package) -> Result<Manifest, String> {
+async fn fetch_manifest(package: Package, channel: Channel) -> Result<Manifest, String> {
     let url = package
-        .manifest_url()
+        .manifest_url(channel)
         .ok_or_else(|| "this build does not update itself".to_owned())?;
     let tls = Tls::system().map_err(|err| err.to_string())?;
     let body = http::get(&url, &tls, MANIFEST_TIMEOUT)
@@ -391,8 +443,8 @@ async fn download(daemon: &Daemon, package: Package) {
         async_io::Timer::after(pause).await;
         try_number += 1;
         // The release may have changed under the download.
-        match fetch_manifest(package).await {
-            Ok(newest) if newest.newer_than(&update::installed(package)) => {
+        match fetch_manifest(package, channel(daemon, package)).await {
+            Ok(newest) if !newest.pulled && newest.newer_than(&update::installed(package)) => {
                 *updates.offered.lock().unwrap() = Some(newest.clone());
                 manifest = newest;
             }
@@ -683,7 +735,7 @@ async fn download_checked(
 ) -> Result<(), String> {
     let updates = daemon.updates();
     let url = package
-        .file_url(name)
+        .file_url(channel(daemon, package), name)
         .ok_or_else(|| "this build does not update itself".to_owned())?;
     let part = part_path(file);
     updates.set(daemon, |s| {

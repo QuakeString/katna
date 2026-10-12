@@ -260,7 +260,7 @@ impl MailWindow {
     fn nav_new_mail(&mut self, account: AccountId, window: &mut Window, cx: &mut Context<Self>) {
         self.nav_menu = None;
         self.open_compose(super::compose::Kind::New, None, window, cx);
-        self.send_compose_from(account);
+        self.send_compose_from(account, cx);
         cx.notify();
     }
 

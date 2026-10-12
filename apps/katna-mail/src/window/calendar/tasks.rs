@@ -8,6 +8,7 @@
 //! to another day keeps its time. The side list's Tasks switch hides them
 //! all, remembered on this computer as Birthdays is.
 
+use crate::widgets::Tip as _;
 use std::collections::HashSet;
 
 use gpui::{
@@ -218,14 +219,14 @@ impl MailWindow {
             .border_color(rgba(th.on_accent))
             .cursor_pointer()
             .hover(|s| s.bg(rgba(fade(th.on_accent, 0.3))))
-            .tooltip(crate::widgets::tip(
+            .tip(
                 tr!(if done {
                     "tasks-mark-open"
                 } else {
                     "tasks-mark-done"
                 }),
                 th,
-            ))
+            )
             .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
             .on_click(cx.listener(move |this, _, _, cx| {
                 cx.stop_propagation();

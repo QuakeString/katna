@@ -55,6 +55,7 @@ reader-details-subject = ຫົວຂໍ້:
 
 reader-downloading = ກຳລັງດາວໂຫຼດຂໍ້ຄວາມນີ້ຈາກເຊີບເວີ…
 reader-download-failed = ບໍ່ສາມາດດາວໂຫຼດຂໍ້ຄວາມນີ້ໄດ້.
+reader-download-failed-reason = ບໍ່ສາມາດດາວໂຫຼດຂໍ້ຄວາມນີ້ໄດ້. { $reason }
 reader-download-offline = ບັນຊີນີ້ອອບລາຍຢູ່. ອອນລາຍເພື່ອດາວໂຫຼດຂໍ້ຄວາມນີ້.
 reader-try-again = ລອງໃໝ່
 
@@ -90,6 +91,86 @@ security-missing-key = ເຊັນດ້ວຍກະແຈທີ່ທ່ານ
 security-missing-key-id = ເຊັນດ້ວຍກະແຈທີ່ທ່ານບໍ່ມີ ({ $key }), ຈຶ່ງກວດສອບບໍ່ໄດ້
 security-signature-unavailable = ເຊັນແລ້ວ; ຕິດຕັ້ງ { $tool } ເພື່ອກວດສອບລາຍເຊັນ
 security-signature-error = ບໍ່ສາມາດກວດສອບລາຍເຊັນໄດ້.
+security-look-up-key = ຊອກຫາກະແຈ
+
+## a key to import (looked up, or attached to the message)
+
+key-card-verified = ລາຍເຊັນທີ່ຢືນຢັນແລ້ວ
+key-card-verified-detail = ລາຍເຊັນຖືກຕ້ອງ ແລະ ທ່ານເຊື່ອຖືກະແຈນີ້.
+key-card-unverified = ລາຍເຊັນຍັງບໍ່ໄດ້ຢືນຢັນ
+key-card-unverified-detail = ລາຍເຊັນຖືກຕ້ອງ, ແຕ່ບໍ່ມີຫຍັງຢືນຢັນວ່າກະແຈເປັນຂອງເຂົາເຈົ້າ. ປຽບທຽບລາຍນິ້ວມືກັບເຂົາເຈົ້າ, ແລ້ວເຊື່ອຖືກະແຈໃນ GnuPG (Kleopatra ຫຼື gpg --edit-key).
+key-card-not-sender = ເຊັນໂດຍຄົນອື່ນ
+key-card-not-sender-detail = ລາຍເຊັນຖືກຕ້ອງ, ແຕ່ກະແຈບໍ່ແມ່ນຂອງຜູ້ສົ່ງ.
+key-card-untrusted = ກະແຈບໍ່ໜ້າເຊື່ອຖື
+key-card-untrusted-detail = ທ່ານໝາຍກະແຈນີ້ວ່າບໍ່ໜ້າເຊື່ອຖືໃນ GnuPG.
+key-card-signature-expired = ລາຍເຊັນໝົດອາຍຸແລ້ວ
+key-card-signature-expired-detail = ລາຍເຊັນເຄີຍຖືກຕ້ອງ, ແຕ່ມັນໝົດອາຍຸແລ້ວ.
+key-card-key-expired = ກະແຈໝົດອາຍຸແລ້ວ
+key-card-key-expired-detail = ລາຍເຊັນຖືກຕ້ອງ, ແຕ່ກະແຈໝົດອາຍຸໄປແລ້ວຕັ້ງແຕ່ນັ້ນ.
+key-card-key-revoked = ກະແຈຖືກຖອນຄືນແລ້ວ
+key-card-key-revoked-detail = ເຈົ້າຂອງໄດ້ຖອນຄືນກະແຈນີ້, ສະນັ້ນລາຍເຊັນຈຶ່ງເຊື່ອຖືບໍ່ໄດ້.
+key-card-bad = ລາຍເຊັນບໍ່ຖືກຕ້ອງ
+key-card-bad-detail = ຂໍ້ຄວາມນີ້ຖືກປ່ຽນແປງຫຼັງຈາກເຊັນ, ຫຼື ລາຍເຊັນຖືກປອມແປງ.
+key-card-signed-by = ເຊັນໂດຍ
+key-card-belongs-to = ເປັນຂອງ
+key-card-fingerprint = ລາຍນິ້ວມື
+key-card-signed = ເຊັນເມື່ອ
+key-card-key = ກະແຈ
+key-card-kind = { $standard }, { $algorithm }
+key-card-created = ສ້າງເມື່ອ
+key-card-expires = ໝົດອາຍຸ
+key-card-never = ບໍ່ມີກຳນົດ
+key-card-issued-by = ອອກໂດຍ
+key-card-found-in = ພົບໃນ
+key-card-keyring = ພວງກະແຈ GnuPG ຂອງທ່ານ
+key-card-copy = ສຳເນົາລາຍນິ້ວມື
+key-card-import-title = ນຳເຂົ້າກະແຈນີ້ບໍ?
+key-card-from-directory = ພົບໃນໄດເຣັກທໍຣີກະແຈຂອງ { $domain }.
+key-card-from-attachment = ຈາກໄຟລ໌ແນບ { $name }.
+key-card-import-note = ຈາກນັ້ນ Katna ຈະສາມາດກວດສອບລາຍເຊັນຂອງຄົນນີ້ ແລະ ເຂົ້າລະຫັດອີເມວເຖິງເຂົາເຈົ້າໄດ້. ເພື່ອເຊື່ອຖືກະແຈຢ່າງເຕັມທີ່, ໃຫ້ປຽບທຽບລາຍນິ້ວມືກັບເຂົາເຈົ້າ.
+key-card-cancel = ຍົກເລີກ
+key-card-import = ນຳເຂົ້າກະແຈ
+key-card-looking-up = ກຳລັງຊອກຫາກະແຈ…
+key-card-looking-up-detail = ກຳລັງຖາມໄດເຣັກທໍຣີກະແຈຂອງ { $domain }.
+key-card-not-found = ບໍ່ພົບກະແຈ
+key-card-not-found-detail = { $domain } ບໍ່ໄດ້ເຜີຍແຜ່ກະແຈສຳລັບທີ່ຢູ່ນີ້. ຂໍໃຫ້ຜູ້ສົ່ງສົ່ງກະແຈຂອງເຂົາເຈົ້າມາໃຫ້ທ່ານ.
+key-card-not-kept = ກະແຈທີ່ພົບນັ້ນໃຊ້ບໍ່ໄດ້.
+key-card-failed = ບໍ່ສາມາດເອົາກະແຈມາໄດ້
+
+## of a sender nothing confirmed
+
+sender-failed-title = ອີເມວນີ້ອາດບໍ່ໄດ້ມາຈາກ { $domain }
+sender-failed-body = ມັນບໍ່ຜ່ານການກວດສອບຜູ້ສົ່ງຂອງ { $provider }. ລະວັງລິ້ງ, ໄຟລ໌ແນບ ແລະ ການຕອບກັບ.
+sender-provider-unknown = ຜູ້ໃຫ້ບໍລິການອີເມວຂອງທ່ານ
+sender-details = ລາຍລະອຽດ
+sender-details-hide = ເຊື່ອງລາຍລະອຽດ
+sender-looks-safe = ເບິ່ງຄືປອດໄພ
+sender-move-to-spam = ຍ້າຍໄປສະແປມ
+sender-checked-by = ກວດສອບໂດຍ { $provider }
+sender-checked-by-server = ກວດສອບໂດຍ { $provider } ({ $server })
+sender-dmarc = ໂດເມນຜູ້ສົ່ງ (DMARC)
+sender-dkim = ລາຍເຊັນ (DKIM)
+sender-spf = ເຊີບເວີທີ່ສົ່ງ (SPF)
+sender-result-pass = ຜ່ານ
+sender-result-fail = ບໍ່ຜ່ານ
+sender-result-unsure = ບໍ່ແນ່ໃຈ
+sender-result-none = ບໍ່ມີ
+sender-result-missing = ບໍ່ໄດ້ກວດສອບ
+sender-dmarc-pass = { $domain } ຢືນຢັນຜູ້ສົ່ງນີ້.
+sender-dmarc-fail = ອີເມວນີ້ບໍ່ກົງກັບວິທີທີ່ { $domain } ບອກວ່າອີເມວຂອງມັນຖືກສົ່ງ.
+sender-dmarc-none = { $domain } ບໍ່ໄດ້ເຜີຍແຜ່ກົດໃດໆສຳລັບອີເມວຂອງມັນ.
+sender-dkim-pass = ເຊັນໂດຍ { $domain }.
+sender-dkim-fail = ລາຍເຊັນຈາກ { $domain } ບໍ່ກົງກັບອີເມວ.
+sender-dkim-none = ຂໍ້ຄວາມນີ້ບໍ່ໄດ້ຖືກເຊັນ.
+sender-spf-pass = ສົ່ງມາຈາກເຊີບເວີທີ່ { $domain } ລະບຸໄວ້.
+sender-spf-fail = ສົ່ງມາຈາກເຊີບເວີທີ່ { $domain } ບໍ່ໄດ້ລະບຸໄວ້.
+sender-spf-none = { $domain } ບໍ່ໄດ້ລະບຸເຊີບເວີຂອງມັນ.
+sender-check-unsure = ການກວດສອບບໍ່ສາມາດໃຫ້ຄຳຕອບທີ່ຊັດເຈນໄດ້.
+sender-unconfirmed = { $provider } ບໍ່ສາມາດຢືນຢັນວ່າອີເມວນີ້ມາຈາກ { $domain }. ໃຜກໍສາມາດຂຽນຜູ້ສົ່ງເປັນຫຍັງກໍໄດ້.
+sender-link-title = ເປີດລິ້ງນີ້ບໍ?
+sender-link-body = ອີເມວນີ້ບໍ່ຜ່ານການກວດສອບຜູ້ສົ່ງ. ລິ້ງນີ້ໄປທີ່ { $host }:
+sender-link-cancel = ຍົກເລີກ
+sender-link-open = ເປີດ
 
 ## sent message's star, and the line above a read receipt)
 
@@ -107,6 +188,7 @@ tracking-receipt-other = ໃບຢືນຢັນການອ່ານ: { $who }
 
 remote-hidden = ຮູບພາບໃນຂໍ້ຄວາມນີ້ຖືກເຊື່ອງໄວ້.
 remote-hidden-unconfirmed = ຮູບພາບຖືກເຊື່ອງໄວ້: ບໍ່ສາມາດຢືນຢັນຜູ້ສົ່ງໄດ້.
+remote-hidden-failed = ຮູບພາບຖືກເຊື່ອງໄວ້: ອີເມວນີ້ບໍ່ຜ່ານການກວດສອບຜູ້ສົ່ງ.
 remote-show = ສະແດງຮູບພາບ
 remote-always-show = ສະແດງຈາກຜູ້ສົ່ງນີ້ສະເໝີ
 remote-picture-use = ໃຊ້

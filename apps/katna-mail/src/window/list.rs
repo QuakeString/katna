@@ -4,14 +4,15 @@
 //! ticked lines), the inbox tabs and the lines, one row each, or three
 //! stacked lines when the list is narrow.
 
+use crate::widgets::Tip as _;
 use katna_ui::WindowDrag;
 use std::rc::Rc;
 use std::time::{Duration, Instant};
 
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, Div, FontWeight, HighlightStyle, ListOffset,
-    SharedString, SpringAnimation, SpringConfig, Stateful, StyledText, deferred, div,
-    ease_out_quint, list, point, prelude::*, relative, rgba,
+    Role as A11yRole, SharedString, SpringAnimation, SpringConfig, Stateful, StyledText, deferred,
+    div, ease_out_quint, list, point, prelude::*, relative, rgba,
 };
 use katna_core::config::Density;
 use katna_i18n::tr;
@@ -41,7 +42,7 @@ const MORE_SIZE: f32 = 30.0;
 const TO_TOP_SIZE: f32 = 40.0;
 
 use super::apps::App;
-use super::attachments::kind_badge;
+use super::attachments::file_badge;
 use super::folder_pick::{PickFrom, PickMode};
 use super::layout::FAB_SIZE;
 use super::mail_drag::MailDrag;
@@ -53,7 +54,7 @@ use crate::sidebar::Role;
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{
     TOOLBAR_HEIGHT, card_outline, elevation, icon, icon_button, icon_button_colored, menu,
-    menu_item, menu_item_icon, tip, toolbar,
+    menu_item, menu_item_icon, toolbar,
 };
 use gpui::DragMoveEvent;
 
@@ -343,6 +344,13 @@ impl MailWindow {
                 LIST_CONTEXT
             })
             .track_focus(&self.list_focus)
+            .map(|d| {
+                if reading_context {
+                    self.spoken_reader(d)
+                } else {
+                    d.role(A11yRole::List).aria_label(tr!("a11y-mail-list"))
+                }
+            })
             .size_full()
             .flex()
             .flex_col()
@@ -482,6 +490,7 @@ impl MailWindow {
                 .relative()
                 .child(list)
                 .children(self.render_list_top(th, cx))
+                .children(self.render_restart(th, cx))
                 .child(self.tour_mark(super::tour::Spot::List))
                 .into_any_element(),
         )
@@ -500,7 +509,7 @@ impl MailWindow {
             .snackbar
             .as_ref()
             .map_or(0.0, |s| s.shown.value().clamp(0.0, 1.0));
-        let above = 16.0 + shape.phone * (FAB_SIZE + 16.0) + 64.0 * snackbar;
+        let above = 16.0 + shape.phone * (FAB_SIZE + 16.0) + 64.0 * snackbar + self.restart_lift();
         // On a phone it stands centred over the Compose button.
         let right = 16.0 + shape.phone * (FAB_SIZE - TO_TOP_SIZE) / 2.0;
         Some(
@@ -526,7 +535,7 @@ impl MailWindow {
                         .keeps_press()
                         .shadow(elevation(th, 2.0))
                         .hover(|s| s.shadow(elevation(th, 3.0)))
-                        .tooltip(tip(tr!("list-back-to-top"), th))
+                        .tip(tr!("list-back-to-top"), th)
                         .on_mouse_move(|_, _, cx| cx.stop_propagation())
                         .on_click(cx.listener(|this, _, _, cx| this.glide_list_to_top(cx)))
                         .child(Ripple::new(("list-top", 0_usize), rgba(th.ripple)).centered())
@@ -659,7 +668,7 @@ impl MailWindow {
             .child(
                 div()
                     .id("select-box")
-                    .tooltip(tip(tr!("list-select"), th))
+                    .tip(tr!("list-select"), th)
                     .size(px(28.0))
                     .flex()
                     .items_center()
@@ -696,7 +705,7 @@ impl MailWindow {
             bar = bar.children(self.quiet_button(th, cx)).child({
                 let more = icon_button("list-more", "more", 20.0, th)
                     .when(self.menu != Some(Menu::ListMore), |d| {
-                        d.tooltip(tip(tr!("list-more"), th))
+                        d.tip(tr!("list-more"), th)
                     })
                     .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::ListMore, cx)));
                 self.with_menu(more, Menu::ListMore, th, cx)
@@ -705,13 +714,13 @@ impl MailWindow {
             let any_unread = self.checked_rows().iter().any(|r| r.unread);
             let read_button = if any_unread {
                 icon_button("mark-read", "mark-read", 20.0, th)
-                    .tooltip(tip(tr!("list-mark-read"), th))
+                    .tip(tr!("list-mark-read"), th)
                     .on_click(
                         cx.listener(|this, _, _, cx| this.act_on_targets(Act::Read(true), cx)),
                     )
             } else {
                 icon_button("mark-unread", "mark-unread", 20.0, th)
-                    .tooltip(tip(tr!("list-mark-unread"), th))
+                    .tip(tr!("list-mark-unread"), th)
                     .on_click(
                         cx.listener(|this, _, _, cx| this.act_on_targets(Act::Read(false), cx)),
                     )
@@ -723,7 +732,7 @@ impl MailWindow {
                 .child({
                     let move_to = icon_button("list-move", "move-to", 20.0, th)
                         .when(self.menu != Some(Menu::MoveTo), |d| {
-                            d.tooltip(tip(tr!("list-move-to"), th))
+                            d.tip(tr!("list-move-to"), th)
                         })
                         .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::MoveTo, cx)));
                     self.with_menu(move_to, Menu::MoveTo, th, cx)
@@ -733,7 +742,7 @@ impl MailWindow {
                     |bar| {
                         let label_as = icon_button("list-label-as", "tag", 20.0, th)
                             .when(self.menu != Some(Menu::LabelAs), |d| {
-                                d.tooltip(tip(tr!("menu-label-as"), th))
+                                d.tip(tr!("menu-label-as"), th)
                             })
                             .on_click(
                                 cx.listener(|this, _, _, cx| this.toggle_menu(Menu::LabelAs, cx)),
@@ -744,7 +753,7 @@ impl MailWindow {
                 .child({
                     let more = icon_button("list-more", "more", 20.0, th)
                         .when(self.menu != Some(Menu::ListMore), |d| {
-                            d.tooltip(tip(tr!("list-more"), th))
+                            d.tip(tr!("list-more"), th)
                         })
                         .on_click(
                             cx.listener(|this, _, _, cx| this.toggle_menu(Menu::ListMore, cx)),
@@ -865,7 +874,7 @@ impl MailWindow {
         )
         .child(
             icon_button("page-up", "chevron-left", 20.0, th)
-                .tooltip(tip(tr!("list-newer"), th))
+                .tip(tr!("list-newer"), th)
                 .when(at_top, |d| d.opacity(0.4))
                 .on_click(cx.listener(|this, _, _, cx| {
                     let page = this.visible.len().max(1);
@@ -876,7 +885,7 @@ impl MailWindow {
         )
         .child(
             icon_button("page-down", "chevron-right", 20.0, th)
-                .tooltip(tip(tr!("list-older"), th))
+                .tip(tr!("list-older"), th)
                 .when(at_end, |d| d.opacity(0.4))
                 .on_click(cx.listener(|this, _, _, cx| {
                     let ix = this.visible.end.min(this.entries.len().saturating_sub(1));
@@ -912,7 +921,7 @@ impl MailWindow {
         };
         let more = icon_button("list-more", "more", 20.0, th)
             .when(self.menu != Some(Menu::ListMore), |d| {
-                d.tooltip(tip(tr!("list-more"), th))
+                d.tip(tr!("list-more"), th)
             })
             .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::ListMore, cx)));
         // The tabs take the place of the title, which would only repeat
@@ -974,7 +983,7 @@ impl MailWindow {
     ) -> Stateful<Div> {
         if !self.checking_mail() {
             return icon_button(id, "refresh", 20.0, th)
-                .tooltip(tip(tr!("list-refresh"), th))
+                .tip(tr!("list-refresh"), th)
                 .on_click(cx.listener(|this, _, window, cx| this.reload(&Reload, window, cx)));
         }
         // Like `icon_button`, with the arrow turning.
@@ -988,7 +997,7 @@ impl MailWindow {
             .relative()
             .rounded_full()
             .child(crate::widgets::hover_fade("refresh-glow", None, th))
-            .tooltip(tip(tr!("list-checking"), th))
+            .tip(tr!("list-checking"), th)
             .child(super::nav_menu::turning_arrow(
                 "refresh-turning",
                 th.text_dim,
@@ -1010,20 +1019,20 @@ impl MailWindow {
             .flex_row()
             .child(
                 icon_button((prefix, 1_usize), "archive", 20.0, th)
-                    .tooltip(tip(tr!("list-archive"), th))
+                    .tip(tr!("list-archive"), th)
                     .on_click(cx.listener(|this, _, _, cx| this.act_on_targets(Act::Archive, cx))),
             )
             .when(!squeeze.spam, |d| {
                 d.child(
                     icon_button((prefix, 2_usize), "junk", 20.0, th)
-                        .tooltip(tip(self.spam_label(false), th))
+                        .tip(self.spam_label(false), th)
                         .on_click(cx.listener(|this, _, _, cx| this.act_on_targets(Act::Spam, cx))),
                 )
             })
             .when(!squeeze.delete, |d| {
                 d.child(
                     icon_button((prefix, 3_usize), "trash", 20.0, th)
-                        .tooltip(tip(tr!("list-delete"), th))
+                        .tip(tr!("list-delete"), th)
                         .on_click(
                             cx.listener(|this, _, _, cx| this.act_on_targets(Act::Delete, cx)),
                         ),
@@ -2204,7 +2213,7 @@ impl MailWindow {
                     d.relative()
                         .child(crate::widgets::hover_fade(("tab-glow", ix), None, th))
                 })
-                .when(label < 0.5, |d| d.tooltip(tip(tab.label(), th)))
+                .when(label < 0.5, |d| d.tip(tab.label(), th))
                 .on_click(cx.listener(move |this, _, _, cx| {
                     // The open tab goes back to its top, as its folder does.
                     if this.tab == ix {
@@ -2303,6 +2312,28 @@ impl MailWindow {
 
     fn render_list(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         if self.entries.is_empty() {
+            if matches!(self.listing, Some(Listing::Search { .. })) {
+                if let Some(text) = self.server_empty_text() {
+                    return self.placeholder(text, th);
+                }
+                if let Some(status) = self.server_status(th, cx) {
+                    return div()
+                        .size_full()
+                        .flex()
+                        .flex_col()
+                        .child(self.placeholder(tr!("list-empty-search"), th))
+                        .child(
+                            div()
+                                .absolute()
+                                .bottom_0()
+                                .w_full()
+                                .flex()
+                                .justify_center()
+                                .child(status),
+                        )
+                        .into_any_element();
+                }
+            }
             let text = match &self.listing {
                 Some(Listing::Search { .. }) => tr!("list-empty-search"),
                 Some(Listing::Folder(_)) if self.first_sync => {
@@ -2366,6 +2397,18 @@ impl MailWindow {
                     .child(this.swiped_row(ix, row, &th))
                     .into_any_element();
                 this.fetch_pictures(cx);
+                let heading = this.server_heading_at(ix, &th);
+                let status = this.server_status_after(ix, &th, cx);
+                let row = if heading.is_some() || status.is_some() {
+                    div()
+                        .w_full()
+                        .children(heading)
+                        .child(row)
+                        .children(status)
+                        .into_any_element()
+                } else {
+                    row
+                };
                 match this.snoozed_group_at(ix) {
                     // A plain block, as other lines sit in: a flex column
                     // lets a long preview push the date off the line.
@@ -2506,7 +2549,11 @@ impl MailWindow {
                 this.mail_drag_moved(event, cx)
             }))
             .when(self.mail_dragged(key, cx), |d| d.opacity(0.45))
-            .child(Ripple::new(("row-ripple", ix), rgba(th.ripple)).rounded(0.0))
+            // Opening a mail already moves the tint, the cursor and the
+            // conversation, so only a click on the open mail ripples.
+            .when(open, |d| {
+                d.child(Ripple::new(("row-ripple", ix), rgba(th.ripple)).rounded(0.0))
+            })
             // The keyboard cursor: a bar that grows from the middle.
             .child(
                 div()
@@ -2573,6 +2620,24 @@ impl MailWindow {
                 .map(|(d, now)| format::list_date(d, now))
                 .unwrap_or_default(),
         };
+        // What a screen reader says on the line: unread first, as the
+        // bold shows, then who, what and when.
+        let spoken = [
+            row.unread.then(|| tr!("a11y-unread").to_string()),
+            Some(row.correspondent.clone()),
+            Some(row.subject.clone()),
+            (!date.is_empty()).then(|| date.to_string()),
+        ]
+        .into_iter()
+        .flatten()
+        .collect::<Vec<_>>()
+        .join(", ");
+        let base = base
+            .role(A11yRole::ListItem)
+            .aria_label(spoken)
+            .aria_selected(cursor || checked)
+            .aria_position_in_set(ix + 1)
+            .when(cursor, |d| d.aria_active_descendant());
         let weight = if row.unread {
             FontWeight::BOLD
         } else {
@@ -2634,14 +2699,14 @@ impl MailWindow {
         let flagged = row.flagged;
         let star = div()
             .id(("row-star", ix))
-            .tooltip(tip(
+            .tip(
                 if row.flagged {
                     tr!("row-starred")
                 } else {
                     tr!("row-not-starred")
                 },
                 th,
-            ))
+            )
             .size(px(32.0))
             .flex_none()
             .flex()
@@ -2663,14 +2728,14 @@ impl MailWindow {
         let marker = self.config.mail.important_markers.then(|| {
             div()
                 .id(("row-important", ix))
-                .tooltip(tip(
+                .tip(
                     if important {
                         tr!("row-important")
                     } else {
                         tr!("row-mark-important")
                     },
                     th,
-                ))
+                )
                 .size(px(32.0))
                 .flex_none()
                 .flex()
@@ -2773,7 +2838,7 @@ impl MailWindow {
                         .pl(px(4.0))
                         .flex()
                         .items_center()
-                        .tooltip(tip(tr!("list-replied"), th))
+                        .tip(tr!("list-replied"), th)
                         .child(icon("reply", th.text_faint, 14.0)),
                 )
             })
@@ -2788,14 +2853,14 @@ impl MailWindow {
                     .flex()
                     .items_center()
                     .justify_center()
-                    .tooltip(tip(
+                    .tip(
                         if name.eq_ignore_ascii_case(&address) {
                             name
                         } else {
                             format!("{name}\n{address}")
                         },
                         th,
-                    ))
+                    )
                     .child(div().size(px(7.0)).rounded_full().bg(rgba(color)))
             }));
         // The quick actions fade in over the date.
@@ -2824,7 +2889,7 @@ impl MailWindow {
                 d.child(
                     div()
                         .id(("row-muted", ix))
-                        .tooltip(tip(tr!("quiet-row-muted"), th))
+                        .tip(tr!("quiet-row-muted"), th)
                         .child(icon("bell-off", th.text_faint, 16.0)),
                 )
             })
@@ -2832,7 +2897,7 @@ impl MailWindow {
                 d.child(
                     div()
                         .id(("row-pinned", ix))
-                        .tooltip(tip(tr!("row-pinned"), th))
+                        .tip(tr!("row-pinned"), th)
                         .child(icon("pin-filled", th.accent, 16.0)),
                 )
             })
@@ -2844,13 +2909,13 @@ impl MailWindow {
                         .flex_row()
                         .items_center()
                         .gap(px(4.0))
-                        .tooltip(tip(
+                        .tip(
                             tr!(
                                 "row-snoozed-until",
                                 when = super::snooze::describe(until, &self.tz)
                             ),
                             th,
-                        ))
+                        )
                         .child(icon("schedule", th.accent, 16.0))
                         .child(date),
                 ),
@@ -3072,7 +3137,6 @@ impl MailWindow {
         let shown = shown.clamp(1, 3).min(files.len());
         let rest: Vec<RowFile> = files[shown..].to_vec();
         let chip = |n: usize, file: &RowFile| {
-            let kind = katna_preview::kind(&file.mime, &file.name);
             let open = file.clone();
             let downloading = self.chip_downloading(file);
             div()
@@ -3094,14 +3158,14 @@ impl MailWindow {
                 .when(!downloading, |d| {
                     d.cursor_pointer()
                         .hover(|s| s.bg(rgba(th.hover)))
-                        .tooltip(tip(file.name.clone(), th))
+                        .tip(file.name.clone(), th)
                 })
                 .on_click(cx.listener(move |this, _, window, cx| {
                     cx.stop_propagation();
                     this.open_row_file(&open, window, cx);
                 }))
                 .children(self.chip_fill(file, true, th))
-                .child(kind_badge(kind, 18.0))
+                .child(file_badge(&file.name, &file.mime, 18.0))
                 .child(
                     div()
                         .min_w_0()
@@ -3145,7 +3209,7 @@ impl MailWindow {
                 .text_size(px(12.0))
                 .text_color(rgba(th.text_dim))
                 .child(tr!("list-files-more", count = rest.len() as u64))
-                .when(!open, |d| d.tooltip(tip(names, th)))
+                .when(!open, |d| d.tip(names, th))
                 .on_click(cx.listener(move |this, _, _, cx| {
                     cx.stop_propagation();
                     this.menu = None;
@@ -3202,7 +3266,6 @@ impl MailWindow {
         .with_priority(1)
         .into_any_element();
         let items = files.iter().enumerate().map(|(n, file)| {
-            let kind = katna_preview::kind(&file.mime, &file.name);
             let open = file.clone();
             let downloading = self.chip_downloading(file);
             div()
@@ -3221,7 +3284,7 @@ impl MailWindow {
                     this.open_row_file(&open, window, cx);
                 }))
                 .children(self.chip_fill(file, false, th))
-                .child(kind_badge(kind, 20.0))
+                .child(file_badge(&file.name, &file.mime, 20.0))
                 .child(
                     div()
                         .flex_1()
@@ -3278,7 +3341,7 @@ impl MailWindow {
         let button = |id: usize, name: &str, label: String| {
             icon_button_colored(("row-action", ix * 5 + id), name, 18.0, th.text_dim, th)
                 .size(px(32.0))
-                .tooltip(tip(label, th))
+                .tip(label, th)
         };
         div()
             .flex()
@@ -3507,7 +3570,7 @@ fn tracking_mark(ix: usize, row: &Row, size: f32, th: &Theme) -> Option<AnyEleme
             .id(("row-tracking", ix))
             .flex_none()
             .child(icon("eye", color, size))
-            .tooltip(tip(text, th))
+            .tip(text, th)
             .into_any_element(),
     )
 }

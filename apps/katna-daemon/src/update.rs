@@ -8,12 +8,55 @@
 //! (`docs/ARCHITECTURE.md` §9.2).
 
 use std::path::{Path, PathBuf};
-use std::time::Duration;
+use std::sync::LazyLock;
+use std::time::{Duration, Instant};
 
-use futures_lite::StreamExt;
+use async_channel::{Receiver, Sender};
+use futures_lite::{FutureExt, StreamExt};
+
+use crate::daemon::Daemon;
 
 /// How often the binary is checked.
 const CHECK_EVERY: Duration = Duration::from_secs(30);
+
+/// How often a restart looks again whether the daemon is idle.
+const IDLE_POLL: Duration = Duration::from_secs(5);
+
+/// The longest a restart waits for the daemon to be idle. Then it restarts
+/// all the same: what waits is kept on disk, and a send stuck that long is
+/// stuck anyway.
+const IDLE_WAIT_MAX: Duration = Duration::from_secs(15 * 60);
+
+/// Wakes [`replaced`] before its next tick.
+static CHECK: LazyLock<(Sender<()>, Receiver<()>)> = LazyLock::new(|| async_channel::bounded(1));
+
+/// Has [`replaced`] check the binary now rather than at its next tick.
+/// Each `Version()` call does, so an app newer than this daemon has it
+/// restart without waiting (`docs/ARCHITECTURE.md` §21.2).
+pub fn check_now() {
+    let _ = CHECK.0.try_send(());
+}
+
+/// Waits until `daemon` is idle enough to restart ([`Daemon::restart_waits_for`]),
+/// at most [`IDLE_WAIT_MAX`].
+pub async fn until_idle(daemon: &Daemon) {
+    let started = Instant::now();
+    let mut told = false;
+    while let Some(waiting) = daemon.restart_waits_for() {
+        if started.elapsed() >= IDLE_WAIT_MAX {
+            tracing::warn!(
+                waiting,
+                "restarting after the update without waiting longer"
+            );
+            return;
+        }
+        if !told {
+            tracing::info!(waiting, "the restart after the update waits");
+            told = true;
+        }
+        smol::Timer::after(IDLE_POLL).await;
+    }
+}
 
 /// Where Linux shows the running binary.
 const SELF_EXE: &str = "/proc/self/exe";
@@ -27,7 +70,13 @@ pub async fn replaced() -> PathBuf {
     let image_at_start = appimage.as_deref().and_then(file_id);
     let mut ticks = smol::Timer::interval(CHECK_EVERY);
     loop {
-        ticks.next().await;
+        async {
+            ticks.next().await;
+        }
+        .or(async {
+            let _ = CHECK.1.recv().await;
+        })
+        .await;
         if let (Some(image), Some(before)) = (&appimage, image_at_start)
             && file_id(image).is_some_and(|now| now != before)
         {

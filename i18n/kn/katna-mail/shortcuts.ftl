@@ -70,6 +70,7 @@ shortcut-navigation = ಮೆನು ತೋರಿಸಿ ಅಥವಾ ಮಡಚಿ
 shortcut-quick-settings = ತ್ವರಿತ ಸೆಟ್ಟಿಂಗ್‌ಗಳು
 shortcut-settings = ಎಲ್ಲಾ ಸೆಟ್ಟಿಂಗ್‌ಗಳು
 shortcut-shortcuts = ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು
+shortcut-palette = ಕಮಾಂಡ್ ಪ್ಯಾಲೆಟ್
 shortcut-reload = ಹೊಸ ಮೇಲ್‌ಗಾಗಿ ಪರಿಶೀಲಿಸಿ
 shortcut-quit = ನಿರ್ಗಮಿಸಿ
 

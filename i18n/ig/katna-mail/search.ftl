@@ -49,3 +49,13 @@ search-dates-month-back = Ọnwa gara aga
 search-dates-month-on = Ọnwa na-abịa
 search-dates-year-back = Afọ gara aga
 search-dates-year-on = Afọ na-abịa
+
+## More results on server: under the results, mail found by asking the
+## mail server, for mail that is not downloaded to this computer yet.
+
+search-server-more = Nsonaazụ ndị ọzọ na sava
+search-server-searching = Na-achọ ozi na sava…
+search-server-empty-searching = Ọ dịbeghị ihe ebe a. Na-achọ ozi na sava…
+search-server-nothing = Enweghị nsonaazụ ọzọ na sava
+search-server-failed = Enweghị ike ịchọ na sava.
+search-server-again = Nwaa ọzọ

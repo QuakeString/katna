@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A calmer start"
+text = """
+On Linux, Katna Mail opens in your desktop's dark or light colours from
+the first moment, with no white flash. A window you left maximized opens
+maximized, instead of first showing smaller and then growing.
+"""

@@ -94,6 +94,7 @@ notes-link-note = Unganisha dokezo
 notes-link-new = Dokezo jipya “{ $title }”
 notes-linked-from = Limeunganishwa kutoka
 notes-link-gone = Dokezo hilo halipo hapa tena
+notes-new-note-gone = Dokezo jipya limetoweka.
 
 ## Version history
 

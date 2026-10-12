@@ -55,6 +55,7 @@ reader-details-subject = ämne:
 
 reader-downloading = Hämtar meddelandet från servern…
 reader-download-failed = Det gick inte att hämta meddelandet.
+reader-download-failed-reason = Det gick inte att hämta det här meddelandet. { $reason }
 reader-download-offline = Det här kontot är offline. Gå online för att hämta meddelandet.
 reader-try-again = Försök igen
 
@@ -90,6 +91,89 @@ security-missing-key = Signerat med en nyckel som du inte har, så det kan inte 
 security-missing-key-id = Signerat med en nyckel som du inte har ({ $key }), så det kan inte kontrolleras
 security-signature-unavailable = Signerat; installera { $tool } för att kontrollera signaturen
 security-signature-error = Signaturen kunde inte kontrolleras.
+security-look-up-key = Slå upp nyckeln
+
+## The key popover: the details of the key a message was signed with, and
+## a key to import (looked up, or attached to the message)
+
+key-card-verified = Verifierad signatur
+key-card-verified-detail = Signaturen är giltig och du litar på den här nyckeln.
+key-card-unverified = Signaturen är inte verifierad
+key-card-unverified-detail = Signaturen är giltig, men inget bekräftar att nyckeln är deras. Jämför fingeravtrycket med personen och lita sedan på nyckeln i GnuPG (Kleopatra eller gpg --edit-key).
+key-card-not-sender = Signerat av någon annan
+key-card-not-sender-detail = Signaturen är giltig, men nyckeln tillhör inte avsändaren.
+key-card-untrusted = Nyckeln är inte betrodd
+key-card-untrusted-detail = Du har markerat den här nyckeln som ej betrodd i GnuPG.
+key-card-signature-expired = Signaturen har gått ut
+key-card-signature-expired-detail = Signaturen var giltig, men den har gått ut.
+key-card-key-expired = Nyckeln har gått ut
+key-card-key-expired-detail = Signaturen är giltig, men nyckeln har gått ut sedan dess.
+key-card-key-revoked = Nyckeln har återkallats
+key-card-key-revoked-detail = Ägaren har återkallat den här nyckeln, så signaturen går inte att lita på.
+key-card-bad = Ogiltig signatur
+key-card-bad-detail = Meddelandet ändrades efter att det signerades, eller så är signaturen förfalskad.
+key-card-signed-by = Signerat av
+key-card-belongs-to = Tillhör
+key-card-fingerprint = Fingeravtryck
+key-card-signed = Signerat
+key-card-key = Nyckel
+key-card-kind = { $standard }, { $algorithm }
+key-card-created = Skapad
+key-card-expires = Går ut
+key-card-never = Aldrig
+key-card-issued-by = Utfärdat av
+key-card-found-in = Hittad i
+key-card-keyring = Din GnuPG-nyckelring
+key-card-copy = Kopiera fingeravtryck
+key-card-import-title = Importera den här nyckeln?
+key-card-from-directory = Hittad i nyckelkatalogen för { $domain }.
+key-card-from-attachment = Från bilagan { $name }.
+key-card-import-note = Katna kan sedan kontrollera den här personens signaturer och kryptera e-post till hen. Jämför fingeravtrycket med personen för att lita fullt ut på nyckeln.
+key-card-cancel = Avbryt
+key-card-import = Importera nyckel
+key-card-looking-up = Slår upp nyckeln…
+key-card-looking-up-detail = Frågar nyckelkatalogen för { $domain }.
+key-card-not-found = Ingen nyckel hittades
+key-card-not-found-detail = { $domain } publicerar ingen nyckel för den här adressen. Be avsändaren att skicka sin nyckel till dig.
+key-card-not-kept = Nyckeln som hittades kan inte användas.
+key-card-failed = Det gick inte att hämta nyckeln
+
+## Sender checks: the banner on mail that failed the checks the user's mail
+## provider ran on its sender (DMARC, DKIM, SPF), and the "?" on the picture
+## of a sender nothing confirmed
+
+sender-failed-title = Det här kanske inte kommer från { $domain }
+sender-failed-body = Det klarade inte avsändarkontrollerna hos { $provider }. Var försiktig med länkar, bilagor och svar.
+sender-provider-unknown = din e-postleverantör
+sender-details = Detaljer
+sender-details-hide = Dölj detaljer
+sender-looks-safe = Ser säkert ut
+sender-move-to-spam = Flytta till skräppost
+sender-checked-by = Kontrollerat av { $provider }
+sender-checked-by-server = Kontrollerat av { $provider } ({ $server })
+sender-dmarc = Avsändardomän (DMARC)
+sender-dkim = Signatur (DKIM)
+sender-spf = Avsändande server (SPF)
+sender-result-pass = Godkänd
+sender-result-fail = Underkänd
+sender-result-unsure = Osäkert
+sender-result-none = Ingen
+sender-result-missing = Inte kontrollerad
+sender-dmarc-pass = { $domain } bekräftar den här avsändaren.
+sender-dmarc-fail = E-posten stämmer inte med hur { $domain } anger att dess e-post skickas.
+sender-dmarc-none = { $domain } publicerar inga regler för sin e-post.
+sender-dkim-pass = Signerat av { $domain }.
+sender-dkim-fail = Signaturen från { $domain } stämmer inte med e-posten.
+sender-dkim-none = Meddelandet var inte signerat.
+sender-spf-pass = Skickat från en server som { $domain } listar.
+sender-spf-fail = Skickat från en server som { $domain } inte listar.
+sender-spf-none = { $domain } listar inte sina servrar.
+sender-check-unsure = Kontrollen kunde inte ge ett tydligt svar.
+sender-unconfirmed = { $provider } kunde inte bekräfta att det här kommer från { $domain }. Vem som helst kan ange vilken avsändare som helst.
+sender-link-title = Öppna den här länken?
+sender-link-body = Den här e-posten klarade inte avsändarkontrollerna. Länken går till { $host }:
+sender-link-cancel = Avbryt
+sender-link-open = Öppna
 
 ## Open and click tracking and read receipts (the eye's popover beside a
 ## sent message's star, and the line above a read receipt)
@@ -120,6 +204,7 @@ tracking-receipt-other = Läskvitto: { $who } raderade eller hanterade ditt medd
 
 remote-hidden = Bilder i det här meddelandet är dolda.
 remote-hidden-unconfirmed = Bilder är dolda: avsändaren kunde inte bekräftas.
+remote-hidden-failed = Bilder är dolda: den här e-posten klarade inte avsändarkontrollerna.
 remote-show = Visa bilder
 remote-always-show = Visa alltid från den här avsändaren
 remote-picture-use = Använd

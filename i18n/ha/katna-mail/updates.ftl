@@ -34,3 +34,7 @@ update-dialog-compare = Kwatanta a GitHub
 update-dialog-no-service = Sabis ɗin Katna na bango ba ya aiki.
 update-dialog-later = Ba yanzu ba
 update-dialog-close = Rufe
+restart-updated = An sabunta Katna
+restart-button = Sake kunnawa
+restart-close = Ba yanzu ba
+restart-failed = Ba a iya fara sabuwar Katna Mail ba: { $error }

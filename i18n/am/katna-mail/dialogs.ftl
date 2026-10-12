@@ -6,6 +6,7 @@
 
 about-tooltip = ስለ Katna
 about-tagline = ለLinux ዴስክቶፕ ደብዳቤ እና ቀን መቁጠሪያ
+about-version = Katna Mail { $version }
 about-copy-version = የስሪት ዝርዝሮችን ቅዳ
 about-version-copied = ተቀድቷል
 about-version-built = የተገነባው፦ { $date }
@@ -38,6 +39,8 @@ about-update-restart = አዘምንና ዳግም አስጀምር
 about-update-cancel = አሁን አይደለም
 about-changelog = የለውጥ መዝገብ
 about-source = የምንጭ ኮድ
+about-debug-report = የማረሚያ ሪፖርት ቅዳ
+about-debug-report-tip = ለስህተት ሪፖርት የሚሆኑ ስሪቶች፣ ከዝማኔዎች በኋላ የሚደረገው ፍተሻ እና የቅርብ ጊዜ የምዝግብ መስመሮች። ምንም ደብዳቤ ወይም የይለፍ ቃል የለም።
 about-coffee = ቡና ይጋብዙኝ
 about-coffee-coffee = ቡና?
 about-coffee-tea = ሻይ?

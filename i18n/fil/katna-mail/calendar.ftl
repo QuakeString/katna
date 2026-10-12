@@ -113,6 +113,7 @@ calendar-add-meet = Magdagdag ng Google Meet video conferencing
 calendar-add-teams = Magdagdag ng Teams meeting
 calendar-has-call = Naidagdag ang video call
 calendar-weekday-day = { $weekday }, { $day }
+calendar-schedule-day = { $weekday }, { $month }
 calendar-all-day-box = Buong araw
 calendar-more-options = Higit pang opsyon
 calendar-save = I-save

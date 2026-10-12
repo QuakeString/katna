@@ -21,6 +21,16 @@ compose-hide-trimmed = කපා හැරි අන්තර්ගතය සඟ
 compose-remove-trimmed = උපුටා දැක්වූ පෙළ ඉවත් කරන්න
 compose-trimmed-removed = උපුටා දැක්වූ පෙළ ඉවත් කරන ලදී
 
+## The quoted or forwarded message, in the mail itself
+
+compose-quote-header = { $date } දින, { $from } ලිවීය:
+compose-forward-header = ---------- ඉදිරියට යැවූ පණිවිඩය ---------
+compose-forward-from = වෙතින්: { $from }
+compose-forward-date = දිනය: { $date }
+compose-forward-subject = විෂය: { $subject }
+compose-forward-to = වෙත: { $to }
+compose-forward-cc = Cc: { $cc }
+
 ## Recipients and subject
 
 compose-to = වෙත

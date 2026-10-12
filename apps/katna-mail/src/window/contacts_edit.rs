@@ -9,6 +9,7 @@
 //! its Undo is gone, so Undo only has to show the person again; once sent,
 //! Undo saves the card again.
 
+use crate::widgets::Tip as _;
 use std::collections::BTreeSet;
 use std::time::Duration;
 
@@ -24,9 +25,7 @@ use katna_ui::{InputEvent, TextInput, px};
 use super::MailWindow;
 use crate::daemon::{self, Command};
 use crate::theme::Theme;
-use crate::widgets::{
-    choice_chip, filled_button, icon, icon_button, outlined_button, text_button, tip,
-};
+use crate::widgets::{choice_chip, filled_button, icon, icon_button, outlined_button, text_button};
 
 /// How long a delete waits for Undo before it goes to the account.
 const DELETE_AFTER: Duration = Duration::from_secs(8);
@@ -767,7 +766,7 @@ impl MailWindow {
             .pb(px(16.0))
             .child(
                 icon_button("contact-edit-close", "close", 20.0, th)
-                    .tooltip(tip(tr!("contacts-edit-cancel"), th))
+                    .tip(tr!("contacts-edit-cancel"), th)
                     .on_click(cx.listener(|this, _, _, cx| this.cancel_contact_edit(cx))),
             )
             .child(

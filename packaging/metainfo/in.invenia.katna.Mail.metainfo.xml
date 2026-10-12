@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SPDX-License-Identifier: CC0-1.0 -->
+<!-- Katna Mail's entry in Discover and GNOME Software (AppStream). Every
+     Linux package installs it in share/metainfo; check it with
+     appstreamcli validate (packaging/README.md, "AppStream"). -->
+<component type="desktop-application">
+  <id>in.invenia.katna.Mail</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+
+  <name>Katna Mail</name>
+  <summary>Email, calendar and contacts for all your accounts</summary>
+  <developer id="in.invenia">
+    <name>Mozammel</name>
+  </developer>
+
+  <description>
+    <p>
+      Katna Mail reads, searches and writes mail from all your accounts in
+      one window, with your calendar, contacts, tasks and notes beside it.
+      It is a personal project, at an early stage: it changes every day, so
+      try it on an account you can spare and keep your own backups.
+    </p>
+    <ul>
+      <li>Instant, typo-tolerant search, even across hundreds of thousands of messages</li>
+      <li>IMAP, POP3 and SMTP, with Gmail categories, labels and server autodiscovery</li>
+      <li>Conversations, stars, pins, snooze and Undo for every action</li>
+      <li>A background service that syncs, notifies and sends scheduled mail while the window is closed</li>
+      <li>Your desktop's colors and accent, a tray icon with the unread count and notifications you can answer</li>
+      <li>Mail stays on your computer, remote content is blocked by default and passwords live in your keyring</li>
+    </ul>
+  </description>
+
+  <launchable type="desktop-id">in.invenia.katna.Mail.desktop</launchable>
+  <icon type="stock">in.invenia.katna.Mail</icon>
+
+  <categories>
+    <category>Network</category>
+    <category>Email</category>
+  </categories>
+  <keywords>
+    <keyword>email</keyword>
+    <keyword>mail</keyword>
+    <keyword>inbox</keyword>
+    <keyword>imap</keyword>
+    <keyword>calendar</keyword>
+    <keyword>contacts</keyword>
+  </keywords>
+
+  <url type="homepage">https://github.com/QuakeString/katna</url>
+  <url type="bugtracker">https://github.com/QuakeString/katna/issues</url>
+  <url type="vcs-browser">https://github.com/QuakeString/katna</url>
+  <url type="donation">https://buymeacoffee.com/quakestring</url>
+
+  <provides>
+    <binary>katna-mail</binary>
+    <binary>katnactl</binary>
+    <dbus type="user">in.invenia.katna.Daemon</dbus>
+    <mediatype>x-scheme-handler/mailto</mediatype>
+  </provides>
+
+  <requires>
+    <display_length compare="ge">360</display_length>
+  </requires>
+  <supports>
+    <control>pointing</control>
+    <control>keyboard</control>
+    <control>touch</control>
+  </supports>
+
+  <branding>
+    <color type="primary" scheme_preference="light">#a3d9d6</color>
+    <color type="primary" scheme_preference="dark">#0b4f4d</color>
+  </branding>
+
+  <screenshots>
+    <screenshot type="default">
+      <caption>Your inbox, with Gmail-style category tabs</caption>
+      <image type="source" width="1280" height="800">https://raw.githubusercontent.com/QuakeString/katna/main/docs/screenshots/appstream/inbox.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>A message open beside the list</caption>
+      <image type="source" width="1280" height="800">https://raw.githubusercontent.com/QuakeString/katna/main/docs/screenshots/appstream/conversation.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>The inbox in the dark theme</caption>
+      <image type="source" width="1280" height="800">https://raw.githubusercontent.com/QuakeString/katna/main/docs/screenshots/appstream/dark.png</image>
+    </screenshot>
+  </screenshots>
+
+  <content_rating type="oars-1.1">
+    <content_attribute id="social-chat">intense</content_attribute>
+    <content_attribute id="social-contacts">intense</content_attribute>
+  </content_rating>
+</component>

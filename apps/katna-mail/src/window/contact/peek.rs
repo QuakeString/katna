@@ -200,6 +200,8 @@ impl MailWindow {
         let popover = div()
             .id("contact-peek")
             .absolute()
+            // Placed on screen, by what it points at.
+            .placed_ltr()
             .left(px(x))
             .top(px(y))
             .w(px(CONTACT_WIDTH))

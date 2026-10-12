@@ -47,4 +47,5 @@ quick-help = Taimako
 quick-tour = Yi rangadi
 quick-whats-new = Me ke sabo
 quick-check-updates = Duba sabuntawa
+quick-send-feedback = Aika ra'ayi
 quick-about = Game da Katna
