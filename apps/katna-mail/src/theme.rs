@@ -163,6 +163,12 @@ pub struct FolderIcons {
 }
 
 impl Theme {
+    /// A [`crate::widgets::switch`]'s track while it is on: a lighter tint
+    /// of the accent, under the accent thumb.
+    pub fn switch_on(&self) -> u32 {
+        mix(self.page, self.accent, if self.dark { 0.4 } else { 0.42 })
+    }
+
     /// The chat view's bubble for the user's own mail: a light tint of the
     /// accent.
     pub fn bubble_own(&self) -> u32 {

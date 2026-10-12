@@ -1573,30 +1573,59 @@ pub fn menu_item_icon(
         .child(label.to_owned())
 }
 
-/// A two-state switch drawn at `t` (0 off, 1 on), for animating.
+/// A switch's box: as wide as the thumb's travel plus the thumb, as tall
+/// as the thumb.
+const SWITCH_WIDTH: f32 = 36.0;
+/// The round thumb, which stands out above and below the track.
+const SWITCH_THUMB: f32 = 20.0;
+/// The thin track the thumb slides along.
+const SWITCH_TRACK: f32 = 12.0;
+/// The minus or check on the thumb.
+const SWITCH_MARK: f32 = 14.0;
+
+/// A two-state switch drawn at `t` (0 off, 1 on), for animating: a big
+/// round thumb on a thin track. Off, the thumb is dark with a minus on a
+/// pale track; on, it is the accent with a check on a lighter accent track,
+/// and the minus fades into the check as it slides.
 pub fn switch(t: f32, th: &Theme) -> AnyElement {
-    let track = crate::theme::mix(th.switch_off, th.accent, t);
-    let knob = crate::theme::mix(th.text_faint, th.on_accent, t);
+    let track = crate::theme::mix(th.switch_off, th.switch_on(), t);
+    let thumb = crate::theme::mix(th.text_dim, th.accent, t);
+    let mark = |name: &str, color: u32, opacity: f32| {
+        katna_ui::icon_svg(name)
+            .absolute()
+            .size(px(SWITCH_MARK))
+            .text_color(rgba(color))
+            .opacity(opacity.clamp(0.0, 1.0))
+    };
     div()
         .relative()
-        .w(px(36.0))
-        .h(px(20.0))
+        .w(px(SWITCH_WIDTH))
+        .h(px(SWITCH_THUMB))
         .flex_none()
-        .rounded_full()
-        .bg(rgba(track))
-        .child({
-            // The knob grows a little when on, and stays centered in the
-            // track with the same gap all round.
-            let size = 14.0 + 2.0 * t;
-            let gap = (20.0 - size) / 2.0;
+        .child(
             div()
                 .absolute()
-                .top(px(gap))
-                .left(px(gap + (36.0 - size - 2.0 * gap) * t))
-                .size(px(size))
+                .left_0()
+                .top(px((SWITCH_THUMB - SWITCH_TRACK) / 2.0))
+                .w(px(SWITCH_WIDTH))
+                .h(px(SWITCH_TRACK))
                 .rounded_full()
-                .bg(rgba(knob))
-        })
+                .bg(rgba(track)),
+        )
+        .child(
+            div()
+                .absolute()
+                .top_0()
+                .left(px((SWITCH_WIDTH - SWITCH_THUMB) * t))
+                .size(px(SWITCH_THUMB))
+                .rounded_full()
+                .bg(rgba(thumb))
+                .flex()
+                .items_center()
+                .justify_center()
+                .child(mark("switch-minus", th.page, 1.0 - t * 1.6))
+                .child(mark("switch-check", th.on_accent, t * 1.6 - 0.6)),
+        )
         .into_any_element()
 }
 

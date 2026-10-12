@@ -110,7 +110,9 @@ pill), `row` (a clickable line: 40 px at least, `SM`, hover, the
 selected tint while open, ripple; `ticked_row` has the ticked tint and
 `count_pill` a count at its end), `field` and `line_field` (an edge at rest, a 2 px
 accent ring inside it while it has the keys; 40 px for one line), menu
-and menu item, switch,
+and menu item, `switch` (36 × 20: a 12 px track under a 20 px round thumb
+that stands out above and below it; off, a `text_dim` thumb with a minus on
+`switch_off`; on, an accent thumb with a check on `Theme::switch_on`),
 checkbox, radio, colour swatch and wheel, avatar, tooltip, snackbar, scroll
 bar, skeleton, `notched::popover` (opens at the click, notch, level 4,
 `LG`), `widgets::dialog` (level 3, `LG`, frosted), `widgets::card` (level

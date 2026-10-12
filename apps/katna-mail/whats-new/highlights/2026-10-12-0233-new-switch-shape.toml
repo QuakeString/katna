@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "New switch shape"
+text = """
+Switches now have a thin track and a bigger round knob that shows a minus
+when off and a check when on.
+"""
