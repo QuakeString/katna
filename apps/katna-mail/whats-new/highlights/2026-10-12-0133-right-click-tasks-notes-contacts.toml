@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Right-click in Tasks, Notes and Contacts"
+text = """
+Right-click a task list, in the side list or on its card's name, to add a
+task, sort, rename it, start a new list or delete it. Right-click a note to
+pin, remind, colour, label, archive, copy or delete it. Right-click a contact
+to email, find their mail, call, edit, print or delete them. And Add to Tasks
+now sits in the mail's right-click menu itself.
+"""

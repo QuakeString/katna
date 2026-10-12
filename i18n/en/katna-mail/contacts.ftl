@@ -143,6 +143,7 @@ contacts-qr-done = Done
 contacts-deleted = Deleted { $name }
 contacts-added = Added { $name } to contacts
 contacts-find-mail = Mail
+contacts-menu-find-mail = Find emails
 contacts-details = Contact details
 contacts-saved-in = Saved in
 contacts-notes = Notes

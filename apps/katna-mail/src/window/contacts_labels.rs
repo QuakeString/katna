@@ -37,6 +37,11 @@ pub(super) enum LabelMenu {
     Person { at: Point<Pixels> },
     /// One label's own menu.
     Label { name: String, at: Point<Pixels> },
+    /// A right-clicked person's menu in the list.
+    Contact {
+        person: Box<katna_store::SavedContact>,
+        at: Point<Pixels>,
+    },
 }
 
 /// The dialog naming a new label, or renaming one.
@@ -376,6 +381,128 @@ impl MailWindow {
     }
 
     /// The labels menu, over everything.
+    /// A person's menu: Send email, Find emails and Call as on their
+    /// page, then Edit, Print and Delete.
+    fn contact_menu_items(
+        &self,
+        person: katna_store::SavedContact,
+        item: &dyn Fn(SharedString, AnyElement, String) -> gpui::Stateful<gpui::Div>,
+        separator: &dyn Fn() -> gpui::Div,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> Vec<AnyElement> {
+        let lead = |name: &str| icon(name, th.text_dim, 20.0);
+        let mut items = Vec::new();
+        if let Some(email) = person.emails.first().filter(|e| !e.is_empty()).cloned() {
+            let to = email.clone();
+            items.push(
+                item(
+                    "contact-menu-email".into(),
+                    lead("mail"),
+                    tr!("contact-email"),
+                )
+                .on_click(cx.listener(move |this, _, window, cx| {
+                    this.contacts.label_menu = None;
+                    this.open_app(App::Mail, cx);
+                    let mail = crate::mailto::Mailto {
+                        to: vec![to.clone()],
+                        ..Default::default()
+                    };
+                    this.open_mailto(mail, window, cx);
+                }))
+                .into_any_element(),
+            );
+            let query = format!("from:{email} OR to:{email}");
+            items.push(
+                item(
+                    "contact-menu-find".into(),
+                    lead("search"),
+                    tr!("contacts-menu-find-mail"),
+                )
+                .on_click(cx.listener(move |this, _, window, cx| {
+                    this.contacts.label_menu = None;
+                    this.open_app(App::Mail, cx);
+                    this.search_for(query.clone(), window, cx);
+                }))
+                .into_any_element(),
+            );
+        }
+        if !person.phone.is_empty() {
+            let dial = format!(
+                "tel:{}",
+                person
+                    .phone
+                    .chars()
+                    .filter(|c| c.is_ascii_digit() || *c == '+')
+                    .collect::<String>()
+            );
+            items.push(
+                item(
+                    "contact-menu-call".into(),
+                    lead("phone"),
+                    tr!("contact-call"),
+                )
+                .on_click(cx.listener(move |this, _, _, cx| {
+                    this.contacts.label_menu = None;
+                    cx.open_url(&dial);
+                    cx.notify();
+                }))
+                .into_any_element(),
+            );
+        }
+        if !items.is_empty() {
+            items.push(separator().into_any_element());
+        }
+        let edit = person.clone();
+        items.push(
+            item(
+                "contact-menu-edit".into(),
+                lead("compose"),
+                tr!("contacts-edit"),
+            )
+            .on_click(cx.listener(move |this, _, window, cx| {
+                this.contacts.label_menu = None;
+                let card = crate::data::saved_cards(&this.paths, &edit.ids)
+                    .ok()
+                    .and_then(|cards| cards.into_iter().next());
+                this.open_saved_contact(edit.clone(), cx);
+                this.start_contact_edit(card, window, cx)
+            }))
+            .into_any_element(),
+        );
+        let print = person.clone();
+        items.push(
+            item(
+                "contact-menu-print".into(),
+                lead("print"),
+                tr!("contacts-print"),
+            )
+            .on_click(cx.listener(move |this, _, window, cx| {
+                this.contacts.label_menu = None;
+                this.print_contacts(print.name.clone(), vec![print.ids.clone()], window, cx)
+            }))
+            .into_any_element(),
+        );
+        items.push(separator().into_any_element());
+        items.push(
+            item(
+                "contact-menu-delete".into(),
+                lead("trash"),
+                tr!("contacts-delete"),
+            )
+            .on_click(cx.listener(move |this, _, _, cx| {
+                this.contacts.label_menu = None;
+                match crate::data::saved_cards(&this.paths, &person.ids) {
+                    Ok(cards) => this.delete_contact(&person, &cards, cx),
+                    Err(err) => this.show_snackbar(err, None, cx),
+                }
+                cx.notify();
+            }))
+            .into_any_element(),
+        );
+        items
+    }
+
     pub(super) fn render_label_menu(
         &self,
         th: &Theme,
@@ -494,6 +621,10 @@ impl MailWindow {
                     ];
                     (at, items)
                 }
+                LabelMenu::Contact { person, at } => (
+                    at,
+                    self.contact_menu_items(*person, &item, &separator, th, cx),
+                ),
             };
         let list = div()
             .w(px(MENU_WIDTH))

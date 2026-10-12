@@ -1032,6 +1032,19 @@ impl MailWindow {
             .relative()
             .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
             .on_click(cx.listener(move |this, _, _, cx| this.open_contact(open.clone(), cx)))
+            .on_mouse_down(gpui::MouseButton::Right, {
+                let person = Box::new(person.clone());
+                cx.listener(move |this, event: &gpui::MouseDownEvent, _, cx| {
+                    cx.stop_propagation();
+                    this.open_label_menu(
+                        LabelMenu::Contact {
+                            person: person.clone(),
+                            at: event.position,
+                        },
+                        cx,
+                    )
+                })
+            })
             .child(
                 div()
                     .w(px(36.0))

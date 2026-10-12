@@ -31,7 +31,7 @@ use std::time::{Duration, Instant};
 
 use gpui::{
     AnimationExt, AnyElement, Bounds, Context, Div, DragMoveEvent, ElementId, Entity, Focusable,
-    FontWeight, SharedString, Subscription, Task, Window, div, prelude::*, rgba,
+    FontWeight, MouseButton, SharedString, Subscription, Task, Window, div, prelude::*, rgba,
 };
 use katna_core::config::AppKind;
 use katna_dbus::{NoteItem, NotePictureItem};
@@ -170,6 +170,9 @@ pub(super) struct NotesPage {
     /// The ⋮ menu of the open note or of the ticked cards, open at a
     /// point in the window.
     more: Option<select::MoreMenu>,
+    /// The card right-clicked when it isn't ticked: its menu and popovers
+    /// act on it alone, leaving the ticks as they are.
+    menu_card: Option<i64>,
     /// The colour or label popover of the ticked cards.
     bulk: Option<select::Bulk>,
     /// The version history of the open note, when shown.
@@ -499,6 +502,7 @@ impl MailWindow {
             checked: Vec::new(),
             check_anchor: None,
             more: None,
+            menu_card: None,
             bulk: None,
             history: None,
             _load: None,
@@ -2314,6 +2318,13 @@ impl MailWindow {
                     }
                 }),
             )
+            .on_mouse_down(
+                MouseButton::Right,
+                cx.listener(move |this, event: &gpui::MouseDownEvent, _, cx| {
+                    cx.stop_propagation();
+                    this.open_card_menu(id, event.position, cx)
+                }),
+            )
             .when_some(section.filter(|_| !trashed), |d, section| {
                 let this = cx.entity().downgrade();
                 d.on_drag(NoteDragged, move |_, grab, _, cx| {
@@ -2804,6 +2815,7 @@ impl MailWindow {
                                 page.more = Some(select::MoreMenu {
                                     at: event.position(),
                                     open_note: true,
+                                    card: false,
                                 });
                             }
                             cx.notify();
