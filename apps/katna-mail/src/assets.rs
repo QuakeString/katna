@@ -206,6 +206,8 @@ icons!(
     "star",
     "subtask",
     "sunrise",
+    "switch-check",
+    "switch-minus",
     "table",
     "tag",
     "tasks",
