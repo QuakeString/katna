@@ -2031,7 +2031,8 @@ impl MailWindow {
                     })
                     .on_click(
                         cx.listener(move |this, _, _, cx| this.task_set_view(View::List(id), cx)),
-                    ),
+                    )
+                    .on_mouse_down(MouseButton::Right, open_list_menu(id, cx)),
                 );
             }
         }
@@ -2427,7 +2428,9 @@ impl MailWindow {
             .as_ref()
             .filter(|a| a.list == id && a.parent.is_none());
         let empty = open_rows.is_empty() && adding_top.is_none();
-        let heading = card_heading(list_title(column), th).child(
+        let heading = card_heading(list_title(column), th)
+            .on_mouse_down(MouseButton::Right, open_list_menu(id, cx))
+            .child(
             icon_button(("tasks-list-menu", id as usize), "more", 20.0, th)
                 .size(px(32.0))
                 // Not over its own menu.
@@ -3001,17 +3004,42 @@ impl MailWindow {
                     .iter()
                     .find(|c| c.list.id == list)
                     .is_some_and(|c| c.list.is_default && c.list.account.is_some());
-                let mut items = self.render_sort_items(list, th, cx);
+                // Right-click on a list in the side list or on its card's
+                // name, or its card's ⋮: what can be done with the list.
+                let mut items = vec![
+                    item("tasks-menu-add".into(), "add", tr!("tasks-add"))
+                        .on_click(cx.listener(move |this, _, window, cx| {
+                            this.tasks.menu = None;
+                            // The list's card shows on All and on its own.
+                            if !matches!(this.tasks.view, View::All)
+                                && this.tasks.view != View::List(list)
+                            {
+                                this.task_set_view(View::List(list), cx);
+                            }
+                            this.task_start_adding(list, None, String::new(), window, cx)
+                        }))
+                        .into_any_element(),
+                    separator().into_any_element(),
+                ];
+                items.extend(self.render_sort_items(list, th, cx));
                 items.push(separator().into_any_element());
-                items.extend([item(
-                    "tasks-menu-rename".into(),
-                    "compose",
-                    tr!("tasks-rename-list"),
-                )
-                .on_click(cx.listener(move |this, _, window, cx| {
-                    this.task_start_naming(Some(list), account, window, cx)
-                }))
-                .into_any_element()]);
+                items.extend([
+                    item(
+                        "tasks-menu-rename".into(),
+                        "compose",
+                        tr!("tasks-rename-list"),
+                    )
+                    .on_click(cx.listener(move |this, _, window, cx| {
+                        this.task_start_naming(Some(list), account, window, cx)
+                    }))
+                    .into_any_element(),
+                    item("tasks-menu-new-list".into(), "add", tr!("tasks-new-list"))
+                        .on_click(cx.listener(move |this, _, window, cx| {
+                            this.tasks.menu = None;
+                            this.task_start_naming(None, account, window, cx)
+                        }))
+                        .into_any_element(),
+                ]);
                 // The service's default list can't be deleted.
                 if !is_default {
                     items.push(
@@ -3183,6 +3211,21 @@ impl MailWindow {
                 .into_any_element(),
         )
     }
+}
+
+/// Opens list `list`'s menu where the right-click was.
+fn open_list_menu(
+    list: i64,
+    cx: &mut Context<MailWindow>,
+) -> impl Fn(&gpui::MouseDownEvent, &mut Window, &mut gpui::App) + 'static {
+    cx.listener(move |this, event: &gpui::MouseDownEvent, _, cx| {
+        this.tasks.menu = Some(Menu::List {
+            list,
+            at: event.position,
+        });
+        cx.stop_propagation();
+        cx.notify();
+    })
 }
 
 /// What the line under an account in the side list says on this page.

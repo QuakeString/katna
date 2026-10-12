@@ -27,6 +27,8 @@ pub(in crate::window) struct MoreMenu {
     pub at: Point<Pixels>,
     /// For the open note; else for the ticked cards.
     pub open_note: bool,
+    /// A right-clicked card's: everything the card and the bar can do.
+    pub card: bool,
 }
 
 /// A popover of the selection bar.
@@ -44,10 +46,29 @@ impl MailWindow {
         let Some(Ok(notes)) = &page.notes else {
             return Vec::new();
         };
+        if let Some(id) = page.menu_card {
+            return notes.iter().filter(|n| n.id == id).cloned().collect();
+        }
         page.checked
             .iter()
             .filter_map(|id| notes.iter().find(|n| n.id == *id).cloned())
             .collect()
+    }
+
+    /// Right-click on card `id`: its menu, for the ticked cards when it is
+    /// one of them, else for it alone.
+    pub(super) fn open_card_menu(&mut self, id: i64, at: Point<Pixels>, cx: &mut Context<Self>) {
+        let Some(page) = self.notes.as_mut() else {
+            return;
+        };
+        page.bulk = None;
+        page.menu_card = (!page.checked.contains(&id)).then_some(id);
+        page.more = Some(MoreMenu {
+            at,
+            open_note: false,
+            card: true,
+        });
+        cx.notify();
     }
 
     /// Ticks card `id`, or unticks it.
@@ -63,6 +84,7 @@ impl MailWindow {
         }
         page.check_anchor = Some(id);
         page.bulk = None;
+        page.menu_card = None;
         cx.notify();
     }
 
@@ -96,6 +118,7 @@ impl MailWindow {
         };
         page.bulk = None;
         page.more = None;
+        page.menu_card = None;
         if page.checked.is_empty() {
             return false;
         }
@@ -298,6 +321,7 @@ impl MailWindow {
                 |this, _, cx| {
                     if let Some(page) = this.notes.as_mut() {
                         page.bulk = None;
+                        page.menu_card = None;
                     }
                     cx.notify();
                 },
@@ -426,6 +450,7 @@ impl MailWindow {
                                 page.more = Some(MoreMenu {
                                     at: event.position(),
                                     open_note: false,
+                                    card: false,
                                 });
                             }
                             cx.notify();
@@ -447,7 +472,7 @@ impl MailWindow {
         let (at, panel) = if let Some(more) = &page.more {
             (
                 more.at,
-                self.render_note_more_menu(more.open_note, th, window, cx),
+                self.render_note_more_menu(more.open_note, more.card, th, window, cx),
             )
         } else {
             match page.bulk.as_ref()? {
@@ -460,6 +485,7 @@ impl MailWindow {
                 if let Some(page) = this.notes.as_mut() {
                     page.more = None;
                     page.bulk = None;
+                    page.menu_card = None;
                 }
                 cx.notify();
             })
@@ -594,12 +620,122 @@ impl MailWindow {
         .into_any_element()
     }
 
+    /// A right-clicked card's menu, for it or for the ticked cards: Pin,
+    /// Remind, Colour, Labels and Archive as on the bar, then Make a copy
+    /// and Delete; in Trash, Restore and Delete forever.
+    fn render_card_menu_items(
+        &self,
+        menu: gpui::Div,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> gpui::Div {
+        let item = |id: &'static str, name: &'static str, label: String| {
+            menu_item_icon(id, name, &label, th)
+        };
+        let close_then = |f: fn(&mut Self, &mut Context<Self>)| {
+            cx.listener(move |this: &mut Self, _: &gpui::ClickEvent, _, cx| {
+                if let Some(page) = this.notes.as_mut() {
+                    page.more = None;
+                }
+                f(this, cx);
+                if let Some(page) = this.notes.as_mut() {
+                    page.menu_card = None;
+                }
+                cx.notify();
+            })
+        };
+        // The colour and label popovers open where the menu was.
+        let popover = |labels: bool| {
+            cx.listener(move |this: &mut Self, _: &gpui::ClickEvent, window, cx| {
+                let at = this.notes.as_ref().and_then(|p| p.more.as_ref()).map(|m| m.at);
+                if let Some(at) = at {
+                    this.open_bulk(labels, at, window, cx)
+                }
+            })
+        };
+        let notes = self.checked_notes();
+        let ids: Vec<i64> = notes.iter().map(|n| n.id).collect();
+        let rule = || div().my(px(space::S2)).h(px(1.0)).bg(rgba(th.divider));
+        if self
+            .notes
+            .as_ref()
+            .is_some_and(|p| p.view == NotesView::Trash)
+        {
+            return menu
+                .child(
+                    item("notes-card-restore", "restore", tr!("notes-restore"))
+                        .on_click(close_then(|this, cx| this.trash_checked(false, cx))),
+                )
+                .child(
+                    item("notes-card-delete-forever", "trash", tr!("notes-delete-forever"))
+                        .on_click(cx.listener(move |this, _, _, cx| {
+                            let ids = ids.clone();
+                            this.clear_checks(cx);
+                            this.delete_notes_forever(ids, cx)
+                        })),
+                );
+        }
+        let all_pinned = notes.iter().all(|n| n.pinned);
+        let all_archived = notes.iter().all(|n| n.archived);
+        let reminded = notes.iter().any(|n| n.remind_at.is_some());
+        menu.child(
+            item(
+                "notes-card-pin",
+                if all_pinned { "pin-filled" } else { "pin" },
+                if all_pinned {
+                    tr!("notes-unpin")
+                } else {
+                    tr!("notes-pin")
+                },
+            )
+            .on_click(close_then(|this, cx| this.pin_checked(cx))),
+        )
+        .child(
+            item("notes-card-remind", "bell", tr!("notes-remind")).on_click(cx.listener(
+                move |this, _, _, cx| {
+                    let at = this.notes.as_ref().and_then(|p| p.more.as_ref()).map(|m| m.at);
+                    if let Some(page) = this.notes.as_mut() {
+                        page.more = None;
+                        page.menu_card = None;
+                    }
+                    if let Some(at) = at {
+                        this.open_remind_menu(ids.clone(), reminded, at, cx)
+                    }
+                },
+            )),
+        )
+        .child(item("notes-card-color", "palette", tr!("notes-color")).on_click(popover(false)))
+        .child(item("notes-card-label", "label", tr!("notes-labels")).on_click(popover(true)))
+        .child(
+            item(
+                "notes-card-archive",
+                "archive",
+                if all_archived {
+                    tr!("notes-unarchive")
+                } else {
+                    tr!("notes-archive")
+                },
+            )
+            .on_click(close_then(|this, cx| this.archive_checked(cx))),
+        )
+        .child(rule())
+        .child(
+            item("notes-card-copy", "copy", tr!("notes-make-copy"))
+                .on_click(close_then(|this, cx| this.copy_checked(cx))),
+        )
+        .child(
+            item("notes-card-delete", "trash", tr!("notes-delete"))
+                .on_click(close_then(|this, cx| this.trash_checked(true, cx))),
+        )
+    }
+
     /// The ⋮ menu: the open note's (Show checkboxes, Make a task, Link a
     /// note, Send as mail, Save as Markdown or PDF, Make a copy, Archive,
     /// Delete) or the ticked cards' (Make a copy, Delete).
     fn render_note_more_menu(
         &self,
         open_note: bool,
+        card: bool,
         th: &Theme,
         _window: &mut Window,
         cx: &mut Context<Self>,
@@ -613,6 +749,9 @@ impl MailWindow {
                     page.more = None;
                 }
                 f(this, window, cx);
+                if let Some(page) = this.notes.as_mut() {
+                    page.menu_card = None;
+                }
                 cx.notify();
             })
         };
@@ -629,6 +768,11 @@ impl MailWindow {
             radius::SM,
             elevation::MENU,
         );
+        if card {
+            return self
+                .render_card_menu_items(menu, th, cx)
+                .into_any_element();
+        }
         if !open_note {
             menu = menu
                 .child(

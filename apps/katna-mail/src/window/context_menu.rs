@@ -853,6 +853,19 @@ impl MailWindow {
         } else {
             plain("context-star", "star", &tr!("menu-star")).on_click(act(Act::Star(true)))
         });
+        if !drafts && self.app_on(App::Tasks) {
+            main.item(
+                plain("context-add-to-tasks", "tasks", &tr!("menu-add-to-tasks")).on_click(
+                    cx.listener(|this, _, _, cx| {
+                        let Some((_, key)) = this.take_context_line() else {
+                            return;
+                        };
+                        let keys = this.context_targets(key);
+                        this.add_to_tasks_from(keys, cx);
+                    }),
+                ),
+            );
+        }
         main.rule(th);
         let mut parents = Vec::new();
         let gmail = self.tree.is_gmail(row.account);
@@ -1011,24 +1024,6 @@ impl MailWindow {
                 }
             }
             Sub::FollowUp => {
-                if self.app_on(App::Tasks) {
-                    rows.item(
-                        menu_row(
-                            "context-add-to-tasks",
-                            "tasks",
-                            tr!("menu-add-to-tasks").into(),
-                            th,
-                            rh,
-                        )
-                        .on_click(cx.listener(|this, _, _, cx| {
-                            let Some((_, key)) = this.take_context_line() else {
-                                return;
-                            };
-                            let keys = this.context_targets(key);
-                            this.add_to_tasks_from(keys, cx);
-                        })),
-                    );
-                }
                 if self.app_on(App::Notes) {
                     rows.item(
                         menu_row(
