@@ -862,6 +862,16 @@ impl Store {
         Ok(())
     }
 
+    /// Keeps list `id`, deleted here, with its tasks: the service refused
+    /// to delete it, so it stays as the service has it.
+    pub fn keep_task_list(&mut self, id: i64) -> Result<()> {
+        self.pim.execute(
+            "UPDATE task_list SET deleted = 0, dirty = 0 WHERE id = ?1",
+            [id],
+        )?;
+        Ok(())
+    }
+
     /// Where the last pull of list `id` ended.
     pub fn task_list_sync_state(&self, id: i64) -> Result<Option<String>> {
         Ok(self

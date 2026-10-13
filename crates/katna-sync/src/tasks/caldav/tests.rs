@@ -431,3 +431,60 @@ fn files_a_server_refuses_stay_here() {
     smol::block_on(sync_account(&service, &store, account)).unwrap();
     assert!(store.lock().unwrap().task_file(file).unwrap().is_some());
 }
+
+#[test]
+fn a_list_the_server_wont_delete_comes_back() {
+    let server = Arc::new(Mutex::new(Server::default()));
+    server
+        .lock()
+        .unwrap()
+        .put(&format!("{LIST}a.ics"), &todo("a", "Insurance", ""));
+    let inner = server.clone();
+    // Yahoo's way: its own list can't go.
+    let (origin, _seen) = fake::serve(move |request| {
+        if request.method == "DELETE" && request.route() == LIST {
+            return Answer::xml(400, "");
+        }
+        answer(&inner, request)
+    });
+    let dav = CalDav::with_origin(&origin, "me", "secret", Tls::insecure_for_local_tests());
+    let service = TaskService::CalDav(DavTasks::new(dav));
+    let dir = tempfile::tempdir().unwrap();
+    let mut store = Store::open(&Paths::with_root(dir.path()), Mode::ReadWrite).unwrap();
+    let account = store
+        .add_account(AccountKind::Imap, "Me", "me@example.test")
+        .unwrap()
+        .id;
+    let store = Mutex::new(store);
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+    let synced = || -> Vec<_> {
+        let lists = store.lock().unwrap().task_lists().unwrap();
+        lists.into_iter().filter(|l| l.account.is_some()).collect()
+    };
+    let list = synced()[0].id;
+    assert!(store.lock().unwrap().delete_task_list(list).unwrap());
+    assert!(synced().is_empty());
+
+    // The round goes on, and the list is back with its task.
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+    let lists = synced();
+    assert_eq!(lists.len(), 1, "{lists:?}");
+    assert_eq!(lists[0].id, list);
+    let tasks = store.lock().unwrap().tasks_in(list).unwrap();
+    assert_eq!(tasks[0].title, "Insurance");
+    assert!(
+        store
+            .lock()
+            .unwrap()
+            .pending_task_lists(account)
+            .unwrap()
+            .is_empty()
+    );
+    assert!(
+        server
+            .lock()
+            .unwrap()
+            .todos
+            .contains_key(&format!("{LIST}a.ics"))
+    );
+}

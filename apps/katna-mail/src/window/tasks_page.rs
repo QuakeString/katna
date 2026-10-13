@@ -1980,11 +1980,13 @@ impl MailWindow {
                 None => groups.push((column.list.account, column.account.clone(), vec![column])),
             }
         }
-        // A local account keeps its lists on this computer.
+        // A local account keeps its lists on this computer; one left out
+        // of Tasks in Settings shows nothing here.
+        let left_out = self.hidden_ids(AppKind::Tasks);
         let accounts = self
             .accounts
             .iter()
-            .filter(|a| a.kind != AccountKind::Local);
+            .filter(|a| a.kind != AccountKind::Local && !left_out.contains(&a.id));
         for account in accounts {
             if !groups.iter().any(|(k, _, _)| *k == Some(account.id)) {
                 groups.push((Some(account.id), account.address.clone(), Vec::new()));

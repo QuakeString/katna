@@ -179,12 +179,17 @@ pub async fn sync_account(
     let pending = store.lock().unwrap().pending_task_lists(account)?;
     for list in pending {
         match (list.deleted, list.remote_id.as_deref()) {
-            (true, remote) => {
-                if let Some(remote) = remote {
-                    service.delete_list(remote).await?;
+            (true, None) => store.lock().unwrap().forget_task_list(list.id)?,
+            // A list the service won't delete (a calendar's own list) comes
+            // back, logged, rather than stopping every round after.
+            (true, Some(remote)) => match service.delete_list(remote).await {
+                Ok(()) => store.lock().unwrap().forget_task_list(list.id)?,
+                Err(Error::Rejected(err)) => {
+                    tracing::warn!(list = list.id, %err, "the task service kept a deleted list");
+                    store.lock().unwrap().keep_task_list(list.id)?;
                 }
-                store.lock().unwrap().forget_task_list(list.id)?;
-            }
+                Err(err) => return Err(err),
+            },
             // A list the service refuses (Zoho makes none of one's own)
             // stays here, logged, rather than stopping the round.
             (false, None) => match service.add_list(&list.title).await {
