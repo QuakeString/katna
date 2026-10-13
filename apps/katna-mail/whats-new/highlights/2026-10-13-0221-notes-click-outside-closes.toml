@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Notes: a click outside just closes the note"
+text = """
+With a note open, clicking anywhere outside it closes it, even on that
+note's own faded card underneath. It no longer closes and opens again
+with a flicker.
+"""

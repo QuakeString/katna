@@ -2859,6 +2859,9 @@ impl MailWindow {
                 // The board stays in sight under a veil of the page's
                 // own colour, not a dark one.
                 .bg(rgba(fade(th.page, 0.85)))
+                // The board under the veil takes no pointer: a click on the
+                // open note's own faded card only closes it, never reopens it.
+                .occlude()
                 .on_click(cx.listener(|this, _, _, cx| this.close_note(cx)))
                 .child(card)
                 .map(|scrim| match closing {
