@@ -38,6 +38,8 @@ list-range-about = { $first }–{ $last } n'ime ihe dị ka { $total }
 list-results = Nsonaazụ maka “{ $query }”
 list-results-corrected = Na-egosi nsonaazụ maka “{ $query }”
 list-search-instead = Kama nke ahụ, chọọ “{ $query }”
+list-search-no-index = Ọchụchọ adịbeghị njikere: e wubeghị ndeksi ahụ.
+list-search-not-ready = Ọchụchọ adịbeghị njikere: { $error }
 list-files-more = +{ $count }
 list-replied = Ị zara ya
 
@@ -189,8 +191,17 @@ list-empty-tab = Ọ dịghị ozi dị na { $tab }.
 list-empty-tab-unknown = Ọ dịghị ozi dị na taabụ a.
 list-empty-folder = Ọ dịghị ozi dị na { $folder }.
 list-empty-folder-unknown = Ọ dịghị ozi dị na folda a.
+list-empty-waiting = Ọ dịghị ihe na-eche nzaghachi.
+list-empty-reminders = Enweghị ncheta. Pịa H n'ozi iji tinye otu.
 list-first-sync = Na-enweta ozi gị…
 list-first-sync-detail = Ha ga-apụta ebe a ka ha na-abata.
+list-store-unreadable = Enweghị ike imepe nchekwa ozi
+row-no-subject = (enweghị isiokwu)
+row-unknown-sender = (onye zitere amaghị)
+row-to = Gaa:
+row-no-recipients = (enweghị ndị nnata)
+row-names-separator = {", "}
+row-me = mụ
 
 ## Mail list: lines
 
@@ -208,6 +219,14 @@ row-tracking-clicked = Mmadụ { $opened } n'ime { $recipients } mepere ya, mmad
 row-pin = Kwụnye n'elu
 row-unpin = Wepụ n'elu
 row-snoozed-until = E yigharịrị ruo { $when }
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = Taa
+snoozed-group-tomorrow = Echi
+snoozed-group-this-week = Izu a
+snoozed-group-later = Emesịa
+row-follow-up-step = Nsochi { $step } n'ime { $steps } · { $date }
+row-follow-up-waiting = Nsochi na-eche
+row-reminder = Ncheta { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -230,6 +249,7 @@ menu-not-important = Kaa akara dị ka ọ dịghị mkpa
 menu-pin = Kwụnye n'elu
 menu-unpin = Wepụ n'elu
 menu-snooze = Yigharịa
+menu-remind = Chetara m
 menu-unsnooze = Kagbuo iyigharị
 menu-add-to-tasks = Tinye na Ọrụ
 menu-schedule-meeting = Hazie nnọkọ
@@ -245,7 +265,29 @@ menu-follow-up = Soro ya
 # Pin to top.
 menu-more = Ndị ọzọ
 menu-move-to-heading = Bugharịa gaa:
+menu-move-to-search = Bugharịa gaa…
+menu-label-as = Tinye leebụl
+menu-label-as-search = Tinye leebụl…
+menu-no-folder = Enweghị folda a na-akpọ “{ $name }”
+menu-no-label = Enweghị leebụl a na-akpọ “{ $name }”
+menu-create-folder = Mepụta “{ $name }”
+menu-always-move = Na-ebuga ozi si n'aka { $name } ebe a mgbe niile
+toast-always-move-failed = E bugharịrị ozi ahụ, mana e meghị iwu ahụ: { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+       *[other] Mkparịta ụka { $count }
+    }
+   *[message] { $count ->
+       *[other] Ozi { $count }
+    }
+}
 menu-find-from = Chọta ozi-e si n'aka { $name }
+menu-make-rule = Mee iwu…
+toast-key-imported = Ebubatala igodo
+toast-key-updated = Ị nweburu igodo a; ọ dị ọhụrụ ugbu a
+toast-key-removed = Ewepụla igodo
+toast-key-not-removed = Enweghị ike iwepụ igodo ahụ
+toast-fingerprint-copied = Edetuola fingerprint
 
 ## Snackbar after an action on mail in the list
 
@@ -261,6 +303,8 @@ toast-moved = { $kind ->
     [conversation] Ebugharịala mkparịta ụka { $count }.
    *[message] Ebugharịala ozi { $count }.
 }
+toast-label-added = Etinyela leebụl “{ $label }”.
+toast-label-removed = Ewepụla leebụl “{ $label }”.
 toast-starred = { $kind ->
     [conversation] Etinyela kpakpando na mkparịta ụka { $count }.
    *[message] Etinyela kpakpando na ozi { $count }.

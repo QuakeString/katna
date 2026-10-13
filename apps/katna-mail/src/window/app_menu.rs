@@ -2,20 +2,23 @@
 
 //! The application menu behind the ☰ button of the account card: the menu
 //! bar the KDE global menu shows (`desktop::menu_bar`), for desktops that
-//! have no global menu. Each menu opens its items to the left of the card,
-//! or, where the window leaves no room there (a phone), in the card itself
-//! under a row that goes back.
+//! have no global menu. It is a page of the card (`menu_page`), with a
+//! button back on the right. Each menu opens its items to the left of the
+//! card, or, where the window leaves no room there (a phone), as a page of
+//! its own.
 
+use crate::widgets::Tip as _;
 use gpui::{AnyElement, Context, FontWeight, KeyDownEvent, MouseButton, div, prelude::*, rgba};
 use katna_i18n::tr;
 use katna_platform::dbusmenu::MenuItem;
 use katna_ui::px;
+use katna_ui::tokens::space;
 
 use super::MailWindow;
 use super::MenuKey;
 use super::desktop;
 use crate::theme::Theme;
-use crate::widgets::{icon, icon_button, raised, tip};
+use crate::widgets::{icon, icon_button, raised};
 
 /// As wide as the account card it replaces.
 const WIDTH: f32 = 340.0;
@@ -37,7 +40,7 @@ impl MailWindow {
     pub(super) fn app_menu_button(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
         icon_button("app-menu", "menu", 22.0, th)
             .ml_auto()
-            .tooltip(tip(tr!("app-menu"), th))
+            .tip(tr!("app-menu"), th)
             .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
             .on_click(cx.listener(|this, _, _, cx| {
                 cx.stop_propagation();
@@ -45,7 +48,7 @@ impl MailWindow {
                     items: desktop::menu_bar(cx),
                     open: None,
                 });
-                cx.notify();
+                this.turn_menu_page(false, cx);
             }))
             .into_any_element()
     }
@@ -62,12 +65,16 @@ impl MailWindow {
         left < SUBMENU_WIDTH + 8.0
     }
 
-    /// Opens menu `ix` of the application menu, or goes back from it.
+    /// Opens menu `ix` of the application menu, or goes back from it. In
+    /// the card, that turns its page.
     fn open_app_submenu(&mut self, ix: Option<usize>, cx: &mut Context<Self>) {
         if let Some(menu) = self.app_menu.as_mut()
             && menu.open != ix
         {
             menu.open = ix;
+            if self.app_menu_drills() {
+                self.turn_menu_page(ix.is_none(), cx);
+            }
             cx.notify();
         }
     }
@@ -78,13 +85,11 @@ impl MailWindow {
         if !self.app_menu_drills() {
             return false;
         }
-        match self.app_menu.as_mut() {
-            Some(menu) if menu.open.is_some() => {
-                menu.open = None;
-                cx.notify();
-                true
-            }
-            _ => false,
+        if self.app_menu.as_ref().is_some_and(|m| m.open.is_some()) {
+            self.open_app_submenu(None, cx);
+            true
+        } else {
+            false
         }
     }
 
@@ -107,7 +112,7 @@ impl MailWindow {
                 .gap(px(2.0))
                 // Left goes back from a menu open in the card; Right opens
                 // the one whose row has the keys.
-                .on_key_down(cx.listener(move |this, event: &KeyDownEvent, _, cx| {
+                .on_key_down(cx.listener(move |this, event: &KeyDownEvent, window, cx| {
                     if event.keystroke.modifiers.modified() {
                         return;
                     }
@@ -116,7 +121,10 @@ impl MailWindow {
                     } else {
                         "right"
                     };
-                    if event.keystroke.key == back
+                    if katna_ui::direction::arrow(
+                        &event.keystroke.key,
+                        katna_ui::direction::is_rtl(window),
+                    ) == back
                         && this.app_menu.as_ref().is_some_and(|m| m.open.is_some())
                     {
                         this.open_app_submenu(None, cx);
@@ -128,45 +136,46 @@ impl MailWindow {
             2.0,
         )
         .text_color(rgba(th.text));
-        // A phone: the open menu's items in the card, under a row back.
+        let motion = self.page_motion(cx);
+        let rule = || {
+            div()
+                .flex_none()
+                .mx(px(space::S3))
+                .my(px(space::S2))
+                .h(px(1.0))
+                .bg(rgba(th.divider))
+        };
+        // A phone: the open menu's items as a page of their own, under its
+        // name and a button back.
         if drills
             && let Some(ix) = menu.open
             && let Some(MenuItem::Submenu { label, items }) = menu.items.get(ix)
         {
-            let back = div()
-                .id("app-menu-back")
-                .h(px(ROW_HEIGHT))
-                .px(px(8.0))
-                .flex()
-                .flex_row()
-                .items_center()
-                .gap(px(8.0))
-                .rounded(px(8.0))
-                .text_size(px(14.0))
-                .font_weight(FontWeight::MEDIUM)
-                .cursor_pointer()
-                .relative()
-                .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
-                .menu_key(th)
-                .tooltip(tip(tr!("app-menu-back"), th))
-                .on_click(cx.listener(|this, _, _, cx| {
-                    cx.stop_propagation();
-                    this.open_app_submenu(None, cx);
-                }))
-                .child(icon("back", th.text_dim, 20.0))
-                .child(without_mnemonic(label));
-            let rule = div()
-                .mx(px(8.0))
-                .my(px(4.0))
-                .h(px(1.0))
-                .bg(rgba(th.divider));
-            return Some(
-                card.child(back)
-                    .child(rule)
-                    .children(self.submenu_rows(ix, items, th, cx))
-                    .into_any_element(),
+            let header = super::menu_page::page_header(
+                "app-menu-back",
+                without_mnemonic(label),
+                th,
+                |this, cx| this.open_app_submenu(None, cx),
+                cx,
             );
+            let page = div()
+                .flex()
+                .flex_col()
+                .gap(px(2.0))
+                .child(header)
+                .child(rule())
+                .children(self.submenu_rows(ix, items, th, cx));
+            return Some(self.menu_page_card("app-menu-page", card, page, None, PADDING, motion));
         }
+        let header = super::menu_page::page_header(
+            "app-menu-close",
+            tr!("app-menu"),
+            th,
+            |this, cx| {
+                this.menu_page_back(cx);
+            },
+            cx,
+        );
         let rows = menu.items.iter().enumerate().filter_map(|(ix, item)| {
             let MenuItem::Submenu { label, items } = item else {
                 return None;
@@ -196,13 +205,18 @@ impl MailWindow {
                         }
                     }))
                 })
-                .on_key_down(cx.listener(move |this, event: &KeyDownEvent, _, cx| {
+                .on_key_down(cx.listener(move |this, event: &KeyDownEvent, window, cx| {
                     let open = if this.app_menu_drills() {
                         "right"
                     } else {
                         "left"
                     };
-                    if !event.keystroke.modifiers.modified() && event.keystroke.key == open {
+                    if !event.keystroke.modifiers.modified()
+                        && katna_ui::direction::arrow(
+                            &event.keystroke.key,
+                            katna_ui::direction::is_rtl(window),
+                        ) == open
+                    {
                         this.open_app_submenu(Some(ix), cx);
                         cx.stop_propagation();
                     }
@@ -226,7 +240,14 @@ impl MailWindow {
                 });
             Some(row)
         });
-        Some(card.children(rows).into_any_element())
+        let page = div()
+            .flex()
+            .flex_col()
+            .gap(px(2.0))
+            .child(header)
+            .child(rule())
+            .children(rows);
+        Some(self.menu_page_card("app-menu-page", card, page, None, PADDING, motion))
     }
 
     /// The items of menu `ix`, beside its row on the left.

@@ -16,7 +16,7 @@ use katna_sync::{
     oauth::{self, Provider, TokenSource},
 };
 
-use super::{CommandError, Daemon, Notice};
+use super::{CommandError, Daemon, Notice, Page};
 
 impl Daemon {
     /// The access tokens of the sign-in linked to `account`, and where it
@@ -65,6 +65,7 @@ impl Daemon {
         self: &Arc<Self>,
         config: Provider,
         account: AccountId,
+        page: &Page,
     ) -> Result<AccountId, CommandError> {
         let account = self.account(account)?;
         let settings = self
@@ -82,7 +83,7 @@ impl Daemon {
             Some(server) => config.at_accounts_server(server),
             None => config,
         };
-        let grant = self.browser_grant(&config, &account.address).await?;
+        let grant = self.browser_grant(&config, &account.address, page).await?;
         let refresh = grant.refresh_token.clone().unwrap_or_default();
         let linked = LinkedSignIn {
             provider: config.kind,

@@ -7,19 +7,21 @@
 //! Encrypted mail asks first. [`AiComplete`] finishes the sentence being
 //! written, in grey like the phrase suggestions, when that is switched on.
 
+use crate::widgets::Tip as _;
 use std::cell::Cell;
 use std::rc::Rc;
 
 use gpui::{
     Anchor, AnyElement, App, Bounds, ClipboardItem, Context, DragMoveEvent, Entity, Focusable,
-    MouseButton, MouseDownEvent, Pixels, Point, Subscription, Task, WeakEntity, Window, anchored,
-    canvas, deferred, div, point, prelude::*, rgba,
+    MouseButton, MouseDownEvent, Pixels, Point, Subscription, Task, WeakEntity, Window, canvas,
+    deferred, div, point, prelude::*, rgba,
 };
 use katna_ai::Tone;
 use katna_ai::provider::{self, OTHER};
 use katna_ai::wire::{plan, problem};
 use katna_core::config::AiSource;
 use katna_i18n::tr;
+use katna_ui::anchored;
 use katna_ui::px;
 use katna_ui::rich::Complete;
 use katna_ui::{InputEvent, TextInput};
@@ -33,7 +35,7 @@ use crate::daemon::{self, Command, Rephrased};
 use crate::theme::{Theme, fade};
 use crate::widgets::choice_chip;
 use crate::widgets::{
-    elevation, filled_button, icon, icon_button_colored, outlined_button, raised, tip,
+    elevation, filled_button, icon, icon_button_colored, outlined_button, raised,
 };
 
 /// The card's width.
@@ -166,7 +168,7 @@ impl MailWindow {
             .child(
                 icon_button_colored("compose-rephrase", "sparkle", 18.0, th.accent, th)
                     .size(px(REPHRASE_BUTTON))
-                    .tooltip(tip(tr!("compose-ai-rephrase-tip"), th))
+                    .tip(tr!("compose-ai-rephrase-tip"), th)
                     // The text keeps its selection.
                     .on_mouse_down(gpui::MouseButton::Left, |_, _, cx| cx.stop_propagation())
                     .on_click(cx.listener(|this, _, window, cx| this.open_rephrase(window, cx))),
@@ -649,7 +651,7 @@ impl MailWindow {
             .child(
                 choice_chip("compose-rephrase-more", "⋯", r.more, th)
                     .rounded_full()
-                    .tooltip(tip(tr!("compose-ai-more"), th))
+                    .tip(tr!("compose-ai-more"), th)
                     .on_click(cx.listener(|this, _, window, cx| {
                         if let Some(r) = this.compose.as_mut().and_then(|c| c.rephrase.as_mut()) {
                             r.more = !r.more;
@@ -754,7 +756,7 @@ impl MailWindow {
         let tool = |id: &'static str, name: &'static str, label: String| {
             icon_button_colored(id, name, 18.0, th.text_dim, th)
                 .size(px(36.0))
-                .tooltip(tip(label, th))
+                .tip(label, th)
                 .when(!done, |d| d.opacity(0.4).cursor_default())
         };
         let actions = div()

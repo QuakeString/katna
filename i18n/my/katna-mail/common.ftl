@@ -41,3 +41,4 @@ search-options-show = ရှာဖွေမှု ရွေးစရာမျာ
 settings = ဆက်တင်များ
 account-add = အကောင့်ထည့်ရန်
 account-wheel-hint = အကောင့်ပြောင်းရန် လှိမ့်ပါ
+account-menu-all-detail = အကောင့် { $count } ခု အတူတကွ

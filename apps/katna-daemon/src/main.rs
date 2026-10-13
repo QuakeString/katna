@@ -8,16 +8,19 @@
 use std::process::ExitCode;
 
 use futures_lite::{FutureExt, StreamExt};
+use katna_core::health::{Health, Request, Restored};
 use katna_core::{Config, Paths};
 use katna_daemon::{Ended, Instance, install, secrets::Secrets, update};
 use katna_sync::worker::WorkerConfig;
 
 const USAGE: &str = "\
-usage: katna-daemon
+usage: katna-daemon [--data-dir DIR]
        katna-daemon install-user-service
 
 Without arguments, runs the Katna background service on the session bus.
 Normally systemd or D-Bus activation starts it; `katnactl` talks to it.
+--data-dir DIR uses DIR/data, DIR/config and DIR/cache instead of the XDG
+directories, as `katna-mail --data-dir` does (which starts it so).
 
 install-user-service: Writes a systemd user unit and a D-Bus activation
 file for this binary under ~/.config and ~/.local/share. Then:
@@ -32,7 +35,8 @@ const TRANSLATIONS: katna_i18n::Sources = include!(concat!(env!("OUT_DIR"), "/tr
 fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().skip(1).collect();
     match args.iter().map(String::as_str).collect::<Vec<_>>()[..] {
-        [] => run(),
+        [] => run(None),
+        ["--data-dir", dir] => run(Some(dir.into())),
         ["install-user-service"] => install_user_service(),
         ["--version"] => {
             println!("katna-daemon {}", env!("CARGO_PKG_VERSION"));
@@ -49,8 +53,8 @@ fn main() -> ExitCode {
     }
 }
 
-fn run() -> ExitCode {
-    let paths = match Paths::from_env() {
+fn run(data_dir: Option<std::path::PathBuf>) -> ExitCode {
+    let paths = match data_dir.map_or_else(Paths::from_env, |dir| Ok(Paths::with_root(dir))) {
         Ok(paths) => paths,
         Err(err) => return fail(err),
     };
@@ -85,16 +89,51 @@ fn run() -> ExitCode {
             Err(err) => return fail(err),
         };
         let bus = connection.clone();
+        let health_file = paths.health_file();
+        let started_at = unix_now();
+        let mut health = Health::load(&health_file);
+        run_request(&paths, &mut health, started_at);
+        if health.begin_start(started_at) {
+            tracing::warn!(
+                starts = health.starts.len() - 1,
+                "the last starts never became healthy; safe mode"
+            );
+        }
+        save_health(&health, &health_file);
         let instance =
             match Instance::start(paths, secrets, WorkerConfig::default(), connection).await {
                 Ok(instance) => instance,
+                // Not a failure: the service runs. Exiting cleanly keeps
+                // systemd from starting this one again every few seconds.
+                Err(err @ katna_daemon::StartError::AlreadyRunning) => {
+                    eprintln!("katna-daemon: {err}");
+                    // Nor a failed start: the running copy owns the file.
+                    let mut health = Health::load(&health_file);
+                    health.starts.retain(|&at| at != started_at);
+                    save_health(&health, &health_file);
+                    return ExitCode::SUCCESS;
+                }
                 Err(err) => return fail(err),
             };
+        if health.needs_check(katna_core::crash::VERSION) {
+            let checks = instance.self_check();
+            health.checked(katna_core::crash::VERSION, unix_now(), checks);
+            if health.healthy {
+                tracing::info!("self-check passed");
+            } else {
+                tracing::warn!(checks = ?health.checks, "self-check failed");
+            }
+        }
+        if health.healthy {
+            health.reached_healthy();
+        }
+        save_health(&health, &health_file);
         match zbus::Connection::system().await {
             Ok(system) => instance.watch_system(system),
             Err(err) => tracing::warn!(%err, "no system bus; not watching suspend and network"),
         }
         tracing::info!("katna-daemon running");
+        let daemon = instance.daemon.clone();
         // Set when a package update replaced this binary.
         let updated = std::cell::OnceCell::new();
         let stop = async {
@@ -103,6 +142,7 @@ fn run() -> ExitCode {
         }
         .or(async {
             let binary = update::replaced().await;
+            update::until_idle(&daemon).await;
             if update::restart_by_systemd(&bus).await {
                 // Its SIGTERM stops this one above.
                 std::future::pending::<()>().await;
@@ -121,6 +161,48 @@ fn run() -> ExitCode {
         }
         ExitCode::SUCCESS
     })
+}
+
+/// Runs what Katna Mail asked of this start in safe mode, if anything:
+/// Try again forgets the failed starts; Restore puts back the copies made
+/// before an update, before anything opens the databases.
+fn run_request(paths: &Paths, health: &mut Health, now: i64) {
+    let Some(request) = Request::take(&paths.safe_mode_request_file()) else {
+        return;
+    };
+    tracing::info!(?request, "safe mode request");
+    // Either way, this start gets a fresh count.
+    health.reached_healthy();
+    health.safe_mode = false;
+    if let Request::Restore { from } = request {
+        let restored = katna_store::restore::restore(paths, from, now);
+        if let Err(err) = &restored {
+            tracing::error!(%err, "could not restore");
+        }
+        health.restored = Some(Restored {
+            at: now,
+            from,
+            saved: restored
+                .as_ref()
+                .map(|dir| dir.display().to_string())
+                .unwrap_or_default(),
+            error: restored.err().map(|err| err.to_string()),
+        });
+    }
+}
+
+/// Writes the health file; a failure is logged, never fatal.
+fn save_health(health: &Health, path: &std::path::Path) {
+    if let Err(err) = health.save(path) {
+        tracing::warn!(%err, "could not write the health file");
+    }
+}
+
+/// The current time in Unix seconds.
+fn unix_now() -> i64 {
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map_or(0, |d| i64::try_from(d.as_secs()).unwrap_or(i64::MAX))
 }
 
 fn install_user_service() -> ExitCode {

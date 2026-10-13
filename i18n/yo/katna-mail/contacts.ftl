@@ -34,7 +34,7 @@ contacts-account-signed-in = O ti wọlé sí { $address } lẹ́ẹ̀kan sí i.
 contacts-account-sign-in-refused = { $provider } kò jẹ́ kí Katna wọlé. Gbìyànjú lẹ́ẹ̀kan sí i, kí o sì gba ààyè sí àwọn olùbásọ̀rọ̀ rẹ láàyè.
 contacts-account-password = Sáfà kò gba ọ̀rọ̀ aṣínà náà. Yahoo, iCloud, Zoho àti àwọn mìíràn nílò ọ̀rọ̀ aṣínà áàpù.
 contacts-account-change-password = Yí ọ̀rọ̀ aṣínà padà
-contacts-account-change-password-tooltip = Ṣí Ètò > Àwọn àkáǹtì
+contacts-account-change-password-tooltip = Tẹ ọ̀rọ̀ aṣínà tuntun; Katna yóò ṣàyẹ̀wò rẹ̀ pẹ̀lú sáfà
 contacts-account-failed = A kò lè ka àwọn olùbásọ̀rọ̀.
 # $reason is the server's own words, in English.
 contacts-account-error = A kò lè ka àwọn olùbásọ̀rọ̀: { $reason }

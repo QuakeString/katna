@@ -21,6 +21,16 @@ compose-hide-trimmed = Ocultar contenido recortado
 compose-remove-trimmed = Quitar texto citado
 compose-trimmed-removed = Se ha quitado el texto citado
 
+## The quoted or forwarded message, in the mail itself
+
+compose-quote-header = El { $date }, { $from } escribió:
+compose-forward-header = ---------- Mensaje reenviado ---------
+compose-forward-from = De: { $from }
+compose-forward-date = Fecha: { $date }
+compose-forward-subject = Asunto: { $subject }
+compose-forward-to = Para: { $to }
+compose-forward-cc = CC: { $cc }
+
 ## Recipients and subject
 
 compose-to = Para

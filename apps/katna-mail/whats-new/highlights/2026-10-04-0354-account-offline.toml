@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Take an account offline"
+text = """
+Right-click an account and pick Go offline, for an hour or until tomorrow if
+you like. Katna stops connecting to it, and a crossed cloud shows beside its
+count and on your picture. Its mail stays here to read, and what you archive,
+delete or send meanwhile goes out when you click the cloud to go online.
+Settings > Accounts has a Connected switch for each account, and the account
+card can take every account offline at once.
+"""

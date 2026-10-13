@@ -265,6 +265,8 @@ impl MailWindow {
                 tr!("delete-ask-confirm"),
             )
         };
+        // Screen readers hear the question as the dialog's name.
+        let spoken = (title.clone(), body.clone());
         let tone = if ask.forever { th.error } else { th.accent };
         let dont_ask = (!ask.forever).then(|| {
             let on = ask.dont_ask;
@@ -300,6 +302,7 @@ impl MailWindow {
         let confirm = div()
             .id("delete-ask-confirm")
             .focus_ring_filled(th)
+            .aria_label(action.clone())
             .flex_none()
             .h(px(36.0))
             .px(px(20.0))
@@ -317,6 +320,7 @@ impl MailWindow {
         let cancel = div()
             .id("delete-ask-cancel")
             .focus_ring(th)
+            .aria_label(tr!("delete-ask-cancel"))
             .h(px(36.0))
             .px(px(16.0))
             .flex()
@@ -387,6 +391,8 @@ impl MailWindow {
             .id("delete-ask")
             .track_focus(&focus)
             .map(|d| super::popovers::keep_tab_inside(d, &focus))
+            .aria_label(spoken.0)
+            .aria_description(spoken.1)
             .on_key_down(
                 cx.listener(move |this, event: &gpui::KeyDownEvent, window, cx| {
                     let stroke = &event.keystroke;

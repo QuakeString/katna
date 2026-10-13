@@ -4,6 +4,7 @@
 search-category-mail = ਮੇਲ
 search-category-people = ਲੋਕ
 search-category-tasks = ਕਾਰਜ
+search-category-notes = ਨੋਟ
 search-category-events = ਇਵੈਂਟ
 search-mail-from = { $sender } ਵੱਲੋਂ
 search-no-subject = (ਕੋਈ ਵਿਸ਼ਾ ਨਹੀਂ)
@@ -18,6 +19,15 @@ search-event-in-days =
         [one] { $count } ਦਿਨ ਵਿੱਚ
        *[other] { $count } ਦਿਨਾਂ ਵਿੱਚ
     }
+search-add-task = ਕਾਰਜ “{ $title }” ਜੋੜੋ
+search-add-task-to = { $list } ਵਿੱਚ
+search-add-task-when = { $when } · { $list }
+search-add-note = ਨੋਟ “{ $title }” ਜੋੜੋ
+search-add-note-to = { $place } ਦੇ ਨੋਟਾਂ ਵਿੱਚ
+search-add-note-here = ਇਸ ਕੰਪਿਊਟਰ ਦੇ ਨੋਟਾਂ ਵਿੱਚ
+search-new-task = ਨਵਾਂ ਕਾਰਜ
+search-new-note = ਨਵਾਂ ਨੋਟ
 search-reply-all = ਸਭ ਨੂੰ ਜਵਾਬ ਦਿਓ
 search-copy-address = ਪਤਾ ਕਾਪੀ ਕਰੋ
 search-find-mail = ਮੇਲ ਲੱਭੋ
+search-edit-capture = ਜੋੜਨ ਤੋਂ ਪਹਿਲਾਂ ਬਦਲੋ

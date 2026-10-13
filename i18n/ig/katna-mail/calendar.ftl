@@ -52,7 +52,7 @@ calendar-account-signed-in = Abanyela ọzọ na { $address }. Na-enweta kalịn
 calendar-account-sign-in-refused = { $provider } ekweghị ka Katna banye. Nwaa ọzọ, ma kwe ka ọ nweta kalịnda gị.
 calendar-account-refused = Sava ahụ anabataghị okwuntughe ahụ. Yahoo, iCloud, Zoho na ndị ọzọ chọrọ okwuntughe ngwa.
 calendar-account-change-password = Gbanwee okwuntughe
-calendar-account-change-password-tooltip = Mepee Ntọala > Akaụntụ
+calendar-account-change-password-tooltip = Pịnye okwuntughe ọhụrụ; Katna ga-eji sava lelee ya
 calendar-account-not-enabled = Agbanyebeghị ohere kalịnda maka Katna.
 calendar-account-failed = Enweghị ike ịgụ kalịnda.
 calendar-account-error = Enweghị ike ịgụ kalịnda: { $reason }
@@ -68,6 +68,7 @@ calendar-account-try-again = Nwaa ọzọ
 calendar-account-try-again-tooltip = Lelee kalịnda akaụntụ a ọzọ ugbu a
 calendar-account-fixing = Na-arụ ọrụ na ya…
 calendar-birthdays = Ụbọchị ọmụmụ
+calendar-tasks = Ọrụ
 calendar-birthday-of = Ụbọchị ọmụmụ { $name }
 calendar-empty-title = Enwebeghị kalịnda
 calendar-empty-text = Katna na-egosi kalịnda akaụntụ Google na Microsoft gị ebe a ozugbo e mekọrịtara ha, yana nke sava ndị ọzọ na-enye CalDAV.
@@ -113,6 +114,7 @@ calendar-add-meet = Tinye ọkpụkpọ vidiyo Google Meet
 calendar-add-teams = Tinye nzukọ Teams
 calendar-has-call = Etinyela ọkpụkpọ vidiyo
 calendar-weekday-day = { $weekday }, { $day }
+calendar-schedule-day = { $weekday }, { $month }
 calendar-all-day-box = Ogologo ụbọchị
 calendar-more-options = Nhọrọ ndị ọzọ
 calendar-save = Chekwaa
@@ -125,6 +127,7 @@ calendar-event-details = Nkọwa ihe omume
 # Right-click menus on the calendar: on a free time or day, an event and
 # a task.
 calendar-menu-new-event = Ihe omume ọhụrụ
+calendar-event-window-title = Ihe omume ọhụrụ
 # Shows the day right-clicked on its own, in the Day view.
 calendar-menu-open-day = Mepee ụbọchị
 calendar-menu-duplicate = Mepụta oyiri

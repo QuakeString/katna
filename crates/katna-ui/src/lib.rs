@@ -3,8 +3,11 @@
 //! Shared GPUI components for Katna apps. GPUI types stay in this crate,
 //! `katna-chrome` and the GUI apps. See `docs/ARCHITECTURE.md` §13.
 
+pub mod anchored;
+pub mod direction;
 pub mod frost;
 pub mod glow;
+pub mod icons;
 pub mod motion;
 pub mod native;
 pub mod rich;
@@ -22,7 +25,10 @@ pub mod window_drag;
 /// own text colour: faint, so it never reads as something typed.
 pub const PLACEHOLDER_OPACITY: f32 = 0.42;
 
+pub use anchored::anchored;
+pub use direction::{Direction, directed};
 pub use glow::Glow;
+pub use icons::icon_svg;
 pub use motion::Spring;
 pub use rich::RichEditor;
 pub use ripple::Ripple;

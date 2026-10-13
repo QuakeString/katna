@@ -171,6 +171,7 @@ pub fn parse(stem: &str, text: &str) -> Result<DesktopScheme, String> {
             accent: color(&side.accent)?,
             accent_fg: color(&side.on_accent)?,
             negative: color(&side.error)?,
+            neutral: None,
         }))
     };
     let (light, dark) = (side(file.light)?, side(file.dark)?);
@@ -290,6 +291,7 @@ pub fn dark_from_light(light: &Scheme) -> Scheme {
         accent,
         accent_fg,
         negative: at(light.negative, 0.72, 0.9),
+        neutral: None,
     }
 }
 

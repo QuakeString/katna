@@ -21,6 +21,16 @@ compose-hide-trimmed = བཅད་ཡོད་པའི་ནང་དོན་
 compose-remove-trimmed = ལུང་འདྲེན་འབད་མི་ཚིག་ཡིག་བཏོན་གཏང་།
 compose-trimmed-removed = ལུང་འདྲེན་འབད་མི་ཚིག་ཡིག་ བཏོན་གཏང་ཡི།
 
+## The quoted or forwarded message, in the mail itself
+
+compose-quote-header = { $date } ལུ་ { $from } གིས་བྲིས་མི:
+compose-forward-header = ---------- མདུན་སྐྱེལ་འབད་མི་འཕྲིན་དོན ---------
+compose-forward-from = ལས: { $from }
+compose-forward-date = ཚེས་གྲངས: { $date }
+compose-forward-subject = དོན་ཚན: { $subject }
+compose-forward-to = ལུ: { $to }
+compose-forward-cc = Cc: { $cc }
+
 ## Recipients and subject
 
 compose-to = ལུ

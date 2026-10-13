@@ -14,6 +14,7 @@ search-without = 不包含
 search-date-within = 日期範圍
 search-has-attachment = 含附件
 search-attachment-custom = 自訂
+search-attachment-image = 圖片
 search-attachment-custom-hint = 輸入副檔名，例如 png，然後按空白鍵
 search-attachment-remove = 移除
 search-clear-filter = 清除篩選條件
@@ -56,3 +57,13 @@ search-dates-month-back = 上個月
 search-dates-month-on = 下個月
 search-dates-year-back = 去年
 search-dates-year-on = 明年
+
+## More results on server: under the results, mail found by asking the
+## mail server, for mail that is not downloaded to this computer yet.
+
+search-server-more = 伺服器上的更多結果
+search-server-searching = 正在搜尋伺服器上的郵件…
+search-server-empty-searching = 目前還沒有內容。正在搜尋伺服器上的郵件…
+search-server-nothing = 伺服器上沒有更多結果
+search-server-failed = 無法搜尋伺服器。
+search-server-again = 再試一次

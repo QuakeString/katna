@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Long lines wrap between words"
+text = """
+Text in Arabic, Hindi and other Indian scripts, Thai, Lao, Khmer and
+Burmese now wraps between words instead of breaking a word in the middle,
+and Chinese and Japanese lines no longer start with a closing mark.
+"""

@@ -38,6 +38,8 @@ list-range-about = { $first }–{ $last } ng humigit-kumulang { $total }
 list-results = Mga resulta para sa “{ $query }”
 list-results-corrected = Ipinapakita ang mga resulta para sa “{ $query }”
 list-search-instead = Hanapin na lang ang “{ $query }”
+list-search-no-index = Hindi pa handa ang paghahanap: hindi pa nabubuo ang index.
+list-search-not-ready = Hindi pa handa ang paghahanap: { $error }
 list-files-more = +{ $count }
 list-replied = Sumagot ka na
 
@@ -339,11 +341,20 @@ list-empty-tab = Walang mail sa { $tab }.
 list-empty-tab-unknown = Walang mail sa tab na ito.
 list-empty-folder = Walang mensahe sa { $folder }.
 list-empty-folder-unknown = Walang mensahe sa folder na ito.
+list-empty-waiting = Walang naghihintay ng sagot.
+list-empty-reminders = Walang paalala. Pindutin ang H sa isang mail para magdagdag.
 list-first-sync = Kinukuha ang iyong mail…
 list-first-sync-detail = Lalabas ito dito habang dumarating.
+list-store-unreadable = Hindi mabuksan ang imbakan ng mail
 
 ## Mail list: lines
 
+row-no-subject = (walang subject)
+row-unknown-sender = (hindi kilalang nagpadala)
+row-to = Para kay:
+row-no-recipients = (walang tatanggap)
+row-names-separator = {", "}
+row-me = ako
 row-removed = Inalis ang mensaheng ito.
 row-starred = Naka-star
 row-not-starred = Walang star
@@ -358,6 +369,14 @@ row-tracking-clicked = Binuksan ng { $opened } sa { $recipients }, may link na s
 row-pin = I-pin sa itaas
 row-unpin = I-unpin
 row-snoozed-until = Naka-snooze hanggang { $when }
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = Ngayon
+snoozed-group-tomorrow = Bukas
+snoozed-group-this-week = Ngayong linggo
+snoozed-group-later = Mamaya pa
+row-follow-up-step = Follow-up { $step } sa { $steps } · { $date }
+row-follow-up-waiting = Naghihintay ang follow-up
+row-reminder = Paalala { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -380,6 +399,7 @@ menu-not-important = Markahan bilang hindi mahalaga
 menu-pin = I-pin sa itaas
 menu-unpin = I-unpin
 menu-snooze = I-snooze
+menu-remind = Paalalahanan ako
 menu-unsnooze = I-unsnooze
 menu-add-to-tasks = Idagdag sa Mga Gawain
 menu-schedule-meeting = Mag-iskedyul ng pulong
@@ -391,10 +411,34 @@ menu-move-to = Ilipat sa
 menu-follow-up = I-follow up
 menu-more = Iba pa
 menu-move-to-heading = Ilipat sa:
+menu-move-to-search = Ilipat sa…
+menu-label-as = Lagyan ng label
+menu-label-as-search = Lagyan ng label…
+menu-no-folder = Walang folder na “{ $name }”
+menu-no-label = Walang label na “{ $name }”
+menu-create-folder = Gumawa ng “{ $name }”
+menu-always-move = Palaging ilipat dito ang mail mula kay { $name }
+toast-always-move-failed = Nailipat ang mail, pero hindi nagawa ang panuntunan: { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } pag-uusap
+       *[other] { $count } pag-uusap
+    }
+   *[message] { $count ->
+        [one] { $count } mensahe
+       *[other] { $count } mensahe
+    }
+}
 menu-find-from = Hanapin ang mga email mula kay { $name }
+menu-make-rule = Gumawa ng panuntunan…
 
 ## Snackbar after an action on mail in the list
 
+toast-key-imported = Na-import ang key
+toast-key-updated = Mayroon ka na ng key na ito; updated na ito ngayon
+toast-key-removed = Inalis ang key
+toast-key-not-removed = Hindi maalis ang key
+toast-fingerprint-copied = Nakopya ang fingerprint
 toast-archived = { $kind ->
     [conversation] { $count ->
         [one] Na-archive ang { $count } pag-uusap.
@@ -425,6 +469,8 @@ toast-moved = { $kind ->
        *[other] Nailipat ang { $count } mensahe.
     }
 }
+toast-label-added = Idinagdag ang label na “{ $label }”.
+toast-label-removed = Inalis ang label na “{ $label }”.
 toast-starred = { $kind ->
     [conversation] { $count ->
         [one] Nilagyan ng star ang { $count } pag-uusap.

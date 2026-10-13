@@ -8,6 +8,7 @@
 //! expanded by `katna_dav`. Google Calendar's keys work: T today, J or N
 //! next, K or P back, D W M A (or 1 2 3 4) for the views.
 
+use crate::widgets::Tip as _;
 use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
@@ -15,18 +16,19 @@ use std::rc::Rc;
 use gpui::{
     Animation, AnimationExt, AnyElement, App, ClickEvent, Context, Div, FocusHandle, FontWeight,
     HighlightStyle, InteractiveText, KeyBinding, MouseButton, Pixels, Point, ScrollHandle,
-    SharedString, StyledText, Task, UnderlineStyle, Window, anchored, canvas, deferred, div,
-    ease_out_quint, prelude::*, rgba,
+    SharedString, StyledText, Task, UnderlineStyle, Window, canvas, deferred, div, ease_out_quint,
+    prelude::*, rgba,
 };
 use jiff::civil::{Date, DateTime, Time};
 use jiff::tz::TimeZone;
 use jiff::{ToSpan, Zoned};
 use katna_core::Paths;
-use katna_core::config::CalendarDensity;
+use katna_core::config::{AppKind, CalendarDensity};
 use katna_dav::Occurrence;
 use katna_i18n::{format, tr};
 use katna_store::calendar::{Calendar, EventKind, EventStatus};
 use katna_store::{Mode, Store};
+use katna_ui::anchored;
 use katna_ui::px;
 
 use super::account_status::{AccountStatus, Of, Say};
@@ -46,7 +48,7 @@ mod tasks;
 mod year_peek;
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{
-    FocusRing, icon, icon_button, menu, menu_item, menu_item_icon, outlined_button, raised, tip,
+    FocusRing, icon, icon_button, menu, menu_item, menu_item_icon, outlined_button, raised,
 };
 
 gpui::actions!(
@@ -490,12 +492,14 @@ pub(super) fn read(
     from: i64,
     to: i64,
     tz: &TimeZone,
-    birthdays: bool,
+    birthdays: Option<bool>,
+    left_out: &[i64],
 ) -> katna_store::Result<(Vec<Calendar>, Vec<Occurrence>)> {
     let store = Store::open(paths, Mode::ReadOnly)?;
     let mut calendars = store.calendars()?;
     let rows = store.event_rows_in_range(from, to)?;
     let mut occurrences = katna_dav::occurrences(rows, from, to, tz);
+    leave_out(left_out, &mut calendars, &mut occurrences);
     birthdays::add_birthdays(
         &store,
         birthdays,
@@ -508,31 +512,62 @@ pub(super) fn read(
     Ok((calendars, occurrences))
 }
 
+/// Drops the calendars of the accounts `left_out` of the Calendar
+/// (Settings > Calendar) and their events.
+pub(super) fn leave_out(
+    left_out: &[i64],
+    calendars: &mut Vec<Calendar>,
+    occurrences: &mut Vec<Occurrence>,
+) {
+    if left_out.is_empty() {
+        return;
+    }
+    let out = |c: &Calendar| c.account.is_some_and(|a| left_out.contains(&a.0));
+    let gone: HashSet<i64> = calendars.iter().filter(|c| out(c)).map(|c| c.id).collect();
+    calendars.retain(|c| !out(c));
+    occurrences.retain(|o| !gone.contains(&o.event.calendar_id));
+}
+
 /// Reads the calendars alone, for an event made before the page has read
-/// them.
-pub(super) fn read_calendars(paths: &Paths) -> Vec<Calendar> {
-    Store::open(paths, Mode::ReadOnly)
+/// them; none of the accounts `left_out` of the Calendar.
+pub(super) fn read_calendars(paths: &Paths, left_out: &[i64]) -> Vec<Calendar> {
+    let mut calendars = Store::open(paths, Mode::ReadOnly)
         .and_then(|store| store.calendars())
         .unwrap_or_else(|err| {
             tracing::warn!(%err, "reading the calendars failed");
             Vec::new()
-        })
+        });
+    leave_out(left_out, &mut calendars, &mut Vec::new());
+    calendars
 }
 
 impl MailWindow {
+    /// The accounts left out of the Calendar (Settings > Calendar), by
+    /// row ID.
+    pub(in crate::window) fn calendar_left_out(&self) -> Vec<i64> {
+        self.hidden_ids(AppKind::Calendar)
+            .into_iter()
+            .map(|a| a.0)
+            .collect()
+    }
+
     /// Reads what the Calendar page shows, when it is on show.
     pub(super) fn load_calendar(&mut self, cx: &mut Context<Self>) {
         let (first, end) = self.calendar.days();
         let tz = self.tz.clone();
         let (from, to) = (midnight(first, &tz), midnight(end, &tz));
         let paths = self.paths.clone();
-        let birthdays = !self.config.contacts.hide_birthdays;
+        // No Birthdays calendar while Contacts is off.
+        let birthdays = self
+            .app_on(super::apps::App::Contacts)
+            .then_some(!self.config.contacts.hide_birthdays);
+        let left_out = self.calendar_left_out();
         self.calendar.loading = true;
         self.load_account_status(Of::Calendar, cx);
         self.calendar.task = Some(cx.spawn(async move |this, cx| {
             let read = cx
                 .background_executor()
-                .spawn(async move { read(&paths, from, to, &tz, birthdays) })
+                .spawn(async move { read(&paths, from, to, &tz, birthdays, &left_out) })
                 .await;
             this.update(cx, |this, cx| {
                 let page = &mut this.calendar;
@@ -1079,20 +1114,9 @@ impl MailWindow {
             CalView::Month => format::month_year(page.day),
             CalView::Year => format::year(page.day.year()),
             CalView::Week | CalView::Schedule | CalView::Days => {
-                if first.year() == last.year() && first.month() == last.month() {
-                    format::month_year(first)
-                } else if first.year() == last.year() {
-                    tr!(
-                        "calendar-title-months",
-                        first = format::month_name(first.month()),
-                        last = format::month_year(last)
-                    )
-                } else {
-                    tr!(
-                        "calendar-title-months",
-                        first = format::month_year(first),
-                        last = format::month_year(last)
-                    )
+                match format::months(first, last) {
+                    (None, month) => month,
+                    (Some(first), last) => tr!("calendar-title-months", first = first, last = last),
                 }
             }
         };
@@ -1147,7 +1171,7 @@ impl MailWindow {
             .child(
                 outlined_button("calendar-today", tr!("calendar-today"), th)
                     .focus_ring(th)
-                    .tooltip(tip(tr!("calendar-today-tip"), th))
+                    .tip(tr!("calendar-today-tip"), th)
                     .on_click(cx.listener(|this, _, window, cx| {
                         this.calendar_today(&CalendarToday, window, cx)
                     })),
@@ -1159,7 +1183,7 @@ impl MailWindow {
                     .child(
                         icon_button("calendar-previous", "chevron-left", 22.0, th)
                             .focus_ring(th)
-                            .tooltip(tip(tr!(previous), th))
+                            .tip(tr!(previous), th)
                             .on_click(cx.listener(|this, _, window, cx| {
                                 this.calendar_previous(&CalendarPrevious, window, cx)
                             })),
@@ -1167,7 +1191,7 @@ impl MailWindow {
                     .child(
                         icon_button("calendar-next", "chevron-right", 22.0, th)
                             .focus_ring(th)
-                            .tooltip(tip(tr!(next), th))
+                            .tip(tr!(next), th)
                             .on_click(cx.listener(|this, _, window, cx| {
                                 this.calendar_next(&CalendarNext, window, cx)
                             })),
@@ -1241,9 +1265,7 @@ impl MailWindow {
                 self.with_menu(
                     icon_button("calendar-options", "tune", 22.0, th)
                         .focus_ring(th)
-                        .when(self.menu.is_none(), |d| {
-                            d.tooltip(tip(tr!("calendar-options"), th))
-                        })
+                        .when(self.menu.is_none(), |d| d.tip(tr!("calendar-options"), th))
                         .on_click(cx.listener(|this, _, _, cx| {
                             this.toggle_menu(Menu::CalendarOptions, cx)
                         })),
@@ -1341,7 +1363,7 @@ impl MailWindow {
                                 d.text_color(rgba(if in_month { th.text } else { th.text_faint }))
                                     .hover(|s| s.bg(rgba(th.hover)))
                             })
-                            .child(format::number(day.day() as u64)),
+                            .child(format::day_number(day)),
                     )
                     .on_click(
                         cx.listener(move |this, _, _, cx| this.open_calendar_day(day, None, cx)),
@@ -1385,11 +1407,13 @@ impl MailWindow {
     }
 
     fn render_calendar_list(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let left_out = self.hidden_ids(AppKind::Calendar);
         // Every account shows, also one whose calendars did not come, with
-        // the reason under it.
+        // the reason under it; not one left out of the Calendar.
         let mut groups: Vec<(Option<i64>, Vec<&Calendar>)> = self
             .accounts
             .iter()
+            .filter(|a| !left_out.contains(&a.id))
             .map(|a| (Some(a.id.0), Vec::new()))
             .collect();
         for calendar in self.calendar.calendars.iter() {
@@ -1653,7 +1677,7 @@ impl MailWindow {
                                 d.text_color(rgba(if past { th.text_dim } else { th.text }))
                                     .hover(|s| s.bg(rgba(th.hover)))
                             })
-                            .child(format::number(day.day() as u64)),
+                            .child(format::day_number(day)),
                     )
             })
             .collect::<Vec<_>>();
@@ -2344,7 +2368,7 @@ impl MailWindow {
                                     .when(!is_today, |d| {
                                         d.text_color(rgba(th.text)).hover(|s| s.bg(rgba(th.hover)))
                                     })
-                                    .child(format::number(day.day() as u64)),
+                                    .child(format::day_number(day)),
                             )
                             .when_some(dot.filter(|_| !is_today), |d, color| {
                                 d.child(
@@ -2557,7 +2581,7 @@ impl MailWindow {
                                 .child(if day.day() == 1 {
                                     format::day_month(day.to_datetime(Time::midnight()))
                                 } else {
-                                    format::number(day.day() as u64)
+                                    format::day_number(day)
                                 }),
                         ),
                     )
@@ -2909,21 +2933,21 @@ impl MailWindow {
                 .when(editable, |d| {
                     d.child(
                         icon_button("event-edit", "compose", 20.0, th)
-                            .tooltip(tip(tr!("calendar-edit"), th))
+                            .tip(tr!("calendar-edit"), th)
                             .on_click(
                                 cx.listener(|this, _, window, cx| this.edit_open_event(window, cx)),
                             ),
                     )
                     .child(
                         icon_button("event-delete", "trash", 20.0, th)
-                            .tooltip(tip(tr!("calendar-delete"), th))
+                            .tip(tr!("calendar-delete"), th)
                             .on_click(cx.listener(|this, _, _, cx| this.delete_open_event(cx))),
                     )
                 })
                 .when(emails, |d| {
                     d.child(
                         icon_button("event-email", "mail", 20.0, th)
-                            .tooltip(tip(tr!("calendar-email-guests"), th))
+                            .tip(tr!("calendar-email-guests"), th)
                             .on_click(cx.listener(|this, _, window, cx| {
                                 this.email_guests(false, window, cx)
                             })),
@@ -2932,7 +2956,7 @@ impl MailWindow {
                 .when(birthday_of.is_some(), |d| {
                     d.child(
                         icon_button("event-contact", "contacts", 20.0, th)
-                            .tooltip(tip(tr!("calendar-open-contact"), th))
+                            .tip(tr!("calendar-open-contact"), th)
                             .on_click(cx.listener(move |this, _, window, cx| {
                                 if let Some(card) = birthday_of {
                                     this.open_birthday_contact(card, window, cx);
@@ -2943,7 +2967,7 @@ impl MailWindow {
                 .when_some(gmail, |d, (link, occurrence)| {
                     d.child(
                         icon_button("event-mail", "inbox", 20.0, th)
-                            .tooltip(tip(tr!("calendar-open-mail"), th))
+                            .tip(tr!("calendar-open-mail"), th)
                             .on_click(cx.listener(move |this, _, window, cx| {
                                 this.open_event_mail(&occurrence, link.clone(), window, cx)
                             })),
@@ -2952,13 +2976,13 @@ impl MailWindow {
                 .when(!web.is_empty(), |d| {
                     d.child(
                         icon_button("event-web", "open-external", 20.0, th)
-                            .tooltip(tip(tr!("calendar-open-web"), th))
+                            .tip(tr!("calendar-open-web"), th)
                             .on_click(move |_, _, cx| cx.open_url(&web)),
                     )
                 })
                 .child(
                     icon_button("event-close", "close", 20.0, th)
-                        .tooltip(tip(tr!("calendar-close"), th))
+                        .tip(tr!("calendar-close"), th)
                         .on_click(cx.listener(|this, _, _, cx| {
                             this.calendar.open = None;
                             cx.notify();
@@ -3174,10 +3198,11 @@ impl MailWindow {
             .when(!data.description.is_empty(), |d| {
                 d.child(self.render_event_description(&data.description, th))
             })
-            // Nothing to take notes of on a birthday.
-            .when(data.kind != EventKind::Birthday, |d| {
-                d.child(self.render_event_notes(occurrence, th, cx))
-            })
+            // Nothing to take notes of on a birthday, nor with Notes off.
+            .when(
+                data.kind != EventKind::Birthday && self.config.app_on(AppKind::Notes),
+                |d| d.child(self.render_event_notes(occurrence, th, cx)),
+            )
             .when_some(calendar, |d, calendar| {
                 d.child(line("calendar", self.copyable(calendar_name(calendar), th)))
             });
@@ -3308,7 +3333,11 @@ pub(super) fn schedule_day(day: Date, is_today: bool, year: bool, th: &Theme) ->
     } else {
         format::month_name(day.month())
     };
-    let label = format!("{}, {month}", format::weekday(date));
+    let label = tr!(
+        "calendar-schedule-day",
+        weekday = format::weekday(date),
+        month = month
+    );
     div()
         .flex()
         .flex_row()
@@ -3338,7 +3367,7 @@ pub(super) fn schedule_day(day: Date, is_today: bool, year: bool, th: &Theme) ->
                             d.bg(rgba(th.accent)).text_color(rgba(th.on_accent))
                         })
                         .when(!is_today, |d| d.text_color(rgba(th.text)))
-                        .child(format::number(day.day() as u64)),
+                        .child(format::day_number(day)),
                 )
                 .child(
                     div()
@@ -3465,6 +3494,38 @@ mod tests {
             end,
             series_start: None,
         }
+    }
+
+    #[test]
+    fn an_account_left_out_takes_its_calendars_and_events() {
+        use katna_core::account::AccountId;
+        use katna_store::calendar::{CalendarAccess, CalendarSource};
+        let calendar = |id: i64, account: Option<i64>| Calendar {
+            id,
+            account: account.map(AccountId),
+            source: CalendarSource::Local,
+            remote_id: String::new(),
+            name: String::new(),
+            color: String::new(),
+            access: CalendarAccess::Owner,
+            is_primary: false,
+            hidden: false,
+            time_zone: String::new(),
+            sync_token: None,
+            position: 0,
+        };
+        let mut calendars = vec![
+            calendar(1, Some(7)),
+            calendar(2, Some(8)),
+            calendar(3, None),
+        ];
+        let mut occurrences = vec![occurrence(10, 0, 1), occurrence(11, 0, 1)];
+        Arc::get_mut(&mut occurrences[1].event).unwrap().calendar_id = 2;
+        leave_out(&[7], &mut calendars, &mut occurrences);
+        let ids: Vec<i64> = calendars.iter().map(|c| c.id).collect();
+        assert_eq!(ids, [2, 3], "this computer's calendar stays");
+        let events: Vec<i64> = occurrences.iter().map(|o| o.event.id).collect();
+        assert_eq!(events, [11]);
     }
 
     #[test]

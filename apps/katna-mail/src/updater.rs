@@ -48,14 +48,18 @@ pub fn install(file: &Path, sha256: &str) -> Result<(), InstallError> {
         Package::Windows => install_windows(file),
         Package::AppImage => install_appimage(file),
         Package::Tarball => install_tarball(file),
-        Package::Rpm | Package::Snap | Package::Flatpak | Package::Nix | Package::Other => {
-            Err(InstallError::Unsupported)
-        }
+        Package::Rpm
+        | Package::Deb
+        | Package::Snap
+        | Package::Flatpak
+        | Package::Nix
+        | Package::MsStore
+        | Package::Other => Err(InstallError::Unsupported),
     }
 }
 
 /// The command that installs the downloaded build in `file` when Katna
-/// cannot: for the RPM, Snap, Flatpak and Nix, and for a tarball
+/// cannot: for the RPM, Debian package, Snap, Flatpak and Nix, and for a tarball
 /// installed where only an administrator may write.
 pub fn command(file: &Path) -> Option<String> {
     let package = Package::current();
@@ -276,14 +280,22 @@ fn install_arch(file: &Path, sha256: &str) -> Result<(), InstallError> {
 /// Starts the Katna Mail just installed, which waits for this one to
 /// close before it opens its window. Quit this one next.
 pub fn start_new() -> std::io::Result<()> {
-    let mut command = match Package::current() {
-        Package::Windows => return Ok(()),
-        // The new image; started without a program name, it opens Katna
-        // Mail.
-        Package::AppImage => Command::new(appimage().ok_or(std::io::ErrorKind::NotFound)?),
-        _ => Command::new(installed_exe()?),
+    match Package::current() {
+        Package::Windows => Ok(()),
+        _ => restart(),
+    }
+}
+
+/// Starts this Katna Mail again from what is installed now (the new
+/// image for an AppImage), as after a package manager updated it while it
+/// ran, which waits for this one to
+/// close before it opens its window. Quit this one next.
+pub fn restart() -> std::io::Result<()> {
+    let program = match Package::current() {
+        Package::AppImage => appimage().ok_or(std::io::ErrorKind::NotFound)?,
+        _ => installed_exe()?,
     };
-    command
+    Command::new(program)
         .arg(AFTER_FLAG)
         .arg(std::process::id().to_string())
         .spawn()

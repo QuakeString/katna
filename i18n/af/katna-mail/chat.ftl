@@ -40,6 +40,7 @@ chat-reply-only = Antwoord net { $name }
 chat-forward = Stuur aan
 chat-copy-text = Kopieer teks
 chat-show-as-mail = Wys as e-pos
+chat-go-down = Gaan na die nuutste e-pos
 chat-pin = Speld bo vas
 chat-pin-file = Speld lêer bo vas
 chat-unpin = Ontspeld
@@ -59,7 +60,8 @@ chat-pins-cancel = Kanselleer
 chat-undo = Ontdoen
 
 chat-reply-to = Antwoord { $names }
-chat-send = Stuur (Ctrl+Enter)
+chat-send = Stuur (Ctrl+Enter). Regsklik of hou vir meer
+chat-send-now = Stuur nou
 chat-attach = Heg aan
 chat-attach-photo = Foto
 chat-attach-file = Lêer

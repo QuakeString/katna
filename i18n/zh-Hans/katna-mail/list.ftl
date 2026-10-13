@@ -38,6 +38,8 @@ list-range-about = 第 { $first }–{ $last } 行，共约 { $total } 行
 list-results = “{ $query }”的搜索结果
 list-results-corrected = 显示的是“{ $query }”的搜索结果
 list-search-instead = 仍然搜索“{ $query }”
+list-search-no-index = 搜索尚未就绪：索引尚未建立。
+list-search-not-ready = 搜索尚未就绪：{ $error }
 list-files-more = +{ $count }
 list-replied = 你已回复
 
@@ -189,11 +191,20 @@ list-empty-tab = “{ $tab }”中没有邮件。
 list-empty-tab-unknown = 此标签页中没有邮件。
 list-empty-folder = “{ $folder }”中没有邮件。
 list-empty-folder-unknown = 此文件夹中没有邮件。
+list-empty-waiting = 没有等待回复的邮件。
+list-empty-reminders = 没有提醒。在邮件上按 H 可添加提醒。
 list-first-sync = 正在获取您的邮件…
 list-first-sync-detail = 邮件到达后会显示在这里。
+list-store-unreadable = 无法打开邮件存储
 
 ## Mail list: lines
 
+row-no-subject = （无主题）
+row-unknown-sender = （未知发件人）
+row-to = 收件人：
+row-no-recipients = （无收件人）
+row-names-separator = {"、"}
+row-me = 我
 row-removed = 此邮件已被移除。
 row-starred = 已加星标
 row-not-starred = 未加星标
@@ -208,6 +219,14 @@ row-tracking-clicked = { $recipients } 人中有 { $opened } 人打开，{ $clic
 row-pin = 置顶
 row-unpin = 取消置顶
 row-snoozed-until = 延后至 { $when }
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = 今天
+snoozed-group-tomorrow = 明天
+snoozed-group-this-week = 本周
+snoozed-group-later = 以后
+row-follow-up-step = 第 { $step } 次跟进，共 { $steps } 次 · { $date }
+row-follow-up-waiting = 跟进待发送
+row-reminder = 提醒 { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -230,6 +249,7 @@ menu-not-important = 标记为不重要
 menu-pin = 置顶
 menu-unpin = 取消置顶
 menu-snooze = 延后
+menu-remind = 提醒我
 menu-unsnooze = 取消延后
 menu-add-to-tasks = 添加到任务
 menu-schedule-meeting = 安排会议
@@ -241,10 +261,32 @@ menu-move-to = 移至
 menu-follow-up = 跟进
 menu-more = 更多
 menu-move-to-heading = 移至：
+menu-move-to-search = 移至…
+menu-label-as = 添加标签
+menu-label-as-search = 添加标签…
+menu-no-folder = 没有名为“{ $name }”的文件夹
+menu-no-label = 没有名为“{ $name }”的标签
+menu-create-folder = 创建“{ $name }”
+menu-always-move = 始终将来自 { $name } 的邮件移至此处
+toast-always-move-failed = 邮件已移动，但规则未创建：{ $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+       *[other] { $count } 个会话
+    }
+   *[message] { $count ->
+       *[other] { $count } 封邮件
+    }
+}
 menu-find-from = 查找来自 { $name } 的邮件
+menu-make-rule = 创建规则…
 
 ## Snackbar after an action on mail in the list
 
+toast-key-imported = 已导入密钥
+toast-key-updated = 您已有此密钥；现已更新为最新
+toast-key-removed = 已移除密钥
+toast-key-not-removed = 无法移除密钥
+toast-fingerprint-copied = 已复制指纹
 toast-archived = { $kind ->
     [conversation] 已归档 { $count } 个会话。
    *[message] 已归档 { $count } 封邮件。
@@ -257,6 +299,8 @@ toast-moved = { $kind ->
     [conversation] 已移动 { $count } 个会话。
    *[message] 已移动 { $count } 封邮件。
 }
+toast-label-added = 已添加标签“{ $label }”。
+toast-label-removed = 已移除标签“{ $label }”。
 toast-starred = { $kind ->
     [conversation] 已为 { $count } 个会话加星标。
    *[message] 已为 { $count } 封邮件加星标。

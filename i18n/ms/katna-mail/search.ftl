@@ -14,6 +14,7 @@ search-without = Tidak mengandungi
 search-date-within = Tarikh dalam tempoh
 search-has-attachment = Ada lampiran
 search-attachment-custom = Tersuai
+search-attachment-image = Imej
 search-attachment-custom-hint = Taip sambungan, seperti png, kemudian tekan Space
 search-attachment-remove = Alih keluar
 search-clear-filter = Kosongkan penapis
@@ -48,3 +49,13 @@ search-dates-month-back = Bulan sebelumnya
 search-dates-month-on = Bulan seterusnya
 search-dates-year-back = Tahun sebelumnya
 search-dates-year-on = Tahun seterusnya
+
+## More results on server: under the results, mail found by asking the
+## mail server, for mail that is not downloaded to this computer yet.
+
+search-server-more = Lebih banyak hasil pada pelayan
+search-server-searching = Mencari mel pada pelayan…
+search-server-empty-searching = Belum ada apa-apa di sini. Mencari mel pada pelayan…
+search-server-nothing = Tiada lagi hasil pada pelayan
+search-server-failed = Tidak dapat mencari pada pelayan.
+search-server-again = Cuba lagi

@@ -187,6 +187,41 @@ pub fn tinted_mark(svg: &[u8], rgb: u32, side: u32) -> Result<Vec<u8>, Error> {
     png(&image)
 }
 
+/// A one-colour icon (an SVG drawn in black) in `rgb` (`0xrrggbb`) on a
+/// faint circle of the same colour, `side` pixels across, as PNG: the
+/// mark before a line of a signature.
+pub fn badge(svg: &[u8], rgb: u32, side: u32) -> Result<Vec<u8>, Error> {
+    use resvg::{tiny_skia, usvg};
+
+    let mut options = usvg::Options::default();
+    options.image_href_resolver.resolve_string = Box::new(|_, _| None);
+    let tree = usvg::Tree::from_data(svg, &options).map_err(|e| Error(e.to_string()))?;
+    let size = tree.size();
+    // The icon fills the middle three fifths.
+    let inner = side as f32 * 0.6;
+    let scale = inner / size.width().max(size.height());
+    let mut pixmap = tiny_skia::Pixmap::new(side, side).ok_or_else(|| Error("empty".into()))?;
+    let (dx, dy) = (
+        (side as f32 - size.width() * scale) / 2.0,
+        (side as f32 - size.height() * scale) / 2.0,
+    );
+    resvg::render(
+        &tree,
+        tiny_skia::Transform::from_scale(scale, scale).post_translate(dx, dy),
+        &mut pixmap.as_mut(),
+    );
+    let [_, r, g, b] = rgb.to_be_bytes();
+    let radius = side as f32 / 2.0;
+    let image = RgbaImage::from_fn(side, side, |x, y| {
+        let icon = pixmap.pixel(x, y).map_or(0, |p| p.alpha()) as f32 / 255.0;
+        // The circle at 14 %, under the icon.
+        let disc = cover(x, y, side, side, radius) as f32 / 255.0 * 0.14;
+        let alpha = icon + disc * (1.0 - icon);
+        Rgba([r, g, b, (alpha * 255.0).round() as u8])
+    });
+    png(&image)
+}
+
 /// `initials` in white on a circle of `rgb` (`0xrrggbb`), `side` pixels
 /// across, as PNG: round in every reader, even where rounded corners are
 /// ignored.

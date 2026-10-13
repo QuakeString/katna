@@ -49,11 +49,24 @@ PlasmaExtras.Representation {
 
     readonly property int paddings: Kirigami.Units.largeSpacing
     readonly property bool showAgenda: eventPluginsManager.enabledPlugins.length > 0
-    readonly property bool showClocks: clocksList.count > 1
+    readonly property bool showClocks: root.selectedTimeZonesDeduplicatingExplicitLocalTimeZone().length > 1
     // Katna: the Tasks list is always there.
     readonly property bool showTasks: true
 
     readonly property alias monthView: monthView
+
+    // A time zone as the clock's settings name it: code, city or offset.
+    function zoneLabel(zone: string, clock: var): string {
+        switch (Plasmoid.configuration.displayTimezoneFormat) {
+        case 0: // Code
+            return clock.timeZoneCode;
+        case 1: // City
+            return TimeZonesI18n.i18nCity(clock.timeZone);
+        case 2: // Offset from UTC time
+            return clock.timeZoneOffset;
+        }
+        return "";
+    }
     // This helps synchronize the header of the agenda and the monthView.
     // We cannot use Kirigami.SizeGroup here because monthView's header is not in a layout.
     readonly property double headerHeight: Math.max(agendaHeader.implicitHeight, monthView.viewHeader.implicitHeight)
@@ -116,15 +129,94 @@ PlasmaExtras.Representation {
             contentItem: ColumnLayout {
                 spacing: 0
 
-                Kirigami.Heading {
+                // Katna: the time zone sits beside the date, where the
+                // Time Zones section under the tasks used to be cut off.
+                RowLayout {
                     Layout.alignment: Qt.AlignTop
-                    // Match calendar title
-                    Layout.leftMargin: calendar.paddings
-                    Layout.rightMargin: calendar.paddings
                     Layout.fillWidth: true
+                    spacing: Kirigami.Units.smallSpacing
 
-                    text: monthView.currentDate.toLocaleDateString(Qt.locale(), Locale.LongFormat)
-                    textFormat: Text.PlainText
+                    Kirigami.Heading {
+                        // Match calendar title
+                        Layout.leftMargin: calendar.paddings
+                        Layout.fillWidth: true
+
+                        text: monthView.currentDate.toLocaleDateString(Qt.locale(), Locale.LongFormat)
+                        textFormat: Text.PlainText
+                        elide: Text.ElideRight
+                    }
+
+                    PlasmaComponents.ToolButton {
+                        id: switchTimeZoneButton
+
+                        readonly property bool canSwitch: KConfig.KAuthorized.authorizeControlModule("kcm_clock.desktop")
+
+                        visible: calendar.showClocks || canSwitch
+                        Layout.rightMargin: Kirigami.Units.smallSpacing
+                        icon.name: "preferences-system-time"
+                        text: root.formatTime(root.currentTime, false) + "  " + calendar.zoneLabel(root.currentTimeZone, currentZoneClock)
+                        down: pressed || timeZoneMenu.opened
+
+                        Accessible.name: i18nd("plasma_applet_org.kde.plasma.digitalclock", "Time Zones")
+                        KeyNavigation.down: addEventButton.visible ? addEventButton : addEventButton.KeyNavigation.down
+                        Keys.onRightPressed: event => {
+                            monthView.Keys.downPressed(event);
+                        }
+
+                        onClicked: timeZoneMenu.popup(switchTimeZoneButton, 0, switchTimeZoneButton.height)
+
+                        Clock {
+                            id: currentZoneClock
+                            timeZone: root.currentTimeZone
+                        }
+
+                        PlasmaComponents.Menu {
+                            id: timeZoneMenu
+
+                            Instantiator {
+                                model: calendar.showClocks ? root.selectedTimeZonesDeduplicatingExplicitLocalTimeZone() : []
+                                onObjectAdded: (index, object) => timeZoneMenu.insertItem(index, object)
+                                onObjectRemoved: (index, object) => timeZoneMenu.removeItem(object)
+
+                                delegate: PlasmaComponents.MenuItem {
+                                    id: zoneItem
+
+                                    required property string modelData
+
+                                    readonly property bool isCurrent: zoneClock.timeZone == root.currentTimeZone
+
+                                    text: calendar.zoneLabel(modelData, zoneClock) + "    "
+                                        + root.formatTime(zoneClock.dateTime, Plasmoid.configuration.showSeconds === 2)
+                                        + (isCurrent ? "" : "  " + root.formatOffset(zoneClock.dateTime))
+                                    font.bold: isCurrent
+                                    // Picking one shows the clock in it, as the
+                                    // middle click on the clock does.
+                                    onTriggered: {
+                                        Plasmoid.configuration.lastSelectedTimezone = modelData;
+                                    }
+
+                                    Clock {
+                                        id: zoneClock
+                                        timeZone: zoneItem.modelData
+                                        trackSeconds: Plasmoid.configuration.showSeconds === 2
+                                    }
+                                }
+                            }
+
+                            PlasmaComponents.MenuSeparator {
+                                visible: calendar.showClocks && switchTimeZoneButton.canSwitch
+                            }
+
+                            PlasmaComponents.MenuItem {
+                                visible: switchTimeZoneButton.canSwitch
+                                height: visible ? implicitHeight : 0
+                                icon.name: "preferences-system-time"
+                                text: i18nd("plasma_applet_org.kde.plasma.digitalclock", "Switch…")
+                                Accessible.description: i18nd("plasma_applet_org.kde.plasma.digitalclock", "Switch to another time zone")
+                                onTriggered: KCMUtils.KCMLauncher.openSystemSettings("kcm_clock")
+                            }
+                        }
+                    }
                 }
 
                 PlasmaComponents.Label {
@@ -187,8 +279,13 @@ PlasmaExtras.Representation {
             visible: calendar.showAgenda
 
             Layout.fillWidth: true
-            Layout.fillHeight: true
-            Layout.minimumHeight: Kirigami.Units.gridUnit * 4
+            // Katna: the events take what they need, up to a few, and the
+            // Tasks list the rest; with Tasks folded the events take all.
+            Layout.fillHeight: katnaTasks.folded
+            Layout.preferredHeight: eventsList.count > 0
+                ? Math.min(eventsList.contentHeight, Kirigami.Units.gridUnit * 9)
+                : noEvents.implicitHeight + Kirigami.Units.largeSpacing * 2
+            Layout.minimumHeight: noEvents.implicitHeight + Kirigami.Units.largeSpacing * 2
 
             function formatDateWithoutYear(date: date): string {
                 // Unfortunately Qt overrides ECMA's Date.toLocaleDateString(),
@@ -254,8 +351,7 @@ PlasmaExtras.Representation {
                     highlight: null
                     currentIndex: -1
 
-                    KeyNavigation.down: switchTimeZoneButton.visible ? switchTimeZoneButton : clocksList
-                    Keys.onRightPressed: event => switchTimeZoneButton.Keys.rightPressed(event)
+                    Keys.onRightPressed: event => monthView.Keys.downPressed(event)
 
                     onCurrentIndexChanged: if (!activeFocus) {
                         currentIndex = -1;
@@ -402,16 +498,39 @@ PlasmaExtras.Representation {
                 }
             }
 
-            PlasmaExtras.PlaceholderMessage {
-                anchors.centerIn: eventsView
-                width: eventsView.width - (Kirigami.Units.gridUnit * 8)
+            // Katna: a quiet line with a small tick, not Plasma's big
+            // placeholder picture.
+            RowLayout {
+                id: noEvents
 
+                anchors {
+                    top: parent.top
+                    left: parent.left
+                    right: parent.right
+                    topMargin: Kirigami.Units.largeSpacing
+                    leftMargin: calendar.paddings
+                    rightMargin: calendar.paddings
+                }
+                spacing: Kirigami.Units.smallSpacing
                 visible: eventsList.count === 0
 
-                iconName: "checkmark"
-                text: monthView.isToday(monthView.currentDate)
-                    ? i18nd("plasma_applet_org.kde.plasma.digitalclock", "No events for today")
-                    : i18nd("plasma_applet_org.kde.plasma.digitalclock", "No events for this day");
+                Kirigami.Icon {
+                    implicitWidth: Kirigami.Units.iconSizes.small
+                    implicitHeight: Kirigami.Units.iconSizes.small
+                    source: "checkmark"
+                    color: Kirigami.Theme.positiveTextColor
+                    isMask: true
+                }
+
+                PlasmaComponents.Label {
+                    Layout.fillWidth: true
+                    opacity: 0.7
+                    elide: Text.ElideRight
+                    textFormat: Text.PlainText
+                    text: monthView.isToday(monthView.currentDate)
+                        ? i18nd("plasma_applet_org.kde.plasma.digitalclock", "No events for today")
+                        : i18nd("plasma_applet_org.kde.plasma.digitalclock", "No events for this day")
+                }
             }
         }
 
@@ -430,206 +549,13 @@ PlasmaExtras.Representation {
             id: katnaTasks
 
             Layout.fillWidth: true
-            Layout.fillHeight: !agenda.visible
+            Layout.fillHeight: !folded || !agenda.visible
             compact: agenda.visible
+            folded: agenda.visible && Plasmoid.configuration.katnaTasksFolded
+            onFoldToggled: Plasmoid.configuration.katnaTasksFolded = !Plasmoid.configuration.katnaTasksFolded
             agenda: calendar.appletInterface.katna
             selectedDate: monthView.currentDate
             paddings: calendar.paddings
-        }
-
-        // Horizontal separator line between events and time zones
-        KSvg.SvgItem {
-            visible: worldClocks.visible
-
-            Layout.fillWidth: true
-            Layout.preferredHeight: naturalSize.height
-
-            imagePath: "widgets/line"
-            elementId: "horizontal-line"
-        }
-
-        // Clocks stuff
-        // ------------
-        // Header text + button to change time & time zone
-        PlasmaExtras.PlasmoidHeading {
-            visible: worldClocks.visible
-
-            enabledBorders: Qt.TopEdge | Qt.BottomEdge
-            // Normally gets some positive/negative values from base component.
-            topInset: 0
-            topPadding: Kirigami.Units.smallSpacing
-
-            leftInset: 0
-            rightInset: 0
-            leftPadding: mirrored ? Kirigami.Units.smallSpacing : calendar.paddings
-            rightPadding: mirrored ? calendar.paddings : Kirigami.Units.smallSpacing
-
-            contentItem: RowLayout {
-                spacing: Kirigami.Units.smallSpacing
-
-                Kirigami.Heading {
-                    Layout.fillWidth: true
-
-                    level: 2
-
-                    text: i18nd("plasma_applet_org.kde.plasma.digitalclock", "Time Zones")
-                    textFormat: Text.PlainText
-                    maximumLineCount: 1
-                    elide: Text.ElideRight
-                    Accessible.ignored: true
-                }
-
-                PlasmaComponents.ToolButton {
-                    id: switchTimeZoneButton
-
-                    visible: KConfig.KAuthorized.authorizeControlModule("kcm_clock.desktop")
-                    text: i18nd("plasma_applet_org.kde.plasma.digitalclock", "Switch…")
-                    icon.name: "preferences-system-time"
-
-                    Accessible.name: i18nd("plasma_applet_org.kde.plasma.digitalclock", "Switch to another time zone")
-                    Accessible.description: i18nd("plasma_applet_org.kde.plasma.digitalclock", "Switch to another time zone")
-
-                    KeyNavigation.down: clocksList
-                    Keys.onRightPressed: event => {
-                        monthView.Keys.downPressed(event);
-                    }
-
-                    onClicked: KCMUtils.KCMLauncher.openSystemSettings("kcm_clock")
-
-                    PlasmaComponents.ToolTip {
-                        text: parent.Accessible.description
-                    }
-                }
-            }
-        }
-
-        // Clocks view itself
-        PlasmaComponents.ScrollView {
-            id: worldClocks
-            visible: calendar.showClocks
-
-            Layout.fillWidth: true
-            Layout.fillHeight: !agenda.visible
-            Layout.minimumHeight: visible ? Kirigami.Units.gridUnit * 7 : 0
-            Layout.maximumHeight: agenda.visible ? Kirigami.Units.gridUnit * 10 : -1
-
-            ListView {
-                id: clocksList
-
-                // We need some imperative bookkeeping here because there's no way to bind to
-                // this information across a set of dynamically-created delegates in a ListView.
-                property int longestTimeStringWidth: 1
-
-                activeFocusOnTab: true
-
-                highlight: null
-                currentIndex: -1
-                onActiveFocusChanged: if (activeFocus) {
-                    currentIndex = 0;
-                } else {
-                    currentIndex = -1;
-                }
-
-                Keys.onRightPressed: event => {
-                    switchTimeZoneButton.Keys.rightPressed(event);
-                }
-
-                // Can't use KeyNavigation.tab since the focus won't go to config button, instead it will be redirected to somewhere else because of
-                // some existing code. Since now the header was in this file and this was not a problem. Now the header is also implicitly
-                // inside the monthViewWrapper.
-                Keys.onTabPressed: event => {
-                    monthView.viewHeader.configureButton.forceActiveFocus(Qt.BacktabFocusReason);
-                }
-
-                model: root.selectedTimeZonesDeduplicatingExplicitLocalTimeZone()
-
-                delegate: PlasmaComponents.ItemDelegate {
-                    id: listItem
-
-                    required property string modelData
-
-                    readonly property bool isCurrentTimeZone: tzClock.timeZone == root.currentTimeZone
-                    readonly property string tzLabel: {
-                        switch (Plasmoid.configuration.displayTimezoneFormat) {
-                        case 0: // Code
-                            return tzClock.timeZoneCode;
-                        case 1: // City
-                            return TimeZonesI18n.i18nCity(tzClock.timeZone);
-                        case 2: // Offset from UTC time
-                            return tzClock.timeZoneOffset;
-                        }
-                    }
-
-                    width: ListView.view.width - ListView.view.leftMargin - ListView.view.rightMargin
-
-                    leftPadding: calendar.paddings
-                    rightPadding: calendar.paddings
-
-                    highlighted: ListView.isCurrentItem
-                    Accessible.name: tzLabel
-                    Accessible.description: root.formatTime(tzClock.dateTime, Plasmoid.configuration.showSeconds === 2)
-
-                    // Only highlight with keyboard
-                    down: false
-                    hoverEnabled: false
-
-                    Clock {
-                        id: tzClock
-                        timeZone: listItem.modelData
-                        trackSeconds: Plasmoid.configuration.showSeconds === 2 // Always
-                    }
-
-                    contentItem: RowLayout {
-                        spacing: Kirigami.Units.smallSpacing
-
-                        PlasmaComponents.Label {
-                            Layout.fillWidth: true
-                            text: listItem.tzLabel
-                            textFormat: Text.PlainText
-                            font.weight: listItem.isCurrentTimeZone ? Font.Bold : Font.Normal
-                            maximumLineCount: 1
-                            elide: Text.ElideRight
-                        }
-
-                        Row {
-                            id: timeAndOffsetRow
-                            Layout.preferredWidth: clocksList.longestTimeStringWidth
-
-                            spacing: 0
-
-                            function recalculateLongestTimeString() {
-                                if (Math.ceil(implicitWidth) > clocksList.longestTimeStringWidth) {
-                                    clocksList.longestTimeStringWidth = Math.ceil(implicitWidth);
-                                }
-                            }
-                            Component.onCompleted: recalculateLongestTimeString();
-
-                            PlasmaComponents.Label {
-                                id: timeString
-
-                                text: root.formatTime(tzClock.dateTime, Plasmoid.configuration.showSeconds === 2)
-                                textFormat: Text.PlainText
-                                font.weight: listItem.isCurrentTimeZone ? Font.Bold : Font.Normal
-
-                                onTextChanged: timeAndOffsetRow.recalculateLongestTimeString();
-                            }
-
-                            PlasmaComponents.Label {
-                                visible: !listItem.isCurrentTimeZone
-
-                                anchors.baseline: timeString.baseline
-                                anchors.baselineOffset: Math.floor((Kirigami.Theme.smallFont.pointSize - Kirigami.Theme.defaultFont.pointSize) / 2)
-
-                                text: root.formatOffset(tzClock.dateTime)
-                                textFormat: Text.PlainText
-                                font.pointSize: Kirigami.Theme.smallFont.pointSize
-                                font.family: Kirigami.Theme.smallFont.family
-                                opacity: 0.75
-                            }
-                        }
-                    }
-                }
-            }
         }
     }
 

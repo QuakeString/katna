@@ -20,6 +20,13 @@ compose-show-trimmed = Kırpılan içeriği göster
 compose-hide-trimmed = Kırpılan içeriği gizle
 compose-remove-trimmed = Alıntılanan metni kaldır
 compose-trimmed-removed = Alıntılanan metin kaldırıldı
+compose-quote-header = { $date } tarihinde { $from } şunu yazdı:
+compose-forward-header = ---------- Yönlendirilmiş ileti ---------
+compose-forward-from = Kimden: { $from }
+compose-forward-date = Tarih: { $date }
+compose-forward-subject = Konu: { $subject }
+compose-forward-to = Kime: { $to }
+compose-forward-cc = Cc: { $cc }
 
 ## Recipients and subject
 

@@ -38,6 +38,8 @@ list-range-about = ഏകദേശം { $total }-ൽ { $first }–{ $last }
 list-results = “{ $query }” എന്നതിനുള്ള ഫലങ്ങൾ
 list-results-corrected = “{ $query }” എന്നതിനുള്ള ഫലങ്ങൾ കാണിക്കുന്നു
 list-search-instead = പകരം “{ $query }” എന്ന് തിരയുക
+list-search-no-index = തിരയൽ തയ്യാറായിട്ടില്ല: സൂചിക ഇതുവരെ നിർമ്മിച്ചിട്ടില്ല.
+list-search-not-ready = തിരയൽ തയ്യാറായിട്ടില്ല: { $error }
 list-files-more = +{ $count }
 list-replied = നിങ്ങൾ മറുപടി നൽകി
 
@@ -339,11 +341,20 @@ list-empty-tab = { $tab }-ൽ മെയിലൊന്നുമില്ല.
 list-empty-tab-unknown = ഈ ടാബിൽ മെയിലൊന്നുമില്ല.
 list-empty-folder = { $folder }-ൽ സന്ദേശങ്ങളൊന്നുമില്ല.
 list-empty-folder-unknown = ഈ ഫോൾഡറിൽ സന്ദേശങ്ങളൊന്നുമില്ല.
+list-empty-waiting = മറുപടിക്കായി ഒന്നും കാത്തിരിക്കുന്നില്ല.
+list-empty-reminders = ഓർമ്മപ്പെടുത്തലുകളൊന്നുമില്ല. ഒരെണ്ണം ചേർക്കാൻ ഒരു മെയിലിൽ H അമർത്തുക.
 list-first-sync = നിങ്ങളുടെ മെയിൽ ലഭ്യമാക്കുന്നു…
 list-first-sync-detail = എത്തുന്നതിനനുസരിച്ച് ഇവിടെ ദൃശ്യമാകും.
+list-store-unreadable = മെയിൽ സ്റ്റോർ തുറക്കാനായില്ല
 
 ## Mail list: lines
 
+row-no-subject = (വിഷയമില്ല)
+row-unknown-sender = (അജ്ഞാത അയച്ചയാൾ)
+row-to = സ്വീകർത്താവ്:
+row-no-recipients = (സ്വീകർത്താക്കളില്ല)
+row-names-separator = {", "}
+row-me = ഞാൻ
 row-removed = ഈ സന്ദേശം നീക്കം ചെയ്‌തു.
 row-starred = നക്ഷത്രമിട്ടത്
 row-not-starred = നക്ഷത്രമിട്ടിട്ടില്ല
@@ -358,6 +369,14 @@ row-tracking-clicked = { $recipients } പേരിൽ { $opened } പേർ ത
 row-pin = മുകളിൽ പിൻ ചെയ്യുക
 row-unpin = അൺപിൻ ചെയ്യുക
 row-snoozed-until = { $when } വരെ സ്‌നൂസ് ചെയ്‌തു
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = ഇന്ന്
+snoozed-group-tomorrow = നാളെ
+snoozed-group-this-week = ഈ ആഴ്‌ച
+snoozed-group-later = പിന്നീട്
+row-follow-up-step = തുടർനടപടി { $steps }-ൽ { $step } · { $date }
+row-follow-up-waiting = തുടർനടപടി കാത്തിരിക്കുന്നു
+row-reminder = ഓർമ്മപ്പെടുത്തൽ { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -380,6 +399,7 @@ menu-not-important = പ്രധാനപ്പെട്ടതല്ലെന�
 menu-pin = മുകളിൽ പിൻ ചെയ്യുക
 menu-unpin = അൺപിൻ ചെയ്യുക
 menu-snooze = സ്‌നൂസ് ചെയ്യുക
+menu-remind = എന്നെ ഓർമ്മിപ്പിക്കുക
 menu-unsnooze = സ്‌നൂസ് ഒഴിവാക്കുക
 menu-add-to-tasks = ടാസ്‌ക്കുകളിലേക്ക് ചേർക്കുക
 menu-schedule-meeting = മീറ്റിംഗ് ഷെഡ്യൂൾ ചെയ്യുക
@@ -391,10 +411,34 @@ menu-move-to = ഇതിലേക്ക് നീക്കുക
 menu-follow-up = തുടർനടപടി
 menu-more = കൂടുതൽ
 menu-move-to-heading = ഇതിലേക്ക് നീക്കുക:
+menu-move-to-search = ഇതിലേക്ക് നീക്കുക…
+menu-label-as = ലേബൽ ചെയ്യുക
+menu-label-as-search = ലേബൽ ചെയ്യുക…
+menu-no-folder = “{ $name }” എന്ന പേരിൽ ഫോൾഡറില്ല
+menu-no-label = “{ $name }” എന്ന പേരിൽ ലേബലില്ല
+menu-create-folder = “{ $name }” സൃഷ്‌ടിക്കുക
+menu-always-move = { $name } അയയ്ക്കുന്ന മെയിൽ എപ്പോഴും ഇവിടേക്ക് നീക്കുക
+toast-always-move-failed = മെയിൽ നീക്കി, പക്ഷേ നിയമം ഉണ്ടാക്കാനായില്ല: { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } സംഭാഷണം
+       *[other] { $count } സംഭാഷണങ്ങൾ
+    }
+   *[message] { $count ->
+        [one] { $count } സന്ദേശം
+       *[other] { $count } സന്ദേശങ്ങൾ
+    }
+}
 menu-find-from = { $name } അയച്ച ഇമെയിലുകൾ കണ്ടെത്തുക
+menu-make-rule = നിയമം ഉണ്ടാക്കുക…
 
 ## Snackbar after an action on mail in the list
 
+toast-key-imported = കീ ഇമ്പോർട്ട് ചെയ്‌തു
+toast-key-updated = ഈ കീ നിങ്ങളുടെ പക്കൽ ഇതിനകം ഉണ്ടായിരുന്നു; ഇപ്പോൾ അത് കാലികമാണ്
+toast-key-removed = കീ നീക്കം ചെയ്‌തു
+toast-key-not-removed = കീ നീക്കം ചെയ്യാനായില്ല
+toast-fingerprint-copied = ഫിംഗർപ്രിന്റ് പകർത്തി
 toast-archived = { $kind ->
     [conversation] { $count ->
         [one] സംഭാഷണം ആർക്കൈവ് ചെയ്‌തു.
@@ -425,6 +469,8 @@ toast-moved = { $kind ->
        *[other] { $count } സന്ദേശങ്ങൾ നീക്കി.
     }
 }
+toast-label-added = “{ $label }” ലേബൽ ചേർത്തു.
+toast-label-removed = “{ $label }” ലേബൽ നീക്കം ചെയ്‌തു.
 toast-starred = { $kind ->
     [conversation] { $count ->
         [one] സംഭാഷണത്തിന് നക്ഷത്രമിട്ടു.

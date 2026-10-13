@@ -41,3 +41,4 @@ search-options-show = 顯示搜尋選項
 settings = 設定
 account-add = 新增帳戶
 account-wheel-hint = 捲動滾輪以切換帳戶
+account-menu-all-detail = 合併 { $count } 個帳戶

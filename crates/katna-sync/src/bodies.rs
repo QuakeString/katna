@@ -121,6 +121,7 @@ async fn fetch_and_save<B: MailBackend>(
     let fetched = backend.fetch_bodies(&uids).await?;
     let mut batch = store.mail_batch()?;
     let mut saved = 0;
+    let mut receipts = Vec::new();
     for (uid, raw) in &fetched {
         let Some(&id) = ids.get(uid) else {
             continue;
@@ -140,6 +141,9 @@ async fn fetch_and_save<B: MailBackend>(
                     Outcome::Read => ReceiptKind::Read,
                 };
                 batch.record_receipt(&report.original, recipient, kind, at)?;
+            }
+            if !report.outcomes.iter().any(|(_, o)| *o == Outcome::Failed) {
+                receipts.push((id, vec![report.original.clone()]));
             }
         }
         // Mail stored before its structure was read, or whose structure
@@ -161,6 +165,7 @@ async fn fetch_and_save<B: MailBackend>(
         saved += 1;
     }
     batch.commit()?;
+    crate::receipts::quiet(store, &receipts);
     Ok(saved)
 }
 

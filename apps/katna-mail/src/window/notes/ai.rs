@@ -266,7 +266,7 @@ impl MailWindow {
                 )
                 .child(
                     gpui::deferred(
-                        gpui::anchored()
+                        katna_ui::anchored()
                             .position(at)
                             .snap_to_window_with_margin(px(space::S3))
                             .child(menu),

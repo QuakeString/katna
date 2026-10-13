@@ -40,6 +40,7 @@ imap-types.workspace = true
 io-imap.workspace = true
 io-sasl.workspace = true
 io-smtp.workspace = true
+chrono.workspace = true
 
 # DNS servers for autoconfig (`src/autoconfig/dns.rs`).
 [target.'cfg(windows)'.dependencies]

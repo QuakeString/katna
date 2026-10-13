@@ -14,6 +14,7 @@ search-without = Nie zawiera
 search-date-within = Data w ciągu
 search-has-attachment = Ma załącznik
 search-attachment-custom = Niestandardowy
+search-attachment-image = Obraz
 search-attachment-custom-hint = Wpisz rozszerzenie, np. png, i naciśnij Spację
 search-attachment-remove = Usuń
 search-clear-filter = Wyczyść filtr
@@ -68,3 +69,13 @@ search-dates-month-back = Poprzedni miesiąc
 search-dates-month-on = Następny miesiąc
 search-dates-year-back = Poprzedni rok
 search-dates-year-on = Następny rok
+
+## More results on server: under the results, mail found by asking the
+## mail server, for mail that is not downloaded to this computer yet.
+
+search-server-more = Więcej wyników na serwerze
+search-server-searching = Przeszukiwanie poczty na serwerze…
+search-server-empty-searching = Na razie nic tu nie ma. Przeszukiwanie poczty na serwerze…
+search-server-nothing = Brak dalszych wyników na serwerze
+search-server-failed = Nie udało się przeszukać serwera.
+search-server-again = Spróbuj ponownie

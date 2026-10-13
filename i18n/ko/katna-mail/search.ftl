@@ -14,6 +14,7 @@ search-without = 제외할 단어
 search-date-within = 기간
 search-has-attachment = 첨부파일 있음
 search-attachment-custom = 직접 지정
+search-attachment-image = 이미지
 search-attachment-custom-hint = png 같은 확장자를 입력하고 스페이스 키를 누르세요
 search-attachment-remove = 삭제
 search-clear-filter = 필터 지우기
@@ -48,3 +49,13 @@ search-dates-month-back = 이전 달
 search-dates-month-on = 다음 달
 search-dates-year-back = 이전 연도
 search-dates-year-on = 다음 연도
+
+## More results on server: under the results, mail found by asking the
+## mail server, for mail that is not downloaded to this computer yet.
+
+search-server-more = 서버의 추가 결과
+search-server-searching = 서버에서 메일을 검색하는 중…
+search-server-empty-searching = 아직 결과가 없습니다. 서버에서 메일을 검색하는 중…
+search-server-nothing = 서버에 더 이상 결과가 없습니다
+search-server-failed = 서버를 검색할 수 없습니다.
+search-server-again = 다시 시도

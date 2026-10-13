@@ -21,6 +21,16 @@ compose-hide-trimmed = କଟାଯାଇଥିବା ବିଷୟବସ୍ତ�
 compose-remove-trimmed = ଉଦ୍ଧୃତ ଟେକ୍ସଟ କାଢ଼ନ୍ତୁ
 compose-trimmed-removed = ଉଦ୍ଧୃତ ଟେକ୍ସଟ କଢ଼ାଗଲା
 
+## The quoted or forwarded message, in the mail itself
+
+compose-quote-header = { $date } ରେ { $from } ଲେଖିଥିଲେ:
+compose-forward-header = ---------- ଫରୱାର୍ଡ କରାଯାଇଥିବା ମେସେଜ ---------
+compose-forward-from = ପ୍ରେରକ: { $from }
+compose-forward-date = ତାରିଖ: { $date }
+compose-forward-subject = ବିଷୟ: { $subject }
+compose-forward-to = ପ୍ରାପକ: { $to }
+compose-forward-cc = Cc: { $cc }
+
 ## Recipients and subject
 
 compose-to = ପ୍ରାପକ

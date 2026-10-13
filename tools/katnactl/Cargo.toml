@@ -12,7 +12,10 @@ publish.workspace = true
 katna-core.workspace = true
 katna-dbus.workspace = true
 katna-store.workspace = true
+katna-search.workspace = true
 futures-lite.workspace = true
+mail-parser.workspace = true
+serde_json.workspace = true
 rpassword.workspace = true
 zbus.workspace = true
 

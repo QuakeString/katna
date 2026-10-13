@@ -7,33 +7,36 @@
 //! its "Open with" list. Settings → Default apps says, for each kind of
 //! file, whether clicking a card opens the viewer or another app.
 
+use crate::widgets::Tip as _;
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::time::{Duration, SystemTime};
 
 use gpui::{
-    AnyElement, Context, Entity, FocusHandle, FontWeight, ImageSource, ObjectFit,
-    PathPromptOptions, RenderImage, SharedString, Subscription, Task, Window, div, img, prelude::*,
-    rgba,
+    Animation, AnimationExt, AnyElement, ClickEvent, Context, ElementId, Entity, FocusHandle,
+    FontWeight, ImageSource, ObjectFit, PathPromptOptions, RenderImage, SharedString, Subscription,
+    Task, Window, div, ease_out_quint, img, prelude::*, rgba,
 };
 use katna_core::config::{FileGroup, OpenIn};
 use katna_i18n::tr;
 use katna_preview::Kind;
 use katna_preview::glance::{Glance, glance};
-use katna_preview::image::{Frame, RgbaImage, imageops};
+use katna_preview::image::{Frame, RgbaImage};
 use katna_render::{Attachment, AttachmentFile};
 use katna_store::MessageId;
+use katna_ui::motion::lerp;
 use katna_ui::px;
-use katna_ui::tokens::radius;
+use katna_ui::tokens::{duration, elevation, radius};
 
 use super::MailWindow;
 use super::reader::AttachmentSource;
+use super::reader::keys;
 use super::viewer::{Viewer, ViewerEvent};
 use crate::data::RowFile;
 use crate::format;
-use crate::theme::Theme;
-use crate::widgets::{icon, tip};
+use crate::theme::{Theme, fade};
+use crate::widgets::icon;
 
 const CARD_WIDTH: f32 = 180.0;
 const THUMB_HEIGHT: f32 = 84.0;
@@ -71,31 +74,18 @@ impl Item {
 /// What the top of a card shows.
 #[derive(Clone)]
 pub(super) enum Thumb {
-    /// A PDF's first page or a picture, and a blurred copy of it shown like
-    /// frosted glass behind the name and Save button when the pointer is
-    /// over the card.
-    Picture {
-        sharp: Arc<RenderImage>,
-        frosted: Arc<RenderImage>,
-    },
+    /// A PDF's first page or a picture.
+    Picture { sharp: Arc<RenderImage> },
     /// The first cells or lines of a spreadsheet, text file or document,
     /// drawn small on a white page.
     Glance(Arc<Glance>),
 }
 
 impl Thumb {
-    /// Its blurred copy, for the hover panel.
-    pub(super) fn frosted(&self) -> Option<Arc<RenderImage>> {
-        match self {
-            Thumb::Picture { frosted, .. } => Some(frosted.clone()),
-            Thumb::Glance(_) => None,
-        }
-    }
-
     /// Its bitmaps, to free when it is no longer drawn.
     pub(super) fn bitmaps(self) -> Vec<Arc<RenderImage>> {
         match self {
-            Thumb::Picture { sharp, frosted } => vec![sharp, frosted],
+            Thumb::Picture { sharp } => vec![sharp],
             Thumb::Glance(_) => Vec::new(),
         }
     }
@@ -169,22 +159,11 @@ pub(super) fn bitmap(mut image: RgbaImage) -> Arc<RenderImage> {
     Arc::new(RenderImage::new([Frame::new(image)]))
 }
 
-/// A picture as a card's top: sharp, and blurred for the hover panel.
+/// A picture as a card's top.
 pub(super) fn picture_thumb(sharp: RgbaImage) -> Thumb {
-    let frosted = bitmap(frosted(&sharp));
     Thumb::Picture {
         sharp: bitmap(sharp),
-        frosted,
     }
-}
-
-/// `thumb` made small and blurred. Drawn stretched over the whole card,
-/// it reads as the thumbnail seen through frosted glass (GPUI has no
-/// backdrop blur).
-fn frosted(thumb: &RgbaImage) -> RgbaImage {
-    let (w, h) = thumb.dimensions();
-    let small = imageops::thumbnail(thumb, (w / 4).max(1), (h / 4).max(1));
-    imageops::fast_blur(&small, 3.0)
 }
 
 /// Where a list chip's attachment is among the message's parsed ones: the
@@ -227,6 +206,15 @@ pub(super) fn kind_badge(kind: Kind, size: f32) -> AnyElement {
         .bg(rgba(color))
         .child(icon(name, 0xffffffff, size * 0.72))
         .into_any_element()
+}
+
+/// [`kind_badge`] for a named file, with the key badge for OpenPGP keys.
+pub(super) fn file_badge(name: &str, mime: &str, size: f32) -> AnyElement {
+    if keys::is_key_file(name, mime) {
+        keys::key_badge(size)
+    } else {
+        kind_badge(katna_preview::kind(mime, name), size)
+    }
 }
 
 /// Whether the cards show a thumbnail of this kind.
@@ -282,19 +270,12 @@ pub(super) fn thumbnail(raw: &[u8], index: usize, kind: Kind) -> Option<Thumb> {
 }
 
 /// The top of a card: its thumbnail, else the file type's badge `badge`
-/// wide on a tinted ground. Under a hover panel (`panel`, the card's
-/// group) it goes while the panel shows: two curves drawn over each other
-/// let a hair of a white page through at the rounded corners.
-pub(super) fn card_top(
-    thumb: Option<Thumb>,
-    kind: Kind,
-    badge: f32,
-    panel: Option<SharedString>,
-    th: &Theme,
-) -> gpui::Div {
+/// wide on a tinted ground. It stays as it is under the pointer; the
+/// card's [`Lifted`] corners show over it.
+pub(super) fn card_top(thumb: Option<Thumb>, kind: Kind, badge: f32, th: &Theme) -> gpui::Div {
     let inner = px(CARD_RADIUS);
-    let top = match thumb {
-        Some(Thumb::Picture { sharp, .. }) => div().size_full().child(
+    match thumb {
+        Some(Thumb::Picture { sharp }) => div().size_full().child(
             img(ImageSource::Render(sharp))
                 .size_full()
                 .rounded_t(inner)
@@ -308,122 +289,233 @@ pub(super) fn card_top(
             .justify_center()
             .bg(rgba(th.read_row))
             .child(kind_badge(kind, badge)),
-    };
-    match panel {
-        Some(group) => top.group_hover(group, |s| s.opacity(0.0)),
-        None => top,
     }
 }
 
-/// What a card shows while the pointer is over it (a member of `group`):
-/// its name and size on frosted glass, with `buttons` (Save, and on the
-/// Files page Show the mail) at the bottom right.
-pub(super) fn hover_panel(
-    group: SharedString,
-    name: String,
-    size: u64,
-    frost: Option<Arc<RenderImage>>,
-    buttons: Vec<AnyElement>,
-    th: &Theme,
-) -> gpui::Div {
-    let inner = px(CARD_RADIUS);
-    // Frosted glass in the theme's own color: the blurred thumbnail
-    // under a veil of the card's surface, text in the theme's ink.
-    // Without a thumbnail there is nothing to blur, so the veil
-    // is thicker and hides the file-type badge under it.
-    let veil = (th.surface & 0xffff_ff00) | if frost.is_some() { 0xa6 } else { 0xf0 };
-    let (ink, ink_dim) = panel_ink(th);
-    div()
-        .absolute()
-        .top_0()
-        .left_0()
-        .size_full()
-        // Shown on hover. Not `hidden()`: GPUI cannot switch
-        // `display` on hover between layout and paint.
-        .opacity(0.0)
-        .group_hover(group, |s| s.opacity(1.0))
-        .rounded(inner)
-        .overflow_hidden()
-        .children(frost.map(|image| {
-            img(ImageSource::Render(image))
-                .absolute()
-                .top_0()
-                .left_0()
-                .size_full()
-                .rounded(inner)
-                .object_fit(ObjectFit::Fill)
-        }))
-        .child(
-            div()
-                .absolute()
-                .top_0()
-                .left_0()
-                .size_full()
-                .rounded(inner)
-                .bg(rgba(veil)),
-        )
-        .flex()
-        .flex_col()
-        .justify_between()
-        .p(px(10.0))
-        .text_color(rgba(ink))
-        .child(
-            div()
-                .text_size(px(13.0))
-                .font_weight(FontWeight::MEDIUM)
-                .line_clamp(2)
-                .child(name),
-        )
-        .child(
-            div()
-                .flex()
-                .flex_row()
-                .items_center()
-                .gap(px(6.0))
-                .child(
-                    div()
-                        .flex_1()
-                        .text_size(px(12.0))
-                        .text_color(rgba(ink_dim))
-                        .child(format::size(size)),
-                )
-                .children(buttons),
-        )
-}
+/// The size of a card's corner buttons and of its size pill.
+const CORNER: f32 = 32.0;
+/// How far the corner buttons and the size pill sit from the card's edges.
+const CORNER_INSET: f32 = 8.0;
+/// How long after the one before it each corner button starts to show.
+const CORNER_STAGGER: f32 = 30.0;
+/// The size the corner buttons grow from as they show, against their own.
+const CORNER_FROM: f32 = 0.85;
 
-/// The ink of a hover panel, and its dimmer ink.
-fn panel_ink(th: &Theme) -> (u32, u32) {
-    if th.dark {
-        (0xffffffff, 0xffffffcc)
-    } else {
-        (th.text, th.text_dim)
-    }
-}
-
-/// A round button on a card's hover panel.
-pub(super) fn panel_button(
+/// A round button on a card's corner (Show the mail, Save, Forward): level
+/// 2, on frosted glass when the frost is on and on a see-through surface
+/// when it is off, so it reads over any thumbnail.
+pub(super) fn corner_button(
     id: impl Into<gpui::ElementId>,
     name: &'static str,
     label: String,
     th: &Theme,
 ) -> gpui::Stateful<gpui::Div> {
-    let (ink, _) = panel_ink(th);
-    let (button, button_hover) = if th.dark {
-        (0xffffff26, 0xffffff4d)
-    } else {
-        (0x0000001a, 0x00000033)
-    };
-    div()
-        .id(id)
-        .size(px(32.0))
+    let id: gpui::ElementId = id.into();
+    let glow = SharedString::from(format!("{id}-glow"));
+    glass(div().id(id), th)
+        .relative()
+        .size(px(CORNER))
         .flex()
         .items_center()
         .justify_center()
         .rounded_full()
-        .bg(rgba(button))
-        .hover(move |s| s.bg(rgba(button_hover)))
-        .tooltip(tip(label, th))
-        .child(icon(name, ink, 18.0))
+        .shadow(crate::widgets::elevation(th, elevation::FLOAT))
+        .cursor_pointer()
+        .child(crate::widgets::hover_fade(glow, None, th))
+        .tip(label, th)
+        .child(icon(name, th.text, 18.0))
+}
+
+/// `el`'s fill as a corner button's or the size pill's: the raised
+/// surface, frosted when the frost is on, else a little see-through.
+fn glass<E: Styled + ParentElement>(el: E, th: &Theme) -> E {
+    if th.frost > 0 {
+        crate::widgets::frosted(el, th, th.raised, CORNER / 2.0)
+    } else {
+        el.bg(rgba(fade(th.raised, 0.82)))
+    }
+}
+
+/// Whether a [`Lifted`] card is under the pointer, and how its corners show.
+#[derive(Default)]
+struct Lift {
+    over: bool,
+    /// Whether the corners show (or are going), and how many times that
+    /// changed, which names the running animations.
+    shown: Option<(bool, usize)>,
+}
+
+/// A file card (a [`crate::widgets::tile`]) that rises from level 1 to
+/// level 2 under the pointer while its corners show: its size on a pill at
+/// the top left and its buttons at the top right, fading in and growing a
+/// little, one after the other. The thumbnail stays as it is. The card
+/// must be `relative()` and have no `on_hover` of its own.
+#[derive(IntoElement)]
+pub(super) struct Lifted {
+    card: gpui::Stateful<gpui::Div>,
+    /// Names the card's state; unique among the view's cards.
+    key: SharedString,
+    size: Option<String>,
+    buttons: Vec<gpui::Stateful<gpui::Div>>,
+    /// The corners show without the pointer: the keyboard's cursor is on it.
+    cursor: bool,
+    th: Theme,
+}
+
+impl Lifted {
+    pub(super) fn new(
+        card: gpui::Stateful<gpui::Div>,
+        key: impl Into<SharedString>,
+        th: &Theme,
+    ) -> Self {
+        Self {
+            card,
+            key: key.into(),
+            size: None,
+            buttons: Vec::new(),
+            cursor: false,
+            th: *th,
+        }
+    }
+
+    /// The size shown at the top left.
+    pub(super) fn size(mut self, size: u64) -> Self {
+        self.size = Some(format::size(size));
+        self
+    }
+
+    /// The buttons at the top right ([`corner_button`]s), in order.
+    pub(super) fn buttons(mut self, buttons: Vec<gpui::Stateful<gpui::Div>>) -> Self {
+        self.buttons = buttons;
+        self
+    }
+
+    /// Shows the corners while `on`, as under the pointer.
+    pub(super) fn cursor(mut self, on: bool) -> Self {
+        self.cursor = on;
+        self
+    }
+}
+
+impl RenderOnce for Lifted {
+    fn render(self, window: &mut Window, cx: &mut gpui::App) -> impl IntoElement {
+        let th = self.th;
+        let state = window.use_keyed_state(self.key.clone(), cx, |_, _| Lift::default());
+        let want = state.read(cx).over || self.cursor;
+        let shown = match state.read(cx).shown {
+            Some((on, n)) if on != want => Some((want, n + 1)),
+            None if want => Some((true, 0)),
+            shown => shown,
+        };
+        if shown != state.read(cx).shown {
+            state.update(cx, |s, _| s.shown = shown);
+        }
+        let watch = state.clone();
+        let card = self.card.on_hover(move |&over, _, cx| {
+            watch.update(cx, |s, cx| {
+                if s.over != over {
+                    s.over = over;
+                    cx.notify();
+                }
+            });
+        });
+        let key = self.key;
+        // How far `step` (0 the first) is through showing, at `t` of the
+        // whole: in `FAST`, each step a stagger after the one before it.
+        let fast = duration::FAST.as_secs_f32() * 1000.0;
+        let steps = self.buttons.len() + 1;
+        let whole = fast + CORNER_STAGGER * (steps - 1) as f32;
+        let along = move |on: bool, step: usize, t: f32| -> f32 {
+            if !on {
+                return 1.0 - ease_out_quint()(t);
+            }
+            let start = CORNER_STAGGER * step as f32 / whole;
+            let t = ((t - start) * whole / fast).clamp(0.0, 1.0);
+            ease_out_quint()(t)
+        };
+        let animation = move |on: bool| {
+            let length = if on {
+                Duration::from_secs_f32(whole / 1000.0)
+            } else {
+                duration::FAST
+            };
+            Animation::new(katna_ui::motion::time(length))
+        };
+        let pill = self.size.map(|size| {
+            let pill = glass(div(), &th)
+                .absolute()
+                .top(px(CORNER_INSET))
+                .left(px(CORNER_INSET))
+                .h(px(CORNER))
+                .px(px(12.0))
+                .flex()
+                .items_center()
+                .rounded_full()
+                .shadow(crate::widgets::elevation(&th, elevation::FLOAT))
+                .text_size(px(12.0))
+                .text_color(rgba(th.text))
+                .child(size);
+            match shown {
+                Some((on, n)) => pill
+                    .with_animation(
+                        (SharedString::from(format!("{key}-pill")), n),
+                        animation(on),
+                        move |el, t| {
+                            let t = along(on, 0, t);
+                            el.opacity(t).ml(px(lerp(-4.0, 0.0, t)))
+                        },
+                    )
+                    .into_any_element(),
+                None => pill.opacity(0.0).into_any_element(),
+            }
+        });
+        let buttons = self.buttons.into_iter().enumerate().map(|(i, button)| {
+            let button = match shown {
+                Some((on, n)) => button
+                    .with_animation(
+                        (SharedString::from(format!("{key}-button-{i}")), n),
+                        animation(on),
+                        move |el, t| {
+                            let t = along(on, i + 1, t);
+                            el.opacity(t).size(px(CORNER * lerp(CORNER_FROM, 1.0, t)))
+                        },
+                    )
+                    .into_any_element(),
+                None => button.opacity(0.0).into_any_element(),
+            };
+            // A box of the full size, so the others stay put while it grows.
+            div()
+                .size(px(CORNER))
+                .flex()
+                .items_center()
+                .justify_center()
+                .child(button)
+        });
+        let corners = div().absolute().inset_0().children(pill).child(
+            div()
+                .absolute()
+                .top(px(CORNER_INSET))
+                .right(px(CORNER_INSET))
+                .flex()
+                .flex_row()
+                .gap(px(4.0))
+                .children(buttons),
+        );
+        let card = card.child(corners);
+        match shown {
+            Some((on, n)) => card
+                .with_animation(
+                    (SharedString::from(format!("{key}-lift")), n),
+                    Animation::new(katna_ui::motion::time(duration::FAST)),
+                    move |el, t| {
+                        let t = ease_out_quint()(t);
+                        el.shadow(crate::widgets::tile_lift(&th, if on { t } else { 1.0 - t }))
+                    },
+                )
+                .into_any_element(),
+            None => card.into_any_element(),
+        }
+    }
 }
 
 /// Ink of a glance: it sits on a white page in every theme, like a PDF.
@@ -637,7 +729,7 @@ impl MailWindow {
         let indices: Vec<usize> = list.iter().map(|&(ix, _)| ix).collect();
         let cards = list.iter().map(|&(ix, attachment)| {
             let item = Item::new(ix, attachment);
-            let group = SharedString::from(format!("attachment-{}-{ix}", id.0));
+            let key = SharedString::from(format!("attachment-{}-{ix}", id.0));
             let thumb = self
                 .files
                 .thumbs
@@ -645,10 +737,17 @@ impl MailWindow {
                 .filter(|_| self.config.mail.attachment_previews)
                 .cloned();
             let name = item.name.clone();
-            let frost = thumb.as_ref().and_then(Thumb::frosted);
-            let top = card_top(thumb, item.kind, 36.0, Some(group.clone()), th);
+            // A public key: a click offers to import it.
+            let key_file = keys::is_key_attachment(attachment);
+            let top = if key_file {
+                keys::key_card_top(36.0, th)
+            } else {
+                card_top(thumb, item.kind, 36.0, th)
+            };
+            let spot: ElementId = ("attachment-key", ix).into();
+            let open = spot.clone();
             let save_name = name.clone();
-            let save = panel_button(
+            let save = corner_button(
                 ("attachment-save", ix),
                 "download",
                 tr!("attachment-save"),
@@ -659,7 +758,7 @@ impl MailWindow {
                 this.save_from_message(id, ix, &save_name, cx);
             }));
             let forward_name = name.clone();
-            let forward = panel_button(
+            let forward = corner_button(
                 ("attachment-forward", ix),
                 "forward",
                 tr!("attachment-forward"),
@@ -669,17 +768,8 @@ impl MailWindow {
                 cx.stop_propagation();
                 this.forward_from_message(id, ix, &forward_name, window, cx);
             }));
-            let overlay = hover_panel(
-                group.clone(),
-                name.clone(),
-                item.size,
-                frost,
-                vec![forward.into_any_element(), save.into_any_element()],
-                th,
-            );
-            div()
+            let card = div()
                 .id(("attachment", ix))
-                .group(group)
                 .relative()
                 .w(px(CARD_WIDTH))
                 .flex_none()
@@ -689,9 +779,14 @@ impl MailWindow {
                 .map(|d| crate::widgets::tile(d, th))
                 .cursor_pointer()
                 .child(crate::widgets::tile_hover(th))
-                .on_click(cx.listener(move |this, _, window, cx| {
+                .when(key_file, |card| card.child(self.person_spot(spot)))
+                .on_click(cx.listener(move |this, e: &ClickEvent, window, cx| {
                     cx.stop_propagation();
-                    this.open_attachment(id, ix, window, cx);
+                    if key_file {
+                        this.open_key_attachment(id, ix, open.clone(), e.position(), window, cx);
+                    } else {
+                        this.open_attachment(id, ix, window, cx);
+                    }
                 }))
                 .child(div().h(px(THUMB_HEIGHT)).w_full().child(top))
                 .child(
@@ -704,7 +799,11 @@ impl MailWindow {
                         .gap(px(8.0))
                         .border_t_1()
                         .border_color(rgba(th.divider))
-                        .child(kind_badge(item.kind, 18.0))
+                        .child(if key_file {
+                            keys::key_badge(18.0)
+                        } else {
+                            kind_badge(item.kind, 18.0)
+                        })
                         .child(
                             div()
                                 .min_w_0()
@@ -713,8 +812,10 @@ impl MailWindow {
                                 .text_color(rgba(th.text))
                                 .child(name),
                         ),
-                )
-                .child(overlay)
+                );
+            Lifted::new(card, key, th)
+                .size(item.size)
+                .buttons(vec![forward, save])
         });
         Some(
             div()
@@ -754,7 +855,7 @@ impl MailWindow {
                                     .text_color(rgba(th.text_dim))
                                     .relative()
                                     .child(crate::widgets::hover_fade("hover-glow", None, th))
-                                    .tooltip(tip(tr!("attachment-save-all-tooltip"), th))
+                                    .tip(tr!("attachment-save-all-tooltip"), th)
                                     .on_click(cx.listener(move |this, _, _, cx| {
                                         cx.stop_propagation();
                                         this.save_all(id, indices.clone(), cx);
@@ -901,6 +1002,7 @@ impl MailWindow {
             viewer
         });
         self.files._viewer_events = Some(cx.subscribe_in(&viewer, window, Self::on_viewer));
+        self.note_usage(katna_core::usage::Feature::Viewers);
         self.files.viewer = Some(viewer);
         cx.notify();
     }
@@ -925,6 +1027,7 @@ impl MailWindow {
             viewer
         });
         self.files._viewer_events = Some(cx.subscribe_in(&viewer, window, Self::on_viewer));
+        self.note_usage(katna_core::usage::Feature::Viewers);
         self.files.viewer = Some(viewer.clone());
         cx.notify();
         viewer

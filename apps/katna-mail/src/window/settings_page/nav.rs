@@ -143,10 +143,19 @@ impl MailWindow {
                 th.text_faint,
                 NAV_ICON,
             ));
-        let apps: Vec<_> = [Scope::Calendar, Scope::Files]
-            .into_iter()
-            .map(|scope| row(scope.first(), false, cx))
-            .collect();
+        // Apps turned off leave the list; Settings > Apps turns them on.
+        let apps: Vec<_> = [
+            Scope::Calendar,
+            Scope::Contacts,
+            Scope::Tasks,
+            Scope::Notes,
+            Scope::Files,
+        ]
+        .into_iter()
+        .filter(|scope| scope.app().is_none_or(|app| self.config.app_on(app)))
+        .map(|scope| row(scope.first(), false, cx))
+        .collect();
+        let overview = row(Section::Apps, false, cx);
         div()
             .flex()
             .flex_col()
@@ -154,6 +163,7 @@ impl MailWindow {
             .child(heading(tr!("settings-group-all-apps")))
             .children(shared)
             .child(heading(tr!("settings-group-apps")).pt(px(space::S4)))
+            .child(overview)
             .child(mail)
             .child(fold_box(
                 "settings-nav-mail-pages",

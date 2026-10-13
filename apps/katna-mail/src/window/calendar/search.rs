@@ -138,14 +138,24 @@ fn find(
     Found { coming, past }
 }
 
-fn read(paths: &Paths, query: &str, tz: &TimeZone) -> Result<Found, String> {
+fn read(paths: &Paths, query: &str, tz: &TimeZone, left_out: &[i64]) -> Result<Found, String> {
     let now = jiff::Timestamp::now().as_second();
     let reach = REACH_DAYS * 86_400;
     let (from, to) = (now - reach, now + reach);
     let store = Store::open(paths, Mode::ReadOnly).map_err(|err| err.to_string())?;
-    let rows = store
+    let mut rows = store
         .event_rows_in_range(from, to)
         .map_err(|err| err.to_string())?;
+    // Not the events of accounts left out of the Calendar.
+    if !left_out.is_empty() {
+        let calendars = store.calendars().map_err(|err| err.to_string())?;
+        let out: Vec<i64> = calendars
+            .iter()
+            .filter(|c| c.account.is_some_and(|a| left_out.contains(&a.0)))
+            .map(|c| c.id)
+            .collect();
+        rows.retain(|row| !out.contains(&row.calendar_id));
+    }
     Ok(find(rows, &words(query), now, from, to, tz))
 }
 
@@ -222,12 +232,13 @@ impl MailWindow {
         }
         let paths = self.paths.clone();
         let tz = self.tz.clone();
+        let left_out = self.calendar_left_out();
         self.calendar.search.task = Some(cx.spawn(async move |this, cx| {
             let found = cx
                 .background_executor()
                 .spawn({
                     let query = query.clone();
-                    async move { read(&paths, &query, &tz) }
+                    async move { read(&paths, &query, &tz, &left_out) }
                 })
                 .await;
             this.update(cx, |this, cx| {

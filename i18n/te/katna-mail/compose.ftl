@@ -21,6 +21,16 @@ compose-hide-trimmed = కత్తిరించిన కంటెంట్�
 compose-remove-trimmed = కోట్ చేసిన టెక్స్ట్‌ను తీసివేయండి
 compose-trimmed-removed = కోట్ చేసిన టెక్స్ట్ తీసివేయబడింది
 
+## The quoted or forwarded message, in the mail itself
+
+compose-quote-header = { $date }న, { $from } ఇలా రాశారు:
+compose-forward-header = ---------- ఫార్వర్డ్ చేసిన మెసేజ్ ---------
+compose-forward-from = పంపినవారు: { $from }
+compose-forward-date = తేదీ: { $date }
+compose-forward-subject = సబ్జెక్ట్: { $subject }
+compose-forward-to = స్వీకర్త: { $to }
+compose-forward-cc = Cc: { $cc }
+
 ## Recipients and subject
 
 compose-to = స్వీకర్త

@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Contact cards open in one piece"
+text = """
+When a person's details take a moment to load, the contact card that pops
+over a name or picture now opens at its usual size with faint lines where
+the details go, then fills them in and eases to fit, instead of opening
+small and jumping taller.
+"""

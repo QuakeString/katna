@@ -53,3 +53,4 @@ search-options-show = সন্ধানৰ বিকল্প দেখুৱ�
 settings = ছেটিংছ
 account-add = একাউণ্ট যোগ কৰক
 account-wheel-hint = একাউণ্ট সলনি কৰিবলৈ স্ক্ৰল কৰক
+account-menu-all-detail = { $count }টা একাউণ্ট একেলগে

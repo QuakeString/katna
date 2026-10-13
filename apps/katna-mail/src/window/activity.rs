@@ -7,23 +7,25 @@
 //! time or chosen dates): open and click rates, opens and clicks by day,
 //! and the subject lines by open rate.
 
+use crate::widgets::Tip as _;
 use std::time::Duration;
 
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, Entity, Focusable, FontWeight, MouseButton,
-    MouseDownEvent, Task, Window, anchored, canvas, deferred, div, point, prelude::*, rgba,
+    MouseDownEvent, Task, Window, canvas, deferred, div, point, prelude::*, rgba,
 };
 use jiff::civil::Date;
 use katna_core::{Account, AccountId};
 use katna_i18n::tr;
 use katna_store::{ActivityItem, Insights, MessageActivity};
+use katna_ui::anchored;
 use katna_ui::{TextInput, px, unpx};
 
 use super::MailWindow;
 use crate::data::{Entry, Mail};
 use crate::format;
 use crate::theme::{Theme, fade};
-use crate::widgets::{icon, icon_button, icon_button_colored, raised, tip};
+use crate::widgets::{icon, icon_button, icon_button_colored, raised};
 
 /// At most this many tracked messages are read.
 const LIMIT: u32 = 500;
@@ -596,11 +598,12 @@ impl MailWindow {
         closed
     }
 
-    /// The Activity button beside the search box, with the number of new
+    /// The Activity button at the bar's right end, with the number of new
     /// opens and clicks.
     pub(super) fn render_activity_button(
         &self,
         th: &Theme,
+        size: f32,
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
         if !self.activity_shown() {
@@ -621,8 +624,9 @@ impl MailWindow {
                         if open { th.accent } else { th.text_dim },
                         th,
                     )
+                    .size(px(size))
                     .when(open, |d| d.bg(rgba(th.hover)))
-                    .tooltip(tip(tr!("folder-activity"), th))
+                    .tip(tr!("folder-activity"), th)
                     .on_click(cx.listener(|this, _, window, cx| this.toggle_activity(window, cx))),
                 )
                 .when(unseen > 0, |d| {
@@ -762,7 +766,7 @@ impl MailWindow {
                     .child(
                         icon_button(("activity-remove", ix), "close", 18.0, th)
                             .size(px(32.0))
-                            .tooltip(tip(tr!("activity-remove"), th))
+                            .tip(tr!("activity-remove"), th)
                             .on_click(cx.listener(move |this, _, _, cx| {
                                 cx.stop_propagation();
                                 this.remove_activity_item(seq, cx);
@@ -781,15 +785,22 @@ impl MailWindow {
     ) -> Option<AnyElement> {
         let menu = self.activity.as_ref()?;
         let button = self.activity_button.get()?;
-        let viewport = window.viewport_size();
-        let (vw, vh) = (unpx(viewport.width), unpx(viewport.height));
+        // Inside the window's content: with Katna's frame, not over its
+        // shadow and resize border.
+        let room = katna_ui::anchored::content_bounds(window, cx);
+        let (x0, y0) = (unpx(room.origin.x), unpx(room.origin.y));
+        let (vw, vh) = (unpx(room.size.width), unpx(room.size.height));
         let width = MENU_WIDTH.min(vw - 16.0);
-        // Under the button, its right edge on the button's, inside the
-        // window.
-        let right = unpx(button.origin.x + button.size.width);
-        let left = (right - width).clamp(8.0, (vw - width - 8.0).max(8.0));
+        // Under the button, its end edge on the button's (the right, or
+        // the left in a right-to-left layout).
+        let left = if katna_ui::direction::is_rtl(window) {
+            unpx(button.origin.x)
+        } else {
+            unpx(button.origin.x + button.size.width) - width
+        };
+        let left = left.clamp(x0 + 8.0, (x0 + vw - width - 8.0).max(x0 + 8.0));
         let top = unpx(button.origin.y + button.size.height) + 6.0;
-        let height = (vh - top - 16.0).clamp(160.0, 560.0);
+        let height = (y0 + vh - top - 16.0).clamp(160.0, 560.0);
         let items: Vec<AnyElement> = menu
             .feed
             .iter()
@@ -822,8 +833,10 @@ impl MailWindow {
             .id("activity-menu")
             .occlude()
             .absolute()
-            .left(px(left))
-            .top(px(top))
+            // In the layer, which covers the content, placed on screen.
+            .placed_ltr()
+            .left(px(left - x0))
+            .top(px(top - y0))
             .w(px(width))
             .max_h(px(height))
             .flex()
@@ -946,7 +959,7 @@ impl MailWindow {
             )
             .child(card);
         Some(
-            deferred(anchored().position(point(px(0.0), px(0.0))).child(layer))
+            deferred(anchored().position(room.origin).child(layer))
                 .with_priority(2)
                 .into_any_element(),
         )
@@ -1274,7 +1287,7 @@ impl MailWindow {
                                 )
                                 .child(
                                     icon_button("activity-close", "close", 20.0, th)
-                                        .tooltip(tip(tr!("activity-close"), th))
+                                        .tip(tr!("activity-close"), th)
                                         .on_click(
                                             cx.listener(|this, _, _, cx| this.close_report(cx)),
                                         ),
@@ -1368,7 +1381,7 @@ impl MailWindow {
             .relative()
             .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
             .when(!report.accounts_open, |d| {
-                d.tooltip(tip(tr!("activity-accounts-tip"), th))
+                d.tip(tr!("activity-accounts-tip"), th)
             })
             .when_some(chosen, |d, a| {
                 d.child(self.person_avatar(&name(a), a.address.trim(), 20.0))

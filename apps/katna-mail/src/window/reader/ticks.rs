@@ -7,6 +7,7 @@
 //! once they read it, by a read receipt or an open seen by open tracking;
 //! a warning when it bounced (`docs/ARCHITECTURE.md` §16.1).
 
+use crate::widgets::Tip as _;
 use std::collections::HashMap;
 
 use gpui::{AnyElement, div, prelude::*};
@@ -15,7 +16,7 @@ use katna_ui::px;
 
 use crate::format;
 use crate::theme::Theme;
-use crate::widgets::{icon, tip};
+use crate::widgets::icon;
 use crate::window::MailWindow;
 
 /// How a recipient was seen to read a message.
@@ -124,7 +125,7 @@ impl MailWindow {
                 .flex_none()
                 .ml(px(2.0))
                 .child(icon(name, color, 16.0))
-                .tooltip(tip(text, th))
+                .tip(text, th)
                 .into_any_element(),
         )
     }

@@ -21,6 +21,16 @@ compose-hide-trimmed = சுருக்கிய உள்ளடக்கத�
 compose-remove-trimmed = மேற்கோள் உரையை நீக்கு
 compose-trimmed-removed = மேற்கோள் உரை நீக்கப்பட்டது
 
+## The quoted or forwarded message, in the mail itself
+
+compose-quote-header = { $date } அன்று, { $from } எழுதியது:
+compose-forward-header = ---------- முன்னனுப்பப்பட்ட மெசேஜ் ---------
+compose-forward-from = அனுப்புநர்: { $from }
+compose-forward-date = தேதி: { $date }
+compose-forward-subject = பொருள்: { $subject }
+compose-forward-to = பெறுநர்: { $to }
+compose-forward-cc = Cc: { $cc }
+
 ## Recipients and subject
 
 compose-to = பெறுநர்

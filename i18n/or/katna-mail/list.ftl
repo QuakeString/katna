@@ -38,6 +38,8 @@ list-range-about = ପ୍ରାୟ { $total }ରୁ { $first }–{ $last }
 list-results = “{ $query }” ପାଇଁ ଫଳାଫଳ
 list-results-corrected = “{ $query }” ପାଇଁ ଫଳାଫଳ ଦେଖାଯାଉଛି
 list-search-instead = ଏହା ବଦଳରେ “{ $query }” ସନ୍ଧାନ କରନ୍ତୁ
+list-search-no-index = ସନ୍ଧାନ ପ୍ରସ୍ତୁତ ନାହିଁ: ଇଣ୍ଡେକ୍ସ ଏପର୍ଯ୍ୟନ୍ତ ତିଆରି ହୋଇନାହିଁ।
+list-search-not-ready = ସନ୍ଧାନ ପ୍ରସ୍ତୁତ ନାହିଁ: { $error }
 list-files-more = +{ $count }
 list-replied = ଆପଣ ଉତ୍ତର ଦେଇଛନ୍ତି
 
@@ -339,8 +341,20 @@ list-empty-tab = { $tab }ରେ କୌଣସି ମେଲ ନାହିଁ।
 list-empty-tab-unknown = ଏହି ଟାବରେ କୌଣସି ମେଲ ନାହିଁ।
 list-empty-folder = { $folder }ରେ କୌଣସି ମେସେଜ ନାହିଁ।
 list-empty-folder-unknown = ଏହି ଫୋଲ୍ଡରରେ କୌଣସି ମେସେଜ ନାହିଁ।
+list-empty-waiting = ଉତ୍ତର ପାଇଁ କିଛି ଅପେକ୍ଷା କରୁନାହିଁ।
+list-empty-reminders = କୌଣସି ସ୍ମାରକ ନାହିଁ। ଯୋଗ କରିବାକୁ ଏକ ମେଲରେ H ଦବାନ୍ତୁ।
 list-first-sync = ଆପଣଙ୍କ ମେଲ ଅଣାଯାଉଛି…
 list-first-sync-detail = ଏହା ଆସିବା ସହ ଏଠାରେ ଦେଖାଯିବ।
+list-store-unreadable = ମେଲ ଷ୍ଟୋର ଖୋଲିହେଲା ନାହିଁ
+
+## Mail list: lines
+
+row-no-subject = (କୌଣସି ବିଷୟ ନାହିଁ)
+row-unknown-sender = (ଅଜଣା ପ୍ରେରକ)
+row-to = ପ୍ରାପକ:
+row-no-recipients = (କୌଣସି ପ୍ରାପକ ନାହିଁ)
+row-names-separator = {", "}
+row-me = ମୁଁ
 
 ## Mail list: lines
 
@@ -358,6 +372,14 @@ row-tracking-clicked = { $recipients } ଜଣଙ୍କ ମଧ୍ୟରୁ { $ope
 row-pin = ଉପରେ ପିନ କରନ୍ତୁ
 row-unpin = ଅନପିନ କରନ୍ତୁ
 row-snoozed-until = { $when } ପର୍ଯ୍ୟନ୍ତ ସ୍ନୁଜ କରାଯାଇଛି
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = ଆଜି
+snoozed-group-tomorrow = କାଲି
+snoozed-group-this-week = ଏହି ସପ୍ତାହ
+snoozed-group-later = ପରେ
+row-follow-up-step = { $steps }ରୁ { $step } ଫଲୋ-ଅପ · { $date }
+row-follow-up-waiting = ଫଲୋ-ଅପ ଅପେକ୍ଷାରେ
+row-reminder = ସ୍ମାରକ { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -380,6 +402,7 @@ menu-not-important = ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ନୁହେଁ 
 menu-pin = ଉପରେ ପିନ କରନ୍ତୁ
 menu-unpin = ଅନପିନ କରନ୍ତୁ
 menu-snooze = ସ୍ନୁଜ କରନ୍ତୁ
+menu-remind = ମୋତେ ମନେ ପକାଇଦିଅନ୍ତୁ
 menu-unsnooze = ସ୍ନୁଜ ହଟାନ୍ତୁ
 menu-add-to-tasks = କାର୍ଯ୍ୟରେ ଯୋଗ କରନ୍ତୁ
 menu-schedule-meeting = ବୈଠକ ନିର୍ଦ୍ଧାରଣ କରନ୍ତୁ
@@ -395,7 +418,34 @@ menu-follow-up = ଫଲୋ ଅପ
 # Pin to top.
 menu-more = ଅଧିକ
 menu-move-to-heading = ଏଠାକୁ ଘୁଞ୍ଚାନ୍ତୁ:
+menu-move-to-search = ଏଠାକୁ ଘୁଞ୍ଚାନ୍ତୁ…
+menu-label-as = ଲେବଲ ଦିଅନ୍ତୁ
+menu-label-as-search = ଲେବଲ ଦିଅନ୍ତୁ…
+menu-no-folder = “{ $name }” ନାମରେ କୌଣସି ଫୋଲ୍ଡର ନାହିଁ
+menu-no-label = “{ $name }” ନାମରେ କୌଣସି ଲେବଲ ନାହିଁ
+menu-create-folder = “{ $name }” ତିଆରି କରନ୍ତୁ
+menu-always-move = { $name }ଙ୍କ ମେଲ ସବୁବେଳେ ଏଠାକୁ ଘୁଞ୍ଚାନ୍ତୁ
+toast-always-move-failed = ମେଲ ଘୁଞ୍ଚାଗଲା, କିନ୍ତୁ ନିୟମ ତିଆରି ହେଲା ନାହିଁ: { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+        [one] { $count }ଟି ବାର୍ତ୍ତାଳାପ
+       *[other] { $count }ଟି ବାର୍ତ୍ତାଳାପ
+    }
+   *[message] { $count ->
+        [one] { $count }ଟି ମେସେଜ
+       *[other] { $count }ଟି ମେସେଜ
+    }
+}
 menu-find-from = { $name }ଙ୍କଠାରୁ ଇମେଲ ଖୋଜନ୍ତୁ
+menu-make-rule = ଏକ ନିୟମ ତିଆରି କରନ୍ତୁ…
+
+## Snackbar after an action on mail in the list
+
+toast-key-imported = କି' ଇମ୍ପୋର୍ଟ ହେଲା
+toast-key-updated = ଏହି କି' ଆପଣଙ୍କ ପାଖରେ ପୂର୍ବରୁ ଥିଲା; ଏବେ ଏହା ଅପଡେଟ ହୋଇଛି
+toast-key-removed = କି' କାଢ଼ାଗଲା
+toast-key-not-removed = କି'ଟି କାଢ଼ିହେଲା ନାହିଁ
+toast-fingerprint-copied = ଫିଙ୍ଗରପ୍ରିଣ୍ଟ କପି ହେଲା
 
 ## Snackbar after an action on mail in the list
 
@@ -429,6 +479,8 @@ toast-moved = { $kind ->
        *[other] { $count }ଟି ମେସେଜ ଘୁଞ୍ଚାଗଲା।
     }
 }
+toast-label-added = “{ $label }” ଲେବଲ ଯୋଗ ହେଲା।
+toast-label-removed = “{ $label }” ଲେବଲ କାଢ଼ାଗଲା।
 toast-starred = { $kind ->
     [conversation] { $count ->
         [one] ବାର୍ତ୍ତାଳାପ ତାରାଙ୍କିତ କରାଗଲା।

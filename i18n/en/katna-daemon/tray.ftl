@@ -28,3 +28,13 @@ tray-unread = { $count ->
     [one] { $count } unread message
    *[other] { $count } unread messages
 }
+
+# Lines under that one, while something needs the user.
+tray-password-refused = New password needed for { $address }
+tray-signed-out = Sign in again to { $address }
+# From three accounts.
+tray-accounts-need-you = { $count } accounts need you
+tray-not-sent = { $count ->
+    [one] { $count } message wasn't sent
+   *[other] { $count } messages weren't sent
+}

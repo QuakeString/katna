@@ -18,6 +18,8 @@ administrator rights, on Windows 10 (version 1903 or later) and 11.
   ticked, which uses `release` as the Arch package does.
 - `katna.ico` is made from the hicolor PNGs by `make-ico.py`; run it again
   when the icon changes.
+- The same workflow builds `KatnaMail.msix`, the Microsoft Store package
+  (`store/README.md`).
 
 Setup installs for the current user into `%LOCALAPPDATA%\Programs\Katna`
 (no administrator) or for everyone into `%ProgramFiles%\Katna`, into a

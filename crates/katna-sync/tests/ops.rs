@@ -324,6 +324,11 @@ fn refused_changes_are_retried_then_undone() {
     );
     let report = replay(&server, &mut store, account, NOW + 2 * RETRY_AFTER);
     assert_eq!(report.failed, 2);
+    // Said to the user as what they did.
+    let mut changes: Vec<_> = report.refused.iter().map(|r| r.change).collect();
+    changes.sort_by_key(|c| c.as_str());
+    assert_eq!(changes, [ops::Change::Flags, ops::Change::Move]);
+    assert!(report.refused.iter().all(|r| !r.reason.is_empty()));
     assert_eq!(store.next_op_due(account).unwrap(), None);
 
     // The move is undone at once; the flag with the next sync.
@@ -331,6 +336,27 @@ fn refused_changes_are_retried_then_undone() {
     assert!(store.messages_in_folder(archive).unwrap().is_empty());
     sync(&server, &mut store, account);
     assert_eq!(flags_of(&store, first), MessageFlags::empty());
+}
+
+#[test]
+fn a_refused_move_undone_after_a_sync_shows_the_message_once() {
+    let (_tmp, mut store, account, server) = setup_synced();
+    let (inbox, archive) = (
+        folder(&store, account, "INBOX"),
+        folder(&store, account, "Archive"),
+    );
+    let second = message_at(&store, inbox, 1);
+    server.state().refuse_changes = true;
+    ops::move_messages(&mut store, &[second], archive).unwrap();
+    for n in 0..3 {
+        replay(&server, &mut store, account, NOW + n * RETRY_AFTER);
+        // The server still has it in the inbox while the move waits.
+        sync(&server, &mut store, account);
+    }
+    assert_eq!(store.next_op_due(account).unwrap(), None);
+    assert_eq!(store.folder_uids(inbox).unwrap(), [1, 2]);
+    assert_eq!(store.messages_in_folder(inbox).unwrap().len(), 2);
+    assert!(store.messages_in_folder(archive).unwrap().is_empty());
 }
 
 #[test]

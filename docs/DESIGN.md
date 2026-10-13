@@ -36,6 +36,13 @@ medium, semibold, bold.
 7%, pressed 14%, selected 10% (12% dark), dragged 16%, disabled 38%.
 Separating lines are a quarter of an edge's strength.
 
+**Status colours:** `Theme::error` (red) is for errors and destructive
+actions. `Theme::warning` (amber: light `#A05A00`, dark `#FDD663`) means
+"needs you": a problem only the user can fix, such as an account Google
+signed out or mail that can't go. With Colours = System it follows the
+desktop's warning colour (KDE's `ForegroundNeutral`, libadwaita's
+`warning_color`) as error follows its negative one.
+
 **Lines:** `faint` (today's `th.divider`, `th.faint_line`) separates;
 `edge` (today's `th.outline`) outlines what can be clicked or typed in:
 fields and chips; outlined and pill buttons keep their stronger edge
@@ -53,10 +60,15 @@ keeps one 0,1 / blur 3 shadow at 30%.
 | Level | Used for | Dark (#448) | Light |
 | --- | --- | --- | --- |
 | 0 Page | the page | page colour | page colour |
-| 1 Card | list, open mail, contact card, agenda | surface, one soft shadow | white, `card_edge` ring + short shadow |
+| 1 Card | list, open mail, contact card, agenda, every app page, Settings | surface, one soft shadow | white, `card_edge` ring + short shadow |
 | 2 Float | floating buttons, dragging | `raised` + rim | white, edge + short shadow |
 | 3 Menu | menus, dialogs (`widgets::dialog`) | `menu` + rim | white, edge + shadow |
 | 4 Popover | notched popovers (`notched::popover`), the tour | `menu` + rim | white, edge + deeper shadow |
+
+A tile (`widgets::tile`) rests at level 1 at full strength; a file card
+rises to level 2 under the pointer in `FAST` (`widgets::tile_lift`), and
+the buttons on its corners are level 2 on frosted glass
+(`attachments::Lifted`).
 
 **Motion:** a hover never switches on at once: round and pill
 buttons carry `katna_ui::Glow`, and any other box that tints on hover
@@ -69,6 +81,9 @@ through `motion::time`, so Settings > Appearance > Animation speed
 50-200%) stretches them all. Reduce motion (the desktop's, or always or
 never in Settings) sets GPUI's `reduce_motion`: `with_animation`,
 `with_spring` and `Spring::tick` then jump to the end.
+A press ripple (`katna_ui::Ripple`) fills the whole control: it takes
+the control's own corners (`rounded`, `corners`) and, on a control with an
+edge, reaches out under it (`border`).
 A menu fades out in `FAST` when it closes, out of reach while it fades
 (the right-click menu keeps itself, marked closing, until the fade ends;
 a toolbar menu is noted as it closes, by `track_menu_fade`, and
@@ -95,12 +110,16 @@ pill), `row` (a clickable line: 40 px at least, `SM`, hover, the
 selected tint while open, ripple; `ticked_row` has the ticked tint and
 `count_pill` a count at its end), `field` and `line_field` (an edge at rest, a 2 px
 accent ring inside it while it has the keys; 40 px for one line), menu
-and menu item, switch,
+and menu item, `switch` (36 × 20: a 12 px track under a 20 px round thumb
+that stands out above and below it; off, a `text_dim` thumb with a minus on
+`switch_off`; on, an accent thumb with a check on `Theme::switch_on`),
 checkbox, radio, colour swatch and wheel, avatar, tooltip, snackbar, scroll
 bar, skeleton, `notched::popover` (opens at the click, notch, level 4,
 `LG`), `widgets::dialog` (level 3, `LG`, frosted), `widgets::card` (level
 1: rounds, fills through `pane` and adds `card_shadow`; the mail list, open
-mail, person card, agenda and Settings), `widgets::tile` (level 1 at full
+mail, person card, agenda; the card of every other app's page and of
+Settings comes from `MailWindow::page_frame`, which adds the faint line
+as Mail's cards have), `widgets::tile` (level 1 at full
 strength, `MD`, `th.surface`: a file, folder, attachment, invitation,
 summary, inline reply or mail service to pick; a clickable one adds
 `tile_hover` first). A card or tile never draws its own outline

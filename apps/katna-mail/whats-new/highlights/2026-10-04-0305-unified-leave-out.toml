@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Leave an inbox out of All Accounts"
+text = """
+Right-click an account's inbox under All Accounts and pick Leave out of
+unified Inbox: its mail stops filling the unified Inbox, but the row stays
+and opens that inbox. Click its eye to bring it back. In Settings > Inbox
+you can take a whole account out of All Accounts too.
+"""

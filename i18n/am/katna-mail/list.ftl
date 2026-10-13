@@ -38,6 +38,8 @@ list-range-about = { $first }–{ $last } ከ{ $total } ገደማ
 list-results = የ«{ $query }» ውጤቶች
 list-results-corrected = የ«{ $query }» ውጤቶችን በማሳየት ላይ
 list-search-instead = በምትኩ «{ $query }»ን ፈልግ
+list-search-no-index = ፍለጋ ዝግጁ አይደለም፦ ማውጫው እስካሁን አልተገነባም።
+list-search-not-ready = ፍለጋ ዝግጁ አይደለም፦ { $error }
 list-files-more = +{ $count }
 list-replied = መልሰዋል
 
@@ -339,8 +341,17 @@ list-empty-tab = በ{ $tab } ውስጥ ምንም ደብዳቤ የለም።
 list-empty-tab-unknown = በዚህ ትር ውስጥ ምንም ደብዳቤ የለም።
 list-empty-folder = በ{ $folder } ውስጥ ምንም መልዕክት የለም።
 list-empty-folder-unknown = በዚህ አቃፊ ውስጥ ምንም መልዕክት የለም።
+list-empty-waiting = ምላሽ የሚጠብቅ ምንም ነገር የለም።
+list-empty-reminders = ምንም አስታዋሽ የለም። አንድ ለማከል በደብዳቤ ላይ H ይጫኑ።
 list-first-sync = ደብዳቤዎን በማምጣት ላይ…
 list-first-sync-detail = ሲደርስ እዚህ ይታያል።
+list-store-unreadable = የደብዳቤ ማከማቻውን መክፈት አልተቻለም
+row-no-subject = (ርዕሰ ጉዳይ የለም)
+row-unknown-sender = (ያልታወቀ ላኪ)
+row-to = ለ፦
+row-no-recipients = (ተቀባዮች የሉም)
+row-names-separator = {"፣ "}
+row-me = እኔ
 
 ## Mail list: lines
 
@@ -358,6 +369,14 @@ row-tracking-clicked = ከ{ $recipients } ውስጥ በ{ $opened } ተከፍቷ�
 row-pin = ከላይ ሰካ
 row-unpin = ንቀል
 row-snoozed-until = እስከ { $when } አሸልቧል
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = ዛሬ
+snoozed-group-tomorrow = ነገ
+snoozed-group-this-week = በዚህ ሳምንት
+snoozed-group-later = በኋላ
+row-follow-up-step = ክትትል { $step } ከ{ $steps } · { $date }
+row-follow-up-waiting = ክትትል በመጠበቅ ላይ
+row-reminder = አስታዋሽ { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -380,6 +399,7 @@ menu-not-important = አስፈላጊ እንዳልሆነ ምልክት አድር�
 menu-pin = ከላይ ሰካ
 menu-unpin = ንቀል
 menu-snooze = አሸልብ
+menu-remind = አስታውሰኝ
 menu-unsnooze = ማሸለብ ሰርዝ
 menu-add-to-tasks = ወደ ተግባራት አክል
 menu-schedule-meeting = ስብሰባ መርሐግብር አውጣ
@@ -395,7 +415,31 @@ menu-follow-up = ክትትል
 # Pin to top.
 menu-more = ተጨማሪ
 menu-move-to-heading = ውሰድ ወደ፦
+menu-move-to-search = ውሰድ ወደ…
+menu-label-as = መሰየሚያ ስጥ
+menu-label-as-search = መሰየሚያ ስጥ…
+menu-no-folder = «{ $name }» የሚባል አቃፊ የለም
+menu-no-label = «{ $name }» የሚባል መሰየሚያ የለም
+menu-create-folder = «{ $name }» ፍጠር
+menu-always-move = ከ{ $name } የሚመጣን ደብዳቤ ሁልጊዜ ወደዚህ ውሰድ
+toast-always-move-failed = ደብዳቤው ተወስዷል፣ ግን ደንቡ አልተፈጠረም፦ { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } ውይይት
+       *[other] { $count } ውይይቶች
+    }
+   *[message] { $count ->
+        [one] { $count } መልዕክት
+       *[other] { $count } መልዕክቶች
+    }
+}
 menu-find-from = ከ{ $name } የመጡ ኢሜይሎችን ፈልግ
+menu-make-rule = ደንብ ፍጠር…
+toast-key-imported = ቁልፉ ገብቷል
+toast-key-updated = ይህ ቁልፍ አስቀድሞ ነበረዎት፤ አሁን የተዘመነ ነው
+toast-key-removed = ቁልፉ ተወግዷል
+toast-key-not-removed = ቁልፉን ማስወገድ አልተቻለም
+toast-fingerprint-copied = የጣት አሻራው ተቀድቷል
 
 ## Snackbar after an action on mail in the list
 
@@ -429,6 +473,8 @@ toast-moved = { $kind ->
        *[other] { $count } መልዕክቶች ተወስደዋል።
     }
 }
+toast-label-added = መሰየሚያ «{ $label }» ታክሏል።
+toast-label-removed = መሰየሚያ «{ $label }» ተወግዷል።
 toast-starred = { $kind ->
     [conversation] { $count ->
         [one] ውይይቱ ኮከብ ተደርጎበታል።

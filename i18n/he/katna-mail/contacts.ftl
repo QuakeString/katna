@@ -34,7 +34,7 @@ contacts-account-signed-in = התחברת שוב אל { $address }. אנשי ה�
 contacts-account-sign-in-refused = { $provider } לא הכניס את Katna. יש לנסות שוב ולאשר גישה לאנשי הקשר שלך.
 contacts-account-password = השרת לא קיבל את הסיסמה. Yahoo, iCloud, Zoho ואחרים דורשים סיסמה לאפליקציה.
 contacts-account-change-password = שינוי סיסמה
-contacts-account-change-password-tooltip = פתיחת הגדרות > חשבונות
+contacts-account-change-password-tooltip = יש להקליד את הסיסמה החדשה; Katna בודקת אותה מול השרת
 contacts-account-failed = לא ניתן היה לקרוא את אנשי הקשר.
 # $reason is the server's own words, in English.
 contacts-account-error = לא ניתן היה לקרוא את אנשי הקשר: { $reason }

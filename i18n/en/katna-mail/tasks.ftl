@@ -30,7 +30,7 @@ tasks-account-signed-in = Signed in to { $address } again. Getting your tasks…
 tasks-account-sign-in-refused = { $provider } did not let Katna in. Try again, and allow access to your tasks.
 tasks-account-refused = The server did not accept the password. Yahoo, iCloud, Zoho and others need an app password.
 tasks-account-change-password = Change password
-tasks-account-change-password-tooltip = Open Settings > Accounts
+tasks-account-change-password-tooltip = Type the new password; Katna checks it with the server
 tasks-account-not-enabled = Task access for Katna is not switched on yet.
 tasks-account-failed = The task lists could not be read.
 # $reason is the server's own words, in English.

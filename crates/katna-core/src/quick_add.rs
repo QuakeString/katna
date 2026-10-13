@@ -13,7 +13,7 @@
 //! typed.
 
 use jiff::ToSpan;
-use jiff::civil::{Date, Time, Weekday};
+use jiff::civil::{Date, DateTime, Time, Weekday};
 
 /// What a typed title says.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
@@ -85,6 +85,10 @@ pub struct Words {
     pub weekday_word: &'static [&'static str],
     /// Between weekdays ("every Mon and Thu").
     pub and: &'static [&'static str],
+    /// Before the day something is due, in a mail ("by Friday").
+    pub due: &'static [&'static str],
+    /// Before a time from now ("in 2 hours").
+    pub in_: &'static [&'static str],
 }
 
 impl Words {
@@ -139,6 +143,8 @@ impl Words {
         year_units: &["year", "years"],
         weekday_word: &["weekday", "weekdays", "workday", "workdays"],
         and: &["and", "&", "+"],
+        due: &["by", "before", "due", "until"],
+        in_: &["in"],
     };
 
     /// The table for `language` (a BCP 47 tag, "en-IN"), English when
@@ -543,6 +549,91 @@ pub fn parse(text: &str, today: Date, words: &Words) -> Typed {
     typed
 }
 
+/// The first day `text` (a mail) says something is due by, on or after
+/// `today`: "please send it by Friday", "due on 12 October".
+pub fn due_in(text: &str, today: Date, words: &Words) -> Option<Date> {
+    let original: Vec<&str> = text.split_whitespace().collect();
+    original.iter().enumerate().find_map(|(ix, word)| {
+        let word = word
+            .trim_matches(|c: char| !c.is_alphanumeric())
+            .to_lowercase();
+        if !words.due.contains(&word.as_str()) {
+            return None;
+        }
+        // The few words after it, up to the end of the sentence.
+        let mut phrase = Vec::new();
+        for next in original.iter().skip(ix + 1).take(4) {
+            let end = next.ends_with(['.', '!', '?', ';', ',']);
+            phrase.push(next.trim_end_matches(['.', '!', '?', ';', ',']));
+            if end {
+                break;
+            }
+        }
+        let day = parse(&phrase.join(" "), today, words).day?;
+        (day >= today).then_some(day)
+    })
+}
+
+/// The moment typed `text` names, after `now`: "in 2 hours", "in 3
+/// days", "tue 3pm", "tomorrow", "oct 12 9:30". A day without a time is at
+/// `morning`; a time without a day is today, or tomorrow once it has
+/// passed.
+pub fn moment(text: &str, now: DateTime, morning: Time, words: &Words) -> Option<DateTime> {
+    let lower = text.trim().to_lowercase();
+    let mut parts = lower.split_whitespace();
+    if let Some(first) = parts.next()
+        && words.in_.contains(&first)
+    {
+        let rest: Vec<&str> = parts.collect();
+        let (number, unit) = match rest[..] {
+            [number, unit] => (number, unit),
+            [joined] => {
+                let split = joined.find(|c: char| c.is_alphabetic())?;
+                joined.split_at(split)
+            }
+            _ => return None,
+        };
+        let number: i64 = match number {
+            "a" | "an" => 1,
+            number => number.parse().ok()?,
+        };
+        let span = if words.minutes.contains(&unit) {
+            number.minutes()
+        } else if words.hours.contains(&unit) {
+            number.hours()
+        } else if words.day_units.contains(&unit) {
+            number.days()
+        } else if words.week_units.contains(&unit) {
+            number.weeks()
+        } else {
+            return None;
+        };
+        return (number > 0).then(|| now.checked_add(span).ok()).flatten();
+    }
+    let typed = parse(text, now.date(), words);
+    let at = match (typed.day, typed.start) {
+        (None, None) => return None,
+        (Some(day), start) => day.to_datetime(start.unwrap_or(morning)),
+        (None, Some(start)) => {
+            let today = now.date().to_datetime(start);
+            if today > now {
+                today
+            } else {
+                now.date().tomorrow().ok()?.to_datetime(start)
+            }
+        }
+    };
+    if at > now {
+        return Some(at);
+    }
+    // "tue 3pm" typed on a Tuesday after 3: next week's.
+    let weekday = lower
+        .split_whitespace()
+        .any(|w| w.len() >= 3 && words.weekdays.iter().any(|day| day.starts_with(w)));
+    let later = at.checked_add(1.week()).ok()?;
+    (weekday && at.date() == now.date() && later > now).then_some(later)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -559,6 +650,26 @@ mod tests {
 
     fn t(h: i8, m: i8) -> Option<Time> {
         Some(Time::constant(h, m, 0, 0))
+    }
+
+    #[test]
+    fn reads_a_typed_moment() {
+        let now = today().at(15, 10, 0, 0);
+        let eight = Time::constant(8, 0, 0, 0);
+        let m = |text| moment(text, now, eight, &Words::ENGLISH);
+        assert_eq!(m("in 2 hours"), Some(today().at(17, 10, 0, 0)));
+        assert_eq!(m("in 30m"), Some(today().at(15, 40, 0, 0)));
+        assert_eq!(m("in 3 days"), Some(date(2026, 10, 2).at(15, 10, 0, 0)));
+        assert_eq!(m("in a week"), Some(date(2026, 10, 6).at(15, 10, 0, 0)));
+        assert_eq!(m("tue 3pm"), Some(date(2026, 10, 6).at(15, 0, 0, 0)));
+        assert_eq!(m("friday"), Some(date(2026, 10, 2).at(8, 0, 0, 0)));
+        assert_eq!(m("tomorrow 9:30"), Some(date(2026, 9, 30).at(9, 30, 0, 0)));
+        // A time that has passed today: tomorrow.
+        assert_eq!(m("2pm"), Some(date(2026, 9, 30).at(14, 0, 0, 0)));
+        assert_eq!(m("6pm"), Some(today().at(18, 0, 0, 0)));
+        assert_eq!(m("oct 12"), Some(date(2026, 10, 12).at(8, 0, 0, 0)));
+        assert_eq!(m("soon"), None);
+        assert_eq!(m("in 0 hours"), None);
     }
 
     #[test]
@@ -656,5 +767,25 @@ mod tests {
         let typed = en("Read a book");
         assert_eq!(typed.title, "Read a book");
         assert!(!typed.found());
+    }
+
+    #[test]
+    fn reads_when_a_mail_says_something_is_due() {
+        let due = |text: &str| due_in(text, today(), &Words::ENGLISH);
+        // Today is Tuesday 29 September.
+        assert_eq!(
+            due("Please send the signed copy by Friday. Thanks!"),
+            Some(date(2026, 10, 2))
+        );
+        assert_eq!(
+            due("The invoice is due on 12 October"),
+            Some(date(2026, 10, 12))
+        );
+        assert_eq!(
+            due("Can you reply before tomorrow?"),
+            Some(date(2026, 9, 30))
+        );
+        assert_eq!(due("Stand by for news. Lunch tomorrow?"), None);
+        assert_eq!(due("No dates here"), None);
     }
 }

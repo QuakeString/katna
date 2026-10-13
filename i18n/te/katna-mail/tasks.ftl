@@ -7,8 +7,11 @@
 tasks-create = కొత్త టాస్క్
 tasks-all = అన్ని టాస్క్‌లు
 tasks-today = ఈరోజు
+tasks-upcoming = రాబోయేవి
 tasks-starred = నక్షత్రం ఉంచినవి
+tasks-completed-view = పూర్తయినవి
 tasks-new-list = కొత్త జాబితాను సృష్టించండి
+tasks-labels-heading = లేబుల్‌లు
 tasks-on-this-computer = ఈ కంప్యూటర్‌లో
 tasks-my-tasks = నా టాస్క్‌లు
 tasks-account-sign-in = టాస్క్‌లను చూపడానికి మళ్లీ సైన్ ఇన్ చేయండి
@@ -16,7 +19,7 @@ tasks-account-signed-in = { $address }కు మళ్లీ సైన్ ఇన
 tasks-account-sign-in-refused = { $provider } Katnaను లోపలికి అనుమతించలేదు. మళ్లీ ట్రై చేసి, మీ టాస్క్‌లకు యాక్సెస్ అనుమతించండి.
 tasks-account-refused = సర్వర్ పాస్‌వర్డ్‌ను అంగీకరించలేదు. Yahoo, iCloud, Zoho మరియు ఇతరాలకు యాప్ పాస్‌వర్డ్ అవసరం.
 tasks-account-change-password = పాస్‌వర్డ్ మార్చండి
-tasks-account-change-password-tooltip = సెట్టింగ్‌లు > ఖాతాలు తెరవండి
+tasks-account-change-password-tooltip = కొత్త పాస్‌వర్డ్‌ను టైప్ చేయండి; Katna దాన్ని సర్వర్‌తో చెక్ చేస్తుంది
 tasks-account-not-enabled = Katna కోసం టాస్క్ యాక్సెస్ ఇంకా ఆన్ చేయబడలేదు.
 tasks-account-failed = టాస్క్ జాబితాలను చదవలేకపోయాము.
 tasks-account-error = టాస్క్ జాబితాలను చదవలేకపోయాము: { $reason }
@@ -41,7 +44,14 @@ tasks-title-placeholder = శీర్షిక
 tasks-add-step = సబ్‌టాస్క్‌ను జోడించండి
 tasks-empty = ఇంకా టాస్క్‌లు లేవు. పైన ఒకదాన్ని జోడించండి.
 tasks-starred-empty = ఇక్కడ చూడటానికి ఒక టాస్క్‌కు నక్షత్రం ఉంచండి.
+tasks-label-empty = ఈ లేబుల్‌తో తెరిచి ఉన్న టాస్క్‌లు లేవు.
 tasks-today-empty = ఈరోజుకు ఏమీ లేదు.
+tasks-completed-empty = మీరు పూర్తి చేసిన టాస్క్‌లు ఇక్కడ కనిపిస్తాయి.
+tasks-upcoming-add = { $day }కు టాస్క్‌ను జోడించండి
+tasks-upcoming-overdue-day = { $weekday } { $day }
+tasks-from-mail-quiet = మెయిల్ నుండి
+tasks-from-note-quiet = గమనిక నుండి
+tasks-steps-done = { $done }/{ $count }
 tasks-today-date = { $weekday }, { $day }
 tasks-overdue = గడువు దాటినవి
 tasks-completed = { $count ->
@@ -49,6 +59,11 @@ tasks-completed = { $count ->
    *[other] పూర్తయినవి ({ $count })
 }
 tasks-list-options = జాబితా ఎంపికలు
+tasks-sort-by = దీని ప్రకారం క్రమబద్ధీకరించండి
+tasks-sort-my-order = నా క్రమం
+tasks-sort-date = తేదీ
+tasks-sort-starred = ఇటీవల నక్షత్రం ఉంచినవి
+tasks-sort-title = శీర్షిక
 tasks-rename-list = జాబితా పేరు మార్చండి
 tasks-delete-list = జాబితాను తొలగించండి
 tasks-mark-done = పూర్తయినట్లు గుర్తించండి
@@ -65,6 +80,17 @@ tasks-from-note = గమనిక
 tasks-open-note = గమనికను తెరవండి
 tasks-note-gone = ఆ గమనిక ఇకపై ఇక్కడ లేదు.
 tasks-no-subject = (సబ్జెక్ట్ లేదు)
+
+## Several tasks selected (Ctrl+click, Shift+click)
+
+tasks-selected = { $count ->
+    [one] { $count } ఎంచుకోబడింది
+   *[other] { $count } ఎంచుకోబడ్డాయి
+}
+tasks-select-clear = ఎంపికను క్లియర్ చేయండి
+tasks-select-move = లిస్ట్‌కు తరలించండి
+tasks-select-date = తేదీని సెట్ చేయండి
+tasks-next-week = వచ్చే వారం
 
 ## The details dialog
 
@@ -85,6 +111,13 @@ tasks-remind-on-time = ఆ సమయంలో
 tasks-remind-morning = ఆ రోజున, { $time }
 tasks-remind-hour-before = ఒక గంట ముందు
 tasks-remind-day-before = ఒక రోజు ముందు
+tasks-label-add = లేబుల్ జోడించండి
+tasks-label-task = టాస్క్‌కు లేబుల్ వేయండి
+tasks-files-attach = ఫైల్‌లను అటాచ్ చేయండి
+tasks-files-pick = అటాచ్ చేయండి
+tasks-file-open = తెరవండి
+tasks-file-remove = ఫైల్‌ను తీసివేయండి
+tasks-file-here = ఈ కంప్యూటర్‌లో మాత్రమే
 tasks-cancel = రద్దు చేయండి
 tasks-save = సేవ్ చేయండి
 tasks-not-a-time = “{ $text }” సమయం కాదు, ఉదాహరణకు { $example }.
@@ -101,6 +134,13 @@ tasks-due-at = { $day }, { $time }
 tasks-toast-done = టాస్క్ పూర్తయింది
 tasks-toast-next = పూర్తయింది. తదుపరిది { $date } న
 tasks-toast-deleted = టాస్క్ తొలగించబడింది
+tasks-files-added = { $count ->
+    [one] ఫైల్ అటాచ్ చేయబడింది
+   *[other] { $count } ఫైల్‌లు అటాచ్ చేయబడ్డాయి
+}
+tasks-file-removed = “{ $name }” తీసివేయబడింది
+tasks-files-left-out = అటాచ్ కాలేదు: { $names }. టాస్క్‌కు { $limit } వరకు ఉన్న ఫైల్‌లను మాత్రమే జోడించవచ్చు, ఫోల్డర్‌లను కాదు.
+tasks-file-missing = ఆ ఫైల్ ఇప్పుడు ఇక్కడ లేదు.
 tasks-toast-added = { $count ->
     [one] టాస్క్‌లకు జోడించబడింది
    *[other] { $count } టాస్క్‌లు జోడించబడ్డాయి
@@ -110,3 +150,27 @@ tasks-toast-list-deleted = జాబితా తొలగించబడిం�
 tasks-toast-moved = { $list }కు తరలించబడింది
 tasks-toast-placed = టాస్క్ తరలించబడింది
 tasks-toast-rescheduled = టాస్క్ సమయం మార్చబడింది
+tasks-toast-rescheduled-several = { $count ->
+    [one] టాస్క్ రీషెడ్యూల్ చేయబడింది
+   *[other] { $count } టాస్క్‌లు రీషెడ్యూల్ చేయబడ్డాయి
+}
+tasks-toast-done-several = { $count ->
+    [one] టాస్క్ పూర్తయింది
+   *[other] { $count } టాస్క్‌లు పూర్తయ్యాయి
+}
+tasks-toast-open-several = { $count ->
+    [one] టాస్క్ పూర్తి కానిదిగా గుర్తు పెట్టబడింది
+   *[other] { $count } టాస్క్‌లు పూర్తి కానివిగా గుర్తు పెట్టబడ్డాయి
+}
+tasks-toast-starred = { $count ->
+    [one] టాస్క్‌కు నక్షత్రం ఉంచబడింది
+   *[other] { $count } టాస్క్‌లకు నక్షత్రం ఉంచబడింది
+}
+tasks-toast-unstarred = { $count ->
+    [one] నక్షత్రం తీసివేయబడింది
+   *[other] { $count } టాస్క్‌ల నుండి నక్షత్రాలు తీసివేయబడ్డాయి
+}
+tasks-toast-deleted-several = { $count ->
+    [one] టాస్క్ తొలగించబడింది
+   *[other] { $count } టాస్క్‌లు తొలగించబడ్డాయి
+}

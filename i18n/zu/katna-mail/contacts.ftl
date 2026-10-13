@@ -34,7 +34,7 @@ contacts-account-signed-in = Ungene futhi ku-{ $address }. Kutholwa oxhumana nab
 contacts-account-sign-in-refused = I-{ $provider } ayizange ivumele i-Katna ingene. Zama futhi, bese uvumela ukufinyelela koxhumana nabo.
 contacts-account-password = Iseva ayizange yamukele iphasiwedi. I-Yahoo, i-iCloud, i-Zoho nabanye badinga iphasiwedi yohlelo lokusebenza.
 contacts-account-change-password = Shintsha iphasiwedi
-contacts-account-change-password-tooltip = Vula Izilungiselelo > Ama-akhawunti
+contacts-account-change-password-tooltip = Thayipha iphasiwedi entsha; i-Katna iyayihlola neseva
 contacts-account-failed = Oxhumana nabo abakwazanga ukufundwa.
 # $reason is the server's own words, in English.
 contacts-account-error = Oxhumana nabo abakwazanga ukufundwa: { $reason }

@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "The subject scrolls with the mail again"
+text = """
+In the mail view the subject scrolls away with the mails again, under a
+plain toolbar. In the chat view the toolbar joins the pinned header, so
+the bubbles slide under both, frosted when Blur is on. The mail list's top
+bar now keeps the card's rounded corners, and with Frosted headers off the
+rows no longer show through it. On a phone-sized window the bottom corners
+are round too.
+"""

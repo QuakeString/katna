@@ -6,6 +6,7 @@
 //! and the desktop's (`katna_platform::colors::DesktopScheme`); and the
 //! accent choices under them.
 
+use crate::widgets::Tip as _;
 use std::sync::Mutex;
 
 use gpui::{
@@ -372,10 +373,7 @@ impl MailWindow {
         let wheel = color_wheel("accent-wheel", custom, SWATCH + 6.0, th);
         self.page_control(wheel, th, cx)
             .relative()
-            .tooltip(crate::widgets::tip(
-                tr!("settings-appearance-accent-more"),
-                th,
-            ))
+            .tip(tr!("settings-appearance-accent-more"), th)
             .on_click(cx.listener(|this, _, window, cx| {
                 this.toggle_color_picker(Target::Accent, window, cx)
             }))

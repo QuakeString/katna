@@ -1,0 +1,6 @@
+title = "Keyboard shortcuts at a glance"
+text = """
+Help > Keyboard shortcuts, or the ? key, now shows every shortcut in a small
+window over your mail, with a box to find one. Keys are still changed in
+Settings > Shortcuts.
+"""

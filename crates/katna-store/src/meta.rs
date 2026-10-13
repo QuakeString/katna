@@ -5,7 +5,7 @@
 //! values their types and runs the scheduler in the daemon; this module
 //! only stores them.
 
-use katna_core::AccountId;
+use katna_core::{AccountId, MailCategory};
 use rusqlite::{OptionalExtension, params};
 
 use crate::Store;
@@ -165,22 +165,95 @@ impl Store {
             .optional()?)
     }
 
-    /// Whether the conversation of `message` has a message written after
-    /// it (another `Message-ID`, a later date): a reply, or a follow-up.
-    pub fn has_later_in_thread(&self, message: MessageId) -> Result<bool> {
-        Ok(self
-            .mail
-            .prepare_cached(
-                "SELECT EXISTS (
-                     SELECT 1 FROM message m JOIN message o ON o.thread_id = m.thread_id
-                     WHERE m.id = ?1 AND o.id <> m.id
-                       AND o.message_id_hdr IS NOT m.message_id_hdr
-                       AND o.date > m.date
-                       AND EXISTS (SELECT 1 FROM message_location l WHERE l.message_id = o.id)
-                 )",
-            )?
-            .query_row([message.0], |row| row.get(0))?)
+    /// The messages of the conversation of `message` written after it
+    /// (another `Message-ID`, a later date) that are in a folder, oldest
+    /// first: replies, or follow-ups.
+    pub fn later_in_thread(&self, message: MessageId) -> Result<Vec<LaterMessage>> {
+        let mut stmt = self.mail.prepare_cached(
+            "SELECT o.message_id_hdr, COALESCE(o.subject, ''), o.category
+             FROM message m JOIN message o ON o.thread_id = m.thread_id
+             WHERE m.id = ?1 AND o.id <> m.id
+               AND o.message_id_hdr IS NOT m.message_id_hdr
+               AND o.date > m.date
+               AND EXISTS (SELECT 1 FROM message_location l WHERE l.message_id = o.id)
+             ORDER BY o.date, o.id",
+        )?;
+        let rows = stmt.query_map([message.0], |row| {
+            Ok(LaterMessage {
+                message_id: row.get(0)?,
+                subject: row.get(1)?,
+                category: row
+                    .get::<_, Option<i64>>(2)?
+                    .and_then(MailCategory::from_storage),
+            })
+        })?;
+        Ok(rows.collect::<rusqlite::Result<_>>()?)
     }
+
+    /// The messages in a Sent folder dated from `from` to `to` (Unix
+    /// seconds), oldest first: where nudges look for questions with no
+    /// answer.
+    pub fn sent_between(&self, from: i64, to: i64) -> Result<Vec<MessageId>> {
+        let mut stmt = self.mail.prepare_cached(
+            "SELECT DISTINCT m.id
+             FROM message m
+             JOIN message_location l ON l.message_id = m.id
+             JOIN folder f ON f.id = l.folder_id
+             WHERE f.role = 'sent' AND m.date BETWEEN ?1 AND ?2
+             ORDER BY m.date, m.id",
+        )?;
+        let rows = stmt.query_map([from, to], |row| Ok(MessageId(row.get(0)?)))?;
+        Ok(rows.collect::<rusqlite::Result<_>>()?)
+    }
+
+    /// The newest message row: messages stored later have larger IDs.
+    pub fn newest_message(&self) -> Result<MessageId> {
+        Ok(MessageId(self.mail.query_row(
+            "SELECT COALESCE(MAX(id), 0) FROM message",
+            [],
+            |row| row.get(0),
+        )?))
+    }
+
+    /// The messages of the conversation of `message` stored after row
+    /// `after` ([`Store::newest_message`] then) that are in an Inbox,
+    /// oldest first: what brings a snoozed conversation back early.
+    pub fn arrived_in_inbox_after(
+        &self,
+        message: MessageId,
+        after: MessageId,
+    ) -> Result<Vec<LaterMessage>> {
+        let mut stmt = self.mail.prepare_cached(
+            "SELECT o.message_id_hdr, COALESCE(o.subject, ''), o.category
+             FROM message m JOIN message o ON o.thread_id = m.thread_id
+             WHERE m.id = ?1 AND o.id > ?2
+               AND o.message_id_hdr IS NOT m.message_id_hdr
+               AND EXISTS (SELECT 1 FROM message_location l
+                           JOIN folder f ON f.id = l.folder_id
+                           WHERE l.message_id = o.id AND f.role = 'inbox')
+             ORDER BY o.id",
+        )?;
+        let rows = stmt.query_map([message.0, after.0], |row| {
+            Ok(LaterMessage {
+                message_id: row.get(0)?,
+                subject: row.get(1)?,
+                category: row
+                    .get::<_, Option<i64>>(2)?
+                    .and_then(MailCategory::from_storage),
+            })
+        })?;
+        Ok(rows.collect::<rusqlite::Result<_>>()?)
+    }
+}
+
+/// A message later in a conversation ([`Store::later_in_thread`]).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct LaterMessage {
+    /// Its `Message-ID`, without angle brackets.
+    pub message_id: Option<String>,
+    pub subject: String,
+    /// Its inbox tab, if it was sorted into one.
+    pub category: Option<MailCategory>,
 }
 
 #[cfg(test)]
@@ -256,5 +329,71 @@ mod tests {
         drop(Store::open(&paths, Mode::ReadWrite).unwrap());
         let mut reader = Store::open(&paths, Mode::ReadOnly).unwrap();
         assert!(reader.set_meta("message", 1, "snooze", "{}", None).is_err());
+    }
+
+    #[test]
+    fn finds_what_reached_the_inbox_after_a_snooze() {
+        use crate::FolderRole;
+        use crate::mail::{Added, MessageFlags, NewMessage};
+        let (_dir, mut store) = store();
+        let account = store
+            .add_account(katna_core::AccountKind::Local, "a", "a@local")
+            .unwrap()
+            .id;
+        let mut batch = store.mail_batch().unwrap();
+        let inbox = batch
+            .upsert_folder(account, "INBOX", Some(FolderRole::Inbox))
+            .unwrap();
+        let sent = batch
+            .upsert_folder(account, "Sent", Some(FolderRole::Sent))
+            .unwrap();
+        let mut add = |folder, id: &str, reply: Option<&str>, date| {
+            let raw = format!("Message-ID: {id}\r\nSubject: Offer\r\n\r\nHi.\r\n");
+            let added = batch
+                .add_message(
+                    account,
+                    folder,
+                    &NewMessage {
+                        raw: raw.as_bytes(),
+                        message_id_hdr: Some(id),
+                        subject: Some("Offer"),
+                        date: Some(date),
+                        flags: MessageFlags::SEEN,
+                        has_attachments: false,
+                        list_id: None,
+                        snippet: None,
+                        participants: &[],
+                        in_reply_to: reply,
+                        references: &[],
+                        category: None,
+                    },
+                )
+                .unwrap();
+            let Added::Message(id) = added else {
+                unreachable!()
+            };
+            id
+        };
+        let first = add(inbox, "<1@x>", None, 100);
+        let earlier = add(inbox, "<2@x>", Some("<1@x>"), 200);
+        let mine = add(sent, "<3@x>", Some("<2@x>"), 300);
+        let newest = MessageId(mine.0);
+        let reply = add(inbox, "<4@x>", Some("<3@x>"), 400);
+        batch.commit().unwrap();
+        assert!(earlier.0 < newest.0 && newest.0 < reply.0);
+        // Only what came after the snooze, and only into the Inbox.
+        let after = store.arrived_in_inbox_after(first, newest).unwrap();
+        assert_eq!(after.len(), 1);
+        assert_eq!(after[0].message_id.as_deref(), Some("<4@x>"));
+        assert_eq!(store.newest_message().unwrap(), reply);
+        assert!(
+            store
+                .arrived_in_inbox_after(first, reply)
+                .unwrap()
+                .is_empty()
+        );
+        // Sent mail by its date, for nudges.
+        assert_eq!(store.sent_between(250, 350).unwrap(), vec![mine]);
+        assert!(store.sent_between(0, 250).unwrap().is_empty());
     }
 }

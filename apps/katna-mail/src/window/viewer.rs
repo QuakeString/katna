@@ -22,6 +22,7 @@
 mod markup;
 mod office;
 
+use crate::widgets::Tip as _;
 use std::collections::HashMap;
 use std::rc::Rc;
 use std::sync::Arc;
@@ -50,7 +51,7 @@ use super::attachments::{Item, bitmap, kind_badge};
 use super::select::{self, Key, Marker, SelectHost, TextSelection};
 use crate::format;
 use crate::theme::Theme;
-use crate::widgets::{icon, tip};
+use crate::widgets::icon;
 
 /// Zoom steps; 1 fits the page (or picture) to the window.
 const ZOOMS: [f32; 12] = [
@@ -1126,7 +1127,7 @@ impl Viewer {
             _ => self.scroll.bounds(),
         };
         let page = (unpx(view.size.height) - LINE_SCROLL).max(LINE_SCROLL);
-        match keystroke.key.as_str() {
+        match katna_ui::direction::arrow(&keystroke.key, katna_ui::direction::is_rtl(window)) {
             "escape" if self.more_at.is_some() => {
                 self.more_at = None;
                 cx.notify();
@@ -1288,7 +1289,7 @@ fn page_arrows(th: &Theme, cx: &mut Context<Viewer>) -> impl IntoElement {
             .rounded(px(3.0))
             .cursor_pointer()
             .hover(|s| s.bg(rgba(0xffffff33)))
-            .tooltip(tip(tip_id, th))
+            .tip(tip_id, th)
             .on_mouse_down(
                 MouseButton::Left,
                 cx.listener(move |this, _, _, cx| {
@@ -1484,19 +1485,19 @@ fn round_button(
         .hover(move |s| s.bg(rgba(hover)))
         .child(Ripple::new(id, rgba(0xffffff33)).centered())
         .child(icon(name, INK, 22.0))
-        .tooltip(tip(tooltip, th))
+        .tip(tooltip, th)
 }
 
-fn tooltip_for(id: &str) -> &'static str {
+fn tooltip_for(id: &str) -> String {
     match id {
-        "viewer-close" => "Close (Esc)",
-        "viewer-save" => "Save (Ctrl+S)",
-        "viewer-open" => "Open with another app",
-        "viewer-prev" => "Previous attachment",
-        "viewer-next" => "Next attachment",
-        "viewer-zoom-in" => "Zoom in (+)",
-        "viewer-zoom-out" => "Zoom out (-)",
-        _ => "",
+        "viewer-close" => tr!("viewer-close-tip"),
+        "viewer-save" => tr!("viewer-save-tip"),
+        "viewer-open" => tr!("viewer-open-tip"),
+        "viewer-prev" => tr!("viewer-prev-tip"),
+        "viewer-next" => tr!("viewer-next-tip"),
+        "viewer-zoom-in" => tr!("viewer-zoom-in-tip"),
+        "viewer-zoom-out" => tr!("viewer-zoom-out-tip"),
+        _ => String::new(),
     }
 }
 
@@ -1672,8 +1673,7 @@ impl Render for Viewer {
                                                     );
                                                     row.child(holder.child(styled))
                                                 }
-                                                None => row
-                                                    .child("… (the rest of the file is not shown)"),
+                                                None => row.child(tr!("viewer-text-cut")),
                                             }
                                         })
                                         .collect()
@@ -1881,11 +1881,11 @@ impl Render for Viewer {
                                         .text_size(px(12.0))
                                         .text_color(rgba(INK_DIM))
                                         .child(if many {
-                                            format!(
-                                                "{} · {} of {}",
-                                                format::size(item.size),
-                                                place + 1,
-                                                count
+                                            tr!(
+                                                "viewer-size-place",
+                                                size = format::size(item.size),
+                                                place = place + 1,
+                                                count = count
                                             )
                                         } else {
                                             format::size(item.size)
@@ -2151,7 +2151,7 @@ impl Viewer {
                         .flex()
                         .items_center()
                         .gap(px(6.0))
-                        .tooltip(tip(tr!("viewer-go-to-page-tip"), &th))
+                        .tip(tr!("viewer-go-to-page-tip"), &th)
                         // A phone keeps the number and drops the word.
                         .when(!compact, |d| {
                             d.child(if tools.slides {
@@ -2219,9 +2219,12 @@ impl Viewer {
                     .flex()
                     .justify_center()
                     .cursor_pointer()
-                    .tooltip(tip("Fit to window (0)", &th))
+                    .tip(tr!("viewer-fit-window-tip"), &th)
                     .on_click(cx.listener(|this, _, _, cx| this.set_zoom(fit_step(), cx)))
-                    .child(format!("{:.0}%", zoom * 100.0)),
+                    .child(tr!(
+                        "viewer-zoom-level",
+                        percent = format::thousands((zoom * 100.0).round() as u64)
+                    )),
             )
             .when(!folded.zoom, |d| {
                 d.child(
@@ -2495,7 +2498,7 @@ impl Viewer {
                 )
                 .child(
                     gpui::deferred(
-                        gpui::anchored()
+                        katna_ui::anchored()
                             .position(at)
                             // Pressed at the foot: the menu opens upwards.
                             .anchor(gpui::Anchor::BottomRight)
@@ -2655,7 +2658,7 @@ fn text_button(id: &'static str, name: &str, label: String) -> gpui::Stateful<gp
         .text_color(rgba(INK))
         .cursor_pointer()
         .hover(|s| s.bg(rgba(HOVER)))
-        .child(Ripple::new(id, rgba(0xffffff33)))
+        .child(Ripple::new(id, rgba(0xffffff33)).border(1.0))
         .child(icon(name, INK, 20.0))
         .child(label)
 }

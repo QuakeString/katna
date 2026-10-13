@@ -10,12 +10,13 @@
 //! (`docs/ARCHITECTURE.md` §9.4); its reasons for refusing one show in
 //! the dialog.
 
+use crate::widgets::Tip as _;
 use std::time::Duration;
 
 use gpui::{
     AnyElement, App, ClickEvent, Context, ElementId, Entity, Focusable, FontWeight, HighlightStyle,
     MouseButton, Pixels, Point, SharedString, Stateful, StyledText, Subscription, Task, Window,
-    anchored, deferred, div, prelude::*, rgba,
+    deferred, div, prelude::*, rgba,
 };
 use katna_core::{AccountId, MailCategory};
 use katna_i18n::tr;
@@ -23,6 +24,7 @@ use katna_store::FolderId;
 use katna_store::rules::{
     Action, Comparator, Condition, Field, MAX_READ_AFTER_DAYS, MatchMode, Rule, RunsNote, RunsOn,
 };
+use katna_ui::anchored;
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::px;
 use katna_ui::unpx;
@@ -32,7 +34,7 @@ use super::MailWindow;
 use super::add_account::text_button;
 use crate::sidebar::Role;
 use crate::theme::{Theme, fade};
-use crate::widgets::{Check, FocusRing, checkbox, filled_button, icon, icon_button, menu, tip};
+use crate::widgets::{Check, FocusRing, checkbox, filled_button, icon, icon_button, menu};
 use crate::{daemon, data, format};
 
 const WIDTH: f32 = 680.0;
@@ -2275,7 +2277,7 @@ fn remove_button(id: impl Into<ElementId>, th: &Theme) -> Stateful<gpui::Div> {
         // Centred on the 36 px boxes of its row when rows align at the top.
         .mt(px(2.0))
         .focus_ring(th)
-        .tooltip(tip(tr!("rules-editor-remove"), th))
+        .tip(tr!("rules-editor-remove"), th)
 }
 
 /// "+ Add a condition" and "+ Add an action".

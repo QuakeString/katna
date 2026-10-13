@@ -58,3 +58,4 @@ search-options-show = Show search options
 settings = Settings
 account-add = Add an account
 account-wheel-hint = Scroll to switch accounts
+account-menu-all-detail = { $count } accounts together

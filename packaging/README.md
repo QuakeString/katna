@@ -14,12 +14,14 @@ Files that distribution packages install, and the Arch Linux package.
 | `gnome-shell/<mail app ID>.search-provider.ini` | `/usr/share/gnome-shell/search-providers/` (GNOME search results from the daemon) |
 | `kio/<mail app ID>.SendFiles.desktop` | `/usr/share/kio/servicemenus/` ("Send with Katna Mail" in Dolphin; the daemon writes the user's copy with an account submenu) |
 | `nautilus/katna-mail.py` | `/usr/share/nautilus-python/extensions/` ("Send with Katna Mail" in GNOME Files; needs python-nautilus) |
+| `metainfo/<mail app ID>.metainfo.xml` | `/usr/share/metainfo/` (Katna Mail's entry in Discover and GNOME Software, CC0; the Flatpak renames it to its own ID) |
 | `icons/<mail app ID>.svg` | `/usr/share/icons/hicolor/scalable/apps/` |
 | `icons/hicolor/<N>x<N>/apps/<mail app ID>.png` | `/usr/share/icons/hicolor/<N>x<N>/apps/` |
 | `arch/PKGBUILD` | Arch Linux package `katna-git` |
 | `windows/` | Katna Setup for Windows (`windows/README.md`) |
-| `linux/` | `stage.sh` (the files above under a prefix, for every package below), the plain tarball and its `install.sh` |
+| `linux/` | `stage.sh` (the files above under a prefix, for every package below), `localize-desktop.sh` (adds the `.desktop` files' names in every language from `i18n/<language>/desktop.ftl` as they are installed), the plain tarball and its `install.sh` |
 | `fedora/katna.spec` | Fedora RPM `katna` |
+| `deb/` | Ubuntu and Debian package `katna` (`katna_amd64.deb`) |
 | `nix/package.nix` | Nix package (`flake.nix` at the top builds it) |
 | `appimage/` | `Katna-x86_64.AppImage` |
 | `snap/snapcraft.yaml` | Snap `katna` |
@@ -63,6 +65,8 @@ CI builds the PKGBUILD on every push to `main`
 (`.github/workflows/arch-package.yml`) and puts the package on the
 [`arch-latest`](https://github.com/QuakeString/katna/releases/tag/arch-latest)
 pre-release, which each build replaces. It is x86_64 only and not signed.
+Betas and stable releases are published the same way under their own
+releases (`docs/RELEASING.md`).
 
 Install it once:
 
@@ -144,11 +148,12 @@ Katna Mail opens a window (`ci/linux-package-test.sh`). Once CI on `main`
 has passed, they replace the files on the
 [`linux-latest`](https://github.com/QuakeString/katna/releases/tag/linux-latest)
 pre-release, with a screenshot of each running. They are x86_64 only, not
-signed, in no store, and do not update themselves: their own package
-manager, or a new download, updates them.
+signed and in no store. Katna checks `linux-latest` for new builds: it
+updates the AppImage and the tarball itself, and for the others shows the
+command that installs the new build.
 
-The AppImage, Snap, Flatpak and tarball share one build made on Ubuntu
-22.04, so they need glibc 2.35 or newer. The RPM and the Nix package are
+The AppImage, Snap, Flatpak, .deb and tarball share one build made on
+Ubuntu 22.04, so they need glibc 2.35 or newer. The RPM and the Nix package are
 built from source by Fedora and Nix.
 
 ### Fedora
@@ -169,6 +174,21 @@ rpmbuild -bb packaging/fedora/katna.spec \
   --define "katna_version $(packaging/linux/version.sh)" \
   --define "katna_built $(git log -1 --format=%ct)"
 ```
+
+### Ubuntu and Debian
+
+For Ubuntu 22.04 and later and Debian 12 and later:
+
+```sh
+wget https://github.com/QuakeString/katna/releases/download/linux-latest/katna_amd64.deb
+sudo apt install ./katna_amd64.deb
+```
+
+apt brings in the libraries the package's `Depends` names. There is no apt
+repository yet, so `apt upgrade` does not see new builds: Katna downloads
+each new one and shows the `sudo apt install` command that installs it
+(`katna_core::update::Package::Deb`). `packaging/deb/make-deb.sh` makes the
+package from the tarball, so it holds the same files under `/usr`.
 
 ### Nix
 
@@ -219,6 +239,21 @@ is the prefix of Katna's IDs, so it may own Katna Mail's and the service's
 D-Bus names and export the service's activation file; D-Bus starts the
 service inside the sandbox. "Start Katna at login" does not work from the
 Flatpak yet (it needs the Background portal, `docs/ARCHITECTURE.md` §9.2).
+
+### AppStream
+
+Every package above installs Katna Mail's AppStream entry, so Discover
+and GNOME Software show it with its description, screenshots and links.
+Check it after a change:
+
+```sh
+appstreamcli validate --no-net packaging/metainfo/*.metainfo.xml
+```
+
+The Fedora and Ubuntu tests in `.github/workflows/linux-packages.yml`
+validate the installed copy. Its screenshots are the PNGs in
+`docs/screenshots/appstream/`, linked from `main` on GitHub; retake them
+with made-up demo data (`ci/linux-demo-data.sh`), never real mail.
 
 ### Any other Linux
 

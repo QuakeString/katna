@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Read receipts no longer show as mail"
+text = """
+When someone's mail app sends a read receipt for mail you sent, it no
+longer shows as a new message in the conversation. Your message gets blue
+ticks and a line saying who read it and when, and the receipt is marked
+read, so it does not notify you. It stays in your mailbox and in search.
+"""

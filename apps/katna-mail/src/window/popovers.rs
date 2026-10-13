@@ -17,7 +17,7 @@ use super::{FocusNext, FocusPrevious, MailWindow};
 /// Keeps Tab and Shift+Tab inside a dialog whose root tracks `focus`, as
 /// in any desktop dialog: they go round its fields and buttons, never to
 /// the window behind it.
-pub(super) fn keep_tab_inside<E: InteractiveElement>(el: E, focus: &FocusHandle) -> E {
+pub(super) fn keep_tab_inside<E: StatefulInteractiveElement>(el: E, focus: &FocusHandle) -> E {
     let step = |focus: FocusHandle, forward: bool| {
         move |window: &mut Window, cx: &mut gpui::App| {
             cx.stop_propagation();
@@ -36,7 +36,9 @@ pub(super) fn keep_tab_inside<E: InteractiveElement>(el: E, focus: &FocusHandle)
         }
     };
     let (next, prev) = (step(focus.clone(), true), step(focus.clone(), false));
-    el.capture_action(move |_: &FocusNext, window, cx| next(window, cx))
+    // Screen readers hear it as a dialog over the window.
+    el.role(gpui::Role::Dialog)
+        .capture_action(move |_: &FocusNext, window, cx| next(window, cx))
         .capture_action(move |_: &FocusPrevious, window, cx| prev(window, cx))
 }
 
@@ -238,10 +240,16 @@ impl MailWindow {
             || self.close_rules_menu(cx)
             || self.close_summary_peek(cx)
             || self.close_delete_ask(cx)
-            || self.close_snooze_menu(cx)
+            || self.close_app_off_ask(cx)
+            || self.close_service_details(cx)
+            || self.close_restore(cx)
+            || self.close_rail_menu(cx)
+            || self.snooze_escape(cx)
             || self.close_note_popovers(cx)
             || self.close_quiet_menu(cx)
             || self.close_danger(cx)
+            || self.close_password_card(cx)
+            || self.close_link_ask(cx)
         {
             true
         } else if self.print_preview_open() {
@@ -250,11 +258,20 @@ impl MailWindow {
         } else if self.contact_qr_open() {
             self.close_contact_qr(cx);
             true
+        } else if self.feedback_form_open() {
+            self.close_feedback_form(cx);
+            true
         } else if self.share_ask_open() {
             self.close_share_ask(window, cx);
             true
         } else if self.whats_new_open() {
             self.close_whats_new(window, cx);
+            true
+        } else if self.shortcuts_dialog_open() {
+            self.close_shortcuts_dialog(window, cx);
+            true
+        } else if self.palette_open() {
+            self.close_palette(window, cx);
             true
         } else if self.update_dialog_open() {
             self.close_update_dialog(window, cx);
@@ -265,14 +282,17 @@ impl MailWindow {
         } else if self.close_gallery(cx)
             || self.dismiss_activity(cx)
             || self.close_seen(cx)
+            || self.close_key_card(cx)
             || self.menu.take().is_some()
             || self.contacts.label_menu.take().is_some()
             || self.files_menu.take().is_some()
             || self.app_menu_back(cx)
+            || self.menu_page_back(cx)
             || (std::mem::take(&mut self.account_menu) && {
                 self.app_menu = None;
                 true
             })
+            || self.language_page_back(cx)
             || self.language_picker.take().is_some()
             || self.dismiss_search_panel(window, cx)
         {
@@ -306,7 +326,10 @@ impl MailWindow {
             || self.contacts.label_dialog.is_some()
             || self.contacts.qr.is_some()
             || self.whats_new.is_some()
+            || self.shortcuts_dialog.is_some()
+            || self.palette.is_some()
             || self.share_ask.is_some()
+            || self.feedback_form.is_some()
             || self.print_preview.is_some()
             || self.about.is_some()
             || self.tour.is_some()

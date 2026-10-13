@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Katna starts its background service by itself"
+text = """
+If the service that syncs your mail and shows the tray icon isn't running,
+Katna Mail starts it again by itself. No terminal needed. If it still won't
+start, a line above your mail says so, with Start again and the details to
+copy for a report.
+"""

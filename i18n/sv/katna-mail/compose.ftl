@@ -21,6 +21,16 @@ compose-hide-trimmed = Dölj förkortat innehåll
 compose-remove-trimmed = Ta bort citerad text
 compose-trimmed-removed = Den citerade texten har tagits bort
 
+## The quoted or forwarded message, in the mail itself
+
+compose-quote-header = Den { $date } skrev { $from }:
+compose-forward-header = ---------- Vidarebefordrat meddelande ---------
+compose-forward-from = Från: { $from }
+compose-forward-date = Datum: { $date }
+compose-forward-subject = Ämne: { $subject }
+compose-forward-to = Till: { $to }
+compose-forward-cc = Kopia: { $cc }
+
 ## Recipients and subject
 
 compose-to = Till

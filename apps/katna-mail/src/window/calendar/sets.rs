@@ -5,6 +5,7 @@
 //! calendars and hides the others; + saves the calendars on show as a new
 //! set (`[[calendar.sets]]` in `config.toml`, `docs/ARCHITECTURE.md` §18).
 
+use crate::widgets::Tip as _;
 use gpui::{
     AnyElement, Context, Focusable, FontWeight, Subscription, Window, div, prelude::*, rgba,
 };
@@ -15,7 +16,7 @@ use katna_ui::text_input::{InputEvent, TextInput};
 
 use super::super::MailWindow;
 use crate::theme::Theme;
-use crate::widgets::{FocusRing, icon, icon_button, tip};
+use crate::widgets::{FocusRing, icon, icon_button};
 
 /// A new set's name being typed.
 pub(in crate::window) struct Naming {
@@ -175,7 +176,7 @@ impl MailWindow {
                     .child(
                         div().invisible().group_hover(group, |s| s.visible()).child(
                             icon_button(("calendar-set-remove", ix), "close", 16.0, th)
-                                .tooltip(tip(tr!("calendar-set-remove"), th))
+                                .tip(tr!("calendar-set-remove"), th)
                                 .on_click(cx.listener(move |this, _, _, cx| {
                                     cx.stop_propagation();
                                     this.remove_calendar_set(ix, cx);
@@ -229,7 +230,7 @@ impl MailWindow {
                     .child(
                         icon_button("calendar-set-add", "add", 20.0, th)
                             .focus_ring(th)
-                            .tooltip(tip(tr!("calendar-set-add"), th))
+                            .tip(tr!("calendar-set-add"), th)
                             .on_click(cx.listener(|this, _, window, cx| {
                                 this.start_calendar_set(window, cx)
                             })),

@@ -19,8 +19,13 @@ ColumnLayout {
     // The day picked in the month view.
     required property date selectedDate
     required property int paddings
-    // Under the day's events the list stays short; alone it fills the column.
+    // Under the day's events the empty line sits at the top; alone it is
+    // centred in the column.
     property bool compact: true
+    // Folded to its heading and count.
+    property bool folded: false
+    // The heading's arrow was clicked; the owner keeps the state.
+    signal foldToggled()
 
     spacing: 0
 
@@ -52,6 +57,9 @@ ColumnLayout {
 
     // Puts the cursor in the Add field (the day menu's Add a Task).
     function focusAdd(): void {
+        if (folded) {
+            foldToggled();
+        }
         addField.forceActiveFocus(Qt.MouseFocusReason);
     }
 
@@ -94,18 +102,68 @@ ColumnLayout {
         return Math.round((day - start) / 86400000);
     }
 
-    RowLayout {
-        Layout.fillWidth: true
-        Layout.leftMargin: section.paddings
-        Layout.rightMargin: section.paddings
-        Layout.topMargin: Kirigami.Units.smallSpacing
+    // The heading folds the list: the arrow, the title and the count of
+    // open tasks are one button.
+    PlasmaComponents.ItemDelegate {
+        id: heading
 
-        Kirigami.Heading {
-            Layout.fillWidth: true
-            level: 2
-            text: i18ndc(section.domain, "@title heading of the tasks list", "Tasks")
-            textFormat: Text.PlainText
-            elide: Text.ElideRight
+        readonly property int open: section.agenda.tasks.filter(task => !task.done).length
+
+        Layout.fillWidth: true
+        Layout.topMargin: Kirigami.Units.smallSpacing
+        leftPadding: section.paddings - Kirigami.Units.smallSpacing
+        rightPadding: section.paddings
+        hoverEnabled: true
+        text: i18ndc(section.domain, "@title heading of the tasks list", "Tasks")
+        Accessible.role: Accessible.Button
+        Accessible.description: section.folded
+            ? i18ndc(section.domain, "@info:tooltip", "Show the tasks")
+            : i18ndc(section.domain, "@info:tooltip", "Hide the tasks")
+        onClicked: section.foldToggled()
+
+        contentItem: RowLayout {
+            spacing: Kirigami.Units.smallSpacing
+
+            Kirigami.Icon {
+                implicitWidth: Kirigami.Units.iconSizes.small
+                implicitHeight: Kirigami.Units.iconSizes.small
+                source: section.folded
+                    ? (heading.mirrored ? "go-previous-symbolic" : "go-next-symbolic")
+                    : "go-down-symbolic"
+                opacity: 0.7
+            }
+
+            Kirigami.Heading {
+                level: 2
+                text: heading.text
+                textFormat: Text.PlainText
+                elide: Text.ElideRight
+                Layout.fillWidth: heading.open === 0
+            }
+
+            // How many are open, so a folded list still says so.
+            PlasmaComponents.Label {
+                visible: heading.open > 0
+                text: heading.open
+                textFormat: Text.PlainText
+                font: Kirigami.Theme.smallFont
+                leftPadding: Kirigami.Units.smallSpacing * 2
+                rightPadding: Kirigami.Units.smallSpacing * 2
+                topPadding: 1
+                bottomPadding: 1
+                opacity: 0.75
+
+                background: Rectangle {
+                    radius: height / 2
+                    color: Kirigami.Theme.textColor
+                    opacity: 0.12
+                }
+            }
+
+            Item {
+                Layout.fillWidth: true
+                visible: heading.open > 0
+            }
         }
     }
 
@@ -118,6 +176,7 @@ ColumnLayout {
         Layout.topMargin: Kirigami.Units.smallSpacing
         Layout.bottomMargin: Kirigami.Units.smallSpacing
 
+        visible: !section.folded
         leftPadding: Kirigami.Units.iconSizes.small + Kirigami.Units.largeSpacing
         enabled: section.agenda.reachable
         placeholderText: section.todayPicked
@@ -150,11 +209,14 @@ ColumnLayout {
     ListView {
         id: taskList
 
+        // Whatever room the popup has left: it scrolls inside its own
+        // space, never under the Add field or past the popup's edge.
         Layout.fillWidth: true
         Layout.fillHeight: true
-        Layout.preferredHeight: contentHeight
-        Layout.maximumHeight: section.compact ? Kirigami.Units.gridUnit * 12 : -1
-        visible: count > 0
+        Layout.minimumHeight: 0
+        Layout.preferredHeight: 0
+        Layout.bottomMargin: Kirigami.Units.smallSpacing
+        visible: count > 0 && !section.folded
         clip: true
         interactive: contentHeight > height
         boundsBehavior: Flickable.StopAtBounds
@@ -232,12 +294,12 @@ ColumnLayout {
     // space under the day's events spilled over the Add field.
     PlasmaComponents.Label {
         Layout.fillWidth: true
-        Layout.fillHeight: !section.compact
+        Layout.fillHeight: true
         Layout.leftMargin: section.paddings
         Layout.rightMargin: section.paddings
         Layout.topMargin: Kirigami.Units.smallSpacing
         Layout.bottomMargin: Kirigami.Units.smallSpacing
-        visible: taskList.count === 0
+        visible: taskList.count === 0 && !section.folded
         verticalAlignment: section.compact ? Text.AlignTop : Text.AlignVCenter
         horizontalAlignment: section.compact ? Text.AlignLeft : Text.AlignHCenter
         opacity: 0.7

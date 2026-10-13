@@ -174,6 +174,19 @@ impl Store {
             .query_row([], |row| row.get(0))?)
     }
 
+    /// Whether a message is being handed to a server now, or is due to be
+    /// before `until`: a restart waits for it (`docs/ARCHITECTURE.md`
+    /// §21.2, Running while updated).
+    pub fn sending_before(&self, until: i64) -> Result<bool> {
+        Ok(self
+            .mail
+            .prepare_cached(
+                "SELECT EXISTS (SELECT 1 FROM outbox
+                     WHERE state = 'sending' OR (state = 'queued' AND send_at < ?1))",
+            )?
+            .query_row([until], |row| row.get(0))?)
+    }
+
     /// Sent entries the server held until `now` or earlier, to file.
     pub fn released_sends(&self, now: i64) -> Result<Vec<OutboxEntry>> {
         let mut stmt = self.mail.prepare_cached(&format!(
@@ -425,6 +438,8 @@ mod tests {
         batch.commit().unwrap();
 
         assert_eq!(store.next_send_at().unwrap(), Some(50));
+        assert!(!store.sending_before(50).unwrap(), "due at 50, not before");
+        assert!(store.sending_before(51).unwrap());
         assert!(store.due_sends(10, 10).unwrap().is_empty());
         let due = store.due_sends(100, 10).unwrap();
         assert_eq!(due.iter().map(|e| e.id).collect::<Vec<_>>(), [b, a]);

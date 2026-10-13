@@ -9,6 +9,7 @@
 //! what reads badly. A card's right-click menu edits, duplicates, exports
 //! or deletes it, with Undo. The files are `crate::user_schemes`'.
 
+use crate::widgets::Tip as _;
 use std::path::PathBuf;
 
 use gpui::{
@@ -18,7 +19,7 @@ use gpui::{
 use katna_i18n::tr;
 use katna_platform::colors::{DesktopScheme, Scheme};
 use katna_ui::motion::{self, Spring, lerp};
-use katna_ui::{InputEvent, TextInput, px, unpx};
+use katna_ui::{InputEvent, TextInput, px};
 
 use super::MailWindow;
 use super::context_menu::Rows;
@@ -548,8 +549,7 @@ impl MailWindow {
         let t = t.clamp(0.0, 1.0);
         let editor = self.scheme_editor.as_ref()?;
         let ready = !editor.name.read(cx).text().trim().is_empty();
-        let viewport = window.viewport_size();
-        let (vw, vh) = (unpx(viewport.width), unpx(viewport.height));
+        let (vw, vh) = (self.room_width(), self.room_height(window));
         let narrow = vw < DIALOG_WIDTH + 32.0;
         let name_focus = editor.name.focus_handle(cx);
         let name_focused = name_focus.is_focused(window);
@@ -756,7 +756,7 @@ impl MailWindow {
                     .cursor_pointer()
                     .relative()
                     .child(crate::widgets::hover_fade("hover-glow", None, th))
-                    .tooltip(crate::widgets::tip(tr!("scheme-editor-remove-side"), th))
+                    .tip(tr!("scheme-editor-remove-side"), th)
                     .on_click(cx.listener(move |this, _, _, cx| this.remove_scheme_side(dark, cx)))
                     .child(icon("remove", th.text_dim, 18.0)),
             )
@@ -883,6 +883,7 @@ fn katna_side(dark: bool) -> Scheme {
         accent: opaque(th.accent),
         accent_fg: opaque(th.on_accent),
         negative: opaque(th.error),
+        neutral: None,
     }
 }
 

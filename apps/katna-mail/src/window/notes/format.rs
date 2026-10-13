@@ -6,6 +6,7 @@
 //! search and checklists) and the same text formatted in `html`, one
 //! paragraph per line, empty while it has no formatting.
 
+use crate::widgets::Tip as _;
 use gpui::{
     AnyElement, Context, FontStyle, FontWeight, HighlightStyle, StyledText, UnderlineStyle, div,
     prelude::*, rgba,
@@ -19,7 +20,7 @@ use katna_ui::tokens::{radius, space, text};
 
 use super::{MailWindow, TICKED, UNTICKED, check_of};
 use crate::theme::Theme;
-use crate::widgets::{icon_button, tip};
+use crate::widgets::icon_button;
 
 /// A line's look: Keep's three.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -256,7 +257,7 @@ impl MailWindow {
             icon_button(id, name, 18.0, th)
                 .size(px(34.0))
                 .when(on, |b| b.bg(rgba(th.row_selected)))
-                .tooltip(tip(tip_text, th))
+                .tip(tip_text, th)
         };
         let heading_button = |id: &'static str, label: String, value: Heading| {
             div()

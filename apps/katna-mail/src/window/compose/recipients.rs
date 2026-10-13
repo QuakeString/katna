@@ -13,9 +13,11 @@ use std::time::{Duration, Instant};
 
 use gpui::{
     AnyElement, Context, Div, DragMoveEvent, FontWeight, Global, HighlightStyle, KeyDownEvent,
-    SharedString, StyledText, anchored, deferred, div, point, prelude::*, rgba,
+    SharedString, StyledText, deferred, div, point, prelude::*, rgba,
 };
+use katna_core::config::AppKind;
 use katna_search::contacts::{ContactBook, Suggestion};
+use katna_ui::anchored;
 use katna_ui::px;
 use katna_ui::text_input::{Backspace, Cancel, Delete, Down, Left, Right, Submit, Up};
 
@@ -61,32 +63,39 @@ struct Book {
     book: Option<ContactBook>,
     loading: bool,
     read: Option<Instant>,
+    /// Whether the book has the saved contacts (Contacts was on).
+    saved: bool,
 }
 
 impl Global for Book {}
 
 impl MailWindow {
     /// Reads the address book if it is missing or old: the saved copy
-    /// first, so suggestions work at once, then the store.
+    /// first, so suggestions work at once, then the store. With Contacts
+    /// off, only the people mailed are suggested.
     pub(in crate::window) fn load_address_book(&mut self, cx: &mut Context<Self>) {
+        let with_saved = self.config.app_on(AppKind::Contacts);
         let book = cx.default_global::<Book>();
-        if book.loading || book.read.is_some_and(|read| read.elapsed() < FRESH) {
+        let fresh = book.read.is_some_and(|read| read.elapsed() < FRESH);
+        if book.loading || (fresh && book.saved == with_saved) {
             return;
         }
         book.loading = true;
-        let saved = book.book.is_none();
+        let cached = book.book.is_none() || book.saved != with_saved;
         let paths = self.paths.clone();
         cx.spawn(async move |_, cx| {
-            if saved {
+            if cached {
                 let paths = paths.clone();
                 let cached = cx
                     .background_executor()
-                    .spawn(async move { data::cached_address_book(&paths) })
+                    .spawn(async move { data::cached_address_book(&paths, with_saved) })
                     .await;
                 cx.update(|cx| {
                     let book = cx.default_global::<Book>();
-                    if book.book.is_none() {
+                    if book.book.is_none() || book.saved != with_saved {
+                        // Not the other kind's book, even with no copy.
                         book.book = cached;
+                        book.saved = with_saved;
                     }
                 });
             }
@@ -94,8 +103,8 @@ impl MailWindow {
             let fresh = cx
                 .background_executor()
                 .spawn(async move {
-                    let book = data::address_book(&paths)?;
-                    data::save_address_book(&paths, &book);
+                    let book = data::address_book(&paths, with_saved)?;
+                    data::save_address_book(&paths, &book, with_saved);
                     Ok::<_, String>(book)
                 })
                 .await;
@@ -105,6 +114,7 @@ impl MailWindow {
                 book.read = Some(Instant::now());
                 match fresh {
                     Ok(fresh) => {
+                        book.saved = with_saved;
                         tracing::debug!(
                             "address book: {} addresses in {:?}",
                             fresh.len(),

@@ -6,6 +6,8 @@
 
 tray-open-inbox = Otwórz _Odebrane
 tray-new-message = _Nowa wiadomość
+tray-new-task = Nowe za_danie
+tray-new-note = Nowa no_tatka
 tray-preferences = U_stawienia
 tray-quit = _Zakończ
 
@@ -17,4 +19,14 @@ tray-unread = { $count ->
     [few] { $count } nieprzeczytane wiadomości
     [many] { $count } nieprzeczytanych wiadomości
    *[other] { $count } nieprzeczytanej wiadomości
+}
+
+tray-password-refused = Potrzebne nowe hasło do { $address }
+tray-signed-out = Zaloguj się ponownie do { $address }
+tray-accounts-need-you = Konta wymagające Twojej uwagi: { $count }
+tray-not-sent = { $count ->
+    [one] { $count } wiadomość nie została wysłana
+    [few] { $count } wiadomości nie zostały wysłane
+    [many] { $count } wiadomości nie zostało wysłanych
+   *[other] { $count } wiadomości nie zostało wysłanej
 }

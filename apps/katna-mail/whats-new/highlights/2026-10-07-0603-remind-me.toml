@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Remind me about any mail"
+text = """
+Press H on a mail, or use Remind me beside Snooze, to be reminded at a
+time while the mail stays where it is. If the mail says something is due
+by a day, Katna offers the morning before. Reminders are tasks in Tasks,
+listed under Reminders and shown on the mail's line. B snoozes.
+"""

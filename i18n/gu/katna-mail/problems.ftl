@@ -1,0 +1,93 @@
+# Katna Mail, Gujarati (ગુજરાતી).
+# Machine-drafted by AI; not yet reviewed by a native speaker.
+# Corrections welcome: see i18n/README.md.
+
+## Lines at the top of the mail list
+
+problems-the-server = મેઇલ સર્વર
+
+problems-signed-out = { $provider } એ Katna ને { $address } માંથી સાઇન આઉટ કર્યું. મેઇલ સિંક થવાનું બંધ થયું.
+problems-password-refused = { $provider } એ { $address } નો પાસવર્ડ નકાર્યો. કદાચ તે બદલાયો હશે.
+problems-no-answer = { $provider } { $address } માટે જવાબ આપતું નથી. Katna પ્રયાસ ચાલુ રાખે છે.
+problems-offline = તમે ઑફલાઇન છો. તમારા મેઇલ હજી અહીં છે, અને તમે મોકલો તે મેઇલ તમે પાછા આવો ત્યાં સુધી રાહ જુએ છે.
+problems-accounts-need-you = { $count ->
+    [one] 1 એકાઉન્ટને તમારી જરૂર છે
+   *[other] { $count } એકાઉન્ટને તમારી જરૂર છે
+}
+problems-show = બતાવો
+problems-later = પછી
+problems-new-password = નવો પાસવર્ડ
+problems-try-again = ફરી પ્રયાસ કરો
+
+## The New password card
+
+problems-password-title = નવો પાસવર્ડ
+problems-password-detail = { $provider } એ { $address } નો સેવ કરેલો પાસવર્ડ નકાર્યો. નવો લખો; Katna તેને રાખતા પહેલાં તપાસે છે.
+problems-password-placeholder = પાસવર્ડ
+problems-password-show = પાસવર્ડ બતાવો
+problems-password-hide = પાસવર્ડ છુપાવો
+problems-password-cancel = રદ કરો
+problems-password-save = સેવ કરો
+problems-password-checking = તપાસી રહ્યાં છીએ…
+problems-password-refused-again = { $provider } એ આ પાસવર્ડ પણ નકાર્યો. તેને તપાસો અને ફરી પ્રયાસ કરો.
+problems-password-saved = { $address } માટે પાસવર્ડ સેવ થયો. તમારા મેઇલ મેળવી રહ્યાં છીએ…
+
+## When a mail server refuses a change for good (a note at the bottom)
+
+problems-refused-move = { $address } ના મેઇલ સર્વરે { $count ->
+    [one] એક મેસેજ ખસેડવાનું સ્વીકાર્યું નહીં, તેથી તે પાછો જ્યાં હતો ત્યાં છે.
+   *[other] { $count } મેસેજ ખસેડવાનું સ્વીકાર્યું નહીં, તેથી તે પાછા જ્યાં હતા ત્યાં છે.
+}
+problems-refused-flags = { $address } ના મેઇલ સર્વરે { $count ->
+    [one] એક મેસેજને ચિહ્નિત કરવાનું (વાંચેલો, તારાંકિત…) સ્વીકાર્યું નહીં, તેથી તે પહેલાં જેવો હતો તેવો છે.
+   *[other] { $count } મેસેજને ચિહ્નિત કરવાનું (વાંચેલા, તારાંકિત…) સ્વીકાર્યું નહીં, તેથી તે પહેલાં જેવા હતા તેવા છે.
+}
+problems-refused-label = { $address } ના મેઇલ સર્વરે { $count ->
+    [one] એક મેસેજનાં લેબલ બદલવાનું સ્વીકાર્યું નહીં, તેથી તે પહેલાં જેવો હતો તેવો છે.
+   *[other] { $count } મેસેજનાં લેબલ બદલવાનું સ્વીકાર્યું નહીં, તેથી તે પહેલાં જેવા હતા તેવા છે.
+}
+problems-refused-delete = { $address } ના મેઇલ સર્વરે { $count ->
+    [one] એક મેસેજ ડિલીટ કરવાનું સ્વીકાર્યું નહીં, તેથી તે પાછો આવ્યો છે.
+   *[other] { $count } મેસેજ ડિલીટ કરવાનું સ્વીકાર્યું નહીં, તેથી તે પાછા આવ્યા છે.
+}
+problems-refused-other = { $address } ના મેઇલ સર્વરે { $count ->
+    [one] એક ફેરફાર સ્વીકાર્યો નહીં, તેથી Katna એ તેને પહેલાં જેવો હતો તેવો કરી દીધો.
+   *[other] { $count } ફેરફાર સ્વીકાર્યા નહીં, તેથી Katna એ તેમને પહેલાં જેવા હતા તેવા કરી દીધા.
+}
+problems-details = વિગતો
+
+## Katna's background service (katna-daemon) isn't running
+
+service-starting = Katna ની બૅકગ્રાઉન્ડ સેવા શરૂ થઈ રહી છે…
+service-failed = Katna ની બૅકગ્રાઉન્ડ સેવા શરૂ થતી નથી, તેથી મેઇલ સિંક થતા નથી.
+service-start-again = ફરી શરૂ કરો
+service-started-again = Katna ની બૅકગ્રાઉન્ડ સેવા બંધ થઈ ગઈ હતી અને ફરી શરૂ કરવામાં આવી.
+service-details-title = સેવા શા માટે શરૂ થતી નથી
+service-details-body = આ કૉપિ કરો અને તમારા રિપોર્ટ સાથે મોકલો. તેમાં કોઈ મેઇલ કે પાસવર્ડ નથી.
+service-details-copy = કૉપિ કરો
+service-details-close = બંધ કરો
+service-not-running = Katna ની બૅકગ્રાઉન્ડ સેવા ચાલી રહી નથી.
+service-no-answer = Katna ની બૅકગ્રાઉન્ડ સેવાએ જવાબ આપ્યો નહીં: { $error }
+service-no-session = કોઈ D-Bus સેશન નથી: { $error }
+
+## Safe mode: an update left Katna's background service unable to start
+
+safe-line = અપડેટમાં સમસ્યા આવ્યા પછી Katna સેફ મોડમાં છે, તેથી મેઇલ સિંક થતા નથી.
+safe-try-again = ફરી પ્રયાસ કરો
+safe-restore = પાછું લાવો
+safe-restoring = { $when } નો તમારો ડેટા પાછો લાવી રહ્યાં છીએ…
+safe-restored = { $when } નો તમારો ડેટા પાછો લાવ્યા. પહેલાં જે હતું તે એક ફોલ્ડરમાં રાખ્યું છે.
+safe-show-folder = ફોલ્ડર બતાવો
+safe-restore-failed = તમારો ડેટા પાછો લાવી શકાયો નહીં: { $error }
+safe-restore-title = અપડેટ પહેલાંનો તમારો ડેટા પાછો લાવવો છે?
+safe-restore-body = Katna તમે પસંદ કરો તે નકલ પર પાછું જાય છે. તેના પછી આવેલા મેઇલ તમારા એકાઉન્ટમાંથી ફરી ડાઉનલોડ થાય છે.
+safe-restore-none = હજી કોઈ નકલ નથી. દરેક અપડેટ તમારો ડેટા બદલે તે પહેલાં Katna એક નકલ બનાવે છે.
+safe-restore-keep = હાલમાં જે છે, ન મોકલેલા મેઇલ, ડ્રાફ્ટ અને હજી સિંક ન થયેલા ફેરફારો સહિત, તે પહેલાં એક ફોલ્ડરમાં રાખવામાં આવે છે, તેથી કંઈ ગુમાવાતું નથી.
+safe-restore-cancel = રદ કરો
+safe-restore-mail = મેઇલ
+safe-restore-pim = એકાઉન્ટ અને સંપર્કો
+safe-restore-blobs = જોડાણો
+safe-report-title = ડિબગ રિપોર્ટ
+safe-report-body = આ કૉપિ કરો અને તમારા બગ રિપોર્ટ સાથે જોડો. તેમાં કોઈ મેઇલ, સરનામાં કે પાસવર્ડ નથી.
+safe-report-restore = પાછું લાવો…
+safe-report-copied = ડિબગ રિપોર્ટ કૉપિ કર્યો

@@ -37,6 +37,7 @@ chat-reply-only = { $name } རྐྱངམ་ཅིག་ལུ་ལན་ས�
 chat-forward = མདུན་སྐྱེལ་འབད།
 chat-copy-text = ཚིག་ཡིག་འདྲ་བཤུས་རྐྱབ།
 chat-show-as-mail = གློག་འཕྲིན་སྦེ་སྟོན།
+chat-go-down = གློག་འཕྲིན་གསར་ཤོས་ལུ་འགྱོ།
 chat-pin = ཡར་སྟོད་ལུ་བཙུགས།
 chat-pin-file = ཡིག་སྣོད་ཡར་སྟོད་ལུ་བཙུགས།
 chat-unpin = ཡར་སྟོད་ལས་བཏོན།
@@ -56,7 +57,8 @@ chat-pins-cancel = ཆ་མེད་གཏང་།
 chat-undo = འབད་བཤོལ།
 
 chat-reply-to = { $names } ལུ་ལན་སློག
-chat-send = གཏང་། (Ctrl+Enter)
+chat-send = གཏང་ (Ctrl+Enter)། གཞན་ཡང་གི་དོན་ལུ་ གཡས་ཨེབ་ ཡང་ན་ ཨེབ་སྟེ་བཞག
+chat-send-now = ད་ལྟོ་གཏང་།
 chat-attach = མཉམ་སྦྲགས།
 chat-attach-photo = པར
 chat-attach-file = ཡིག་སྣོད

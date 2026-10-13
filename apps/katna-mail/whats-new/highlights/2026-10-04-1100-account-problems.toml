@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "See and fix account problems in one place"
+text = """
+When an account needs you, a line at the top of the mail list says what
+happened in plain words, with the fix beside it. A changed password opens
+a small card where you type the new one, and Katna checks it before
+keeping it. An amber sign also marks the account in the folder pane and
+on your picture. When you lose your connection, one quiet line says
+you're offline and that mail you send waits until you're back.
+"""

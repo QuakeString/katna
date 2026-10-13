@@ -7,7 +7,7 @@
 
 use std::collections::HashMap;
 
-use futures_lite::{Stream, StreamExt};
+use futures_lite::{FutureExt, Stream, StreamExt};
 use katna_core::OAuthProvider;
 use katna_dbus::zbus::Connection;
 use katna_dbus::{
@@ -33,6 +33,17 @@ pub enum Command {
     Snooze(Vec<MessageId>, i64),
     /// Brings snoozed messages back now.
     Unsnooze(Vec<MessageId>),
+    /// The follow-up of a sent message, by its outbox ID: sends it now,
+    /// moves it (Unix seconds) or stops it.
+    SendFollowUpNow(i64),
+    MoveFollowUp(i64, i64),
+    StopFollowUp(i64),
+    /// Dismisses the nudge on a sent message.
+    DismissNudge(MessageId),
+    /// Sets a follow-up as it was: seconds after sending, seconds to a
+    /// second one and the mail Katna sends (none to remind). The Undo of
+    /// Stop.
+    SetFollowUp(i64, i64, i64, Option<String>),
     /// Takes back the queued message with this outbox ID.
     UndoSend(i64),
     /// Opens the message just discarded, or not saved, again. The app does
@@ -54,6 +65,22 @@ pub enum Command {
     /// contents and whether it was in use. The app does this itself; the
     /// daemon never sees it.
     RestoreScheme(String, String, bool),
+    /// Turns an app on again in Settings > Apps: the Undo after turning it
+    /// off, or "Turn on" where it was asked for. The app does this itself;
+    /// the daemon hears of it through `ReloadConfig`.
+    TurnAppOn(katna_core::config::AppKind),
+    /// Opens the outbox: the button of "… wasn't sent". The app does this
+    /// itself.
+    OpenOutbox,
+    /// Takes the keys just imported (by fingerprint) out of the user's
+    /// GnuPG keyring again. The app does this itself.
+    RemoveKeys(Vec<String>),
+    /// Opens a folder in the file manager: the button of "Restored your
+    /// data". The app does this itself.
+    RevealPath(String),
+    /// Shows a server's own words in the note: the button of a note that
+    /// said what went wrong in plain ones. The app does this itself.
+    ShowDetails(String),
     /// Gives saved cards these labels, by name: an undo on the Contacts
     /// page.
     ContactLabels(Vec<(i64, Vec<String>)>),
@@ -66,6 +93,9 @@ pub enum Command {
     WriteCards(Vec<WriteCard>),
     /// Has the daemon read the settings file again.
     ReloadConfig,
+    /// Has the daemon delete the local copy of an app just turned off
+    /// ("Remove the copy").
+    ForgetApp(katna_core::config::AppKind),
     /// These, one after the other: an undo that moves mail back to
     /// several folders.
     Several(Vec<Command>),
@@ -222,6 +252,11 @@ impl Command {
             // The window says until when.
             Self::Snooze(..) => return None,
             Self::MarkRead(..)
+            | Self::SendFollowUpNow(_)
+            | Self::MoveFollowUp(..)
+            | Self::StopFollowUp(_)
+            | Self::DismissNudge(_)
+            | Self::SetFollowUp(..)
             | Self::UndoSend(_)
             | Self::ReopenDraft
             | Self::RestoreQuote
@@ -229,11 +264,17 @@ impl Command {
             | Self::RestoreSubject(_)
             | Self::RestoreContacts(_)
             | Self::RestoreScheme(..)
+            | Self::TurnAppOn(_)
+            | Self::OpenOutbox
+            | Self::RemoveKeys(_)
+            | Self::RevealPath(_)
+            | Self::ShowDetails(_)
             | Self::ContactLabels(_)
             | Self::RenameContactLabel(..)
             | Self::DeleteContacts(_)
             | Self::WriteCards(_)
             | Self::ReloadConfig
+            | Self::ForgetApp(_)
             | Self::SaveNote(_)
             | Self::TrashNotes(..)
             | Self::DeleteNotes(_)
@@ -260,19 +301,21 @@ impl Command {
 }
 
 /// What [`describe`] says when the daemon is not running.
-pub const NOT_RUNNING: &str = "The Katna background service is not running.";
+pub fn not_running() -> String {
+    katna_i18n::tr!("service-not-running")
+}
 
 /// Why a change could not be sent.
 pub fn describe(err: &katna_dbus::zbus::Error) -> String {
     match err {
         katna_dbus::zbus::Error::MethodError(name, detail, _) => {
             if name.as_str() == "org.freedesktop.DBus.Error.ServiceUnknown" {
-                NOT_RUNNING.to_owned()
+                not_running()
             } else {
                 detail.clone().unwrap_or_else(|| name.to_string())
             }
         }
-        err => format!("The Katna background service did not answer: {err}"),
+        err => katna_i18n::tr!("service-no-answer", error = err.to_string()),
     }
 }
 
@@ -322,7 +365,7 @@ impl AccountState {
 pub async fn connect() -> Result<Connection, String> {
     let connection = katna_dbus::session()
         .await
-        .map_err(|err| format!("No D-Bus session: {err}"))?;
+        .map_err(|err| katna_i18n::tr!("service-no-session", error = err.to_string()))?;
     katna_dbus::ensure_daemon(&connection).await;
     Ok(connection)
 }
@@ -377,7 +420,19 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
         }
         Command::Snooze(messages, until) => pim.snooze(&ids(messages), *until).await,
         Command::Unsnooze(messages) => pim.unsnooze(&ids(messages)).await,
+        Command::SendFollowUpNow(id) => pim.send_follow_up_now(*id).await,
+        Command::MoveFollowUp(id, at) => pim.move_follow_up(*id, *at).await,
+        Command::DismissNudge(id) => pim.dismiss_nudge(id.0).await,
+        Command::StopFollowUp(id) => pim.set_follow_up(*id, 0).await,
+        Command::SetFollowUp(id, after, again, mail) => match mail {
+            Some(mail) => {
+                pim.set_follow_up_mail(*id, *after, *again, mail.as_bytes())
+                    .await
+            }
+            None => pim.set_follow_up(*id, *after).await,
+        },
         Command::ReloadConfig => pim.reload_config().await,
+        Command::ForgetApp(app) => pim.forget_app(app.key()).await,
         Command::UndoSend(id) => match pim.undo_send(*id).await {
             // The app opens the message again, so the outbox can forget it.
             Ok(true) => pim.discard_send(*id).await.map(|_| ()),
@@ -433,7 +488,12 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
         | Command::UndoRephrase
         | Command::RestoreSubject(_)
         | Command::RestoreContacts(_)
-        | Command::RestoreScheme(..) => {
+        | Command::RestoreScheme(..)
+        | Command::TurnAppOn(_)
+        | Command::OpenOutbox
+        | Command::RemoveKeys(_)
+        | Command::RevealPath(_)
+        | Command::ShowDetails(_) => {
             return Ok(());
         }
         Command::Event(change) => return edit_event(connection, change).await.map(|_| ()),
@@ -723,6 +783,24 @@ pub async fn set_follow_up(connection: &Connection, id: i64, after: i64) -> Resu
         .map_err(|err| describe(&err))
 }
 
+/// Has the daemon send `mail` for the user `after` seconds after outbox
+/// entry `id` goes out if nobody replied by then, and again `again`
+/// seconds later (0 for once).
+pub async fn set_follow_up_mail(
+    connection: &Connection,
+    id: i64,
+    after: i64,
+    again: i64,
+    mail: &[u8],
+) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.set_follow_up_mail(id, after, again, mail)
+        .await
+        .map_err(|err| describe(&err))
+}
+
 /// Schedules an RFC 5322 message from `account` to go out at `at` (Unix
 /// seconds); Undo works for `delay` seconds. Returns its outbox ID.
 pub async fn schedule_send(
@@ -747,6 +825,21 @@ pub async fn server_hold_limit(connection: &Connection, account: i64) -> Result<
         .await
         .map_err(|err| describe(&err))?;
     pim.server_hold_limit(account)
+        .await
+        .map_err(|err| describe(&err))
+}
+
+/// Searches the mail servers of `account` (every account when 0) for
+/// `query`, for mail not downloaded ("More results on server").
+pub async fn search_server(
+    connection: &Connection,
+    query: &str,
+    account: i64,
+) -> Result<Vec<i64>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.search_server(query, account)
         .await
         .map_err(|err| describe(&err))
 }
@@ -960,6 +1053,28 @@ pub async fn ai_key_saved(connection: &Connection) -> Result<bool, String> {
     pim.ai_key_saved().await.map_err(|err| describe(&err))
 }
 
+/// Has the daemon send feedback from the Send feedback form: `text`
+/// exactly as the form showed it. Returns why it could not be sent.
+pub async fn send_feedback(
+    connection: &Connection,
+    text: &str,
+    kind: &str,
+    reply_to: &str,
+) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    let problem = pim
+        .send_feedback(text, kind, reply_to)
+        .await
+        .map_err(|err| describe(&err))?;
+    if problem.is_empty() {
+        Ok(())
+    } else {
+        Err(problem)
+    }
+}
+
 /// The models the user's own AI service `provider` offers to the saved
 /// key, or a `katna_ai::wire::problem`.
 pub async fn ai_models(
@@ -1042,9 +1157,64 @@ pub async fn sign_in(
     let pim = PimProxy::new(connection)
         .await
         .map_err(|err| AddError::Other(describe(&err)))?;
-    pim.sign_in(provider.as_str(), account.unwrap_or(0), address)
-        .await
-        .map_err(|err| add_error(&err))
+    let account = account.unwrap_or(0);
+    // The page goes to this app's windows to open: from the daemon, a
+    // service in the background, the desktop may leave the browser
+    // behind Katna, so nothing seems to happen.
+    let ticket = ticket();
+    let result = match pim.receive_sign_in_page().await {
+        Ok(mut pages) => {
+            let forward = async {
+                while let Some(page) = pages.next().await {
+                    if let Ok(args) = page.args()
+                        && args.ticket == ticket.as_str()
+                    {
+                        let _ = sign_in_pages().0.try_send(args.url.to_string());
+                    }
+                }
+                std::future::pending::<katna_dbus::zbus::Result<i64>>().await
+            };
+            pim.sign_in_from_app(provider.as_str(), account, address, &ticket)
+                .or(forward)
+                .await
+        }
+        Err(err) => Err(err),
+    };
+    match result {
+        // A daemon from before it opens the page itself.
+        Err(katna_dbus::zbus::Error::MethodError(name, _, _))
+            if name.as_str() == "org.freedesktop.DBus.Error.UnknownMethod" =>
+        {
+            pim.sign_in(provider.as_str(), account, address).await
+        }
+        result => result,
+    }
+    .map_err(|err| add_error(&err))
+}
+
+/// The sign-in pages the daemon handed this app ([`sign_in`]), which the
+/// app opens in the browser as they come.
+pub fn sign_in_pages() -> &'static (
+    async_channel::Sender<String>,
+    async_channel::Receiver<String>,
+) {
+    static PAGES: std::sync::OnceLock<(
+        async_channel::Sender<String>,
+        async_channel::Receiver<String>,
+    )> = std::sync::OnceLock::new();
+    PAGES.get_or_init(async_channel::unbounded)
+}
+
+/// A ticket no other sign-in has.
+fn ticket() -> String {
+    let mut bytes = [0u8; 16];
+    if getrandom::fill(&mut bytes).is_err() {
+        let nanos = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map_or(0, |d| d.as_nanos());
+        bytes = nanos.to_le_bytes();
+    }
+    bytes.iter().map(|b| format!("{b:02x}")).collect()
 }
 
 /// Ends a sign-in that still waits for the browser.
@@ -1054,20 +1224,30 @@ pub async fn cancel_sign_in(connection: &Connection) {
     }
 }
 
-/// The accounts that signed in with a provider which now asks to sign in
-/// again: (ID, address, provider).
-pub async fn signed_out(
+/// Checks `password` with account `id`'s server, keeps it in the keyring
+/// and has the account sync again. `AddError::Password` when the server
+/// refuses it.
+pub async fn set_password(
     connection: &Connection,
-) -> Result<Vec<(i64, String, OAuthProvider)>, String> {
+    id: i64,
+    password: &str,
+) -> Result<(), AddError> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| AddError::Other(describe(&err)))?;
+    pim.set_password(id, password)
+        .await
+        .map_err(|err| add_error(&err))
+}
+
+/// Where every account's mail sync stands.
+pub async fn accounts_status(
+    connection: &Connection,
+) -> Result<Vec<katna_dbus::AccountStatus>, String> {
     let pim = PimProxy::new(connection)
         .await
         .map_err(|err| describe(&err))?;
-    let accounts = pim.accounts().await.map_err(|err| describe(&err))?;
-    Ok(accounts
-        .into_iter()
-        .filter(|a| a.state == state::AUTH_FAILED)
-        .filter_map(|a| Some((a.id, a.address, a.sign_in.parse().ok()?)))
-        .collect())
+    pim.accounts().await.map_err(|err| describe(&err))
 }
 
 /// Where account `id`'s mail sync stands, or `None` if there is no such
@@ -1155,6 +1335,23 @@ pub async fn fetch_image(connection: &Connection, url: &str) -> Result<Vec<u8>, 
         .await
         .map_err(|err| describe(&err))?;
     pim.fetch_image(url).await.map_err(|err| describe(&err))
+}
+
+/// Asks the daemon to keep the Autocrypt key of message `id`, just opened.
+pub async fn learn_key(connection: &Connection, id: i64) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.learn_key(id).await.map_err(|err| describe(&err))
+}
+
+/// Asks the daemon to look up a key for `address` in its Web Key
+/// Directory: its fingerprint, or empty when there is none.
+pub async fn look_up_key(connection: &Connection, address: &str) -> Result<String, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.look_up_key(address).await.map_err(|err| describe(&err))
 }
 
 /// Asks the daemon for the picture of the sender `address` (empty: none).
@@ -1279,6 +1476,14 @@ pub async fn delete_folder(connection: &Connection, folder: i64) -> Result<u32, 
     pim.delete_folder(folder)
         .await
         .map_err(|err| describe(&err))
+}
+
+/// Stops the daemon so its next start runs a safe mode request.
+pub async fn restart_daemon(connection: &Connection) -> Result<(), String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.restart().await.map_err(|err| describe(&err))
 }
 
 /// Has the daemon delete everything Katna keeps on this computer. It exits
@@ -1419,12 +1624,61 @@ pub async fn send_outcomes(
         .filter_map(|outcome| outcome))
 }
 
+/// Changes a mail server refused for good, which the daemon undid.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Refused {
+    pub account: i64,
+    /// `flags`, `move`, `label`, `delete` or `other`.
+    pub change: String,
+    pub count: u32,
+    /// The server's answer.
+    pub reason: String,
+}
+
+/// Yields each time a mail server refuses changes for good.
+pub async fn changes_refused(
+    connection: &Connection,
+) -> Result<impl Stream<Item = Refused>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    let signals = pim
+        .receive_changes_refused()
+        .await
+        .map_err(|err| describe(&err))?;
+    Ok(signals.filter_map(|signal| {
+        let args = signal.args().ok()?;
+        Some(Refused {
+            account: args.account,
+            change: args.change.to_owned(),
+            count: args.count,
+            reason: args.reason.to_owned(),
+        })
+    }))
+}
+
 /// Every message in the outbox: waiting, being sent, sent or failed.
 pub async fn outbox(connection: &Connection) -> Result<Vec<OutboxItem>, String> {
     let pim = PimProxy::new(connection)
         .await
         .map_err(|err| describe(&err))?;
     pim.outbox().await.map_err(|err| describe(&err))
+}
+
+/// Sends a failed message again now; `false` when it was not one.
+pub async fn retry_send(connection: &Connection, id: i64) -> Result<bool, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.retry_send(id).await.map_err(|err| describe(&err))
+}
+
+/// Forgets a failed or cancelled message; `false` when it was not one.
+pub async fn discard_send(connection: &Connection, id: i64) -> Result<bool, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.discard_send(id).await.map_err(|err| describe(&err))
 }
 
 /// Yields whenever an outbox entry changes.
@@ -1745,9 +1999,10 @@ pub async fn first_sync_pending(connection: &Connection) -> Result<bool, String>
         .await
         .map_err(|err| describe(&err))?;
     let accounts = pim.accounts().await.map_err(|err| describe(&err))?;
-    Ok(accounts
-        .iter()
-        .any(|a| a.last_sync == 0 && a.state != state::NOT_SYNCED && a.state != state::AUTH_FAILED))
+    Ok(accounts.iter().any(|a| {
+        a.last_sync == 0
+            && ![state::NOT_SYNCED, state::AUTH_FAILED, state::PAUSED].contains(&a.state.as_str())
+    }))
 }
 
 /// Has the daemon check `account` for new mail now, every folder of it, or
@@ -1793,7 +2048,7 @@ async fn check(
                 folders.iter().any(|(id, _)| id.0 == a.id)
             }
         })
-        .filter(|a| a.state != state::NOT_SYNCED)
+        .filter(|a| a.state != state::NOT_SYNCED && a.state != state::PAUSED)
         .map(|a| a.id)
         .collect();
     if folders.is_empty() {

@@ -4,6 +4,7 @@
 //! the people a Gmail account mailed but never saved, as Google keeps
 //! them. Each can be saved in one click, with an Undo.
 
+use crate::widgets::Tip as _;
 use std::collections::BTreeSet;
 use std::ops::Range;
 use std::rc::Rc;
@@ -18,7 +19,7 @@ use super::apps::App;
 use crate::daemon::{self, Command};
 use crate::data::SavedBook;
 use crate::theme::Theme;
-use crate::widgets::{icon_button, tip};
+use crate::widgets::icon_button;
 
 /// The other contacts to show: not saved since, one per address, matching
 /// `query` (lower case).
@@ -195,7 +196,7 @@ impl MailWindow {
                     .group_hover("other-contact", |s| s.visible())
                     .child(
                         icon_button(("other-contact-mail", ix), "mail", 20.0, th)
-                            .tooltip(tip(tr!("contacts-other-email"), th))
+                            .tip(tr!("contacts-other-email"), th)
                             .on_click(cx.listener(move |this, _, window, cx| {
                                 cx.stop_propagation();
                                 this.open_app(App::Mail, cx);
@@ -208,7 +209,7 @@ impl MailWindow {
                     )
                     .child(
                         icon_button(("other-contact-add", ix), "person-add", 20.0, th)
-                            .tooltip(tip(tr!("contact-add-to-contacts"), th))
+                            .tip(tr!("contact-add-to-contacts"), th)
                             .on_click(cx.listener(move |this, _, _, cx| {
                                 cx.stop_propagation();
                                 this.save_other_contact(id, shown.clone(), cx);

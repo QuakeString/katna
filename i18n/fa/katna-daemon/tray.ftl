@@ -6,6 +6,8 @@
 
 tray-open-inbox = باز کردن _صندوق ورودی
 tray-new-message = _پیام جدید
+tray-new-task = _کار جدید
+tray-new-note = _یادداشت جدید
 tray-preferences = _تنظیمات
 tray-quit = _خروج
 
@@ -14,4 +16,11 @@ tray-quit = _خروج
 tray-unread = { $count ->
     [0] پیام خوانده‌نشده‌ای نیست
    *[other] { $count } پیام خوانده‌نشده
+}
+tray-password-refused = برای { $address } گذرواژهٔ جدید لازم است
+tray-signed-out = دوباره به { $address } وارد شوید
+tray-accounts-need-you = { $count } حساب به شما نیاز دارند
+tray-not-sent = { $count ->
+    [one] { $count } پیام ارسال نشد
+   *[other] { $count } پیام ارسال نشد
 }

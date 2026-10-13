@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Dialogs fit a phone-sized window"
+text = """
+What's new, About, Updates, Keyboard shortcuts and the other dialogs now
+fit inside a narrow window with Katna's own frame, instead of running past
+its edges.
+"""

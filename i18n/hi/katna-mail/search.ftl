@@ -14,6 +14,7 @@ search-without = इनके बिना
 search-date-within = इतने समय के भीतर
 search-has-attachment = अटैचमेंट वाले
 search-attachment-custom = कस्टम
+search-attachment-image = तस्वीर
 search-attachment-custom-hint = कोई एक्सटेंशन टाइप करें, जैसे png, फिर Space दबाएं
 search-attachment-remove = हटाएं
 search-clear-filter = फ़िल्टर साफ़ करें
@@ -60,3 +61,13 @@ search-dates-month-back = पिछला महीना
 search-dates-month-on = अगला महीना
 search-dates-year-back = पिछला साल
 search-dates-year-on = अगला साल
+
+## More results on server: under the results, mail found by asking the
+## mail server, for mail that is not downloaded to this computer yet.
+
+search-server-more = सर्वर पर और नतीजे
+search-server-searching = सर्वर पर मेल खोजे जा रहे हैं…
+search-server-empty-searching = अभी यहां कुछ नहीं है। सर्वर पर मेल खोजे जा रहे हैं…
+search-server-nothing = सर्वर पर और कोई नतीजा नहीं
+search-server-failed = सर्वर पर खोज नहीं हो सकी।
+search-server-again = फिर से कोशिश करें

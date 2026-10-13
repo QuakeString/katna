@@ -6,6 +6,11 @@
 
 about-tooltip = ກ່ຽວກັບ Katna
 about-tagline = ອີເມວ ແລະ ປະຕິທິນສຳລັບເດັສທັອບ Linux
+about-version = Katna Mail { $version }
+about-copy-version = ສຳເນົາລາຍລະອຽດເວີຊັນ
+about-version-copied = ສຳເນົາແລ້ວ
+about-version-built = ສ້າງເມື່ອ: { $date }
+about-version-system = ລະບົບ: { $system }
 about-whats-new = ມີຫຍັງໃໝ່
 
 ## update themselves). $version is a version such as 0.0.0.r236.g1a2b3c4.
@@ -21,11 +26,13 @@ about-update-ready = ເວີຊັນ { $version } ພ້ອມຕິດຕັ
 about-update-ready-detail = Katna Mail ຈະເລີ່ມໃໝ່ເພື່ອສຳເລັດການອັບເດດ.
 about-update-confirm = ຕິດຕັ້ງເວີຊັນ { $version } ບໍ?
 about-update-confirm-detail = Katna Mail ຈະປິດ, ຕິດຕັ້ງການອັບເດດ, ແລ້ວເປີດຄືນຢູ່ບ່ອນທີ່ທ່ານຄ້າງໄວ້. ຄອມພິວເຕີຂອງທ່ານຈະຖາມຫາລະຫັດຜ່ານ.
+about-update-confirm-detail-windows = Katna Mail ຈະປິດ, ຕິດຕັ້ງອັບເດດ ແລະ ເປີດຄືນໃນອີກຈັກໜ້ອຍ.
 about-update-installing = ກຳລັງຕິດຕັ້ງເວີຊັນ { $version }…
 about-update-installing-detail = ພິມລະຫັດຜ່ານຂອງທ່ານໃນໜ້າຕ່າງທີ່ເປີດຂຶ້ນ.
+about-update-installing-detail-windows = Katna Mail ຈະປິດດຽວນີ້ ແລະ ເປີດຄືນເມື່ອຕິດຕັ້ງອັບເດດແລ້ວ.
 about-update-cancelled = ບໍ່ໄດ້ຕິດຕັ້ງການອັບເດດ ເພາະບໍ່ໄດ້ພິມລະຫັດຜ່ານ.
 about-update-failed = ຕິດຕັ້ງການອັບເດດບໍ່ໄດ້: { $error }
-about-update-unsupported = Katna Mail ສະບັບນີ້ອັບເດດໂດຍຕົວຈັດການແພັກເກດຂອງທ່ານ.
+about-update-not-self-updating = Katna Mail ສະບັບນີ້ບໍ່ອັບເດດເອງ. ອັບເດດມັນດ້ວຍວິທີດຽວກັບທີ່ທ່ານຕິດຕັ້ງ.
 about-update-restart-failed = ຕິດຕັ້ງການອັບເດດແລ້ວ, ແຕ່ Katna Mail ເປີດຄືນບໍ່ໄດ້ ({ $error }). ກະລຸນາເປີດມັນເອງ.
 about-update-check = ກວດຫາການອັບເດດ
 about-update-download = ດາວໂຫຼດ
@@ -35,6 +42,8 @@ about-update-restart = ອັບເດດ ແລະ ເລີ່ມໃໝ່
 about-update-cancel = ບໍ່ເອົາຕອນນີ້
 about-changelog = ບັນທຶກການປ່ຽນແປງ
 about-source = ຊອສໂຄດ
+about-debug-report = ສຳເນົາລາຍງານດີບັກ
+about-debug-report-tip = ເວີຊັນ, ການກວດຫຼັງອັບເດດ ແລະ ບັນທຶກລ່າສຸດ ສຳລັບລາຍງານບັກ. ບໍ່ມີອີເມວ ຫຼື ລະຫັດຜ່ານ.
 about-coffee = ລ້ຽງກາເຟຂ້ອຍຈອກໜຶ່ງ
 about-coffee-coffee = ກາເຟບໍ?
 about-coffee-tea = ຊາບໍ?
@@ -143,6 +152,7 @@ onboarding-katna-private = ມັນມີລະຫັດຜ່ານຂອງ�
 onboarding-ready-title = ພ້ອມແລ້ວ
 onboarding-ready-lead = Katna ກຳລັງດຶງອີເມວຂອງທ່ານ. ມັນຈະສະແດງເມື່ອມາຮອດ, ແລະ ອີເມວໃໝ່ຈະປາກົດຂຶ້ນເອງ.
 onboarding-ready-lead-address = Katna ກຳລັງດຶງອີເມວຂອງ { $address }. ມັນຈະສະແດງເມື່ອມາຮອດ, ແລະ ອີເມວໃໝ່ຈະປາກົດຂຶ້ນເອງ.
+onboarding-apps = ແອັບທີ່ທ່ານຈະໃຊ້
 onboarding-ready-tour = ຢາກທ່ຽວຊົມໜຶ່ງນາທີເພື່ອເບິ່ງວ່າທຸກຢ່າງຢູ່ໃສບໍ?
 onboarding-skip = ຂ້າມໄປກ່ອນ
 onboarding-take-tour = ທ່ຽວຊົມ
@@ -208,11 +218,9 @@ crash-close = ປິດ
 
 ## letting an account in; $provider: Google or Microsoft)
 
-sign-in-again-text = { $provider } ຂໍໃຫ້ທ່ານເຂົ້າສູ່ລະບົບ { $address } ອີກຄັ້ງ.
 sign-in-again-button = ເຂົ້າສູ່ລະບົບ
 sign-in-again-tooltip = ເປີດໜ້າເຂົ້າສູ່ລະບົບຂອງ { $provider } ໃນບຣາວເຊີຂອງທ່ານ
 sign-in-again-waiting = ກຳລັງລໍຖ້າບຣາວເຊີຂອງທ່ານ…
-sign-in-again-close = ປິດ
 google-api-off = { $api } ຖືກປິດໄວ້ໃນໂຄງການ Google Cloud ຂອງ Katna.
 google-api-turn-on = ເປີດ
 google-api-turn-on-tooltip = ເປີດ Google Cloud ເພື່ອເປີດ { $api }, ແລ້ວກົດ ລອງໃໝ່

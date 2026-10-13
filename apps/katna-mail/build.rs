@@ -107,7 +107,7 @@ fn highlights() {
             .unwrap_or_else(|e| panic!("whats-new/highlights/{file}: {e}"));
         for key in table.keys() {
             assert!(
-                matches!(key.as_str(), "title" | "text" | "animation"),
+                matches!(key.as_str(), "title" | "text" | "animation" | "apps"),
                 "whats-new/highlights/{file}: unknown key {key:?}"
             );
         }
@@ -144,6 +144,29 @@ fn highlights() {
                 )
             }
         };
+        // The apps beside Mail a highlight is about: left out while they
+        // are all turned off.
+        let mut apps = String::from("&[");
+        for app in table.get("apps").map_or(&[][..], |value| {
+            value.as_array().map_or_else(
+                || panic!("whats-new/highlights/{file}: apps must be a list"),
+                |list| list.as_slice(),
+            )
+        }) {
+            let variant = match app.as_str() {
+                Some("calendar") => "Calendar",
+                Some("contacts") => "Contacts",
+                Some("tasks") => "Tasks",
+                Some("notes") => "Notes",
+                Some("files") => "Files",
+                _ => panic!(
+                    "whats-new/highlights/{file}: apps are \"calendar\", \"contacts\", \
+                     \"tasks\", \"notes\" or \"files\""
+                ),
+            };
+            write!(apps, "katna_core::config::AppKind::{variant}, ").unwrap();
+        }
+        apps.push(']');
         let mut translations = String::from("&[");
         for (folder, title, text) in translated.get(name).into_iter().flatten() {
             write!(
@@ -156,7 +179,7 @@ fn highlights() {
         writeln!(
             out,
             "    Highlight {{ name: {name:?}, title: {title:?}, text: {text:?}, \
-             translations: {translations}, animation: {animation} }},"
+             translations: {translations}, animation: {animation}, apps: {apps} }},"
         )
         .unwrap();
     }

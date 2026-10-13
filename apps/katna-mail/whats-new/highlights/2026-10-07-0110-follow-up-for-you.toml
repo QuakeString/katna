@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Follow-ups that send themselves"
+text = """
+In the menu beside Send, Follow up if no reply can now send a short
+follow-up for you when nobody answers: write it once, pick when, and
+choose whether to try once more. It goes out on weekdays in working hours,
+stops as soon as anyone replies (auto-replies don't count), and waits for
+you rather than go out late if your computer was off. A chip beside Send
+shows what is set. Or keep it to a reminder, now with any date you pick.
+"""

@@ -27,6 +27,8 @@ mod checks;
 mod chips;
 mod drafts;
 mod drive;
+mod follow_up;
+mod outbox;
 mod paste;
 mod popout;
 mod quote;
@@ -42,6 +44,7 @@ mod templates;
 mod tools;
 mod tracking;
 
+use crate::widgets::Tip as _;
 use std::cell::Cell;
 use std::rc::Rc;
 use std::sync::Arc;
@@ -72,15 +75,18 @@ use crate::data::EntryKey;
 use crate::format;
 use crate::grammar;
 use crate::outgoing::{self, Mailbox, Outgoing, Part};
+use crate::quoting;
 use crate::signatures;
 use crate::spell::{self, Speller};
 use crate::suggest::{Phrases, Suggester};
 use crate::theme::{Theme, fade};
-use crate::widgets::{elevation, icon, menu, menu_item, tip};
+use crate::widgets::{elevation, icon, menu, menu_item};
 
 pub(super) use attach::Attachment;
 use checks::Passed;
 use chips::Chips;
+pub(super) use outbox::NAV_KEY as OUTBOX_NAV_KEY;
+pub(super) use outbox::reason_text as outbox_reason;
 pub(super) use quote::{signature_name, signature_tag};
 pub(in crate::window) use recipients::address_suggestions;
 use recipients::{Field, Suggestions};
@@ -187,8 +193,8 @@ pub(super) struct Compose {
     format_height: std::rc::Rc<std::cell::Cell<f32>>,
     /// The open menu or dialog, if any.
     popup: Option<Popup>,
-    /// Seconds after sending to remind if nobody replies; 0 for never.
-    follow_up: u32,
+    /// What happens if nobody replies: a reminder, or a follow-up.
+    follow_up: follow_up::FollowUp,
     /// Fields of the link and schedule dialogs and the emoji search.
     dialog: tools::Dialog,
     shown: Spring,
@@ -396,6 +402,11 @@ pub(super) struct Writing {
     scheduled: Vec<OutboxItem>,
     /// The list of scheduled mail shows.
     scheduled_open: bool,
+    /// Mail that has not gone out: waiting for a connection or a sign-in,
+    /// or refused.
+    outbox: Vec<OutboxItem>,
+    /// The outbox's list shows.
+    outbox_open: bool,
     watch: Option<Task<()>>,
     /// The signature being edited on the Settings page, and its bar.
     signature_editor: Option<Entity<RichEditor>>,
@@ -447,6 +458,19 @@ impl Writing {
     /// How many messages wait for their scheduled time.
     pub(super) fn scheduled_count(&self) -> usize {
         self.scheduled.len()
+    }
+
+    /// How many messages have not gone out.
+    pub(super) fn outbox_count(&self) -> usize {
+        self.outbox.len()
+    }
+
+    /// Whether one of them waits for the user: refused, or waiting for a
+    /// sign-in. Its count is amber then.
+    pub(super) fn outbox_needs_you(&self) -> bool {
+        self.outbox
+            .iter()
+            .any(|i| outbox::why(i).is_some_and(|w| w.needs_you()))
     }
 }
 
@@ -580,6 +604,11 @@ fn addresses<'a>(list: impl IntoIterator<Item = &'a Address>) -> String {
         .join(", ")
 }
 
+/// `at` in Unix seconds, or now.
+fn at_or_now(at: Option<jiff::Timestamp>) -> i64 {
+    at.unwrap_or_else(jiff::Timestamp::now).as_second()
+}
+
 /// `subject` with `prefix` ("Re:" or "Fwd:") once.
 fn prefixed(prefix: &str, subject: &str) -> String {
     let subject = subject.trim();
@@ -620,7 +649,7 @@ fn thread_text(doc: &Doc) -> String {
             Block::Para(p) => Some(p),
             _ => None,
         })
-        .skip_while(|p| p.style.quote == 0 && !p.text.trim_end().ends_with("wrote:"))
+        .skip_while(|p| p.style.quote == 0 && !quoting::is_reply_header(&p.text))
         .filter(|p| !p.style.signature)
         .map(|p| p.text.as_str())
         .collect();
@@ -637,7 +666,7 @@ fn trim_quote(doc: &mut Doc) -> Option<Vec<Block>> {
         }
     }
     let at = doc.blocks.iter().rposition(|b| {
-        para(b).is_some_and(|p| p.style.quote == 0 && p.text.trim_end().ends_with("wrote:"))
+        para(b).is_some_and(|p| p.style.quote == 0 && quoting::is_reply_header(&p.text))
     })?;
     let quote = &doc.blocks[at + 1..];
     if quote.is_empty()
@@ -690,11 +719,20 @@ fn draft(
                 to.extend(view.to.iter().filter(|a| !is_me(&a.email)));
                 cc.extend(view.cc.iter().filter(|a| !is_me(&a.email)));
             }
+            // Replying to all on one's own message lists its recipients
+            // once.
+            let mut seen: Vec<String> = Vec::new();
+            to.retain(|a| {
+                let email = a.email.to_lowercase();
+                let new = !seen.contains(&email);
+                seen.push(email);
+                new
+            });
             let to_emails: Vec<String> = to.iter().map(|a| a.email.to_lowercase()).collect();
             cc.retain(|a| !to_emails.contains(&a.email.to_lowercase()));
             body.blocks.push(para(""));
             body.blocks
-                .push(para(format!("On {date}, {from_text} wrote:")));
+                .push(para(quoting::reply_header(date, &from_text)));
             body.blocks.extend(quoted(&view.body));
             Draft {
                 to: addresses(to),
@@ -706,16 +744,25 @@ fn draft(
         }
         Kind::Forward => {
             body.blocks.push(para(""));
+            let iso = |text: &str| quoting::isolated(text);
+            body.blocks.push(para(quoting::forward_header()));
             body.blocks
-                .push(para("---------- Forwarded message ---------"));
-            body.blocks.push(para(format!("From: {from_text}")));
-            body.blocks.push(para(format!("Date: {date}")));
-            body.blocks.push(para(format!("Subject: {}", view.subject)));
+                .push(para(tr!("compose-forward-from", from = iso(&from_text))));
             body.blocks
-                .push(para(format!("To: {}", addresses(&view.to))));
+                .push(para(tr!("compose-forward-date", date = iso(date))));
+            body.blocks.push(para(tr!(
+                "compose-forward-subject",
+                subject = iso(&view.subject)
+            )));
+            body.blocks.push(para(tr!(
+                "compose-forward-to",
+                to = iso(&addresses(&view.to))
+            )));
             if !view.cc.is_empty() {
-                body.blocks
-                    .push(para(format!("Cc: {}", addresses(&view.cc))));
+                body.blocks.push(para(tr!(
+                    "compose-forward-cc",
+                    cc = iso(&addresses(&view.cc))
+                )));
             }
             body.blocks.push(para(""));
             body.blocks
@@ -1095,12 +1142,42 @@ impl MailWindow {
     }
 
     /// Sends the open new message from `account`, as picking it in From.
-    pub(super) fn send_compose_from(&mut self, account: AccountId) {
-        if let Some(compose) = &mut self.compose
-            && self.accounts.iter().any(|a| a.id == account)
-        {
+    pub(super) fn send_compose_from(&mut self, account: AccountId, cx: &mut Context<Self>) {
+        self.change_compose_from(account, cx);
+    }
+
+    /// Sends the open message from `account`. The signature follows when
+    /// it is the one the old account starts with, not one picked by hand.
+    /// Returns the signature put in instead, if it changed.
+    fn change_compose_from(
+        &mut self,
+        account: AccountId,
+        cx: &mut Context<Self>,
+    ) -> Option<Option<u32>> {
+        let address = |id: AccountId| {
+            self.accounts
+                .iter()
+                .find(|a| a.id == id)
+                .map(|a| a.address.clone())
+        };
+        let new_address = address(account)?;
+        let old = self.compose_from_id();
+        let compose = self.compose.as_ref()?;
+        let replies = compose.kind != Kind::New;
+        let signature = compose.signature;
+        let sending = &self.config.sending;
+        let was = old
+            .and_then(address)
+            .map(|a| sending.default_signature(&a, replies));
+        let now = sending.default_signature(&new_address, replies);
+        if let Some(compose) = &mut self.compose {
             compose.from = Some(account);
         }
+        if was != Some(signature) || now == signature {
+            return None;
+        }
+        self.choose_signature(now, cx);
+        Some(now)
     }
 
     /// Scrolls the conversation smoothly to the reply that just opened at
@@ -1165,14 +1242,20 @@ impl MailWindow {
         .detach();
     }
 
-    /// The signature a new message starts with: for new mail the default;
-    /// in a conversation the one the user signed their newest message in it
-    /// with, else the default for replies.
+    /// The signature a new message starts with: for new mail its account's
+    /// default; in a conversation the one the user signed their newest
+    /// message in it with, else the account's default for replies.
     pub(in crate::window) fn signature_for(&self, kind: Kind) -> Option<u32> {
         let sending = &self.config.sending;
+        let address = self
+            .compose_account(kind)
+            .map(|a| a.address.as_str())
+            .unwrap_or_default();
         let id = match kind {
-            Kind::New => sending.new_mail_signature,
-            _ => self.signature_used().or(sending.reply_signature),
+            Kind::New => sending.default_signature(address, false),
+            _ => self
+                .signature_used()
+                .or_else(|| sending.default_signature(address, true)),
         };
         sending.signature(id).map(|s| s.id)
     }
@@ -1434,6 +1517,16 @@ impl MailWindow {
         window.focus(&focus, cx);
         let dialog = tools::Dialog::new(accent, cx);
         subscriptions.extend(dialog.subscribe(window, cx));
+        let follow_up = follow_up::FollowUp::new(accent, cx);
+        subscriptions.push(cx.subscribe_in(
+            &follow_up.text,
+            window,
+            |this, _, event: &InputEvent, window, cx| {
+                if let InputEvent::Cancel = event {
+                    this.cancel_follow_up(window, cx);
+                }
+            },
+        ));
         // Whether Track can be used: the Katna account, read again.
         self.katna_load(window, cx);
         self.compose = Some(Compose {
@@ -1466,7 +1559,7 @@ impl MailWindow {
             format_slide: Spring::new(motion::SMOOTH, 0.0),
             format_height: Default::default(),
             popup: None,
-            follow_up: 0,
+            follow_up,
             dialog,
             shown: Spring::new(motion::SLIDE, 0.0),
             sheet_width: Rc::default(),
@@ -1685,7 +1778,7 @@ impl MailWindow {
     /// forward the account the open conversation is in, whatever list it
     /// was opened from (the unified inbox or search mix accounts); else
     /// that of the open folder, or the first.
-    fn compose_account(&self, kind: Kind) -> Option<&katna_core::Account> {
+    pub(super) fn compose_account(&self, kind: Kind) -> Option<&katna_core::Account> {
         let chosen = &self.config.sending.send_from;
         let fixed = (kind == Kind::New && chosen != SEND_FROM_CURRENT)
             .then(|| {
@@ -1771,7 +1864,18 @@ impl MailWindow {
         let attachments = compose.attachments.clone();
         let drive_files = compose.drive.clone();
         let plain = compose.plain(cx);
-        let follow_up = i64::from(compose.follow_up);
+        // When to follow up, and what to send then, if anything.
+        let follow_up_on = compose.follow_up.on();
+        let follow_up_text = (compose.follow_up.send && !sealing.encrypt)
+            .then(|| compose.follow_up.text.read(cx).text().trim().to_owned())
+            .filter(|text| !text.is_empty());
+        let follow_up_again = i64::from(compose.follow_up.again);
+        let follow_up_sent = at_or_now(at);
+        let follow_up = if follow_up_on {
+            compose.follow_up.after_sending(follow_up_sent)
+        } else {
+            0
+        };
         // Tracking needs a Katna account with a confirmed address.
         let track = sealing.track && self.katna_signed_in();
         // Delivery receipts where the mail server sends them (the daemon
@@ -1887,6 +1991,34 @@ impl MailWindow {
         let hidden = emails(&bcc);
         let recipients: Vec<Mailbox> = to.iter().chain(&cc).chain(&bcc).cloned().collect();
         let draft_subject = draft.subject.clone();
+        let follow_up_mail = follow_up_text.map(|text| {
+            let signature = self
+                .config
+                .sending
+                .signature(signature)
+                .map(|s| html::to_plain(&signatures::doc(s)));
+            let said = quoting::reply_header(
+                &format::local(follow_up_sent, &self.tz)
+                    .map(format::long_date)
+                    .unwrap_or_default(),
+                &match &from.name {
+                    Some(name) => format!("{name} <{}>", from.email),
+                    None => from.email.clone(),
+                },
+            );
+            follow_up::build(&follow_up::Mail {
+                from: &from,
+                to: &to,
+                cc: &cc,
+                bcc: &bcc,
+                subject: &draft.subject,
+                message_id: &message_id,
+                references: &thread.references,
+                text: &text,
+                signature: signature.as_deref(),
+                quote: (&said, &body_text),
+            })
+        });
         let raw = outgoing::build(&Outgoing {
             from: Some(from),
             to,
@@ -1952,7 +2084,14 @@ impl MailWindow {
                 cx,
             );
         }
+        if at.is_some() {
+            self.note_usage(katna_core::usage::Feature::ScheduledSend);
+        }
+        if sealing.encrypt {
+            self.note_usage(katna_core::usage::Feature::Encrypted);
+        }
         let connection = self.daemon.clone();
+        let peers = self.paths.peer_keys_dir();
         let when = at.map(|at| schedule::describe(at, &self.tz));
         let undo = self.config.sending.undo_send_seconds;
         let at = at.map(|at| at.as_second());
@@ -1960,8 +2099,16 @@ impl MailWindow {
             let result = cx
                 .background_executor()
                 .spawn(async move {
+                    let connection = match connection {
+                        Some(connection) => connection,
+                        None => daemon::connect().await?,
+                    };
                     // Signed and encrypted before the outbox sees it.
-                    let raw = security::seal(raw, sealing, sender.clone(), visible, hidden)?;
+                    let recipients: Vec<String> = visible.iter().chain(&hidden).cloned().collect();
+                    security::look_up_keys(&connection, sealing, &sender, &recipients, &peers)
+                        .await;
+                    let raw =
+                        security::seal(raw, sealing, sender.clone(), visible, hidden, &peers)?;
                     let raw = if sealing.receipt {
                         tracking::with_receipt(raw, &sender)
                     } else {
@@ -1971,10 +2118,6 @@ impl MailWindow {
                         tracking::with_delivery_receipt(raw)
                     } else {
                         raw
-                    };
-                    let connection = match connection {
-                        Some(connection) => connection,
-                        None => daemon::connect().await?,
                     };
                     let id = match at {
                         // Undo works for the undo delay; then it may go
@@ -1988,10 +2131,23 @@ impl MailWindow {
                         }
                         None => daemon::queue_send(&connection, account, &raw, delay).await?,
                     };
-                    if follow_up > 0
-                        && let Err(err) = daemon::set_follow_up(&connection, id, follow_up).await
-                    {
-                        tracing::warn!(%err, "the reply reminder was not set");
+                    if follow_up > 0 {
+                        let set = match &follow_up_mail {
+                            Some(mail) => {
+                                daemon::set_follow_up_mail(
+                                    &connection,
+                                    id,
+                                    follow_up,
+                                    follow_up_again,
+                                    mail,
+                                )
+                                .await
+                            }
+                            None => daemon::set_follow_up(&connection, id, follow_up).await,
+                        };
+                        if let Err(err) = set {
+                            tracing::warn!(%err, "the follow-up was not set");
+                        }
                     }
                     if let Some((account, message_id)) = saved
                         && let Err(err) =
@@ -2222,8 +2378,7 @@ impl MailWindow {
         }
         let t = t.clamp(0.0, 1.0);
         let compose = self.compose.as_ref()?;
-        let viewport = window.viewport_size();
-        let (vw, vh) = (unpx(viewport.width), unpx(viewport.height));
+        let (vw, vh) = (self.room_width(), self.room_height(window));
         let mode = compose.mode;
         let title = compose.title(cx);
         let draft_status = match compose.draft_status {
@@ -2285,14 +2440,14 @@ impl MailWindow {
                     },
                     th,
                 )
-                .tooltip(tip(
+                .tip(
                     if mode == Mode::Minimized {
                         tr!("compose-restore")
                     } else {
                         tr!("compose-minimize")
                     },
                     th,
-                ))
+                )
                 .on_click(cx.listener(|this, _, _, cx| {
                     cx.stop_propagation();
                     this.compose_mode(Mode::Minimized, cx)
@@ -2301,7 +2456,7 @@ impl MailWindow {
             .when(mode == Mode::Full, |d| {
                 d.child(
                     small_button("compose-full", "close-full", th)
-                        .tooltip(tip(tr!("compose-exit-full-screen"), th))
+                        .tip(tr!("compose-exit-full-screen"), th)
                         .on_click(cx.listener(|this, _, _, cx| {
                             cx.stop_propagation();
                             this.compose_mode(Mode::Full, cx)
@@ -2311,7 +2466,7 @@ impl MailWindow {
             .child(
                 // Gmail's expand button, in a window of its own here.
                 small_button("compose-pop-out", "open-full", th)
-                    .tooltip(tip(tr!("compose-open-window"), th))
+                    .tip(tr!("compose-open-window"), th)
                     .on_click(cx.listener(|this, _, window, cx| {
                         cx.stop_propagation();
                         this.pop_out_compose(window, cx)
@@ -2319,7 +2474,7 @@ impl MailWindow {
             )
             .child(
                 small_button("compose-close", "close", th)
-                    .tooltip(tip(tr!("compose-save-close"), th))
+                    .tip(tr!("compose-save-close"), th)
                     .on_click(cx.listener(|this, _, _, cx| {
                         cx.stop_propagation();
                         this.close_compose_saving(cx)
@@ -2488,7 +2643,7 @@ impl MailWindow {
                 self.person_avatar(&name, &a.address, 40.0)
             });
         let pop_out = small_button("inline-pop-out", "open-full", th)
-            .tooltip(tip(tr!("compose-pop-out-reply"), th))
+            .tip(tr!("compose-pop-out-reply"), th)
             // Straight into a window of its own; docking it brings it back
             // here.
             .on_click(cx.listener(|this, _, window, cx| this.pop_out_compose(window, cx)));
@@ -2720,12 +2875,8 @@ impl MailWindow {
                             } else {
                                 rgba(0)
                             })
-                            .children(self.render_floating_format_bar(
-                                th,
-                                card_width.max(320.0) - 24.0,
-                                cx,
-                            ))
-                            .child(self.render_compose_actions(th, card_width.max(320.0), cx)),
+                            .children(self.render_floating_format_bar(th, card_width - 24.0, cx))
+                            .child(self.render_compose_actions(th, card_width, cx)),
                     ),
             )
             .child(self.render_drop_target(th));
@@ -2845,7 +2996,17 @@ impl MailWindow {
                     .font_weight(FontWeight::MEDIUM)
                     .child(self.render_subject_field(th, cx)),
             )
+            .children(self.compose_offline_strip(th, cx))
             .into_any_element()
+    }
+
+    /// The account the message goes out from.
+    pub(super) fn compose_from_id(&self) -> Option<AccountId> {
+        let compose = self.compose.as_ref()?;
+        compose
+            .from
+            .filter(|id| self.accounts.iter().any(|a| a.id == *id))
+            .or_else(|| self.compose_account(compose.kind).map(|a| a.id))
     }
 
     /// The account the message goes out from, with the others to pick
@@ -2864,12 +3025,27 @@ impl MailWindow {
             menu_item(("compose-from-account", ix), &sender_label(account), th)
                 .gap(px(12.0))
                 .child(div().flex_1())
+                .when(self.is_account_offline(id), |d| {
+                    d.child(crate::widgets::tag(tr!("offline-tag"), th))
+                })
                 .when(chosen, |d| {
                     d.child(icon("check", th.nav_selected_text, 20.0))
                 })
                 .on_click(cx.listener(move |this, _, window, cx| {
+                    if let Some(signature) = this.change_compose_from(id, cx) {
+                        let said = match this.config.sending.signature(signature) {
+                            Some(s) if !s.name.trim().is_empty() => {
+                                tr!("compose-signature-changed", name = s.name.clone())
+                            }
+                            Some(_) => tr!(
+                                "compose-signature-changed",
+                                name = tr!("compose-tool-signature-untitled")
+                            ),
+                            None => tr!("compose-signature-taken-out"),
+                        };
+                        this.show_snackbar(said, None, cx);
+                    }
                     if let Some(c) = &mut this.compose {
-                        c.from = Some(id);
                         c.popup = None;
                         window.focus(&c.body.focus_handle(cx), cx);
                     }
@@ -2918,10 +3094,13 @@ impl MailWindow {
                             .child(SharedString::from(from.address.clone())),
                     ),
             )
+            .when(self.is_account_offline(from.id), |d| {
+                d.child(crate::widgets::tag(tr!("offline-tag"), th))
+            })
             .when(several, |d| {
                 d.cursor_pointer()
                     .hover(|s| s.bg(rgba(th.hover)))
-                    .when(!open, |d| d.tooltip(tip(tr!("compose-from-choose"), th)))
+                    .when(!open, |d| d.tip(tr!("compose-from-choose"), th))
                     .child(icon("chevron-down", th.text_dim, 16.0))
                     .on_click(cx.listener(|this, _, _, cx| this.toggle_popup(Popup::From, cx)))
             })
@@ -3255,6 +3434,22 @@ mod tests {
         let d = draft(Kind::ReplyAll, Some(&original), me, None);
         assert_eq!(d.to, "Kay Mann <kay@enron.com>, Bob <bob@enron.com>");
         assert_eq!(d.cc, "sara@enron.com");
+    }
+
+    #[test]
+    fn reply_all_to_my_own_mail_lists_each_recipient_once() {
+        let view = MessageView {
+            from: vec![addr(None, "me@enron.com")],
+            to: vec![addr(Some("Bob"), "bob@enron.com")],
+            ..view()
+        };
+        let original = Original {
+            view: &view,
+            date: "Tue".to_owned(),
+        };
+        let d = draft(Kind::ReplyAll, Some(&original), me, None);
+        assert_eq!(d.to, "Bob <bob@enron.com>");
+        assert_eq!(d.cc, "sara@enron.com, kay@enron.com");
     }
 
     #[test]

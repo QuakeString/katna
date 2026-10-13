@@ -20,6 +20,13 @@ compose-show-trimmed = نمایش محتوای کوتاه‌شده
 compose-hide-trimmed = پنهان کردن محتوای کوتاه‌شده
 compose-remove-trimmed = حذف متن نقل‌شده
 compose-trimmed-removed = متن نقل‌شده حذف شد
+compose-quote-header = در { $date }، { $from } نوشت:
+compose-forward-header = ---------- پیام بازارسال‌شده ---------
+compose-forward-from = از: { $from }
+compose-forward-date = تاریخ: { $date }
+compose-forward-subject = موضوع: { $subject }
+compose-forward-to = به: { $to }
+compose-forward-cc = رونوشت: { $cc }
 
 ## Recipients and subject
 

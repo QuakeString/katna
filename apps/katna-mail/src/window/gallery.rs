@@ -15,8 +15,8 @@ use super::MailWindow;
 use crate::theme::{Accent, Theme};
 use crate::widgets::{
     CARD_REST, Check, Fold, avatar, card, checkbox, choice_chip, count_pill, filled_button,
-    fold_arrow, fold_box, icon_button, line_field, menu, menu_item, outlined_button, pill_button,
-    radio, raised, row, switch, tag, text_button, ticked_row, tonal_icon_button,
+    fold_arrow, fold_box, icon, icon_button, line_field, menu, menu_item, outlined_button,
+    pill_button, radio, raised, row, switch, tag, text_button, ticked_row, tonal_icon_button,
 };
 
 pub(super) struct Gallery {
@@ -337,6 +337,22 @@ fn column(
                         .justify_center()
                         .text_color(rgba(th.text_dim))
                         .child(format!("{level}"))
+                }),
+            ),
+        ))
+        .child(section(
+            tr!("gallery-status"),
+            th,
+            div().flex().flex_col().gap(px(space::S3)).children(
+                [
+                    ("warning", th.warning, tr!("gallery-status-warning")),
+                    ("info", th.error, tr!("gallery-status-error")),
+                ]
+                .into_iter()
+                .map(|(name, color, label)| {
+                    line()
+                        .child(icon(name, color, 20.0))
+                        .child(div().text_color(rgba(color)).child(label))
                 }),
             ),
         ))

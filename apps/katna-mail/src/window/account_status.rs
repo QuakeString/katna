@@ -9,17 +9,19 @@
 //! words ([`Say`]); the shape, the states and the fixes are the same on
 //! every page.
 
+use crate::widgets::Tip as _;
 use std::collections::{HashMap, HashSet};
 
-use gpui::{AnyElement, Context, FontWeight, SharedString, Task, Window, div, prelude::*, rgba};
+use gpui::{
+    AnyElement, ClickEvent, Context, FontWeight, Pixels, Point, SharedString, Task, Window, div,
+    prelude::*, rgba,
+};
 use katna_dbus::task_state;
 use katna_ui::px;
 
 use super::MailWindow;
-use super::settings_page::Section;
 use crate::daemon::{self, AccountState, AddError};
 use crate::theme::Theme;
-use crate::widgets::tip;
 
 /// Where one page's accounts stand, as last read from the daemon.
 #[derive(Default)]
@@ -196,11 +198,20 @@ impl MailWindow {
         of: Of,
         id: i64,
         fix: Fix,
+        at: Point<Pixels>,
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
         if fix == Fix::Password {
-            self.open_settings_page(Section::Accounts, window, cx);
+            // The same card as the mail list's New password.
+            if let Some(address) = self
+                .accounts
+                .iter()
+                .find(|a| a.id.0 == id)
+                .map(|a| a.address.clone())
+            {
+                self.open_password_card(id, address, at, window, cx);
+            }
             return;
         }
         let Some(connection) = self.daemon.clone() else {
@@ -334,9 +345,9 @@ impl MailWindow {
                         .font_weight(FontWeight::MEDIUM)
                         .text_color(rgba(th.accent))
                         .hover(|s| s.underline())
-                        .tooltip(tip(hint, th))
-                        .on_click(cx.listener(move |this, _, window, cx| {
-                            this.fix_account(of, id, fix, window, cx)
+                        .tip(hint, th)
+                        .on_click(cx.listener(move |this, event: &ClickEvent, window, cx| {
+                            this.fix_account(of, id, fix, event.position(), window, cx)
                         }))
                         .child(label)
                         .into_any_element(),
@@ -355,10 +366,7 @@ impl MailWindow {
                 .font_weight(FontWeight::MEDIUM)
                 .text_color(rgba(th.accent))
                 .hover(|s| s.underline())
-                .tooltip(tip(
-                    katna_i18n::tr!("google-api-turn-on-tooltip", api = api),
-                    th,
-                ))
+                .tip(katna_i18n::tr!("google-api-turn-on-tooltip", api = api), th)
                 .on_click(move |_, _, cx| cx.open_url(&url))
                 .child(katna_i18n::tr!("google-api-turn-on"))
                 .into_any_element()

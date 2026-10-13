@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Pane tops no longer cut off"
+text = """
+With Katna's own title bar, the top edge and soft shadow of the mail
+list, the open mail and the side panes now show in full when the window
+isn't maximized, instead of looking cut flat under the top bar.
+"""

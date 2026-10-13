@@ -20,6 +20,13 @@ compose-show-trimmed = הצגת התוכן שקוצץ
 compose-hide-trimmed = הסתרת התוכן שקוצץ
 compose-remove-trimmed = הסרת הטקסט המצוטט
 compose-trimmed-removed = הטקסט המצוטט הוסר
+compose-quote-header = ב־{ $date }, { $from } כתב/ה:
+compose-forward-header = ---------- הודעה שהועברה ---------
+compose-forward-from = מאת: { $from }
+compose-forward-date = תאריך: { $date }
+compose-forward-subject = נושא: { $subject }
+compose-forward-to = אל: { $to }
+compose-forward-cc = עותק: { $cc }
 
 ## Recipients and subject
 

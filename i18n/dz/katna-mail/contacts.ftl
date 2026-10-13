@@ -34,7 +34,7 @@ contacts-account-signed-in = { $address } ནང་ ལོག་ནང་བས�
 contacts-account-sign-in-refused = { $provider } གིས་ Katna ནང་ན་ འཛུལ་མ་བཅུག ལོག་འབད་རྩོལ་བསྐྱེད་ཞིནམ་ལས་ ཁྱོད་ཀྱི་འབྲེལ་བ་ཚུ་ལུ་ འཛུལ་སྤྱོད་ཀྱི་གནང་བ་བྱིན།
 contacts-account-password = སར་བར་གྱིས་ ཆོག་ཡིག་ངོས་ལེན་མ་འབད། Yahoo དང་ iCloud Zoho དེ་ལས་ གཞན་ཚུ་ལུ་ གློག་རིམ་ཆོག་ཡིག་དགོཔ་ཨིན།
 contacts-account-change-password = ཆོག་ཡིག་བསྒྱུར།
-contacts-account-change-password-tooltip = སྒྲིག་སྟངས་ > རྩིས་ཐོ་ཚུ་ ཁ་ཕྱེ།
+contacts-account-change-password-tooltip = ཆོག་ཡིག་གསརཔ་ཡིག་དཔར་རྐྱབ། Katna གིས་ སར་བར་དང་གཅིག་ཁར་ཞིབ་དཔྱད་འབདཝ་ཨིན
 contacts-account-failed = འབྲེལ་བ་ཚུ་ལྷག་མ་ཚུགས།
 # $reason is the server's own words, in English.
 contacts-account-error = འབྲེལ་བ་ཚུ་ལྷག་མ་ཚུགས་: { $reason }

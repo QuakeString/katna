@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Pick a date where you clicked"
+text = """
+Pick date & time now slides into the snooze and Remind me menu itself,
+instead of a box in the middle of the window. The back arrow returns to
+the times.
+"""

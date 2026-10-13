@@ -4,6 +4,7 @@
 search-category-mail = אימייל
 search-category-people = אנשים
 search-category-tasks = משימות
+search-category-notes = הערות
 search-category-events = אירועים
 search-mail-from = מאת { $sender }
 search-no-subject = (ללא נושא)
@@ -19,6 +20,15 @@ search-event-in-days =
         [two] בעוד יומיים
        *[other] בעוד { $count } ימים
     }
+search-add-task = הוספת המשימה „{ $title }”
+search-add-task-to = אל { $list }
+search-add-task-when = { $when } · { $list }
+search-add-note = הוספת ההערה „{ $title }”
+search-add-note-to = אל ההערות ב־{ $place }
+search-add-note-here = אל ההערות במחשב הזה
+search-new-task = משימה חדשה
+search-new-note = הערה חדשה
 search-reply-all = תשובה לכולם
 search-copy-address = העתקת הכתובת
 search-find-mail = חיפוש באימייל
+search-edit-capture = שינוי לפני ההוספה

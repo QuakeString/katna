@@ -7,6 +7,7 @@
 //! and Insert puts it where the user writes, as one step Undo takes back.
 //! Once there is text, the sparkle rephrases again.
 
+use crate::widgets::Tip as _;
 use gpui::{AnyElement, Context, Focusable, Task, Window, div, prelude::*, rgba};
 use katna_ai::draft::{DraftKind, DraftRequest, Length, Manner};
 use katna_ai::wire::{plan, problem};
@@ -20,7 +21,7 @@ use super::{Fix, Rephrase, State, idea_placeholder, placeholder, problem_text};
 use crate::daemon::{self, Command, Rephrased};
 use crate::theme::Theme;
 use crate::widgets::choice_chip;
-use crate::widgets::{filled_button, icon, icon_button_colored, outlined_button, tip};
+use crate::widgets::{filled_button, icon, icon_button_colored, outlined_button};
 
 /// Why there are no ideas: the conversation is encrypted and Settings
 /// keeps writing help out of encrypted mail.
@@ -510,7 +511,7 @@ impl MailWindow {
         let tool = |id: &'static str, name: &'static str, label: String, on: bool| {
             icon_button_colored(id, name, 18.0, th.text_dim, th)
                 .size(px(36.0))
-                .tooltip(tip(label, th))
+                .tip(label, th)
                 .when(!on, |d| d.opacity(0.4).cursor_default())
         };
         let actions = div()

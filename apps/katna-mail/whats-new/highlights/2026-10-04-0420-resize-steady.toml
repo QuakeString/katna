@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Steady while resizing"
+text = """
+With Katna's own title bar on Wayland, the window's content stays still
+while you drag an edge to resize it, instead of shaking.
+"""

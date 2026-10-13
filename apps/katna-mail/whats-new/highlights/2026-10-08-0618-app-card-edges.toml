@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Every app sits on the same card"
+text = """
+Calendar, Contacts, Tasks, Notes and Files now rest on a card with the
+same thin edge and soft shadow as Mail and Settings.
+"""

@@ -41,4 +41,5 @@ quick-help = Trợ giúp
 quick-tour = Tham quan ứng dụng
 quick-whats-new = Có gì mới
 quick-check-updates = Kiểm tra cập nhật
+quick-send-feedback = Gửi ý kiến phản hồi
 quick-about = Giới thiệu về Katna

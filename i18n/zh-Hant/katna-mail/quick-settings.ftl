@@ -41,4 +41,5 @@ quick-help = 說明
 quick-tour = 開始導覽
 quick-whats-new = 最新消息
 quick-check-updates = 檢查更新
+quick-send-feedback = 傳送意見回饋
 quick-about = 關於 Katna

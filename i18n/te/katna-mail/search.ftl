@@ -14,6 +14,7 @@ search-without = ఇవి లేనివి
 search-date-within = తేదీ పరిధి
 search-has-attachment = అటాచ్‌మెంట్ ఉంది
 search-attachment-custom = అనుకూలం
+search-attachment-image = చిత్రం
 search-attachment-custom-hint = png లాంటి ఎక్స్‌టెన్షన్ టైప్ చేసి, ఆపై Space నొక్కండి
 search-attachment-remove = తీసివేయండి
 search-clear-filter = ఫిల్టర్‌ను క్లియర్ చేయండి
@@ -60,3 +61,12 @@ search-dates-month-back = మునుపటి నెల
 search-dates-month-on = తర్వాతి నెల
 search-dates-year-back = మునుపటి సంవత్సరం
 search-dates-year-on = తర్వాతి సంవత్సరం
+
+## mail server, for mail that is not downloaded to this computer yet.
+
+search-server-more = సర్వర్‌లో మరిన్ని ఫలితాలు
+search-server-searching = సర్వర్‌లో మెయిల్‌ను సెర్చ్ చేస్తోంది…
+search-server-empty-searching = ఇక్కడ ఇంకా ఏమీ లేదు. సర్వర్‌లో మెయిల్‌ను సెర్చ్ చేస్తోంది…
+search-server-nothing = సర్వర్‌లో మరిన్ని ఫలితాలు లేవు
+search-server-failed = సర్వర్‌లో సెర్చ్ చేయడం సాధ్యం కాలేదు.
+search-server-again = మళ్లీ ప్రయత్నించండి

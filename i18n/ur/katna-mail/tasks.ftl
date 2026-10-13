@@ -7,8 +7,11 @@
 tasks-create = نیا کام
 tasks-all = تمام کام
 tasks-today = آج
+tasks-upcoming = آنے والے
 tasks-starred = ستارے والے
+tasks-completed-view = مکمل شدہ
 tasks-new-list = نئی فہرست بنائیں
+tasks-labels-heading = لیبلز
 tasks-on-this-computer = اس کمپیوٹر پر
 tasks-my-tasks = میرے کام
 # The line under an account in the side list whose task lists could not
@@ -18,7 +21,7 @@ tasks-account-signed-in = { $address } میں دوبارہ سائن ان ہو گ
 tasks-account-sign-in-refused = { $provider } نے Katna کو اندر نہیں آنے دیا۔ دوبارہ کوشش کریں، اور اپنے کاموں تک رسائی کی اجازت دیں۔
 tasks-account-refused = سرور نے پاس ورڈ قبول نہیں کیا۔ Yahoo، iCloud، Zoho اور دیگر کو ایپ پاس ورڈ درکار ہے۔
 tasks-account-change-password = پاس ورڈ بدلیں
-tasks-account-change-password-tooltip = ترتیبات > اکاؤنٹس کھولیں
+tasks-account-change-password-tooltip = نیا پاس ورڈ ٹائپ کریں؛ Katna اسے سرور سے چیک کرتا ہے
 tasks-account-not-enabled = Katna کے لیے کاموں تک رسائی ابھی آن نہیں کی گئی۔
 tasks-account-failed = کاموں کی فہرستیں پڑھی نہیں جا سکیں۔
 # $reason is the server's own words, in English.
@@ -47,7 +50,14 @@ tasks-title-placeholder = عنوان
 tasks-add-step = ذیلی کام شامل کریں
 tasks-empty = ابھی کوئی کام نہیں۔ اوپر ایک شامل کریں۔
 tasks-starred-empty = کسی کام پر ستارہ لگائیں تاکہ وہ یہاں نظر آئے۔
+tasks-label-empty = اس لیبل والا کوئی کھلا کام نہیں۔
 tasks-today-empty = آج کوئی کام واجب الادا نہیں۔
+tasks-completed-empty = جو کام آپ مکمل کرتے ہیں وہ یہاں دکھائی دیتے ہیں۔
+tasks-upcoming-add = { $day } کے لیے کام شامل کریں
+tasks-upcoming-overdue-day = { $weekday } { $day }
+tasks-from-mail-quiet = میل سے
+tasks-from-note-quiet = نوٹ سے
+tasks-steps-done = { $done }/{ $count }
 tasks-today-date = { $weekday }، { $day }
 tasks-overdue = تاخیر شدہ
 tasks-completed = { $count ->
@@ -55,6 +65,11 @@ tasks-completed = { $count ->
    *[other] مکمل ({ $count })
 }
 tasks-list-options = فہرست کے اختیارات
+tasks-sort-by = ترتیب بلحاظ
+tasks-sort-my-order = میری ترتیب
+tasks-sort-date = تاریخ
+tasks-sort-starred = حال ہی میں ستارہ لگے
+tasks-sort-title = عنوان
 tasks-rename-list = فہرست کا نام تبدیل کریں
 tasks-delete-list = فہرست حذف کریں
 tasks-mark-done = مکمل کے بطور نشان زد کریں
@@ -71,6 +86,14 @@ tasks-from-note = نوٹ
 tasks-open-note = نوٹ کھولیں
 tasks-note-gone = وہ نوٹ اب یہاں نہیں ہے۔
 tasks-no-subject = (کوئی موضوع نہیں)
+tasks-selected = { $count ->
+    [one] { $count } منتخب
+   *[other] { $count } منتخب
+}
+tasks-select-clear = انتخاب صاف کریں
+tasks-select-move = فہرست میں منتقل کریں
+tasks-select-date = تاریخ مقرر کریں
+tasks-next-week = اگلے ہفتے
 
 ## The details dialog
 
@@ -91,6 +114,13 @@ tasks-remind-on-time = وقت پر
 tasks-remind-morning = اسی دن، { $time }
 tasks-remind-hour-before = ایک گھنٹہ پہلے
 tasks-remind-day-before = ایک دن پہلے
+tasks-label-add = لیبل شامل کریں
+tasks-label-task = کام پر لیبل لگائیں
+tasks-files-attach = فائلیں منسلک کریں
+tasks-files-pick = منسلک کریں
+tasks-file-open = کھولیں
+tasks-file-remove = فائل ہٹائیں
+tasks-file-here = صرف اس کمپیوٹر پر
 tasks-cancel = منسوخ کریں
 tasks-save = محفوظ کریں
 tasks-not-a-time = “{ $text }” وقت نہیں ہے، مثال کے طور پر { $example }۔
@@ -107,6 +137,13 @@ tasks-due-at = { $day }، { $time }
 tasks-toast-done = کام مکمل ہو گیا
 tasks-toast-next = ہو گیا۔ اگلی بار { $date } کو
 tasks-toast-deleted = کام حذف ہو گیا
+tasks-files-added = { $count ->
+    [one] فائل منسلک ہو گئی
+   *[other] { $count } فائلیں منسلک ہو گئیں
+}
+tasks-file-removed = ”{ $name }“ ہٹا دی گئی
+tasks-files-left-out = منسلک نہیں ہوئیں: { $names }۔ کام میں { $limit } تک کی فائلیں منسلک ہو سکتی ہیں، فولڈرز نہیں۔
+tasks-file-missing = وہ فائل اب یہاں نہیں ہے۔
 tasks-toast-added = { $count ->
     [one] کاموں میں شامل ہو گیا
    *[other] { $count } کام شامل ہو گئے
@@ -117,3 +154,27 @@ tasks-toast-moved = { $list } میں منتقل ہو گیا
 # A task dragged to another place in its own list.
 tasks-toast-placed = کام منتقل ہو گیا
 tasks-toast-rescheduled = کام کا وقت تبدیل کر دیا گیا
+tasks-toast-rescheduled-several = { $count ->
+    [one] کام کا وقت بدل دیا گیا
+   *[other] { $count } کاموں کا وقت بدل دیا گیا
+}
+tasks-toast-done-several = { $count ->
+    [one] کام مکمل ہو گیا
+   *[other] { $count } کام مکمل ہو گئے
+}
+tasks-toast-open-several = { $count ->
+    [one] کام بطور نامکمل نشان زد ہو گیا
+   *[other] { $count } کام بطور نامکمل نشان زد ہو گئے
+}
+tasks-toast-starred = { $count ->
+    [one] کام پر ستارہ لگ گیا
+   *[other] { $count } کاموں پر ستارہ لگ گیا
+}
+tasks-toast-unstarred = { $count ->
+    [one] ستارہ ہٹ گیا
+   *[other] { $count } کاموں سے ستارے ہٹ گئے
+}
+tasks-toast-deleted-several = { $count ->
+    [one] کام حذف ہو گیا
+   *[other] { $count } کام حذف ہو گئے
+}

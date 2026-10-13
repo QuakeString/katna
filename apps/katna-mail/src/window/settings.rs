@@ -5,6 +5,7 @@
 //! send, the signature, conversation view, the tour, What's new and About.
 //! Changes apply at once and are saved to `config.toml`.
 
+use crate::widgets::Tip as _;
 use std::time::Duration;
 
 use gpui::{
@@ -26,7 +27,7 @@ use crate::schemes;
 use crate::theme::{Accent, Theme, mix};
 use crate::widgets::FocusRing;
 use crate::widgets::{
-    CARD_SHADOW_ROOM, ScaledEdge, card_outline, icon, icon_button, radio, switch, tip,
+    CARD_SHADOW_ROOM, ScaledEdge, card_outline, icon, icon_button, radio, switch,
 };
 
 /// One loop of the reading-pane demo.
@@ -62,6 +63,7 @@ pub(super) enum Change {
     Colors(&'static str),
     Accent(Accent),
     Tabs(bool),
+    Nudges(bool),
     Conversations(bool),
     AppLabels(bool),
     SenderPictures(bool),
@@ -73,6 +75,9 @@ pub(super) enum Change {
     AccountsShown(AccountsShown),
     /// The unified inbox over the accounts in the folder pane.
     UnifiedInbox(bool),
+    /// An account is in the unified inbox (`true`) or only in the account
+    /// card.
+    InUnified(katna_core::AccountId, bool),
     /// The tray icon, shown by the daemon.
     Tray(bool),
     TrayStyle(TrayStyle),
@@ -113,6 +118,8 @@ pub(super) enum Change {
     SaveCrashReports(bool),
     /// Crash reports sent to Katna's crash tracker: "Help improve Katna".
     SendCrashReports(bool),
+    /// Anonymous usage statistics sent once a week.
+    SendUsageStatistics(bool),
     /// The interface scale, in percent.
     Scale(u16),
     /// Katna's own animation speed, as a percentage of normal length, or
@@ -128,6 +135,19 @@ pub(super) enum Change {
     CustomDays(u8),
     /// The Birthdays calendar shows.
     Birthdays(bool),
+    /// An app is turned on (`true`), or asked about turning it off.
+    AppOn(katna_core::config::AppKind, bool),
+    /// An account is shown in an app (`true`) or left out of it.
+    AppAccount(katna_core::config::AppKind, katna_core::AccountId, bool),
+    /// AI assistants may use the mail through `katnactl mcp`.
+    McpOn(bool),
+    /// Assistants may save drafts.
+    McpDrafts(bool),
+    /// Assistants see an account's mail (`true`) or not.
+    McpAccount(katna_core::AccountId, bool),
+    /// An account is connected (`true`) or taken offline until brought
+    /// back.
+    AccountOnline(katna_core::AccountId, bool),
     /// What Katna starts at login, if anything (an autostart entry).
     StartAtLogin(Option<crate::autostart::Start>),
     MarkRead(MarkRead),
@@ -157,6 +177,10 @@ pub(super) enum Change {
     NewMailNotices(bool),
     /// New versions of Katna downloaded as soon as the daemon finds them.
     AutoDownloadUpdates(bool),
+    /// Look for new versions every hour (`updates.check`).
+    CheckUpdates(bool),
+    /// The builds this install takes (`updates.channel`).
+    UpdateChannel(katna_core::update::Channel),
     PlainText(bool),
     SpellCheck(bool),
     /// The interface's language, a tag; empty follows the desktop.
@@ -218,7 +242,7 @@ impl MailWindow {
                     )
                     .child(
                         icon_button("settings-close", "close", 20.0, th)
-                            .tooltip(tip(tr!("reader-close"), th))
+                            .tip(tr!("reader-close"), th)
                             .on_click(cx.listener(|this, _, window, cx| {
                                 this.toggle_settings(&super::ToggleSettings, window, cx)
                             })),
@@ -401,6 +425,12 @@ impl MailWindow {
                                     },
                                 )),
                             )
+                            .child(
+                                help_row("send-feedback", "chat", tr!("quick-send-feedback"), th)
+                                    .on_click(cx.listener(|this, _, window, cx| {
+                                        this.open_feedback_form(window, cx)
+                                    })),
+                            )
                             .child(help_row("about", "info", tr!("quick-about"), th).on_click(
                                 cx.listener(|this, _, window, cx| this.open_about(window, cx)),
                             )),
@@ -557,6 +587,13 @@ impl MailWindow {
             Change::OpenIn(group, open) => view.open.set(group, open),
             Change::Tabs(on) => {
                 view.inbox_tabs = on;
+                relist = true;
+            }
+            Change::Nudges(on) => {
+                view.nudges = on;
+                if let Ok(mail) = &mut self.mail {
+                    mail.set_nudges(on);
+                }
                 relist = true;
             }
             Change::Conversations(on) => {
@@ -731,8 +768,36 @@ impl MailWindow {
                 cx.notify();
                 return;
             }
+            Change::CheckUpdates(on) => {
+                self.config.updates.check = on;
+                self.save_config();
+                self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
+                cx.notify();
+                return;
+            }
+            Change::UpdateChannel(channel) => {
+                self.config.updates.channel = Some(channel);
+                self.save_config();
+                self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
+                cx.notify();
+                return;
+            }
             Change::AutoDownloadUpdates(on) => {
                 self.config.updates.auto_download = on;
+                self.save_config();
+                self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
+                cx.notify();
+                return;
+            }
+            Change::SendUsageStatistics(on) => {
+                self.config.feedback.send_usage_statistics = on;
+                // The week's facts are noted on the next frame.
+                self.usage_noted = (0, Default::default());
+                if !on {
+                    // Nothing recorded is kept once it is off.
+                    katna_core::usage::forget(&self.paths);
+                    self.usage_report_open = false;
+                }
                 self.save_config();
                 self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
                 cx.notify();
@@ -751,6 +816,23 @@ impl MailWindow {
             }
             Change::CustomDays(days) => {
                 self.keep_custom_days(days, cx);
+                return;
+            }
+            Change::AppOn(app, on) => {
+                self.flip_app(app, on, cx);
+                return;
+            }
+            Change::AppAccount(app, id, shown) => {
+                self.set_app_account_shown(app, id, shown, cx);
+                return;
+            }
+            Change::McpOn(_) | Change::McpDrafts(_) | Change::McpAccount(..) => {
+                self.apply_mcp(change, cx);
+                return;
+            }
+            Change::AccountOnline(id, online) => {
+                let time = (!online).then_some(super::offline::OfflineFor::Now);
+                self.set_account_offline(id, time, cx);
                 return;
             }
             Change::Birthdays(on) => {
@@ -789,7 +871,9 @@ impl MailWindow {
                 super::refresh_menu_bar(cx);
                 // The daemon's notifications, tray and dock menu follow.
                 self.send(crate::daemon::Command::ReloadConfig, None, None, true, cx);
-                cx.notify();
+                // Every open window takes the new words, and turns around
+                // when the new language reads the other way.
+                cx.refresh_windows();
                 return;
             }
             Change::GrammarCheck(on) => {
@@ -808,6 +892,10 @@ impl MailWindow {
             }
             Change::UnifiedInbox(on) => {
                 self.set_unified_inbox(on, cx);
+                return;
+            }
+            Change::InUnified(id, on) => {
+                self.set_in_unified(id, on, cx);
                 return;
             }
             Change::TranslateOffer(on) => view.translation.offer = on,
@@ -967,11 +1055,19 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> AnyElement {
         // A long label wraps onto a second line in a narrow window.
+        let label = label.into();
         self.page_control(crate::widgets::row(id, false, th), th, cx)
+            .role(gpui::Role::RadioButton)
+            .aria_label(label.clone())
+            .aria_toggled(if on {
+                gpui::Toggled::True
+            } else {
+                gpui::Toggled::False
+            })
             .gap(px(14.0))
             .on_click(cx.listener(move |this, _, _, cx| this.apply(change, cx)))
             .child(animated_radio((id, 2_usize), on, th))
-            .child(div().flex_1().min_w_0().child(label.into()))
+            .child(div().flex_1().min_w_0().child(label))
             .into_any_element()
     }
 
@@ -985,7 +1081,11 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
+        let label = label.into();
         self.page_control(crate::widgets::row(id, false, th), th, cx)
+            .role(gpui::Role::Link)
+            .aria_label(label.clone())
+            .aria_description(detail.clone())
             .on_click(
                 cx.listener(move |this, _, window, cx| {
                     this.open_settings_page(section, window, cx)
@@ -997,7 +1097,7 @@ impl MailWindow {
                     .min_w_0()
                     .flex()
                     .flex_col()
-                    .child(div().text_size(px(14.0)).child(label.into()))
+                    .child(div().text_size(px(14.0)).child(label))
                     .child(
                         div()
                             .text_size(px(12.0))
@@ -1013,9 +1113,14 @@ impl MailWindow {
     /// "Work, by default" or "None yet".
     fn signature_summary(&self) -> SharedString {
         let sending = &self.config.sending;
+        // As new mail starts, from the account it goes out from.
+        let address = self
+            .compose_account(super::compose::Kind::New)
+            .map(|a| a.address.as_str())
+            .unwrap_or_default();
         match (
             sending.signatures.len(),
-            sending.signature(sending.new_mail_signature),
+            sending.signature(sending.default_signature(address, false)),
         ) {
             (0, _) => tr!("quick-signatures-none").into(),
             (n, Some(default)) => {
@@ -1037,7 +1142,7 @@ impl MailWindow {
     #[allow(clippy::too_many_arguments)]
     pub(super) fn switch_row(
         &self,
-        id: &'static str,
+        id: impl Into<gpui::ElementId>,
         label: impl Into<SharedString>,
         detail: impl Into<SharedString>,
         on: bool,
@@ -1052,7 +1157,7 @@ impl MailWindow {
     #[allow(clippy::too_many_arguments)]
     pub(super) fn switch_row_with(
         &self,
-        id: &'static str,
+        id: impl Into<gpui::ElementId>,
         label: impl Into<SharedString>,
         detail: impl Into<SharedString>,
         on: bool,
@@ -1061,7 +1166,17 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
-        self.page_control(crate::widgets::row(id, false, th), th, cx)
+        let id: gpui::ElementId = id.into();
+        let (label, detail) = (label.into(), detail.into());
+        self.page_control(crate::widgets::row(id.clone(), false, th), th, cx)
+            .role(gpui::Role::Switch)
+            .aria_label(label.clone())
+            .aria_description(detail.clone())
+            .aria_toggled(if on {
+                gpui::Toggled::True
+            } else {
+                gpui::Toggled::False
+            })
             .on_click(cx.listener(move |this, _, _, cx| this.apply(change, cx)))
             .child(
                 div()
@@ -1069,17 +1184,17 @@ impl MailWindow {
                     .min_w_0()
                     .flex()
                     .flex_col()
-                    .child(div().text_size(px(14.0)).child(label.into()))
+                    .child(div().text_size(px(14.0)).child(label))
                     .child(
                         div()
                             .text_size(px(12.0))
                             .text_color(rgba(th.text_faint))
-                            .child(detail.into()),
+                            .child(detail),
                     ),
             )
             .children(extra)
             .child(div().with_spring(
-                (id, 3_usize),
+                (id, "switch"),
                 SpringAnimation::new(katna_ui::motion::scaled(motion::SLIDE)).to(if on {
                     1.0
                 } else {

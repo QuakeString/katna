@@ -38,6 +38,8 @@ list-range-about = { $first }–{ $last } daripada kira-kira { $total }
 list-results = Hasil untuk “{ $query }”
 list-results-corrected = Menunjukkan hasil untuk “{ $query }”
 list-search-instead = Cari “{ $query }” sahaja
+list-search-no-index = Carian belum sedia: indeks belum dibina lagi.
+list-search-not-ready = Carian belum sedia: { $error }
 list-files-more = +{ $count }
 list-replied = Anda telah membalas
 
@@ -189,11 +191,20 @@ list-empty-tab = Tiada mel dalam { $tab }.
 list-empty-tab-unknown = Tiada mel dalam tab ini.
 list-empty-folder = Tiada mesej dalam { $folder }.
 list-empty-folder-unknown = Tiada mesej dalam folder ini.
+list-empty-waiting = Tiada apa-apa yang menunggu balasan.
+list-empty-reminders = Tiada peringatan. Tekan H pada mel untuk menambah satu.
 list-first-sync = Mendapatkan mel anda…
 list-first-sync-detail = Mel akan dipaparkan di sini sebaik sahaja tiba.
+list-store-unreadable = Stor mel tidak dapat dibuka
 
 ## Mail list: lines
 
+row-no-subject = (tiada subjek)
+row-unknown-sender = (pengirim tidak diketahui)
+row-to = Kepada:
+row-no-recipients = (tiada penerima)
+row-names-separator = {", "}
+row-me = saya
 row-removed = Mesej ini telah dialih keluar.
 row-starred = Dibintangi
 row-not-starred = Tidak dibintangi
@@ -208,6 +219,14 @@ row-tracking-clicked = Dibuka oleh { $opened } daripada { $recipients }, pautan 
 row-pin = Sematkan di atas
 row-unpin = Nyahsemat
 row-snoozed-until = Ditunda hingga { $when }
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = Hari ini
+snoozed-group-tomorrow = Esok
+snoozed-group-this-week = Minggu ini
+snoozed-group-later = Kemudian
+row-follow-up-step = Susulan { $step } daripada { $steps } · { $date }
+row-follow-up-waiting = Susulan menunggu
+row-reminder = Peringatan { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -230,6 +249,7 @@ menu-not-important = Tandai sebagai tidak penting
 menu-pin = Sematkan di atas
 menu-unpin = Nyahsemat
 menu-snooze = Tunda
+menu-remind = Ingatkan saya
 menu-unsnooze = Nyahtunda
 menu-add-to-tasks = Tambah pada Tugas
 menu-schedule-meeting = Jadualkan mesyuarat
@@ -241,10 +261,32 @@ menu-move-to = Alih ke
 menu-follow-up = Susulan
 menu-more = Lagi
 menu-move-to-heading = Alih ke:
+menu-move-to-search = Alih ke…
+menu-label-as = Labelkan sebagai
+menu-label-as-search = Labelkan sebagai…
+menu-no-folder = Tiada folder bernama “{ $name }”
+menu-no-label = Tiada label bernama “{ $name }”
+menu-create-folder = Cipta “{ $name }”
+menu-always-move = Sentiasa alihkan mel daripada { $name } ke sini
+toast-always-move-failed = Mel telah dialihkan, tetapi peraturan tidak dibuat: { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+       *[other] { $count } perbualan
+    }
+   *[message] { $count ->
+       *[other] { $count } mesej
+    }
+}
 menu-find-from = Cari e-mel daripada { $name }
+menu-make-rule = Buat peraturan…
 
 ## Snackbar after an action on mail in the list
 
+toast-key-imported = Kunci diimport
+toast-key-updated = Anda sudah mempunyai kunci ini; kini ia dikemas kini
+toast-key-removed = Kunci dialih keluar
+toast-key-not-removed = Kunci tidak dapat dialih keluar
+toast-fingerprint-copied = Cap jari disalin
 toast-archived = { $kind ->
     [conversation] { $count } perbualan diarkibkan.
    *[message] { $count } mesej diarkibkan.
@@ -257,6 +299,8 @@ toast-moved = { $kind ->
     [conversation] { $count } perbualan dialihkan.
    *[message] { $count } mesej dialihkan.
 }
+toast-label-added = Label “{ $label }” ditambah.
+toast-label-removed = Label “{ $label }” dialih keluar.
 toast-starred = { $kind ->
     [conversation] { $count } perbualan dibintangi.
    *[message] { $count } mesej dibintangi.

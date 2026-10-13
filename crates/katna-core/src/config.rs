@@ -4,9 +4,9 @@
 //!
 //! Every field has a default, so a missing file or a missing key is not an
 //! error. Unknown keys are ignored, so an older Katna can read a file written
-//! by a newer one.
+//! by a newer one, and kept: saving writes them back unchanged.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
 use std::io::{self, Write};
 use std::path::Path;
@@ -42,7 +42,296 @@ pub struct Config {
     pub contacts: ContactsConfig,
     pub meetings: Meetings,
     pub ai: Ai,
+    pub mcp: Mcp,
     pub tasks: TasksConfig,
+    pub hidden_accounts: HiddenAccounts,
+    pub offline: OfflineAccounts,
+    pub apps: AppsOn,
+    /// Keys this version does not know, written by a newer one.
+    #[serde(skip)]
+    pub unknown_keys: UnknownKeys,
+}
+
+/// Settings a newer Katna wrote that this version does not know, by their
+/// path of table names. [`Config::save`] writes them back, so going back to
+/// an older version and changing a setting keeps them. Keys inside arrays
+/// of tables (signatures) are not kept.
+#[derive(Debug, Clone, Default, PartialEq)]
+pub struct UnknownKeys(Vec<(Vec<String>, toml::Value)>);
+
+impl UnknownKeys {
+    /// Whether every key was known.
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+
+    /// The dotted paths of the keys, for logs.
+    pub fn paths(&self) -> impl Iterator<Item = String> + '_ {
+        self.0.iter().map(|(path, _)| path.join("."))
+    }
+
+    /// Collects the values at `paths` from the parsed file.
+    fn collect(text: &str, paths: Vec<Vec<String>>) -> Self {
+        let Ok(table) = text.parse::<toml::Table>() else {
+            return Self::default();
+        };
+        let found = paths
+            .into_iter()
+            .filter_map(|path| {
+                let (last, parents) = path.split_last()?;
+                let mut at = &table;
+                for key in parents {
+                    at = at.get(key)?.as_table()?;
+                }
+                let value = at.get(last)?.clone();
+                Some((path, value))
+            })
+            .collect();
+        Self(found)
+    }
+
+    /// Puts the keys back into `table` where nothing else took their place.
+    fn restore(&self, table: &mut toml::Table) {
+        'keys: for (path, value) in &self.0 {
+            let Some((last, parents)) = path.split_last() else {
+                continue;
+            };
+            let mut at = &mut *table;
+            for key in parents {
+                let next = at
+                    .entry(key.clone())
+                    .or_insert_with(|| toml::Value::Table(toml::Table::new()));
+                match next.as_table_mut() {
+                    Some(inner) => at = inner,
+                    None => continue 'keys,
+                }
+            }
+            at.entry(last.clone()).or_insert_with(|| value.clone());
+        }
+    }
+}
+
+/// The table path of an ignored key, or `None` when it is inside an array.
+fn key_path(path: &serde_ignored::Path<'_>) -> Option<Vec<String>> {
+    use serde_ignored::Path;
+    match path {
+        Path::Root => Some(Vec::new()),
+        Path::Map { parent, key } => {
+            let mut keys = key_path(parent)?;
+            keys.push(key.clone());
+            Some(keys)
+        }
+        Path::Some { parent }
+        | Path::NewtypeStruct { parent }
+        | Path::NewtypeVariant { parent } => key_path(parent),
+        Path::Seq { .. } => None,
+    }
+}
+
+impl Config {
+    /// Whether `app` is turned on in Settings > Apps. Mail has no switch:
+    /// it is always on.
+    pub fn app_on(&self, app: AppKind) -> bool {
+        self.apps.is_on(app)
+    }
+}
+
+/// An app beside Mail: its items come from the accounts and can leave one
+/// out, and the whole app can be turned off.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum AppKind {
+    Calendar,
+    Contacts,
+    Tasks,
+    Notes,
+    Files,
+}
+
+impl AppKind {
+    /// Its name in `[apps]` and over D-Bus: `calendar`, `contacts`, …
+    pub fn key(self) -> &'static str {
+        match self {
+            Self::Calendar => "calendar",
+            Self::Contacts => "contacts",
+            Self::Tasks => "tasks",
+            Self::Notes => "notes",
+            Self::Files => "files",
+        }
+    }
+
+    /// The app named `key` ([`AppKind::key`]).
+    pub fn from_key(key: &str) -> Option<Self> {
+        Self::ALL.into_iter().find(|app| app.key() == key)
+    }
+
+    pub const ALL: [Self; 5] = [
+        Self::Calendar,
+        Self::Contacts,
+        Self::Tasks,
+        Self::Notes,
+        Self::Files,
+    ];
+}
+
+/// Which apps beside Mail are turned on (Settings > Apps). An app turned
+/// off is gone from everywhere and stops syncing; what is on the servers is
+/// not touched. All are on until turned off.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AppsOn {
+    pub calendar: bool,
+    pub contacts: bool,
+    pub tasks: bool,
+    pub notes: bool,
+    pub files: bool,
+}
+
+impl Default for AppsOn {
+    fn default() -> Self {
+        Self {
+            calendar: true,
+            contacts: true,
+            tasks: true,
+            notes: true,
+            files: true,
+        }
+    }
+}
+
+impl AppsOn {
+    pub fn is_on(&self, app: AppKind) -> bool {
+        match app {
+            AppKind::Calendar => self.calendar,
+            AppKind::Contacts => self.contacts,
+            AppKind::Tasks => self.tasks,
+            AppKind::Notes => self.notes,
+            AppKind::Files => self.files,
+        }
+    }
+
+    pub fn set(&mut self, app: AppKind, on: bool) {
+        *match app {
+            AppKind::Calendar => &mut self.calendar,
+            AppKind::Contacts => &mut self.contacts,
+            AppKind::Tasks => &mut self.tasks,
+            AppKind::Notes => &mut self.notes,
+            AppKind::Files => &mut self.files,
+        } = on;
+    }
+
+    /// Whether every app beside Mail is off, so Katna is just a mail app.
+    pub fn mail_only(&self) -> bool {
+        AppKind::ALL.into_iter().all(|app| !self.is_on(app))
+    }
+}
+
+/// Accounts left out of each app, by lower-case address: their items are
+/// not shown there (lists, search, reminders) but keep syncing, so showing
+/// them again is instant. The account's mail is not affected.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct HiddenAccounts {
+    #[serde(skip_serializing_if = "BTreeSet::is_empty")]
+    pub calendar: BTreeSet<String>,
+    #[serde(skip_serializing_if = "BTreeSet::is_empty")]
+    pub contacts: BTreeSet<String>,
+    #[serde(skip_serializing_if = "BTreeSet::is_empty")]
+    pub tasks: BTreeSet<String>,
+    #[serde(skip_serializing_if = "BTreeSet::is_empty")]
+    pub notes: BTreeSet<String>,
+    #[serde(skip_serializing_if = "BTreeSet::is_empty")]
+    pub files: BTreeSet<String>,
+}
+
+impl HiddenAccounts {
+    /// The accounts left out of `app`, by lower-case address.
+    pub fn in_app(&self, app: AppKind) -> &BTreeSet<String> {
+        match app {
+            AppKind::Calendar => &self.calendar,
+            AppKind::Contacts => &self.contacts,
+            AppKind::Tasks => &self.tasks,
+            AppKind::Notes => &self.notes,
+            AppKind::Files => &self.files,
+        }
+    }
+
+    /// Whether `app` leaves out the account at `address`.
+    pub fn hides(&self, app: AppKind, address: &str) -> bool {
+        let set = self.in_app(app);
+        !set.is_empty() && set.contains(&address.to_lowercase())
+    }
+
+    /// Shows the account at `address` in `app`, or leaves it out.
+    pub fn set_shown(&mut self, app: AppKind, address: &str, shown: bool) {
+        let set = match app {
+            AppKind::Calendar => &mut self.calendar,
+            AppKind::Contacts => &mut self.contacts,
+            AppKind::Tasks => &mut self.tasks,
+            AppKind::Notes => &mut self.notes,
+            AppKind::Files => &mut self.files,
+        };
+        let address = address.to_lowercase();
+        if shown {
+            set.remove(&address);
+        } else {
+            set.insert(address);
+        }
+    }
+}
+
+/// Accounts taken offline, by lower-case address: Katna doesn't connect
+/// to their servers (mail, calendars, contacts, tasks, notes) until each
+/// is brought back online or its time ends. What is already here stays
+/// readable; changes made meanwhile wait and go out when it is back.
+/// Kept across restarts.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(transparent)]
+pub struct OfflineAccounts {
+    /// When each account comes back online by itself, in Unix seconds;
+    /// 0 for when it is brought back.
+    pub until: BTreeMap<String, i64>,
+}
+
+impl OfflineAccounts {
+    /// Whether the account at `address` is offline at `now` (Unix
+    /// seconds).
+    pub fn is_offline(&self, address: &str, now: i64) -> bool {
+        self.ends(address, now).is_some()
+    }
+
+    /// When the account at `address` comes back online by itself:
+    /// `Some(None)` when only by hand, `None` when it is online at `now`.
+    pub fn ends(&self, address: &str, now: i64) -> Option<Option<i64>> {
+        if self.until.is_empty() {
+            return None;
+        }
+        match self.until.get(&address.to_lowercase()) {
+            Some(0) => Some(None),
+            Some(&until) if until > now => Some(Some(until)),
+            _ => None,
+        }
+    }
+
+    /// Takes the account at `address` offline until `until` (Unix
+    /// seconds; `None` until brought back), or brings it back online.
+    pub fn set(&mut self, address: &str, offline: bool, until: Option<i64>) {
+        let address = address.to_lowercase();
+        if offline {
+            self.until.insert(address, until.unwrap_or(0).max(0));
+        } else {
+            self.until.remove(&address);
+        }
+    }
+
+    /// The next time an account comes back online by itself, after `now`.
+    pub fn next_end(&self, now: i64) -> Option<i64> {
+        self.until.values().copied().filter(|&u| u > now).min()
+    }
+
+    /// Forgets the times that ended before `now`.
+    pub fn prune(&mut self, now: i64) {
+        self.until.retain(|_, until| *until == 0 || *until > now);
+    }
 }
 
 /// The Contacts page's own choices.
@@ -107,15 +396,24 @@ impl Default for Meetings {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(default)]
 pub struct Updates {
+    /// Look for a new version every hour and after waking (never on a
+    /// metered connection). Off, Katna looks only when asked.
+    pub check: bool,
     /// Download a new version as soon as the daemon finds it (never on a
     /// metered connection), so Update only has to install it.
     pub auto_download: bool,
+    /// The builds this install takes; `None` until picked, which keeps
+    /// the build's own ([`crate::update::Channel::default_for`]).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub channel: Option<crate::update::Channel>,
 }
 
 impl Default for Updates {
     fn default() -> Self {
         Self {
+            check: true,
             auto_download: true,
+            channel: None,
         }
     }
 }
@@ -135,6 +433,9 @@ pub struct Feedback {
     /// ([`crate::ids::SENTRY_DSN`]): a self-hosted Sentry or GlitchTip.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub dsn: Option<String>,
+    /// Send anonymous usage statistics once a week (`katna_core::usage`).
+    /// Off until the user turns it on; nothing is recorded while off.
+    pub send_usage_statistics: bool,
 }
 
 impl Feedback {
@@ -155,6 +456,7 @@ impl Default for Feedback {
             save_crash_reports: true,
             send_crash_reports: None,
             dsn: None,
+            send_usage_statistics: false,
         }
     }
 }
@@ -207,6 +509,47 @@ pub enum AiSource {
     Own,
     /// No writing help.
     Off,
+}
+
+/// Settings > MCP server: what AI assistants on this computer may do
+/// with the mail through `katnactl mcp`. Off until turned on.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct Mcp {
+    /// Assistants may search and read mail.
+    pub enabled: bool,
+    /// Assistants may save drafts (never send them).
+    pub drafts: bool,
+    /// Accounts assistants don't see, by lower-case address.
+    #[serde(skip_serializing_if = "BTreeSet::is_empty")]
+    pub hidden_accounts: BTreeSet<String>,
+}
+
+impl Default for Mcp {
+    fn default() -> Self {
+        Self {
+            enabled: false,
+            drafts: true,
+            hidden_accounts: BTreeSet::new(),
+        }
+    }
+}
+
+impl Mcp {
+    /// Whether assistants see the account at `address`.
+    pub fn shows(&self, address: &str) -> bool {
+        self.hidden_accounts.is_empty() || !self.hidden_accounts.contains(&address.to_lowercase())
+    }
+
+    /// Shows the account at `address` to assistants, or hides it.
+    pub fn set_shown(&mut self, address: &str, shown: bool) {
+        let address = address.to_lowercase();
+        if shown {
+            self.hidden_accounts.remove(&address);
+        } else {
+            self.hidden_accounts.insert(address);
+        }
+    }
 }
 
 /// The frost's blur, in pixels, when nothing else sets it.
@@ -609,6 +952,11 @@ pub struct Sending {
     /// The [`Signature::id`] replies and forwards start with, unless the
     /// conversation shows which one the user signed with before.
     pub reply_signature: Option<u32>,
+    /// Each account's own defaults, by lowercase address; an account
+    /// without an entry starts with [`Self::new_mail_signature`] and
+    /// [`Self::reply_signature`].
+    #[serde(skip_serializing_if = "BTreeMap::is_empty")]
+    pub account_signatures: BTreeMap<String, AccountSignatures>,
     /// New messages open full screen.
     pub compose_full_screen: bool,
     /// Messages are written and sent as plain text, without formatting.
@@ -643,6 +991,7 @@ impl Default for Sending {
             signatures: Vec::new(),
             new_mail_signature: None,
             reply_signature: None,
+            account_signatures: BTreeMap::new(),
             compose_full_screen: false,
             plain_text: false,
             spell_check: true,
@@ -681,10 +1030,45 @@ impl Sending {
     /// Removes a signature, and it as a default.
     pub fn remove_signature(&mut self, id: u32) {
         self.signatures.retain(|s| s.id != id);
-        for default in [&mut self.new_mail_signature, &mut self.reply_signature] {
+        let accounts = self
+            .account_signatures
+            .values_mut()
+            .flat_map(|a| [&mut a.new_mail, &mut a.reply]);
+        for default in [&mut self.new_mail_signature, &mut self.reply_signature]
+            .into_iter()
+            .chain(accounts)
+        {
             if *default == Some(id) {
                 *default = None;
             }
+        }
+    }
+
+    /// The signature mail from `address` starts with: for replies and
+    /// forwards when `replies`, else for new mail. `None` for none, or
+    /// when that signature is gone.
+    pub fn default_signature(&self, address: &str, replies: bool) -> Option<u32> {
+        let id = match self.account_signatures.get(&address.to_lowercase()) {
+            Some(own) if replies => own.reply,
+            Some(own) => own.new_mail,
+            None if replies => self.reply_signature,
+            None => self.new_mail_signature,
+        };
+        self.signature(id).map(|s| s.id)
+    }
+
+    /// Makes `id` (or none) the signature mail from `address` starts
+    /// with, for replies and forwards when `replies`, else for new mail.
+    pub fn set_default_signature(&mut self, address: &str, replies: bool, id: Option<u32>) {
+        let (new_mail, reply) = (self.new_mail_signature, self.reply_signature);
+        let own = self
+            .account_signatures
+            .entry(address.to_lowercase())
+            .or_insert(AccountSignatures { new_mail, reply });
+        if replies {
+            own.reply = id;
+        } else {
+            own.new_mail = id;
         }
     }
 
@@ -695,6 +1079,17 @@ impl Sending {
             self.add_signature("My signature".to_owned(), old);
         }
     }
+}
+
+/// The signatures one account's mail starts with
+/// ([`Sending::account_signatures`]).
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct AccountSignatures {
+    /// The [`Signature::id`] new mail starts with; `None` for none.
+    pub new_mail: Option<u32>,
+    /// The [`Signature::id`] replies and forwards start with.
+    pub reply: Option<u32>,
 }
 
 /// A named signature ([`Sending::signatures`]).
@@ -729,6 +1124,12 @@ pub struct SignatureLayout {
     pub company: String,
     pub mobile: String,
     pub office: String,
+    /// The WhatsApp number; shown beside the mobile number when the same.
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub whatsapp: String,
+    /// The Telegram username, as `@name`, `name` or a `t.me` link.
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub telegram: String,
     pub email: String,
     pub website: String,
     pub address: String,
@@ -801,6 +1202,15 @@ pub struct MailView {
     /// mail shows in the tab of its category. [`TabStyle::Auto`] is
     /// Gmail's five.
     pub unified_tabs: TabStyle,
+    /// Accounts whose inbox the unified Inbox leaves out, by lower-case
+    /// address: their row stays under it, dimmed, and opens that inbox
+    /// on its own.
+    #[serde(skip_serializing_if = "BTreeSet::is_empty")]
+    pub unified_left_out: BTreeSet<String>,
+    /// Accounts kept out of the unified inbox altogether, by lower-case
+    /// address: none of its lists shows them; the account card still does.
+    #[serde(skip_serializing_if = "BTreeSet::is_empty")]
+    pub unified_hidden: BTreeSet<String>,
     /// Each account's color, by lower-case address: a name from Katna
     /// Mail's account colors (`teal`, `pink`, ...). Accounts not listed
     /// wear one picked from their address.
@@ -917,6 +1327,75 @@ pub struct MailView {
     /// empty for all accounts.
     #[serde(skip_serializing_if = "String::is_empty")]
     pub activity_account: String,
+    /// What the snooze menu's suggested times mean.
+    pub snooze: SnoozeTimes,
+    /// Nudges: mail the user sent that asked something and got no answer
+    /// in three days comes back to the top of the Inbox.
+    pub nudges: bool,
+}
+
+/// What the snooze menu's suggested times mean (Settings > Inbox >
+/// Snooze times), as in Spark.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct SnoozeTimes {
+    /// Later today, in minutes after midnight.
+    pub later_today: u32,
+    /// Tomorrow, This weekend and Next week, in minutes after midnight.
+    pub morning: u32,
+    /// The day This weekend comes back on.
+    pub weekend: SnoozeDay,
+    /// The day Next week comes back on.
+    pub next_week: SnoozeDay,
+    /// One more time of the user's own, as typed ("monday 10:00"),
+    /// offered when it is still to come; empty for none.
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub own: String,
+}
+
+impl Default for SnoozeTimes {
+    fn default() -> Self {
+        Self {
+            later_today: 18 * 60,
+            morning: 8 * 60,
+            weekend: SnoozeDay::Saturday,
+            next_week: SnoozeDay::Monday,
+            own: String::new(),
+        }
+    }
+}
+
+/// A day of the week for [`SnoozeTimes`].
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum SnoozeDay {
+    Monday,
+    Tuesday,
+    Wednesday,
+    Thursday,
+    Friday,
+    Saturday,
+    Sunday,
+}
+
+impl SnoozeDay {
+    /// The days a weekend can start on.
+    pub const WEEKEND: [Self; 3] = [Self::Friday, Self::Saturday, Self::Sunday];
+    /// The days a week can start on.
+    pub const WEEK: [Self; 3] = [Self::Saturday, Self::Sunday, Self::Monday];
+
+    pub fn weekday(self) -> jiff::civil::Weekday {
+        use jiff::civil::Weekday;
+        match self {
+            Self::Monday => Weekday::Monday,
+            Self::Tuesday => Weekday::Tuesday,
+            Self::Wednesday => Weekday::Wednesday,
+            Self::Thursday => Weekday::Thursday,
+            Self::Friday => Weekday::Friday,
+            Self::Saturday => Weekday::Saturday,
+            Self::Sunday => Weekday::Sunday,
+        }
+    }
 }
 
 /// The Files page (Settings > Default apps): its small pictures (logos
@@ -1035,6 +1514,8 @@ impl Default for MailView {
             inbox_tabs: true,
             account_tabs: BTreeMap::new(),
             unified_tabs: TabStyle::Auto,
+            unified_left_out: BTreeSet::new(),
+            unified_hidden: BTreeSet::new(),
             account_colors: BTreeMap::new(),
             density: Density::Default,
             scale: 100,
@@ -1074,6 +1555,8 @@ impl Default for MailView {
             activity_cleared: 0,
             activity_removed: Vec::new(),
             activity_account: String::new(),
+            snooze: SnoozeTimes::default(),
+            nudges: true,
         }
     }
 }
@@ -1311,6 +1794,10 @@ pub struct Shortcuts {
     /// `reply`, ...): each a list of keystrokes such as `ctrl-shift-a` or
     /// `g i`. An empty list turns the shortcut off.
     pub keys: BTreeMap<String, Vec<String>>,
+    /// What was last run from the command palette, the latest first: a
+    /// shortcut's name or a setting's key.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub recent: Vec<String>,
 }
 
 impl Default for Shortcuts {
@@ -1319,6 +1806,7 @@ impl Default for Shortcuts {
             single_keys: true,
             set: ShortcutSet::Katna,
             keys: BTreeMap::new(),
+            recent: Vec::new(),
         }
     }
 }
@@ -1460,7 +1948,15 @@ impl Config {
 
     /// Parses and validates TOML text.
     fn parse(text: &str) -> Result<Self, ParseError> {
-        let mut config: Self = toml::from_str(text).map_err(ParseError::Toml)?;
+        let deserializer = toml::Deserializer::parse(text).map_err(ParseError::Toml)?;
+        let mut ignored = Vec::new();
+        let mut config: Self = serde_ignored::deserialize(deserializer, |path| {
+            ignored.extend(key_path(&path));
+        })
+        .map_err(ParseError::Toml)?;
+        if !ignored.is_empty() {
+            config.unknown_keys = UnknownKeys::collect(text, ignored);
+        }
         config.sending.upgrade();
         config.upgrade_sounds();
         config.validate().map_err(ParseError::Invalid)?;
@@ -1526,7 +2022,13 @@ impl Config {
     /// over it, so readers never see a half-written file.
     pub fn save(&self, path: &Path) -> Result<()> {
         self.validate()?;
-        let text = toml::to_string_pretty(self)?;
+        let text = if self.unknown_keys.is_empty() {
+            toml::to_string_pretty(self)?
+        } else {
+            let mut table = toml::Table::try_from(self)?;
+            self.unknown_keys.restore(&mut table);
+            toml::to_string_pretty(&table)?
+        };
         let dir = path
             .parent()
             .filter(|dir| !dir.as_os_str().is_empty())
@@ -1587,6 +2089,35 @@ mod tests {
     }
 
     #[test]
+    fn assistants_are_off_until_turned_on() {
+        use super::Config;
+        let mut config = Config::parse("").unwrap();
+        assert!(!config.mcp.enabled && config.mcp.drafts);
+        config.mcp.set_shown("A@x.org", false);
+        assert!(!config.mcp.shows("a@X.org") && config.mcp.shows("b@x.org"));
+        let text = toml::to_string(&config).unwrap();
+        let back = Config::parse(&text).unwrap();
+        assert_eq!(back.mcp, config.mcp);
+        config.mcp.set_shown("a@x.org", true);
+        assert!(config.mcp.shows("a@x.org"));
+    }
+
+    #[test]
+    fn accounts_hide_per_app() {
+        use super::{AppKind, Config};
+        let mut config = Config::parse("[hidden_accounts]\ntasks = [\"a@x.org\"]\n").unwrap();
+        let hidden = &mut config.hidden_accounts;
+        assert!(hidden.hides(AppKind::Tasks, "A@x.org"));
+        assert!(!hidden.hides(AppKind::Notes, "a@x.org"));
+        hidden.set_shown(AppKind::Notes, "B@x.org", false);
+        hidden.set_shown(AppKind::Tasks, "a@x.org", true);
+        assert!(hidden.hides(AppKind::Notes, "b@x.org"));
+        assert!(!hidden.hides(AppKind::Tasks, "a@x.org"));
+        let text = toml::to_string(&config).unwrap();
+        assert!(text.contains("notes = [\"b@x.org\"]") && !text.contains("tasks = ["));
+    }
+
+    #[test]
     fn accounts_follow_the_chosen_order() {
         use crate::{Account, AccountId, AccountKind};
         let account = |id, address: &str| Account {
@@ -1617,6 +2148,47 @@ mod tests {
     }
 
     use super::*;
+
+    #[test]
+    fn apps_start_on_and_turn_off() {
+        let config: Config = toml::from_str("").unwrap();
+        assert!(AppKind::ALL.into_iter().all(|app| config.app_on(app)));
+        let config: Config = toml::from_str("[apps]\nnotes = false\n").unwrap();
+        assert!(!config.app_on(AppKind::Notes));
+        assert!(config.app_on(AppKind::Calendar));
+        let mut apps = AppsOn::default();
+        for app in AppKind::ALL {
+            apps.set(app, false);
+        }
+        assert!(apps.mail_only());
+    }
+
+    #[test]
+    fn offline_accounts_round_trip_and_end() {
+        let mut config = Config::default();
+        config.offline.set("Kay@Work.example", true, None);
+        config
+            .offline
+            .set("codes@mailbox.example", true, Some(1_000));
+        let text = toml::to_string(&config).unwrap();
+        let back: Config = toml::from_str(&text).unwrap();
+        assert_eq!(back.offline, config.offline);
+        let offline = &back.offline;
+        assert_eq!(offline.ends("kay@work.example", 5_000), Some(None));
+        assert_eq!(
+            offline.ends("codes@mailbox.example", 999),
+            Some(Some(1_000))
+        );
+        assert!(!offline.is_offline("codes@mailbox.example", 1_000));
+        assert!(!offline.is_offline("other@example.org", 0));
+        assert_eq!(offline.next_end(10), Some(1_000));
+        let mut pruned = offline.clone();
+        pruned.prune(2_000);
+        assert_eq!(pruned.until.len(), 1);
+        let mut online = pruned;
+        online.set("KAY@work.example", false, None);
+        assert!(online.until.is_empty());
+    }
 
     #[test]
     fn task_sorts_round_trip() {
@@ -1801,6 +2373,46 @@ mod tests {
     }
 
     #[test]
+    fn signatures_per_account() {
+        let mut sending = Sending::default();
+        let work = sending.add_signature("Work".into(), "Kay, Enron".into());
+        let home = sending.add_signature("Home".into(), "Kay".into());
+        // An account not set yet starts with the shared defaults.
+        assert_eq!(
+            sending.default_signature("kay@enron.example", false),
+            Some(work)
+        );
+        assert_eq!(
+            sending.default_signature("kay@enron.example", true),
+            Some(work)
+        );
+        sending.set_default_signature("Kay@Home.example", false, Some(home));
+        sending.set_default_signature("kay@home.example", true, None);
+        assert_eq!(
+            sending.default_signature("kay@home.example", false),
+            Some(home)
+        );
+        assert_eq!(sending.default_signature("KAY@HOME.EXAMPLE", true), None);
+        assert_eq!(
+            sending.default_signature("kay@enron.example", false),
+            Some(work)
+        );
+        let config = Config {
+            sending: sending.clone(),
+            ..Config::default()
+        };
+        let text = toml::to_string_pretty(&config).unwrap();
+        assert_eq!(Config::parse(&text).unwrap(), config);
+        // Deleting a signature takes it out of every account.
+        sending.remove_signature(home);
+        assert_eq!(sending.default_signature("kay@home.example", false), None);
+        assert_eq!(
+            sending.account_signatures["kay@home.example"].new_mail,
+            None
+        );
+    }
+
+    #[test]
     fn signatures() {
         let mut sending = Sending::default();
         let work = sending.add_signature("Work".into(), "Kay, Enron".into());
@@ -1909,7 +2521,10 @@ mod tests {
 
     #[test]
     fn unknown_keys_are_ignored() {
-        let config = Config::parse("future = 1\n[general]\nnew_option = \"x\"\n").unwrap();
+        let mut config = Config::parse("future = 1\n[general]\nnew_option = \"x\"\n").unwrap();
+        let paths: Vec<_> = config.unknown_keys.paths().collect();
+        assert_eq!(paths, ["future", "general.new_option"]);
+        config.unknown_keys = UnknownKeys::default();
         assert_eq!(config, Config::default());
     }
 
@@ -1984,6 +2599,32 @@ mod tests {
         // No temporary files are left behind.
         let entries: Vec<_> = fs::read_dir(path.parent().unwrap()).unwrap().collect();
         assert_eq!(entries.len(), 1);
+    }
+
+    #[test]
+    fn save_keeps_keys_a_newer_version_wrote() {
+        let tmp = tempfile::tempdir().unwrap();
+        let path = tmp.path().join("config.toml");
+        let newer = "future_switch = true\n\n[general]\nshow_in_tray = false\nfuture_mode = \"bright\"\n\n[future_page]\nwidth = 3\n";
+        fs::write(&path, newer).unwrap();
+        let mut config = Config::load(&path).unwrap();
+        assert!(!config.general.show_in_tray);
+        let mut paths: Vec<_> = config.unknown_keys.paths().collect();
+        paths.sort();
+        assert_eq!(
+            paths,
+            ["future_page", "future_switch", "general.future_mode"]
+        );
+        config.general.show_in_tray = true;
+        config.save(&path).unwrap();
+        let saved: toml::Table = fs::read_to_string(&path).unwrap().parse().unwrap();
+        assert_eq!(saved["future_switch"].as_bool(), Some(true));
+        assert_eq!(saved["general"]["future_mode"].as_str(), Some("bright"));
+        assert_eq!(saved["general"]["show_in_tray"].as_bool(), Some(true));
+        assert_eq!(saved["future_page"]["width"].as_integer(), Some(3));
+        let again = Config::load(&path).unwrap();
+        assert!(again.general.show_in_tray);
+        assert_eq!(again.unknown_keys, config.unknown_keys);
     }
 
     #[test]

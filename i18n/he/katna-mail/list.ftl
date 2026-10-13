@@ -38,6 +38,8 @@ list-range-about = { $first }–{ $last } מתוך כ־{ $total }
 list-results = תוצאות עבור „{ $query }”
 list-results-corrected = מוצגות תוצאות עבור „{ $query }”
 list-search-instead = חיפוש „{ $query }” במקום זאת
+list-search-no-index = החיפוש לא מוכן: האינדקס עדיין לא נבנה.
+list-search-not-ready = החיפוש לא מוכן: { $error }
 list-files-more = +{ $count }
 list-replied = עניתם
 
@@ -389,8 +391,17 @@ list-empty-tab = אין דואר ב־{ $tab }.
 list-empty-tab-unknown = אין דואר בכרטיסייה הזו.
 list-empty-folder = אין הודעות ב־{ $folder }.
 list-empty-folder-unknown = אין הודעות בתיקייה הזו.
+list-empty-waiting = שום דבר לא ממתין לתשובה.
+list-empty-reminders = אין תזכורות. אפשר ללחוץ H על דואר כדי להוסיף אחת.
 list-first-sync = מביאים את הדואר שלך…
 list-first-sync-detail = הוא יופיע כאן כשיגיע.
+list-store-unreadable = לא ניתן היה לפתוח את מאגר הדואר
+row-no-subject = (ללא נושא)
+row-unknown-sender = (שולח לא ידוע)
+row-to = אל:
+row-no-recipients = (ללא נמענים)
+row-names-separator = {", "}
+row-me = אני
 
 ## Mail list: lines
 
@@ -408,6 +419,14 @@ row-tracking-clicked = נפתחה אצל { $opened } מתוך { $recipients }, �
 row-pin = הצמדה למעלה
 row-unpin = ביטול ההצמדה
 row-snoozed-until = מושהית עד { $when }
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = היום
+snoozed-group-tomorrow = מחר
+snoozed-group-this-week = השבוע
+snoozed-group-later = מאוחר יותר
+row-follow-up-step = הודעת מעקב { $step } מתוך { $steps } · { $date }
+row-follow-up-waiting = הודעת מעקב ממתינה
+row-reminder = תזכורת { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -430,6 +449,7 @@ menu-not-important = סימון כלא חשובה
 menu-pin = הצמדה למעלה
 menu-unpin = ביטול ההצמדה
 menu-snooze = השהיה
+menu-remind = להזכיר לי
 menu-unsnooze = ביטול ההשהיה
 menu-add-to-tasks = הוספה למשימות
 menu-schedule-meeting = תזמון פגישה
@@ -445,7 +465,33 @@ menu-follow-up = מעקב
 # Pin to top.
 menu-more = עוד
 menu-move-to-heading = העברה אל:
+menu-move-to-search = העברה אל…
+menu-label-as = תיוג בתור
+menu-label-as-search = תיוג בתור…
+menu-no-folder = אין תיקייה בשם „{ $name }”
+menu-no-label = אין תווית בשם „{ $name }”
+menu-create-folder = יצירת „{ $name }”
+menu-always-move = תמיד להעביר לכאן דואר מ־{ $name }
+toast-always-move-failed = הדואר הועבר, אבל הכלל לא נוצר: { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+        [one] שיחה אחת
+        [two] { $count } שיחות
+       *[other] { $count } שיחות
+    }
+   *[message] { $count ->
+        [one] הודעה אחת
+        [two] { $count } הודעות
+       *[other] { $count } הודעות
+    }
+}
 menu-find-from = חיפוש הודעות מאת { $name }
+menu-make-rule = יצירת כלל…
+toast-key-imported = המפתח יובא
+toast-key-updated = המפתח הזה כבר היה אצלך; עכשיו הוא מעודכן
+toast-key-removed = המפתח הוסר
+toast-key-not-removed = לא ניתן היה להסיר את המפתח
+toast-fingerprint-copied = טביעת האצבע הועתקה
 
 ## Snackbar after an action on mail in the list
 
@@ -485,6 +531,8 @@ toast-moved = { $kind ->
        *[other] { $count } הודעות הועברו.
     }
 }
+toast-label-added = התווית „{ $label }” נוספה.
+toast-label-removed = התווית „{ $label }” הוסרה.
 toast-starred = { $kind ->
     [conversation] { $count ->
         [one] השיחה סומנה בכוכב.

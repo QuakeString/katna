@@ -61,3 +61,9 @@ search-options-show = Показати параметри пошуку
 settings = Налаштування
 account-add = Додати обліковий запис
 account-wheel-hint = Прокрутіть, щоб перемкнути обліковий запис
+account-menu-all-detail = { $count ->
+    [one] { $count } обліковий запис разом
+    [few] { $count } облікові записи разом
+    [many] { $count } облікових записів разом
+   *[other] { $count } облікового запису разом
+}

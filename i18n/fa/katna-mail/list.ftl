@@ -38,6 +38,8 @@ list-range-about = { $first }–{ $last } از حدود { $total }
 list-results = نتایج برای «{ $query }»
 list-results-corrected = نمایش نتایج برای «{ $query }»
 list-search-instead = به‌جای آن «{ $query }» را جستجو کنید
+list-search-no-index = جستجو آماده نیست: نمایه هنوز ساخته نشده است.
+list-search-not-ready = جستجو آماده نیست: { $error }
 list-files-more = +{ $count }
 list-replied = پاسخ داده‌اید
 
@@ -339,8 +341,17 @@ list-empty-tab = هیچ ایمیلی در { $tab } نیست.
 list-empty-tab-unknown = هیچ ایمیلی در این برگه نیست.
 list-empty-folder = هیچ پیامی در { $folder } نیست.
 list-empty-folder-unknown = هیچ پیامی در این پوشه نیست.
+list-empty-waiting = چیزی در انتظار پاسخ نیست.
+list-empty-reminders = یادآوری‌ای نیست. برای افزودن، روی یک ایمیل H را بزنید.
 list-first-sync = در حال دریافت ایمیل‌هایتان…
 list-first-sync-detail = ایمیل‌ها همزمان با رسیدن اینجا نشان داده می‌شوند.
+list-store-unreadable = انبارهٔ ایمیل باز نشد
+row-no-subject = (بدون موضوع)
+row-unknown-sender = (فرستندهٔ ناشناس)
+row-to = به:
+row-no-recipients = (بدون گیرنده)
+row-names-separator = {"، "}
+row-me = من
 
 ## Mail list: lines
 
@@ -358,6 +369,14 @@ row-tracking-clicked = باز شده توسط { $opened } از { $recipients }،
 row-pin = سنجاق کردن به بالا
 row-unpin = برداشتن سنجاق
 row-snoozed-until = به تعویق افتاده تا { $when }
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = امروز
+snoozed-group-tomorrow = فردا
+snoozed-group-this-week = این هفته
+snoozed-group-later = بعداً
+row-follow-up-step = پیگیری { $step } از { $steps } · { $date }
+row-follow-up-waiting = پیگیری در انتظار
+row-reminder = یادآوری { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -380,6 +399,7 @@ menu-not-important = علامت‌گذاری به‌عنوان غیرمهم
 menu-pin = سنجاق کردن به بالا
 menu-unpin = برداشتن سنجاق
 menu-snooze = به تعویق انداختن
+menu-remind = یادآوری کن
 menu-unsnooze = لغو تعویق
 menu-add-to-tasks = افزودن به کارها
 menu-schedule-meeting = زمان‌بندی جلسه
@@ -395,7 +415,31 @@ menu-follow-up = پیگیری
 # Pin to top.
 menu-more = بیشتر
 menu-move-to-heading = انتقال به:
+menu-move-to-search = انتقال به…
+menu-label-as = برچسب زدن با
+menu-label-as-search = برچسب زدن با…
+menu-no-folder = پوشه‌ای به نام «{ $name }» نیست
+menu-no-label = برچسبی به نام «{ $name }» نیست
+menu-create-folder = ساختن «{ $name }»
+menu-always-move = همیشه ایمیل‌های { $name } را به اینجا منتقل کن
+toast-always-move-failed = ایمیل منتقل شد، اما قانون ساخته نشد: { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } مکالمه
+       *[other] { $count } مکالمه
+    }
+   *[message] { $count ->
+        [one] { $count } پیام
+       *[other] { $count } پیام
+    }
+}
 menu-find-from = یافتن ایمیل‌های { $name }
+menu-make-rule = ساختن قانون…
+toast-key-imported = کلید وارد شد
+toast-key-updated = این کلید را از قبل داشتید؛ اکنون به‌روز است
+toast-key-removed = کلید حذف شد
+toast-key-not-removed = حذف کلید ممکن نشد
+toast-fingerprint-copied = اثر انگشت کپی شد
 
 ## Snackbar after an action on mail in the list
 
@@ -429,6 +473,8 @@ toast-moved = { $kind ->
        *[other] { $count } پیام منتقل شد.
     }
 }
+toast-label-added = برچسب «{ $label }» افزوده شد.
+toast-label-removed = برچسب «{ $label }» برداشته شد.
 toast-starred = { $kind ->
     [conversation] { $count ->
         [one] مکالمه ستاره‌دار شد.

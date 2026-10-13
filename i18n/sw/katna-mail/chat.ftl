@@ -40,6 +40,7 @@ chat-reply-only = Mjibu { $name } pekee
 chat-forward = Sambaza
 chat-copy-text = Nakili maandishi
 chat-show-as-mail = Onyesha kama barua
+chat-go-down = Nenda kwenye barua mpya zaidi
 chat-pin = Bandika juu
 chat-pin-file = Bandika faili juu
 chat-unpin = Bandua
@@ -59,7 +60,8 @@ chat-pins-cancel = Ghairi
 chat-undo = Tendua
 
 chat-reply-to = Wajibu { $names }
-chat-send = Tuma (Ctrl+Enter)
+chat-send = Tuma (Ctrl+Enter). Bofya kulia au shikilia kwa zaidi
+chat-send-now = Tuma sasa
 chat-attach = Ambatisha
 chat-attach-photo = Picha
 chat-attach-file = Faili

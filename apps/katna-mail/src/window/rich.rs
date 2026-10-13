@@ -24,7 +24,7 @@ use katna_render::html::{
     Align, Block, BoxBlock, BoxKind, Document, Image, ImageKind, ImageSource, Inline, Length,
     TextBlock,
 };
-use katna_ui::px;
+use katna_ui::{Direction, directed, px};
 
 use super::MailWindow;
 use super::dark::Dark;
@@ -103,6 +103,9 @@ pub(super) struct Links {
     /// the message in it.
     pub conversation: usize,
     pub part: usize,
+    /// Its sender failed the provider's checks: a link asks before it
+    /// opens.
+    pub careful: bool,
 }
 
 /// The link under the pointer in the reading pane.
@@ -121,6 +124,18 @@ impl HoveredLink {
 }
 
 impl Links {
+    /// Opens `url`, clicked at `at`, or asks first in careful mail.
+    fn open(&self, url: &str, at: gpui::Point<gpui::Pixels>, cx: &mut App) {
+        if !self.careful {
+            cx.open_url(url);
+            return;
+        }
+        let url = url.to_owned();
+        self.window
+            .update(cx, |this, cx| this.ask_link(url, at, cx))
+            .ok();
+    }
+
     /// The pointer is on link `element` (to `url`), or left it (`None`).
     fn hover(&self, element: usize, url: Option<String>, cx: &mut App) {
         let owner = (self.conversation, self.part, element);
@@ -175,6 +190,8 @@ pub(super) struct Painter<'a> {
     /// Drawn in place, without a page's edge around it (a designed
     /// signature in an editor).
     bare: bool,
+    /// The direction the box being drawn is laid out in.
+    dir: Direction,
 }
 
 impl<'a> Painter<'a> {
@@ -209,6 +226,7 @@ impl<'a> Painter<'a> {
             bg: th.surface,
             pieces,
             bare: false,
+            dir: Direction::Ltr,
         }
     }
 
@@ -259,8 +277,11 @@ impl<'a> Painter<'a> {
         if let Some(page) = page {
             self.enter(page);
         }
+        // Mail reads left to right unless it says otherwise, as in a
+        // browser, whatever the window's direction.
+        self.dir = doc.dir.unwrap_or_default();
         let children = self.blocks(&doc.blocks);
-        div()
+        directed(div(), Some(self.dir))
             .w_full()
             .flex()
             .flex_col()
@@ -300,7 +321,16 @@ impl<'a> Painter<'a> {
     /// A box; `cell` when it is a cell of a table row.
     fn boxed(&mut self, b: &BoxBlock, cell: bool) -> AnyElement {
         let s = &b.style;
-        let [top, right, bottom, left] = s.padding.map(|p| px(p.min(96.0)));
+        let outer_dir = self.dir;
+        self.dir = s.dir.unwrap_or(outer_dir);
+        let rtl = self.dir.is_rtl();
+        let [top, mut right, bottom, mut left] = s.padding.map(|p| px(p.min(96.0)));
+        // Mail's padding and borders are left and right as drawn; a
+        // right-to-left box takes GPUI's `pl` and `border_l` as its start,
+        // on the right.
+        if rtl {
+            std::mem::swap(&mut left, &mut right);
+        }
         let background = s.background.map(|bg| self.fill(bg));
         let outer = self.enter(background.unwrap_or(0));
         let children: Vec<AnyElement> = match &b.kind {
@@ -308,7 +338,8 @@ impl<'a> Painter<'a> {
             _ => self.blocks(&b.children),
         };
         self.bg = outer;
-        let mut d = div()
+        self.dir = outer_dir;
+        let mut d = directed(div(), s.dir)
             .min_w_0()
             .flex()
             .pt(top)
@@ -318,6 +349,12 @@ impl<'a> Painter<'a> {
             .mt(px(s.margin[0].min(64.0) * SCALE))
             .mb(px(s.margin[1].min(64.0) * SCALE));
         d = match &b.kind {
+            // Cells that only ask for room for their longest word go
+            // under each other when they cannot all fit, as a two
+            // column signature does on a phone, rather than be cut off.
+            BoxKind::Row if b.children.iter().all(free_width) => {
+                d.flex_row().flex_wrap().items_start()
+            }
             BoxKind::Row => d.flex_row().items_start(),
             _ => d.flex_col(),
         };
@@ -346,8 +383,13 @@ impl<'a> Painter<'a> {
             let edges = &mut d.style().border_widths;
             edges.top = edge(s.border_top);
             edges.bottom = edge(s.border_bottom);
-            edges.left = edge(s.border_left);
-            edges.right = edge(s.border_right);
+            let (start, end) = if rtl {
+                (s.border_right, s.border_left)
+            } else {
+                (s.border_left, s.border_right)
+            };
+            edges.left = edge(start);
+            edges.right = edge(end);
             d = d.border_color(rgba(self.fill(color)));
         }
         if s.radius > 0.0 {
@@ -396,7 +438,7 @@ impl<'a> Painter<'a> {
                 .text_color(rgba(self.ink.faint))
                 .children(children)
                 .into_any_element(),
-            BoxKind::ListItem(marker) => div()
+            BoxKind::ListItem(marker) => directed(div(), s.dir)
                 .flex()
                 .flex_row()
                 .min_w_0()
@@ -455,13 +497,21 @@ impl<'a> Painter<'a> {
         if run_start < t.inlines.len() {
             pieces.push(self.text(&t.inlines[run_start..], t));
         }
+        // Each paragraph reads its own way (`TextBlock::dir`), its
+        // alignment from that side.
+        let dir = t.dir.filter(|&d| d != self.dir);
         if !has_image && pieces.len() == 1 {
             let only = pieces.pop().expect("one piece");
-            return align(div().w_full(), t.align)
+            return align(directed(div(), dir).w_full(), t.align)
                 .child(only)
                 .into_any_element();
         }
-        let row = div().w_full().flex().flex_row().flex_wrap().items_end();
+        let row = directed(div(), dir)
+            .w_full()
+            .flex()
+            .flex_row()
+            .flex_wrap()
+            .items_end();
         match t.align {
             Align::Start => row,
             Align::Center => row.justify_center(),
@@ -607,7 +657,13 @@ impl<'a> Painter<'a> {
                     .id(("rich-image", id))
                     .max_w_full()
                     .cursor_pointer()
-                    .on_click(move |_, _, cx| cx.open_url(&link))
+                    .on_click({
+                        let hover = hover.clone();
+                        move |event, _, cx| match &hover {
+                            Some(links) => links.open(&link, event.position(), cx),
+                            None => cx.open_url(&link),
+                        }
+                    })
                     .when_some(hover, |d, hover| {
                         d.on_hover(move |hovered, _, cx| {
                             hover.hover(id, hovered.then(|| shown.clone()), cx);
@@ -652,6 +708,14 @@ impl<'a> Painter<'a> {
                 d.child(div().min_w_0().truncate().child(label))
             })
             .into_any_element()
+    }
+}
+
+/// A cell with no width of its own: it takes a share of the row.
+fn free_width(cell: &Block) -> bool {
+    match cell {
+        Block::Box(b) => b.style.width.is_none(),
+        _ => true,
     }
 }
 
@@ -784,11 +848,15 @@ pub(super) fn linked_text(
     let (ranges, urls): (Vec<_>, Vec<_>) = links.into_iter().unzip();
     let urls = Arc::new(urls);
     let clicked = urls.clone();
+    let opener = hover.clone();
     let mut body = InteractiveText::new(("rich-text", id), styled).on_click(
         ranges.clone(),
-        move |ix, _, cx: &mut App| {
+        move |ix, window, cx: &mut App| {
             if let Some(url) = clicked.get(ix) {
-                cx.open_url(url);
+                match &opener {
+                    Some(links) => links.open(url, window.mouse_position(), cx),
+                    None => cx.open_url(url),
+                }
             }
         },
     );

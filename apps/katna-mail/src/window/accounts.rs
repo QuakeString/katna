@@ -7,15 +7,18 @@
 //! General) asks in the same dialog, saying what is downloaded again and
 //! what is kept.
 
+use crate::widgets::Tip as _;
 use gpui::{
-    AnyElement, Context, Div, DragMoveEvent, ElementId, Entity, Focusable, FontWeight, MouseButton,
-    MouseDownEvent, SharedString, Stateful, Subscription, Window, deferred, div, prelude::*, rgba,
+    AnyElement, ClickEvent, Context, Div, DragMoveEvent, ElementId, Entity, Focusable, FontWeight,
+    MouseButton, MouseDownEvent, SharedString, Stateful, Subscription, Window, deferred, div,
+    prelude::*, rgba,
 };
 use katna_core::config::AccountsShown;
 use katna_core::{Account, AccountId, AccountKind, Config, Pop3Keep};
 use katna_i18n::tr;
 use katna_ui::motion::{self, Spring, lerp};
 use katna_ui::px;
+use katna_ui::tokens::{space, text};
 use katna_ui::unpx;
 use katna_ui::{InputEvent, TextInput};
 
@@ -282,6 +285,7 @@ impl MailWindow {
                 list,
                 th,
             ))
+            .children(self.connected_section(&accounts, th, cx))
             .children(self.pop3_section(th, cx))
             .child(self.row(
                 tr!("accounts-delete-all-row"),
@@ -348,14 +352,14 @@ impl MailWindow {
                     18.0,
                     th,
                 )
-                .tooltip(crate::widgets::tip(
+                .tip(
                     if dir == "pop3-days-less" {
                         tr!("accounts-pop3-days-less")
                     } else {
                         tr!("accounts-pop3-days-more")
                     },
                     th,
-                ));
+                );
                 match to.filter(|_| now == Pop3Choice::AfterDays) {
                     Some(to) => button
                         .map(|d| self.page_control(d, th, cx))
@@ -473,6 +477,7 @@ impl MailWindow {
             account.display_name.clone()
         };
         let id = account.id;
+        let problem = self.account_problem(id);
         let renaming = self
             .settings_page
             .as_ref()
@@ -513,7 +518,57 @@ impl MailWindow {
                 .truncate()
                 .text_size(px(12.0))
                 .text_color(rgba(th.text_faint)),
-            );
+            )
+            // What is wrong with it, as the line over the mail list says.
+            .children(problem.as_ref().map(|problem| {
+                let busy = self.signing_in(id.0);
+                div()
+                    .pt(px(space::S1))
+                    .flex()
+                    .flex_row()
+                    .items_start()
+                    .gap(px(space::S2))
+                    .text_size(px(text::SMALL))
+                    .text_color(rgba(th.text_dim))
+                    .child(div().flex_none().child(icon(
+                        problem.icon(),
+                        problem.color(th),
+                        text::SMALL + 2.0,
+                    )))
+                    .child(
+                        div()
+                            .flex_1()
+                            .min_w_0()
+                            .child(if busy {
+                                format!("{} {}", problem.text(), tr!("sign-in-again-waiting"))
+                            } else {
+                                problem.text()
+                            })
+                            // Its fix, as on the line over the mail list,
+                            // which waits for the browser like it.
+                            .children((!busy).then(|| {
+                                div()
+                                    .id(("account-fix", ix))
+                                    .font_weight(FontWeight::MEDIUM)
+                                    .text_color(rgba(th.accent))
+                                    .cursor_pointer()
+                                    .hover(|s| s.underline())
+                                    .child(problem.action())
+                                    .map(|d| self.page_control(d, th, cx))
+                                    .on_click({
+                                        let problem = problem.clone();
+                                        cx.listener(move |this, event: &ClickEvent, window, cx| {
+                                            this.fix_problem(
+                                                problem.clone(),
+                                                event.position(),
+                                                window,
+                                                cx,
+                                            )
+                                        })
+                                    })
+                            })),
+                    )
+            }));
         let own = self.remote.has_own_picture(id);
         let desktop = self.remote.has_desktop_picture();
         let buttons = div()
@@ -602,7 +657,7 @@ impl MailWindow {
                 20.0,
                 th,
             )
-            .tooltip(crate::widgets::tip(label, th));
+            .tip(label, th);
             match to {
                 Some(to) => button
                     .map(|d| self.page_control(d, th, cx))
@@ -630,7 +685,7 @@ impl MailWindow {
             .cursor_grab()
             .relative()
             .child(crate::widgets::hover_fade("hover-glow", None, th))
-            .tooltip(crate::widgets::tip(tr!("accounts-drag"), th))
+            .tip(tr!("accounts-drag"), th)
             .on_mouse_down(
                 MouseButton::Left,
                 cx.listener(move |this, event: &MouseDownEvent, _, _| {
@@ -643,9 +698,14 @@ impl MailWindow {
                 cx.new(|_| drag.clone())
             })
             .child(icon("drag-handle", th.text_faint, 20.0));
-        let avatar = self.account_ring(
-            &account.address,
-            self.person_avatar(&name, &account.address, 36.0),
+        let avatar = self.problem_badge(
+            self.account_ring(
+                &account.address,
+                self.person_avatar(&name, &account.address, 36.0),
+                th,
+            ),
+            36.0,
+            problem.as_ref(),
             th,
         );
         // The buttons go below the name, together, where the row is
@@ -1056,7 +1116,12 @@ impl MailWindow {
         if listed
             || matches!(
                 self.listing,
-                Some(Listing::Search { .. } | Listing::Unified { .. })
+                Some(
+                    Listing::Search { .. }
+                        | Listing::Unified { .. }
+                        | Listing::Waiting
+                        | Listing::Reminders
+                )
             )
         {
             self.close_listing(cx);
@@ -1082,7 +1147,8 @@ impl MailWindow {
         self.settings_page = None;
         self.close_listing(cx);
         self.unread.clear();
-        self.mail = Mail::open(&self.paths);
+        let nudges = self.config.mail.nudges;
+        self.mail = Mail::open(&self.paths).map(|mail| mail.with_nudges(nudges));
         self.load_tree();
         self.show_snackbar(tr!("accounts-all-deleted"), None, cx);
     }
@@ -1411,8 +1477,7 @@ impl MailWindow {
                         .on_click(cx.listener(|this, _, _, cx| this.confirm_danger(cx))),
                     ),
             );
-        let viewport = window.viewport_size();
-        let (vw, vh) = (unpx(viewport.width), unpx(viewport.height));
+        let (vw, vh) = (self.room_width(), self.room_height(window));
         let card = div()
             .id("danger")
             .track_focus(&self.dialog_focus)

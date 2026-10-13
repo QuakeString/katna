@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Move the mark-up tools"
+text = """
+When marking up a PDF, drag the dots at the end of the tools to move
+them anywhere over the page, so they never cover what you are marking.
+Double-click the dots to put them back.
+"""

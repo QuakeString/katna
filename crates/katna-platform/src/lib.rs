@@ -19,6 +19,8 @@ pub mod motion;
 pub mod shortcuts;
 pub mod sound;
 #[cfg(windows)]
+pub mod store;
+#[cfg(windows)]
 pub mod toasts;
 #[cfg(not(windows))]
 pub mod tray;

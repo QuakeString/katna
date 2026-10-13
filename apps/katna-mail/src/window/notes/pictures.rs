@@ -5,6 +5,7 @@
 //! in Katna's viewer. They are kept apart from the text and travel in the
 //! note's Notes-folder message as inline parts (`katna-sync`).
 
+use crate::widgets::Tip as _;
 use std::sync::Arc;
 
 use gpui::{AnyElement, Context, ObjectFit, SharedString, Window, div, img, prelude::*, rgba};
@@ -17,7 +18,7 @@ use katna_ui::tokens::radius;
 
 use super::MailWindow;
 use crate::theme::Theme;
-use crate::widgets::{icon_button_colored, tip};
+use crate::widgets::icon_button_colored;
 
 /// The biggest picture taken, in bytes (a phone photo; the whole note
 /// must fit in one message).
@@ -363,7 +364,7 @@ impl MailWindow {
                                         th,
                                     )
                                     .size(px(32.0))
-                                    .tooltip(tip(tr!("notes-picture-remove"), th))
+                                    .tip(tr!("notes-picture-remove"), th)
                                     .on_click(cx.listener(
                                         move |this, _, _, cx| {
                                             cx.stop_propagation();

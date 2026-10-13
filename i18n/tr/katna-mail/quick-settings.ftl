@@ -47,4 +47,5 @@ quick-help = Yardım
 quick-tour = Turu başlat
 quick-whats-new = Yenilikler
 quick-check-updates = Güncellemeleri denetle
+quick-send-feedback = Geri bildirim gönder
 quick-about = Katna hakkında

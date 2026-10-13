@@ -125,7 +125,7 @@ impl GoogleContacts {
     pub async fn sync(&self, sync_token: Option<&str>) -> Result<BookSync> {
         let groups = self.groups().await?;
         match self.connections(sync_token).await {
-            Err(Error::Rejected(e)) if sync_token.is_some() && e.contains("410") => {
+            Err(Error::Rejected(e)) if sync_token.is_some() && token_expired(&e) => {
                 tracing::info!("contacts: Google's sync token ran out; reading all again");
                 self.connections(None).await
             }
@@ -256,7 +256,7 @@ impl GoogleContacts {
     /// longer knows it.
     pub async fn other_contacts(&self, sync_token: Option<&str>) -> Result<BookSync> {
         match self.other_pages(sync_token).await {
-            Err(Error::Rejected(e)) if sync_token.is_some() && e.contains("410") => {
+            Err(Error::Rejected(e)) if sync_token.is_some() && token_expired(&e) => {
                 tracing::info!("contacts: Google's other contacts token ran out; reading all");
                 self.other_pages(None).await
             }
@@ -1104,6 +1104,14 @@ fn parse<'a, T: Deserialize<'a>>(body: &'a [u8]) -> Result<T> {
 /// A `2xx` answer is fine. A refused token or permission asks the user to
 /// allow contacts ([`Error::Auth`]); anything else is the service's own
 /// message with its status.
+/// Whether `error` (from [`check`]) says Google no longer knows the sync
+/// token: the People API answers 400 "Sync token is expired" (older
+/// answers were 410), and the only way on is reading everything again.
+fn token_expired(error: &str) -> bool {
+    error.contains("status 410")
+        || (error.contains("status 400") && error.to_ascii_lowercase().contains("sync token"))
+}
+
 fn check(reply: &Reply, doing: &str) -> Result<()> {
     if (200..300).contains(&reply.status) {
         return Ok(());

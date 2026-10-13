@@ -14,6 +14,7 @@ search-without = ಇವು ಇಲ್ಲ
 search-date-within = ದಿನಾಂಕದ ಅವಧಿ
 search-has-attachment = ಲಗತ್ತು ಇದೆ
 search-attachment-custom = ಕಸ್ಟಮ್
+search-attachment-image = ಚಿತ್ರ
 search-attachment-custom-hint = ಒಂದು ವಿಸ್ತರಣೆಯನ್ನು ಟೈಪ್ ಮಾಡಿ, ಉದಾ. png, ನಂತರ Space ಒತ್ತಿ
 search-attachment-remove = ತೆಗೆದುಹಾಕಿ
 search-clear-filter = ಫಿಲ್ಟರ್ ತೆರವುಗೊಳಿಸಿ
@@ -60,3 +61,12 @@ search-dates-month-back = ಹಿಂದಿನ ತಿಂಗಳು
 search-dates-month-on = ಮುಂದಿನ ತಿಂಗಳು
 search-dates-year-back = ಹಿಂದಿನ ವರ್ಷ
 search-dates-year-on = ಮುಂದಿನ ವರ್ಷ
+
+## mail server, for mail that is not downloaded to this computer yet.
+
+search-server-more = ಸರ್ವರ್‌ನಲ್ಲಿ ಇನ್ನಷ್ಟು ಫಲಿತಾಂಶಗಳು
+search-server-searching = ಸರ್ವರ್‌ನಲ್ಲಿ ಮೇಲ್ ಹುಡುಕಲಾಗುತ್ತಿದೆ…
+search-server-empty-searching = ಇಲ್ಲಿ ಇನ್ನೂ ಏನೂ ಇಲ್ಲ. ಸರ್ವರ್‌ನಲ್ಲಿ ಮೇಲ್ ಹುಡುಕಲಾಗುತ್ತಿದೆ…
+search-server-nothing = ಸರ್ವರ್‌ನಲ್ಲಿ ಇನ್ನಷ್ಟು ಫಲಿತಾಂಶಗಳಿಲ್ಲ
+search-server-failed = ಸರ್ವರ್‌ನಲ್ಲಿ ಹುಡುಕಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.
+search-server-again = ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ

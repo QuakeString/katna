@@ -14,6 +14,7 @@ search-without = 含まない語句
 search-date-within = 期間
 search-has-attachment = 添付ファイルあり
 search-attachment-custom = カスタム
+search-attachment-image = 画像
 search-attachment-custom-hint = png などの拡張子を入力して Space キー
 search-attachment-remove = 削除
 search-clear-filter = フィルタをクリア
@@ -48,3 +49,13 @@ search-dates-month-back = 前の月
 search-dates-month-on = 次の月
 search-dates-year-back = 前の年
 search-dates-year-on = 次の年
+
+## More results on server: under the results, mail found by asking the
+## mail server, for mail that is not downloaded to this computer yet.
+
+search-server-more = サーバー上のその他の結果
+search-server-searching = サーバー上のメールを検索中…
+search-server-empty-searching = まだ何もありません。サーバー上のメールを検索中…
+search-server-nothing = サーバー上にほかの結果はありません
+search-server-failed = サーバーを検索できませんでした。
+search-server-again = もう一度試す

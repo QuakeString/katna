@@ -9,6 +9,13 @@ shortcut-group-actions = 動作
 shortcut-group-go-to = 前往
 shortcut-group-app = 應用程式
 
+## Help > Keyboard shortcuts: every shortcut in a dialog over the window
+
+shortcuts-dialog-title = 鍵盤快速鍵
+shortcuts-dialog-search = 尋找快速鍵
+shortcuts-dialog-none = 沒有相符的快速鍵
+shortcuts-dialog-close = 關閉
+
 ## Settings > Keyboard shortcuts: what each shortcut does
 
 shortcut-next = 下一個會話群組
@@ -37,6 +44,8 @@ shortcut-mark-read = 標示為已讀取
 shortcut-mark-unread = 標示為未讀取
 shortcut-star = 加上或移除星號
 shortcut-add-to-tasks = 新增至工作
+shortcut-snooze = 延後
+shortcut-remind = 提醒我
 shortcut-important = 標示為重要
 shortcut-not-important = 標示為不重要
 shortcut-mute = 將會話群組設為靜音或取消靜音
@@ -61,6 +70,7 @@ shortcut-navigation = 顯示或收合選單
 shortcut-quick-settings = 快速設定
 shortcut-settings = 所有設定
 shortcut-shortcuts = 鍵盤快速鍵
+shortcut-palette = 命令面板
 shortcut-reload = 檢查新郵件
 shortcut-quit = 結束
 

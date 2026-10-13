@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Smoother app buttons"
+text = """
+Clicking an app in the left rail, or in the bar along the bottom on a
+phone, no longer shakes: the press wave plays out and the selected pill
+grows from the middle while the button keeps its size.
+"""

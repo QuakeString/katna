@@ -71,7 +71,7 @@ impl MailWindow {
                 self.start_tour(true, window, cx);
             }
         } else {
-            let (highlights, more) = whats_new::unseen(&seen);
+            let (highlights, more) = whats_new::unseen(&seen, &self.config.apps);
             let shown = !highlights.is_empty();
             if shown {
                 self.open_whats_new(highlights, more, true, from, window, cx);
@@ -104,7 +104,7 @@ impl MailWindow {
     /// Opens What's new with the newest highlights, from quick settings.
     pub(super) fn show_whats_new(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         self.settings_open = false;
-        let (highlights, more) = whats_new::recent();
+        let (highlights, more) = whats_new::recent(&self.config.apps);
         self.open_whats_new(highlights, more, false, None, window, cx);
     }
 
@@ -222,7 +222,7 @@ impl MailWindow {
         let t = t.clamp(0.0, 1.0);
         let dialog = self.whats_new.as_ref()?;
         let phone = self.layout.shape.is_phone();
-        let vw = unpx(window.viewport_size().width);
+        let vw = self.room_width();
         let width = if phone { vw } else { WIDTH.min(vw - 48.0) };
         // Room for the animations: the card less its padding.
         let inner = width - 48.0;

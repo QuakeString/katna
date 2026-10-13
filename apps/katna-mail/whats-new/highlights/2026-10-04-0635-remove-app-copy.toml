@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Free the space of an app you turned off"
+text = """
+Turning off an app in Settings › Apps now offers to remove its copy on
+this computer. Nothing changes on your accounts, and turning it back on
+downloads it again. New accounts are only asked for what the apps you use
+need.
+"""

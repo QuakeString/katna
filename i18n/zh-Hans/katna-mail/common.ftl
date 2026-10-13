@@ -41,3 +41,4 @@ search-options-show = 显示搜索选项
 settings = 设置
 account-add = 添加账号
 account-wheel-hint = 滚动滚轮以切换账号
+account-menu-all-detail = { $count } 个账号合并显示

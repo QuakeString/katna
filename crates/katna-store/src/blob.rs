@@ -98,6 +98,10 @@ impl BlobStore {
         Self { conn, dir, mode }
     }
 
+    pub(crate) fn conn(&self) -> &Connection {
+        &self.conn
+    }
+
     /// Starts a transaction that the following [`put`](Self::put)s join, so
     /// a [`MailBatch`](crate::MailBatch) commits its blobs at once.
     pub(crate) fn begin(&self) -> Result<()> {

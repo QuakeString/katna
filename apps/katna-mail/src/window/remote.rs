@@ -183,9 +183,18 @@ impl Remote {
 
     /// Whether remote content of `message` from `sender` may load. A
     /// trusted sender counts only when the provider vouched for the
-    /// address (`authenticated`): anyone can write any `From`.
-    pub(super) fn allowed(&self, message: MessageId, sender: &str, authenticated: bool) -> bool {
-        self.always || self.shown.contains(&message) || (authenticated && self.trusts(sender))
+    /// address (`authenticated`): anyone can write any `From`. Mail whose
+    /// sender `failed` the provider's checks shows them only when asked,
+    /// even with "Always show images" on.
+    pub(super) fn allowed(
+        &self,
+        message: MessageId,
+        sender: &str,
+        authenticated: bool,
+        failed: bool,
+    ) -> bool {
+        self.shown.contains(&message)
+            || (!failed && (self.always || (authenticated && self.trusts(sender))))
     }
 
     fn trust(&mut self, sender: &str) {
@@ -360,10 +369,12 @@ impl MailWindow {
         };
         let mut urls = Vec::new();
         for content in reader.remote_content() {
-            if !self
-                .remote
-                .allowed(content.id, &content.sender, content.authenticated)
-            {
+            if !self.remote.allowed(
+                content.id,
+                &content.sender,
+                content.authenticated,
+                content.failed && !self.looks_safe(content.id),
+            ) {
                 continue;
             }
             urls.extend(
@@ -643,16 +654,18 @@ impl MailWindow {
 
     /// "Images are hidden" with the two ways to show them. For a sender
     /// who is trusted already, but whose address the provider did not
-    /// vouch for, it says so, and only "Show images" is offered.
+    /// vouch for, it says so, and only "Show images" is offered; so for
+    /// one who `failed` the provider's checks.
     pub(super) fn images_banner(
         &self,
         ix: usize,
         id: MessageId,
         sender: &str,
+        failed: bool,
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
-        let unconfirmed = self.remote.trusts(sender);
+        let unconfirmed = failed || self.remote.trusts(sender);
         let link = |label: SharedString, id: (&'static str, usize)| {
             div()
                 .id(id)
@@ -680,17 +693,13 @@ impl MailWindow {
             .text_size(px(12.0))
             .text_color(rgba(th.text_dim))
             .child(icon("image", th.text_faint, 16.0))
-            .child(
-                div()
-                    .min_w_0()
-                    .pl(px(4.0))
-                    .pr(px(4.0))
-                    .child(if unconfirmed {
-                        tr!("remote-hidden-unconfirmed")
-                    } else {
-                        tr!("remote-hidden")
-                    }),
-            )
+            .child(div().min_w_0().pl(px(4.0)).pr(px(4.0)).child(if failed {
+                tr!("remote-hidden-failed")
+            } else if unconfirmed {
+                tr!("remote-hidden-unconfirmed")
+            } else {
+                tr!("remote-hidden")
+            }))
             .child(
                 link(tr!("remote-show").into(), ("show-images", ix)).on_click(cx.listener(
                     move |this, _, _, cx| {

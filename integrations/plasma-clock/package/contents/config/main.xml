@@ -103,6 +103,10 @@
       <label>Whether the popup should remain open when another window is activated</label>
       <default>false</default>
     </entry>
+    <entry name="katnaTasksFolded" type="Bool">
+      <label>Whether Katna's Tasks list in the popup is folded to its heading</label>
+      <default>false</default>
+    </entry>
     <entry name="dateDisplayFormat" type="Enum">
       <label>Whether the date should be shown below or beside the time</label>
       <choices name="Settings::dateDisplayFormat">

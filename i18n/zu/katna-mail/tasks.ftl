@@ -7,8 +7,11 @@
 tasks-create = Umsebenzi omusha
 tasks-all = Yonke imisebenzi
 tasks-today = Namuhla
+tasks-upcoming = Okuzayo
 tasks-starred = Okunenkanyezi
+tasks-completed-view = Okuqediwe
 tasks-new-list = Dala uhlu olusha
+tasks-labels-heading = Amalebula
 tasks-on-this-computer = Kule khompyutha
 tasks-my-tasks = Imisebenzi yami
 # The line under an account in the side list whose task lists could not
@@ -18,7 +21,7 @@ tasks-account-signed-in = Ungene futhi ku-{ $address }. Kutholwa imisebenzi yakh
 tasks-account-sign-in-refused = I-{ $provider } ayizange ivumele i-Katna ingene. Zama futhi, bese uvumela ukufinyelela emisebenzini yakho.
 tasks-account-refused = Iseva ayizange yamukele iphasiwedi. I-Yahoo, i-iCloud, i-Zoho nabanye badinga iphasiwedi yohlelo lokusebenza.
 tasks-account-change-password = Shintsha iphasiwedi
-tasks-account-change-password-tooltip = Vula Izilungiselelo > Ama-akhawunti
+tasks-account-change-password-tooltip = Thayipha iphasiwedi entsha; i-Katna iyayihlola neseva
 tasks-account-not-enabled = Ukufinyelela kwemisebenzi kwe-Katna akukavulwa.
 tasks-account-failed = Izinhlu zemisebenzi azikwazanga ukufundwa.
 # $reason is the server's own words, in English.
@@ -47,7 +50,14 @@ tasks-title-placeholder = Isihloko
 tasks-add-step = Engeza umsebenzi omncane
 tasks-empty = Ayikho imisebenzi okwamanje. Engeza owodwa ngenhla.
 tasks-starred-empty = Faka inkanyezi emsebenzini ukuze uwubone lapha.
+tasks-label-empty = Ayikho imisebenzi evulekile enale lebula.
 tasks-today-empty = Akukho okufanele namuhla.
+tasks-completed-empty = Imisebenzi oyiqedayo ivela lapha.
+tasks-upcoming-add = Engeza umsebenzi we-{ $day }
+tasks-upcoming-overdue-day = { $weekday } { $day }
+tasks-from-mail-quiet = Kusuka kumeyili
+tasks-from-note-quiet = Kusuka enothini
+tasks-steps-done = { $done }/{ $count }
 tasks-today-date = { $weekday }, { $day }
 tasks-overdue = Okwedlulelwe isikhathi
 tasks-completed = { $count ->
@@ -55,6 +65,11 @@ tasks-completed = { $count ->
    *[other] Kuqediwe ({ $count })
 }
 tasks-list-options = Izinketho zohlu
+tasks-sort-by = Hlunga nge-
+tasks-sort-my-order = Ukulandelana kwami
+tasks-sort-date = Usuku
+tasks-sort-starred = Okufakwe inkanyezi muva nje
+tasks-sort-title = Isihloko
 tasks-rename-list = Qamba kabusha uhlu
 tasks-delete-list = Susa uhlu
 tasks-mark-done = Maka njengokuqediwe
@@ -71,6 +86,17 @@ tasks-from-note = Inothi
 tasks-open-note = Vula inothi
 tasks-note-gone = Leli nothi alisekho lapha.
 tasks-no-subject = (asikho isihloko)
+
+## Several tasks selected (Ctrl+click, Shift+click)
+
+tasks-selected = { $count ->
+    [one] { $count } ukhethiwe
+   *[other] { $count } akhethiwe
+}
+tasks-select-clear = Sula ukukhetha
+tasks-select-move = Hambisa ohlwini
+tasks-select-date = Setha usuku
+tasks-next-week = Iviki elizayo
 
 ## The details dialog
 
@@ -91,6 +117,13 @@ tasks-remind-on-time = Ngesikhathi
 tasks-remind-morning = Ngalolo suku, { $time }
 tasks-remind-hour-before = Ihora elilodwa ngaphambili
 tasks-remind-day-before = Usuku olulodwa ngaphambili
+tasks-label-add = Engeza ilebula
+tasks-label-task = Faka ilebula emsebenzini
+tasks-files-attach = Namathisela amafayela
+tasks-files-pick = Namathisela
+tasks-file-open = Vula
+tasks-file-remove = Susa ifayela
+tasks-file-here = Kule khompyutha kuphela
 tasks-cancel = Khansela
 tasks-save = Londoloza
 tasks-not-a-time = “{ $text }” akuyona isikhathi, isibonelo { $example }.
@@ -107,6 +140,13 @@ tasks-due-at = { $day }, { $time }
 tasks-toast-done = Umsebenzi uqediwe
 tasks-toast-next = Kwenziwe. Olandelayo ngomhla ka-{ $date }
 tasks-toast-deleted = Umsebenzi ususiwe
+tasks-files-added = { $count ->
+    [one] Ifayela linamathiselwe
+   *[other] Amafayela angu-{ $count } anamathiselwe
+}
+tasks-file-removed = Kususwe “{ $name }”
+tasks-files-left-out = Akunamathiselwe: { $names }. Umsebenzi uthatha amafayela afika ku-{ $limit }, hhayi amafolda.
+tasks-file-missing = Lelo fayela alisekho lapha.
 tasks-toast-added = { $count ->
     [one] Kwengezwe Kumisebenzi
    *[other] Imisebenzi engu-{ $count } yengeziwe
@@ -117,3 +157,27 @@ tasks-toast-moved = Kuhanjiswe ku-{ $list }
 # A task dragged to another place in its own list.
 tasks-toast-placed = Umsebenzi uhanjisiwe
 tasks-toast-rescheduled = Umsebenzi uhlelwe kabusha
+tasks-toast-rescheduled-several = { $count ->
+    [one] Umsebenzi uhlelwe kabusha
+   *[other] Imisebenzi engu-{ $count } ihlelwe kabusha
+}
+tasks-toast-done-several = { $count ->
+    [one] Umsebenzi uqediwe
+   *[other] Imisebenzi engu-{ $count } iqediwe
+}
+tasks-toast-open-several = { $count ->
+    [one] Umsebenzi umakwe njengongaqediwe
+   *[other] Imisebenzi engu-{ $count } imakwe njengengaqediwe
+}
+tasks-toast-starred = { $count ->
+    [one] Umsebenzi ufakwe inkanyezi
+   *[other] Imisebenzi engu-{ $count } ifakwe inkanyezi
+}
+tasks-toast-unstarred = { $count ->
+    [one] Inkanyezi isusiwe
+   *[other] Izinkanyezi zisusiwe emisebenzini engu-{ $count }
+}
+tasks-toast-deleted-several = { $count ->
+    [one] Umsebenzi ususiwe
+   *[other] Imisebenzi engu-{ $count } isusiwe
+}

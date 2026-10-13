@@ -34,7 +34,7 @@ contacts-account-signed-in = Reconnecté à { $address }. Récupération de vos 
 contacts-account-sign-in-refused = { $provider } n’a pas laissé entrer Katna. Réessayez, et autorisez l’accès à vos contacts.
 contacts-account-password = Le serveur n’a pas accepté le mot de passe. Yahoo, iCloud, Zoho et d’autres demandent un mot de passe d’application.
 contacts-account-change-password = Changer le mot de passe
-contacts-account-change-password-tooltip = Ouvrir Paramètres > Comptes
+contacts-account-change-password-tooltip = Saisissez le nouveau mot de passe ; Katna le vérifie auprès du serveur
 contacts-account-failed = Impossible de lire les contacts.
 # $reason is the server's own words, in English.
 contacts-account-error = Impossible de lire les contacts : { $reason }

@@ -53,7 +53,7 @@ calendar-account-signed-in = Ungene futhi ku-{ $address }. Kutholwa amakhalenda 
 calendar-account-sign-in-refused = I-{ $provider } ayizange ivumele i-Katna ingene. Zama futhi, bese uvumela ukufinyelela kumakhalenda akho.
 calendar-account-refused = Iseva ayizange yamukele iphasiwedi. I-Yahoo, i-iCloud, i-Zoho nabanye badinga iphasiwedi yohlelo lokusebenza.
 calendar-account-change-password = Shintsha iphasiwedi
-calendar-account-change-password-tooltip = Vula Izilungiselelo > Ama-akhawunti
+calendar-account-change-password-tooltip = Thayipha iphasiwedi entsha; i-Katna iyayihlola neseva
 calendar-account-not-enabled = Ukufinyelela kwekhalenda kwe-Katna akukavulwa.
 calendar-account-failed = Amakhalenda awakwazanga ukufundwa.
 calendar-account-error = Amakhalenda awakwazanga ukufundwa: { $reason }
@@ -69,6 +69,7 @@ calendar-account-try-again = Zama futhi
 calendar-account-try-again-tooltip = Hlola amakhalenda ale akhawunti futhi manje
 calendar-account-fixing = Kuyasebenzwa kukho…
 calendar-birthdays = Osuku lokuzalwa
+calendar-tasks = Imisebenzi
 calendar-birthday-of = Usuku lokuzalwa luka-{ $name }
 calendar-empty-title = Awukho amakhalenda okwamanje
 calendar-empty-text = I-Katna ibonisa amakhalenda ama-akhawunti akho e-Google ne-Microsoft lapha ngemva kokuvumelanisa, kanye nawamanye amaseva anikeza i-CalDAV.
@@ -115,6 +116,7 @@ calendar-add-meet = Engeza ikholi yevidiyo ye-Google Meet
 calendar-add-teams = Engeza umhlangano we-Teams
 calendar-has-call = Ikholi yevidiyo ingeziwe
 calendar-weekday-day = { $weekday }, { $day }
+calendar-schedule-day = { $weekday }, { $month }
 calendar-all-day-box = Usuku lonke
 calendar-more-options = Okunye okungakhethwa
 calendar-save = Londoloza
@@ -127,6 +129,7 @@ calendar-event-details = Imininingwane yomcimbi
 # Right-click menus on the calendar: on a free time or day, an event and
 # a task.
 calendar-menu-new-event = Umcimbi omusha
+calendar-event-window-title = Umcimbi omusha
 # Shows the day right-clicked on its own, in the Day view.
 calendar-menu-open-day = Vula usuku
 calendar-menu-duplicate = Yenza ikhophi

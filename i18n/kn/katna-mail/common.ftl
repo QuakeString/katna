@@ -53,3 +53,4 @@ search-options-show = ಹುಡುಕಾಟದ ಆಯ್ಕೆಗಳನ್ನು
 settings = ಸೆಟ್ಟಿಂಗ್‌ಗಳು
 account-add = ಖಾತೆಯನ್ನು ಸೇರಿಸಿ
 account-wheel-hint = ಖಾತೆ ಬದಲಿಸಲು ಸ್ಕ್ರಾಲ್ ಮಾಡಿ
+account-menu-all-detail = { $count } ಖಾತೆಗಳು ಒಟ್ಟಿಗೆ

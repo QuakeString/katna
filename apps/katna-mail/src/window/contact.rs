@@ -12,13 +12,14 @@
 //! opens the card's summary as a popover ([`peek`]), or a sheet on a
 //! phone.
 
+use crate::widgets::Tip as _;
 use std::cell::Cell;
 use std::collections::HashMap;
 use std::rc::Rc;
 use std::time::{Duration, Instant};
 
 use gpui::{
-    Animation, AnimationExt, AnyElement, ClipboardItem, Context, FontWeight, Pixels, Point,
+    Animation, AnimationExt, AnyElement, Bounds, ClipboardItem, Context, FontWeight, Pixels,
     ScrollHandle, SharedString, Window, canvas, div, ease_out_quint, prelude::*, rgba,
 };
 use katna_dav::Occurrence;
@@ -26,6 +27,7 @@ use katna_i18n::tr;
 use katna_render::signature;
 use katna_store::{ContactConversation, ContactFile};
 use katna_ui::motion::{self, Spring};
+use katna_ui::tokens::space;
 use katna_ui::{px, unpx};
 
 mod peek;
@@ -42,9 +44,7 @@ use crate::data::{Entry, EntryKey, RowFile};
 use crate::format;
 use crate::profile::{self, Profile};
 use crate::theme::{Theme, mix};
-use crate::widgets::{
-    card_outline, icon, icon_button, icon_button_colored, tip, tonal_icon_button,
-};
+use crate::widgets::{card_outline, icon, icon_button, icon_button_colored, tonal_icon_button};
 
 /// The card's width.
 pub(super) const CONTACT_WIDTH: f32 = 300.0;
@@ -125,6 +125,12 @@ pub(super) struct ContactPanel {
     /// Where the panel has no room, a summary of the card pops over
     /// where the name or picture was clicked.
     peek: Option<ContactPeek>,
+    /// Where the names and pictures that open the card were drawn.
+    spots: peek::Spots,
+    /// Who the popover was last showing, what it pointed at and when it
+    /// closed: a press on that same name or picture closes it first, and
+    /// the click that follows must not open it again.
+    peek_shut: Option<(String, Bounds<Pixels>, Instant)>,
 }
 
 impl ContactPanel {
@@ -144,6 +150,8 @@ impl ContactPanel {
             nav_hold: false,
             sheet: Sheet::new(),
             peek: None,
+            spots: Default::default(),
+            peek_shut: None,
         }
     }
 
@@ -256,24 +264,25 @@ impl MailWindow {
     }
 
     /// Shows `email` (lower case) in the panel, opening it if it was put
-    /// away: an address clicked at `at` in the open mail's details.
-    /// A second click on the person whose card shows puts the panel away.
-    pub(super) fn show_person(&mut self, email: &str, at: Point<Pixels>, cx: &mut Context<Self>) {
+    /// away: an address clicked in the open mail's details (`at`, see
+    /// [`MailWindow::person_at`]). A second click on the person whose
+    /// card shows puts the panel away.
+    pub(super) fn show_person(&mut self, email: &str, at: Bounds<Pixels>, cx: &mut Context<Self>) {
         if let Some(key) = self.reader.as_ref().map(|r| r.key) {
             self.show_contact_of(key, email, at, cx);
         }
     }
 
     /// Shows `email`'s card for conversation `key`, opening the panel if
-    /// it is hidden: a click at `at` on a name or picture in the chat
-    /// view. A second click on the person whose card shows puts the panel
-    /// away. Where the panel has no room, the card's summary pops over
-    /// at `at` instead.
+    /// it is hidden: a click on a name or picture in the chat view, drawn
+    /// at `at`. A second click on the person whose card shows puts the
+    /// panel away. Where the panel has no room, the card's summary pops
+    /// over, pointing at `at`, instead.
     pub(super) fn show_contact_of(
         &mut self,
         key: EntryKey,
         email: &str,
-        at: Point<Pixels>,
+        at: Bounds<Pixels>,
         cx: &mut Context<Self>,
     ) {
         let email = email.to_lowercase();
@@ -285,6 +294,15 @@ impl MailWindow {
             return;
         }
         if !self.contact_offered() {
+            // A second click on what the popover points at closes it: the
+            // press already did, so the click leaves it shut.
+            if let Some((who, was, when)) = self.contact.peek_shut.take()
+                && who == email
+                && was.dilate(px(2.0)).contains(&at.center())
+                && when.elapsed() < Duration::from_secs(1)
+            {
+                return;
+            }
             self.contact.picked = Some((key, email));
             self.contact.peek = Some(ContactPeek::new(key, at));
             cx.notify();
@@ -339,14 +357,14 @@ impl MailWindow {
                 if on { th.accent } else { th.text_dim },
                 th,
             )
-            .tooltip(tip(
+            .tip(
                 if on {
                     tr!("contact-panel-hide")
                 } else {
                     tr!("contact-panel-show")
                 },
                 th,
-            ))
+            )
             .on_click(cx.listener(|this, _, _, cx| this.toggle_contact_panel(cx)))
             .into_any_element(),
         )
@@ -382,6 +400,17 @@ impl MailWindow {
 
     /// The profile of `email`, read in the background when not known or
     /// stale; the old one shows meanwhile.
+    /// `email`'s details are being read for the first time.
+    fn contact_reading(&self, email: &str) -> bool {
+        matches!(self.contact.profiles.get(email), Some((_, None)))
+    }
+
+    /// The name `email` uses most on mail, once their profile was read.
+    pub(super) fn contact_known_name(&self, email: &str) -> Option<String> {
+        let (_, profile) = self.contact.profiles.get(&email.to_lowercase())?;
+        profile.as_ref()?.summary.name.clone()
+    }
+
     fn contact_profile(&mut self, email: &str, cx: &mut Context<Self>) -> Option<Rc<Profile>> {
         let known = self.contact.profiles.get(email).cloned();
         // Being read for the first time, or read a while ago.
@@ -423,6 +452,12 @@ impl MailWindow {
             .detach();
         }
         known.and_then(|(_, p)| p)
+    }
+
+    /// The pointer is on a name or picture that opens `email`'s card:
+    /// its profile is read now, so the card opens with it.
+    pub(in crate::window) fn read_person_ahead(&mut self, email: &str, cx: &mut Context<Self>) {
+        self.contact_profile(&email.to_lowercase(), cx);
     }
 
     /// Asks the daemon once for the company of the person at `email`:
@@ -606,7 +641,7 @@ impl MailWindow {
             .child(
                 div().absolute().top(px(6.0)).right(px(6.0)).child(
                     icon_button("contact-close", "close", 20.0, th)
-                        .tooltip(tip(tr!("contact-panel-hide"), th))
+                        .tip(tr!("contact-panel-hide"), th)
                         .on_click(cx.listener(|this, _, _, cx| this.toggle_contact_panel(cx))),
                 ),
             )
@@ -669,18 +704,10 @@ impl MailWindow {
             .reading
             .then(|| self.reader.as_ref()?.signature_of(email))
             .flatten();
-        // A colleague signed the open mail from a shared address
-        // ("accounts@"): the card is theirs, not that of a name the
-        // address used on other mail.
-        let signer = open_signature.as_deref().and_then(|s| {
-            let signer = signature::signer(s)?;
-            (known_name.is_none() || signature::someone_else(s, known_name.as_deref()))
-                .then_some(signer)
-        });
-        let name = signer
-            .clone()
-            .or(known_name)
-            .or_else(|| name.map(str::to_owned));
+        let signer = open_signature
+            .as_deref()
+            .and_then(|s| other_signer(s, name, known_name.as_deref()));
+        let name = person_name(signer.as_deref(), name, known_name.as_deref());
         // What older mail said of the person is not the signer's.
         let card = profile.as_ref().map(|p| match signer {
             Some(_) => profile::Card {
@@ -779,7 +806,10 @@ impl MailWindow {
         let size = ACTION.0 + (ACTION_STUCK.0 - ACTION.0) * stuck;
         let mut actions = self.contact_actions(email, phone, size, th, cx);
         // Their address book entry: open it, or save them in one click.
-        if !own && self.contacts.book.as_ref().is_some_and(|b| b.is_ok()) {
+        if !own
+            && self.app_on(super::apps::App::Contacts)
+            && self.contacts.book.as_ref().is_some_and(|b| b.is_ok())
+        {
             actions = actions.child(self.contact_save_button(
                 email,
                 name.clone(),
@@ -813,6 +843,11 @@ impl MailWindow {
                 self.contact_details(profile, card, details.as_ref(), &mut pieces, th, cx)
         {
             sections.push(details);
+        }
+        // The popover while their details are still being read: faint
+        // lines where they will go, so it opens at about its full height.
+        if summary && !own && profile.is_none() && self.contact_reading(email) {
+            sections.push(contact_placeholder(th, cx.reduce_motion()));
         }
         // The company as its home page describes it, else as the
         // signature does.
@@ -1007,7 +1042,7 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> gpui::Div {
         let button = |id: &'static str, name: &str, label: String| {
-            tonal_icon_button(id, name, size, false, true, th).tooltip(tip(label, th))
+            tonal_icon_button(id, name, size, false, true, th).tip(label, th)
         };
         let to = email.to_owned();
         let query = format!("from:{email} OR to:{email}");
@@ -1022,7 +1057,7 @@ impl MailWindow {
                     tr!("quiet-mute-sender")
                 };
                 tonal_icon_button("contact-mute", "bell-off", size, muted, true, th)
-                    .tooltip(tip(label, th))
+                    .tip(label, th)
                     .on_click(cx.listener(move |this, _, _, cx| {
                         this.mute_sender(address.clone(), !muted, cx)
                     }))
@@ -1075,7 +1110,7 @@ impl MailWindow {
         };
         let email = email.to_owned();
         tonal_icon_button("contact-save", glyph, size, false, !adding, th)
-            .tooltip(tip(label, th))
+            .tip(label, th)
             .when(!adding, |d| {
                 d.on_click(cx.listener(move |this, _, window, cx| {
                     if this.is_saved_contact(&email) {
@@ -1431,7 +1466,7 @@ impl MailWindow {
                     .cursor_pointer()
                     .text_color(rgba(th.accent))
                     .hover(|s| s.underline())
-                    .tooltip(tip(tr!("contact-call"), th))
+                    .tip(tr!("contact-call"), th)
                     .on_click(move |_, _, cx| cx.open_url(&dial))
                     .child(number),
             )
@@ -1457,7 +1492,7 @@ impl MailWindow {
                     .opacity(0.0)
                     .group_hover(group, |s| s.opacity(1.0))
                     .hover(|s| s.bg(rgba(th.hover)))
-                    .tooltip(tip(tr!("contact-copy-number"), th))
+                    .tip(tr!("contact-copy-number"), th)
                     .on_click(cx.listener(move |this, _, _, cx| {
                         cx.write_to_clipboard(ClipboardItem::new_string(copied.clone()));
                         this.show_snackbar(tr!("contact-number-copied"), None, cx);
@@ -1657,7 +1692,7 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
         let tasks = self.tasks_of_mails(mails);
-        if tasks.is_empty() {
+        if tasks.is_empty() || !self.app_on(super::apps::App::Tasks) {
             return None;
         }
         let today = super::tasks_page::today();
@@ -1674,14 +1709,14 @@ impl MailWindow {
                             .id(("contact-task-tick", id as usize))
                             .flex_none()
                             .rounded_full()
-                            .tooltip(tip(
+                            .tip(
                                 if done {
                                     tr!("tasks-mark-open")
                                 } else {
                                     tr!("tasks-mark-done")
                                 },
                                 th,
-                            ))
+                            )
                             .child(super::tasks_page::round_tick(done, true, th))
                             .on_click(cx.listener(move |this, _, _, cx| {
                                 cx.stop_propagation();
@@ -1970,7 +2005,7 @@ fn page_chips(id: &'static str, pages: &[signature::Link], th: &Theme) -> AnyEle
                 .cursor_pointer()
                 .relative()
                 .child(crate::widgets::hover_fade("hover-glow", None, th))
-                .tooltip(tip(link.url.clone(), th))
+                .tip(link.url.clone(), th)
                 .on_click(move |_, _, cx| cx.open_url(&url));
             match brand_icon(link.site) {
                 Some(name) => chip.w(px(24.0)).child(icon(name, th.text_dim, 14.0)),
@@ -2096,4 +2131,93 @@ fn snap(offset: f32, device: f32) -> f32 {
     }
     let dev = offset * device;
     (dev.abs() - 0.5).ceil().copysign(dev) / device
+}
+
+/// Widths of the placeholder lines, as parts of the row.
+const PLACEHOLDER_LINES: [f32; 3] = [0.7, 0.55, 0.8];
+
+/// Faint lines in the shape of the details' rows: an icon and a line of
+/// text each, breathing gently until the details come.
+fn contact_placeholder(th: &Theme, reduce: bool) -> AnyElement {
+    let rows = div()
+        .flex()
+        .flex_col()
+        // As far apart as the details' rows.
+        .gap(px(space::S3 + space::S1))
+        .children(PLACEHOLDER_LINES.iter().map(|width| {
+            div()
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(space::S4))
+                .h(px(20.0))
+                .child(super::skeleton::bone(th).size(px(18.0)))
+                .child(
+                    div().flex_1().child(
+                        super::skeleton::bone(th)
+                            .h(px(10.0))
+                            .w(gpui::relative(*width)),
+                    ),
+                )
+        }));
+    super::skeleton::breathing("contact-placeholder", rows, reduce)
+}
+
+/// Who signed `signature`, when it isn't the person the mail is from:
+/// a colleague writing from a shared address ("accounts@"). The mail's
+/// own name for its sender counts first, then the name the address uses
+/// most on other mail.
+pub(super) fn other_signer(
+    signature: &str,
+    header: Option<&str>,
+    known: Option<&str>,
+) -> Option<String> {
+    let signer = signature::signer(signature)?;
+    let named = header.filter(|n| !n.trim().is_empty()).or(known);
+    (named.is_none() || signature::someone_else(signature, named)).then_some(signer)
+}
+
+/// The name a person goes by, wherever it shows (the card, the chat's
+/// people): who signed their mail here, else the name their mail here
+/// carries, else the one the address uses most.
+pub(super) fn person_name(
+    signer: Option<&str>,
+    header: Option<&str>,
+    known: Option<&str>,
+) -> Option<String> {
+    signer
+        .or(header.filter(|n| !n.trim().is_empty()))
+        .or(known)
+        .map(str::to_owned)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{other_signer, person_name};
+
+    const SIGNED: &str = "Best Regards,\nRakib Alam\nAccounts\n+91 70447 62847";
+
+    #[test]
+    fn a_colleague_on_a_shared_address_goes_by_their_signature() {
+        let signer = other_signer(SIGNED, Some("Niyajuddin Mollick"), None);
+        assert_eq!(signer.as_deref(), Some("Rakib Alam"));
+        let name = person_name(signer.as_deref(), Some("Niyajuddin Mollick"), None);
+        assert_eq!(name.as_deref(), Some("Rakib Alam"));
+    }
+
+    #[test]
+    fn a_sender_signing_their_own_mail_keeps_the_mail_name() {
+        let signer = other_signer(SIGNED, Some("Rakib Alam"), Some("Accounts Team"));
+        assert_eq!(signer, None);
+        let name = person_name(None, Some("Rakib Alam"), Some("Accounts Team"));
+        assert_eq!(name.as_deref(), Some("Rakib Alam"));
+    }
+
+    #[test]
+    fn the_mail_name_comes_before_the_usual_one() {
+        let name = person_name(None, Some("Niyajuddin Mollick"), Some("Rakib Alam"));
+        assert_eq!(name.as_deref(), Some("Niyajuddin Mollick"));
+        let name = person_name(None, Some("  "), Some("Rakib Alam"));
+        assert_eq!(name.as_deref(), Some("Rakib Alam"));
+    }
 }

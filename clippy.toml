@@ -2,4 +2,5 @@
 # Scaling (crates/katna-ui/src/scale.rs).
 disallowed-methods = [
     { path = "gpui::px", reason = "use katna_ui::px, which applies the interface scale" },
+    { path = "gpui::anchored", reason = "use katna_ui::anchored, which keeps inside Katna's frame" },
 ]

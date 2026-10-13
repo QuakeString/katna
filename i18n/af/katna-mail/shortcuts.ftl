@@ -9,6 +9,13 @@ shortcut-group-actions = Aksies
 shortcut-group-go-to = Gaan na
 shortcut-group-app = Program
 
+## Help > Keyboard shortcuts: every shortcut in a dialog over the window
+
+shortcuts-dialog-title = Kortpadsleutels
+shortcuts-dialog-search = Soek 'n kortpad
+shortcuts-dialog-none = Geen kortpad pas nie
+shortcuts-dialog-close = Maak toe
+
 ## Settings > Keyboard shortcuts: what each shortcut does
 
 shortcut-next = Volgende gesprek
@@ -37,6 +44,8 @@ shortcut-mark-read = Merk as gelees
 shortcut-mark-unread = Merk as ongelees
 shortcut-star = Voeg ster by of verwyder dit
 shortcut-add-to-tasks = Voeg by Take
+shortcut-snooze = Sluimer
+shortcut-remind = Herinner my
 shortcut-important = Merk as belangrik
 shortcut-not-important = Merk as nie belangrik nie
 shortcut-mute = Demp of ontdemp die gesprek
@@ -61,6 +70,7 @@ shortcut-navigation = Wys of vou die kieslys
 shortcut-quick-settings = Vinnige instellings
 shortcut-settings = Alle instellings
 shortcut-shortcuts = Kortpadsleutels
+shortcut-palette = Opdragpalet
 shortcut-reload = Kyk vir nuwe e-pos
 shortcut-quit = Verlaat
 

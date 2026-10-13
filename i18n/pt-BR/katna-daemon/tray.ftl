@@ -6,6 +6,8 @@
 
 tray-open-inbox = Abrir a _Caixa de entrada
 tray-new-message = _Nova mensagem
+tray-new-task = Nova _tarefa
+tray-new-note = Nova n_ota
 tray-preferences = _Preferências
 tray-quit = _Sair
 
@@ -16,4 +18,13 @@ tray-unread = { $count ->
     [one] { $count } mensagem não lida
     [many] { $count } de mensagens não lidas
    *[other] { $count } mensagens não lidas
+}
+
+tray-password-refused = Nova senha necessária para { $address }
+tray-signed-out = Faça login de novo em { $address }
+tray-accounts-need-you = { $count } contas precisam de você
+tray-not-sent = { $count ->
+    [one] { $count } mensagem não foi enviada
+    [many] { $count } de mensagens não foram enviadas
+   *[other] { $count } mensagens não foram enviadas
 }

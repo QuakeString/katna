@@ -53,6 +53,12 @@ const fn entry(
 /// result can find its row.
 const ENTRIES: &[Entry] = &[
     entry(
+        Section::Apps,
+        "settings-apps",
+        "settings-apps-summary",
+        "apps turn off disable remove hide calendar contacts tasks notes files mail only just mail",
+    ),
+    entry(
         Section::General,
         "language-setting",
         "settings-general-language-summary",
@@ -134,7 +140,7 @@ const ENTRIES: &[Entry] = &[
         Section::General,
         "settings-general-updates",
         "settings-general-updates-summary",
-        "update upgrade new version download install automatic",
+        "update upgrade new version download install automatic channel stable beta nightly check",
     ),
     entry(
         Section::General,
@@ -197,6 +203,24 @@ const ENTRIES: &[Entry] = &[
         "unified all accounts tabs shared combined categories",
     ),
     entry(
+        Section::Inbox,
+        "settings-snooze-times",
+        "settings-snooze-times-detail",
+        "snooze later today tomorrow weekend next week morning hour time own custom",
+    ),
+    entry(
+        Section::Inbox,
+        "settings-nudges",
+        "settings-nudges-on-detail",
+        "nudge nudges follow up reply question unanswered sent remind",
+    ),
+    entry(
+        Section::Inbox,
+        "settings-unified-accounts",
+        "settings-unified-accounts-detail",
+        "unified all accounts hide leave out exclude account",
+    ),
+    entry(
         Section::Accounts,
         "accounts-folder-pane",
         "accounts-folder-pane-detail",
@@ -213,6 +237,12 @@ const ENTRIES: &[Entry] = &[
         "accounts-row",
         "settings-accounts-accounts-summary",
         "add remove delete account picture photo avatar",
+    ),
+    entry(
+        Section::Accounts,
+        "offline-settings-row",
+        "offline-settings-detail",
+        "offline work offline disconnect pause connection sync stop online",
     ),
     entry(
         Section::Accounts,
@@ -359,6 +389,36 @@ const ENTRIES: &[Entry] = &[
         "save download folder file manager reveal show dolphin",
     ),
     entry(
+        Section::Calendar,
+        "settings-app-accounts",
+        "settings-app-accounts-summary",
+        "accounts calendar calendars events reminders show hide leave out exclude account",
+    ),
+    entry(
+        Section::Contacts,
+        "settings-app-accounts",
+        "settings-app-accounts-summary",
+        "accounts contacts people address book show hide leave out exclude account",
+    ),
+    entry(
+        Section::Tasks,
+        "settings-app-accounts",
+        "settings-app-accounts-summary",
+        "accounts tasks lists to do show hide leave out exclude account",
+    ),
+    entry(
+        Section::Notes,
+        "settings-app-accounts",
+        "settings-app-accounts-summary",
+        "accounts notes show hide leave out exclude account",
+    ),
+    entry(
+        Section::Files,
+        "settings-app-accounts",
+        "settings-app-accounts-summary",
+        "accounts files attachments drives show hide leave out exclude account",
+    ),
+    entry(
         Section::Files,
         "settings-files-page",
         "settings-files-page-summary",
@@ -415,15 +475,9 @@ const ENTRIES: &[Entry] = &[
     ),
     entry(
         Section::Signatures,
-        "settings-compose-for-new-mail",
-        "settings-compose-for-new-mail-summary",
-        "default signature",
-    ),
-    entry(
-        Section::Signatures,
-        "settings-compose-for-replies",
-        "settings-compose-for-replies-summary",
-        "default signature reply forward",
+        "settings-compose-default-signature",
+        "settings-compose-default-signature-summary",
+        "default signature account new mail reply forward from",
     ),
     entry(
         Section::Signatures,
@@ -497,14 +551,42 @@ const ENTRIES: &[Entry] = &[
         "chat-view-detail",
         "chat bubbles whatsapp group conversation messenger reading",
     ),
+    entry(
+        Section::McpServer,
+        "mcp-assistants",
+        "mcp-assistants-switch",
+        "mcp ai assistants claude desktop code lm studio chatgpt model context protocol katnactl turn on off allow",
+    ),
+    entry(
+        Section::McpServer,
+        "mcp-drafts",
+        "mcp-drafts-switch",
+        "mcp ai assistants drafts write save",
+    ),
+    entry(
+        Section::McpServer,
+        "mcp-accounts",
+        "mcp-accounts-detail",
+        "mcp ai assistants accounts hide show which mail",
+    ),
+    entry(
+        Section::McpServer,
+        "mcp-connect",
+        "mcp-connect-other",
+        "mcp ai assistants connect set up install config json claude desktop code lm studio katnactl command copy",
+    ),
+    entry(
+        Section::McpServer,
+        "mcp-recently",
+        "mcp-recently-detail",
+        "mcp ai assistants recently activity history log what did searched read clear privacy",
+    ),
 ];
 
 /// What a tab that is still to come will do.
-fn coming(section: Section) -> Option<String> {
-    Some(match section {
-        Section::McpServer => tr!("settings-tab-mcp-server-coming"),
-        _ => return None,
-    })
+/// None just now; MCP server was the last.
+fn coming(_section: Section) -> Option<String> {
+    None
 }
 
 /// More words a tab is found by, besides its name and its line (English
@@ -518,29 +600,29 @@ fn tab_words(section: Section) -> &'static str {
         Section::Reading => "reading conversations open mail",
         Section::MailDesktop => "desktop krunner gnome mailto default mail app links",
         Section::Feedback => "crash report feedback privacy anonymous sentry telemetry",
+        Section::McpServer => {
+            "mcp ai assistants claude desktop code lm studio model context protocol"
+        }
         _ => "",
     }
 }
 
 /// A result: a row of a tab, or the tab itself.
 #[derive(Clone)]
-struct Found {
-    section: Section,
-    title: SharedString,
-    detail: SharedString,
+pub(super) struct Found {
+    pub section: Section,
+    pub title: SharedString,
+    pub detail: SharedString,
     /// The row to light up; `None` for a tab.
-    row: Option<SharedString>,
+    pub row: Option<SharedString>,
+    /// Names it for good: the message id of a row's name, or the tab's
+    /// `Section` (the command palette remembers what was picked by it).
+    pub key: String,
 }
 
-/// The settings that have every word of `query`, the best first: those
-/// whose name starts with it, then whose name has it, then the rest. Names
-/// and lines are matched in the current language, the extra words in
-/// English.
-fn search(query: &str) -> Vec<Found> {
-    let words: Vec<String> = query.split_whitespace().map(str::to_lowercase).collect();
-    if words.is_empty() {
-        return Vec::new();
-    }
+/// Every row of every tab and every tab, each with more words it is found
+/// by; with the shortcuts' rows on the Shortcuts tab if `shortcuts`.
+pub(super) fn candidates(shortcuts: bool) -> Vec<(Found, String)> {
     let rows = ENTRIES.iter().map(|e| {
         let title: SharedString = tr!(e.title).into();
         (
@@ -549,6 +631,7 @@ fn search(query: &str) -> Vec<Found> {
                 title: title.clone(),
                 detail: tr!(e.detail).into(),
                 row: Some(title),
+                key: e.title.to_owned(),
             },
             // The English name and line too, so English words find a row
             // in any language.
@@ -560,13 +643,14 @@ fn search(query: &str) -> Vec<Found> {
             ),
         )
     });
-    let shortcuts = SHORTCUTS.iter().map(|s| {
+    let shortcuts = SHORTCUTS.iter().filter(|_| shortcuts).map(|s| {
         (
             Found {
                 section: Section::Shortcuts,
                 title: s.title().into(),
                 detail: tr!("settings-search-shortcut").into(),
                 row: Some(s.title().into()),
+                key: format!("shortcut-{}", s.name),
             },
             format!("{} keyboard key shortcut", s.english_title()),
         )
@@ -583,14 +667,26 @@ fn search(query: &str) -> Vec<Found> {
                 }
                 .into(),
                 row: None,
+                key: format!("{section:?}"),
             },
             tab_words(section).to_owned(),
         )
     });
+    rows.chain(shortcuts).chain(tabs).collect()
+}
+
+/// The settings that have every word of `query`, the best first: those
+/// whose name starts with it, then whose name has it, then the rest. Names
+/// and lines are matched in the current language, the extra words in
+/// English.
+fn search(query: &str) -> Vec<Found> {
+    let words: Vec<String> = query.split_whitespace().map(str::to_lowercase).collect();
+    if words.is_empty() {
+        return Vec::new();
+    }
     let query = words.join(" ");
-    let mut found: Vec<(u8, Found)> = rows
-        .chain(shortcuts)
-        .chain(tabs)
+    let mut found: Vec<(u8, Found)> = candidates(true)
+        .into_iter()
         .filter_map(|(found, extra)| {
             let title = found.title.to_lowercase();
             let extra = extra.to_lowercase();
@@ -694,7 +790,12 @@ impl MailWindow {
     }
 
     /// Opens the tab of a result and lights up its row.
-    fn go_to_setting(&mut self, found: Found, window: &mut Window, cx: &mut Context<Self>) {
+    pub(super) fn go_to_setting(
+        &mut self,
+        found: Found,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
         self.search.update(cx, |search, cx| search.set_text("", cx));
         self.open_settings_page(found.section, window, cx);
         self.flash_seq += 1;
@@ -798,7 +899,16 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
-        let found = search(query);
+        // Nothing from an app turned off, which is no longer listed.
+        let found: Vec<_> = search(query)
+            .into_iter()
+            .filter(|f| {
+                f.section
+                    .scope()
+                    .app()
+                    .is_none_or(|app| self.config.app_on(app))
+            })
+            .collect();
         let empty = found.is_empty();
         let rows = found.into_iter().enumerate().map(|(ix, found)| {
             let title = found.title.clone();
@@ -852,42 +962,6 @@ impl MailWindow {
             .children(rows)
             .into_any_element()
     }
-
-    /// The page of a tab still to come.
-    pub(super) fn coming_soon_section(&self, section: Section, th: &Theme) -> AnyElement {
-        div()
-            .pt(px(40.0))
-            .flex()
-            .flex_col()
-            .items_start()
-            .gap(px(12.0))
-            .child(coming_pill(th))
-            .child(div().text_size(px(20.0)).child(section.label()))
-            .child(
-                div()
-                    .text_size(px(14.0))
-                    .line_height(px(20.0))
-                    .text_color(rgba(th.text_dim))
-                    .child(coming(section).unwrap_or_default()),
-            )
-            .into_any_element()
-    }
-}
-
-/// The "Coming soon" pill.
-pub(super) fn coming_pill(th: &Theme) -> Div {
-    div()
-        .flex_none()
-        .px(px(10.0))
-        .h(px(24.0))
-        .flex()
-        .items_center()
-        .rounded_full()
-        .bg(rgba(th.nav_selected))
-        .text_color(rgba(th.nav_selected_text))
-        .text_size(px(12.0))
-        .font_weight(FontWeight::SEMIBOLD)
-        .child(tr!("app-coming-soon"))
 }
 
 /// Whether `section` is a tab still to come.
@@ -921,14 +995,16 @@ mod tests {
         assert!(titles("sentry").contains(&"User feedback".to_owned()));
         assert!(titles("zzzz").is_empty());
         assert!(titles("  ").is_empty());
-        // The Accounts tab and its Accounts row come once.
+        // The Accounts tab and its Accounts row come once (MCP server
+        // has an Accounts row of its own).
         assert_eq!(
-            titles("accounts")
+            search("accounts")
                 .iter()
-                .filter(|t| t.as_str() == "Accounts")
+                .filter(|f| f.title == "Accounts" && f.section == Section::Accounts)
                 .count(),
             1
         );
+        assert!(titles("claude desktop").contains(&"Connect an assistant".to_owned()));
     }
 
     /// Every row's name and line, and every tab, has an English message.

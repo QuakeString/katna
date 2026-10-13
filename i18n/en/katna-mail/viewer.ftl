@@ -16,6 +16,22 @@ viewer-sheet-unreadable = This spreadsheet could not be read.
 viewer-document-unreadable = This document could not be read.
 viewer-slides-unreadable = These slides could not be read.
 viewer-no-preview = No preview available
+# Under the last line of a long text file the viewer shows only the start of.
+viewer-text-cut = … (the rest of the file is not shown)
+# Under a long document the viewer shows only the start of.
+viewer-document-cut = The rest of this document is not shown. Open it in another app to read it all.
+# Beside a spreadsheet's tabs when it is too big to show whole.
+viewer-sheet-cut = Only the first { $rows } rows and { $columns } columns are shown
+# Under the file's name in the viewer's bar, when several files can be
+# paged through. $size: the file's size, such as "2.4 MB"; $place: this
+# file's number; $count: how many files there are.
+viewer-size-place = { $size } · { $place } of { $count }
+# The viewer's round buttons, with their keys.
+viewer-close-tip = Close (Esc)
+viewer-save-tip = Save (Ctrl+S)
+viewer-open-tip = Open with another app
+viewer-prev-tip = Previous attachment
+viewer-next-tip = Next attachment
 # Above each slide of a presentation. $number: the slide's number.
 viewer-slide = Slide { $number }
 # In the pill under a PDF, before the box with the page number on show,
@@ -32,6 +48,13 @@ viewer-dark-pages-tip = Dark pages
 viewer-light-pages-tip = Show pages as they are
 viewer-fit-page-tip = Fit page
 viewer-fit-picture-tip = Fit to window
+# The zoom level between the zoom buttons, which fits the picture to the
+# window when pressed.
+viewer-fit-window-tip = Fit to window (0)
+# $percent: a whole number, already in the language's digits.
+viewer-zoom-level = { $percent }%
+viewer-zoom-in-tip = Zoom in (+)
+viewer-zoom-out-tip = Zoom out (-)
 viewer-fit-width-tip = Fit width
 viewer-real-size-tip = Real size (1:1)
 viewer-page-back-tip = Previous page
@@ -48,6 +71,7 @@ viewer-rotate-clockwise = Rotate clockwise
 ## Marking up a PDF
 
 viewer-markup-tip = Mark up
+viewer-markup-move-tip = Drag to move. Double-click to put back.
 viewer-tool-select = Select text
 viewer-tool-highlight = Highlight
 viewer-tool-underline = Underline

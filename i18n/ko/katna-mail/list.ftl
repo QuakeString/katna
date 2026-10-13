@@ -38,6 +38,8 @@ list-range-about = { $first }–{ $last } / 약 { $total }
 list-results = “{ $query }” 검색결과
 list-results-corrected = “{ $query }” 검색결과를 표시합니다
 list-search-instead = 대신 “{ $query }”(으)로 검색
+list-search-no-index = 검색을 사용할 수 없습니다. 아직 검색 색인이 만들어지지 않았습니다.
+list-search-not-ready = 검색을 사용할 수 없습니다: { $error }
 list-files-more = +{ $count }
 list-replied = 답장함
 
@@ -189,11 +191,20 @@ list-empty-tab = { $tab }에 메일이 없습니다.
 list-empty-tab-unknown = 이 탭에 메일이 없습니다.
 list-empty-folder = { $folder }에 메일이 없습니다.
 list-empty-folder-unknown = 이 폴더에 메일이 없습니다.
+list-empty-waiting = 답장을 기다리는 메일이 없습니다.
+list-empty-reminders = 알림이 없습니다. 메일에서 H를 눌러 추가하세요.
 list-first-sync = 메일을 가져오는 중…
 list-first-sync-detail = 메일이 도착하는 대로 여기에 표시됩니다.
+list-store-unreadable = 메일 저장소를 열 수 없습니다
 
 ## Mail list: lines
 
+row-no-subject = (제목 없음)
+row-unknown-sender = (알 수 없는 보낸사람)
+row-to = 받는사람:
+row-no-recipients = (받는사람 없음)
+row-names-separator = {", "}
+row-me = 나
 row-removed = 이 메일은 삭제되었습니다.
 row-starred = 별표 있음
 row-not-starred = 별표 없음
@@ -208,6 +219,14 @@ row-tracking-clicked = { $recipients }명 중 { $opened }명이 열람, { $click
 row-pin = 상단에 고정
 row-unpin = 고정 해제
 row-snoozed-until = { $when }에 다시 알림
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = 오늘
+snoozed-group-tomorrow = 내일
+snoozed-group-this-week = 이번 주
+snoozed-group-later = 나중
+row-follow-up-step = 후속 메일 { $step }/{ $steps } · { $date }
+row-follow-up-waiting = 후속 메일 대기 중
+row-reminder = 알림 { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -230,6 +249,7 @@ menu-not-important = 중요하지 않음으로 표시
 menu-pin = 상단에 고정
 menu-unpin = 고정 해제
 menu-snooze = 다시 알림
+menu-remind = 알림 받기
 menu-unsnooze = 다시 알림 취소
 menu-add-to-tasks = 할 일에 추가
 menu-schedule-meeting = 회의 예약
@@ -241,10 +261,28 @@ menu-move-to = 이동
 menu-follow-up = 후속 조치
 menu-more = 더보기
 menu-move-to-heading = 이동할 위치:
+menu-move-to-search = 이동할 위치…
+menu-label-as = 라벨 지정
+menu-label-as-search = 라벨 지정…
+menu-no-folder = “{ $name }” 폴더가 없습니다
+menu-no-label = “{ $name }” 라벨이 없습니다
+menu-create-folder = “{ $name }” 만들기
+menu-always-move = { $name }의 메일을 항상 여기로 이동
+toast-always-move-failed = 메일은 이동했지만 규칙을 만들지 못했습니다: { $error }
+drag-mail = { $kind ->
+    [conversation] 대화 { $count }개
+   *[message] 메일 { $count }개
+}
 menu-find-from = { $name }님이 보낸 메일 찾기
+menu-make-rule = 규칙 만들기…
 
 ## Snackbar after an action on mail in the list
 
+toast-key-imported = 키를 가져왔습니다.
+toast-key-updated = 이미 있는 키입니다. 최신 상태로 업데이트했습니다.
+toast-key-removed = 키를 삭제했습니다.
+toast-key-not-removed = 키를 삭제할 수 없습니다.
+toast-fingerprint-copied = 지문을 복사했습니다.
 toast-archived = { $kind ->
     [conversation] 대화 { $count }개가 보관처리되었습니다.
    *[message] 메일 { $count }개가 보관처리되었습니다.
@@ -257,6 +295,8 @@ toast-moved = { $kind ->
     [conversation] 대화 { $count }개가 이동되었습니다.
    *[message] 메일 { $count }개가 이동되었습니다.
 }
+toast-label-added = “{ $label }” 라벨을 추가했습니다.
+toast-label-removed = “{ $label }” 라벨을 삭제했습니다.
 toast-starred = { $kind ->
     [conversation] 대화 { $count }개에 별표를 추가했습니다.
    *[message] 메일 { $count }개에 별표를 추가했습니다.

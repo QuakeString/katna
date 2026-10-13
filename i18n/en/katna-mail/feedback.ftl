@@ -41,3 +41,66 @@ feedback-deleted-all = Crash reports deleted.
 feedback-read-failed = Could not read the crash report: { $error }
 feedback-delete-failed = Could not delete the crash report: { $error }
 feedback-delete-all-failed = Could not delete the crash reports: { $error }
+
+## Settings > User feedback (usage statistics)
+
+feedback-usage = Send anonymous usage statistics
+feedback-usage-detail = Once a week: which features you used, yes or no. Never counts, addresses, names or search words
+# At the top of the page, when crash reports and usage statistics are sent.
+feedback-intro-sending-usage = Crash reports and weekly usage statistics are sent. Nothing else leaves this computer.
+# At the top of the page, when only usage statistics are sent.
+feedback-intro-usage-only = Weekly usage statistics are sent. Crash reports stay on this computer.
+feedback-counted = What is counted
+feedback-counted-detail = Each one is yes or no for the week.
+feedback-counted-also = Also: Katna's version, the Linux family, the desktop, the screen scale and how many accounts (1, 2–3, 4+)
+# Opens the text of this week's usage statistics.
+feedback-see-report = See this week's report
+feedback-hide-report = Hide this week's report
+# Under this week's report. $date: when the week ends and it is sent.
+feedback-report-goes = Sent after the week ends, on { $date }, if usage statistics are still on.
+# A random number that changes every 90 days. $id: its first and last digits.
+feedback-install-id = Install ID { $id }
+feedback-install-id-tooltip = Random, so one computer isn't counted twice in a week. It changes every 90 days and is never sent with crash reports or feedback
+# Makes a new install ID at once.
+feedback-install-id-reset = Reset
+feedback-install-id-new = New install ID made.
+feedback-report-copied = Report copied.
+feedback-send-feedback = Feedback
+feedback-send-feedback-detail = A problem, an idea, anything.
+feedback-send-feedback-button = Send feedback…
+usage-feature-search-options = Search options
+usage-feature-pins = Pinned mail
+usage-feature-labels = Labels
+usage-feature-scheduled-send = Scheduled send
+usage-feature-snooze = Snooze and reminders
+usage-feature-encrypted = Encrypted mail
+usage-feature-viewers = Built-in viewers
+usage-feature-calendar = Calendar
+usage-feature-contacts = Contacts
+usage-feature-tasks-notes = Tasks and Notes
+usage-feature-phone-layout = Phone-width layout
+usage-feature-own-frame = Katna's own window frame
+
+## Help > Send feedback
+
+send-feedback-title = Send feedback
+send-feedback-about = About
+send-feedback-problem = Problem
+send-feedback-idea = Idea
+send-feedback-other = Something else
+send-feedback-message = Your message
+send-feedback-message-placeholder = What happened, or what would you like?
+send-feedback-reply = Email for a reply (optional)
+send-feedback-reply-placeholder = you@example.org
+send-feedback-system = Include Katna's version and your system
+send-feedback-what-is-sent = What is sent
+send-feedback-show = Show
+send-feedback-hide = Hide
+# Under the text that is sent. Sentry is the name of the service that receives it.
+send-feedback-where = Sent to Katna's feedback inbox at Sentry (EU). No IP address, accounts, messages or install ID.
+send-feedback-cancel = Cancel
+send-feedback-send = Send
+send-feedback-sending = Sending…
+send-feedback-sent = Feedback sent. Thank you
+# $error: why it could not be sent, in English.
+send-feedback-failed = Could not send feedback: { $error }

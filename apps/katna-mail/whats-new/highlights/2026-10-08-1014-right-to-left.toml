@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Katna Mail mirrors for Arabic, Hebrew, Persian and Urdu"
+text = """
+In Arabic, Hebrew, Persian and Urdu the whole window turns around: the
+app rail and folders on the right, menus opening to the left, arrows and
+arrow keys the way the screen reads. English names, addresses and
+shortcuts keep their own order, and Persian dates count in the Solar
+Hijri calendar.
+"""

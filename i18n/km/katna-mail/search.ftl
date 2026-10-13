@@ -14,6 +14,7 @@ search-without = គ្មានពាក្យ
 search-date-within = កាលបរិច្ឆេទក្នុងរយៈពេល
 search-has-attachment = មានឯកសារភ្ជាប់
 search-attachment-custom = ផ្ទាល់ខ្លួន
+search-attachment-image = រូបភាព
 search-attachment-custom-hint = វាយកន្ទុយឯកសារ ដូចជា png រួចចុច Space
 search-attachment-remove = ដកចេញ
 search-clear-filter = សម្អាតតម្រង
@@ -48,3 +49,12 @@ search-dates-month-back = ខែមុន
 search-dates-month-on = ខែបន្ទាប់
 search-dates-year-back = ឆ្នាំមុន
 search-dates-year-on = ឆ្នាំបន្ទាប់
+
+## mail server, for mail that is not downloaded to this computer yet.
+
+search-server-more = លទ្ធផលបន្ថែមនៅលើម៉ាស៊ីនមេ
+search-server-searching = កំពុងស្វែងរកសំបុត្រនៅលើម៉ាស៊ីនមេ…
+search-server-empty-searching = មិនទាន់មានអ្វីនៅឡើយទេ។ កំពុងស្វែងរកសំបុត្រនៅលើម៉ាស៊ីនមេ…
+search-server-nothing = គ្មានលទ្ធផលបន្ថែមនៅលើម៉ាស៊ីនមេទេ
+search-server-failed = មិនអាចស្វែងរកនៅលើម៉ាស៊ីនមេបានទេ។
+search-server-again = ព្យាយាមម្ដងទៀត

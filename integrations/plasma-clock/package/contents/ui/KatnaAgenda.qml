@@ -121,7 +121,7 @@ QtObject {
         });
     }
 
-    // A new event on `day` in Katna's Calendar.
+    // A new event on `day`, in Katna's small New event window.
     function newEvent(day: date): void {
         call("NewEvent", [Qt.formatDate(day, "yyyy-MM-dd")], "", () => agenda.shownInKatna());
     }

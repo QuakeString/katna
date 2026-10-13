@@ -40,6 +40,7 @@ chat-reply-only = Amsa wa { $name } kaɗai
 chat-forward = Tura
 chat-copy-text = Kwafa rubutu
 chat-show-as-mail = Nuna a matsayin wasiƙa
+chat-go-down = Je zuwa sabuwar wasiƙa
 chat-pin = Maƙala a sama
 chat-pin-file = Maƙala fayil a sama
 chat-unpin = Cire maƙalawa
@@ -59,7 +60,8 @@ chat-pins-cancel = Soke
 chat-undo = Janye
 
 chat-reply-to = Amsa wa { $names }
-chat-send = Aika (Ctrl+Enter)
+chat-send = Aika (Ctrl+Enter). Danna dama ko riƙe don ƙari
+chat-send-now = Aika yanzu
 chat-attach = Haɗa
 chat-attach-photo = Hoto
 chat-attach-file = Fayil

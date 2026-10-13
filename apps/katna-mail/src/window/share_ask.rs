@@ -12,7 +12,7 @@ use gpui::{
 };
 use katna_i18n::tr;
 use katna_ui::motion::{self, Spring, lerp};
-use katna_ui::{px, unpx};
+use katna_ui::px;
 
 use super::onboarding::{feature, lead, title};
 use super::settings::Change;
@@ -172,7 +172,7 @@ impl MailWindow {
         let t = t.clamp(0.0, 1.0);
         let focus = dialog.focus.clone();
         let phone = self.layout.shape.is_phone();
-        let vw = unpx(window.viewport_size().width);
+        let vw = self.room_width();
         let width = if phone { vw } else { WIDTH.min(vw - 48.0) };
         let body = div()
             .id("share-ask-body")

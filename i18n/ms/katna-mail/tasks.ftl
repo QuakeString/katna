@@ -7,8 +7,11 @@
 tasks-create = Tugasan baharu
 tasks-all = Semua tugasan
 tasks-today = Hari ini
+tasks-upcoming = Akan datang
 tasks-starred = Dibintangi
+tasks-completed-view = Selesai
 tasks-new-list = Buat senarai baharu
+tasks-labels-heading = Label
 tasks-on-this-computer = Pada komputer ini
 tasks-my-tasks = Tugasan Saya
 tasks-account-sign-in = Log masuk semula untuk menunjukkan tugas
@@ -16,7 +19,7 @@ tasks-account-signed-in = Telah log masuk ke { $address } semula. Mendapatkan tu
 tasks-account-sign-in-refused = { $provider } tidak membenarkan Katna masuk. Cuba lagi, dan benarkan akses kepada tugas anda.
 tasks-account-refused = Pelayan tidak menerima kata laluan. Yahoo, iCloud, Zoho dan lain-lain memerlukan kata laluan aplikasi.
 tasks-account-change-password = Tukar kata laluan
-tasks-account-change-password-tooltip = Buka Tetapan > Akaun
+tasks-account-change-password-tooltip = Taip kata laluan baharu; Katna menyemaknya dengan pelayan
 tasks-account-not-enabled = Akses tugas untuk Katna belum dihidupkan lagi.
 tasks-account-failed = Senarai tugas tidak dapat dibaca.
 tasks-account-error = Senarai tugas tidak dapat dibaca: { $reason }
@@ -41,13 +44,25 @@ tasks-title-placeholder = Tajuk
 tasks-add-step = Tambah subtugasan
 tasks-empty = Belum ada tugasan. Tambah satu di atas.
 tasks-starred-empty = Bintangkan tugasan untuk melihatnya di sini.
+tasks-label-empty = Tiada tugasan belum selesai dengan label ini.
 tasks-today-empty = Tiada apa-apa yang perlu disiapkan hari ini.
+tasks-completed-empty = Tugasan yang anda selesaikan ditunjukkan di sini.
+tasks-upcoming-add = Tambah tugasan untuk { $day }
+tasks-upcoming-overdue-day = { $weekday } { $day }
+tasks-from-mail-quiet = Daripada mel
+tasks-from-note-quiet = Daripada nota
+tasks-steps-done = { $done }/{ $count }
 tasks-today-date = { $weekday }, { $day }
 tasks-overdue = Tertunggak
 tasks-completed = { $count ->
    *[other] Selesai ({ $count })
 }
 tasks-list-options = Pilihan senarai
+tasks-sort-by = Isih mengikut
+tasks-sort-my-order = Susunan saya
+tasks-sort-date = Tarikh
+tasks-sort-starred = Baru dibintangi
+tasks-sort-title = Tajuk
 tasks-rename-list = Namakan semula senarai
 tasks-delete-list = Padam senarai
 tasks-mark-done = Tandakan selesai
@@ -64,6 +79,16 @@ tasks-from-note = Nota
 tasks-open-note = Buka nota
 tasks-note-gone = Nota itu sudah tiada di sini.
 tasks-no-subject = (tiada subjek)
+
+## Several tasks selected (Ctrl+click, Shift+click)
+
+tasks-selected = { $count ->
+   *[other] { $count } dipilih
+}
+tasks-select-clear = Kosongkan pilihan
+tasks-select-move = Alih ke senarai
+tasks-select-date = Tetapkan tarikh
+tasks-next-week = Minggu depan
 
 ## The details dialog
 
@@ -84,6 +109,13 @@ tasks-remind-on-time = Pada masanya
 tasks-remind-morning = Pada hari itu, { $time }
 tasks-remind-hour-before = Sejam sebelum
 tasks-remind-day-before = Sehari sebelum
+tasks-label-add = Tambah label
+tasks-label-task = Labelkan tugasan
+tasks-files-attach = Lampirkan fail
+tasks-files-pick = Lampirkan
+tasks-file-open = Buka
+tasks-file-remove = Alih keluar fail
+tasks-file-here = Hanya pada komputer ini
 tasks-cancel = Batal
 tasks-save = Simpan
 tasks-not-a-time = “{ $text }” bukan masa, contohnya { $example }.
@@ -100,6 +132,12 @@ tasks-due-at = { $day }, { $time }
 tasks-toast-done = Tugasan selesai
 tasks-toast-next = Selesai. Seterusnya pada { $date }
 tasks-toast-deleted = Tugasan dipadam
+tasks-files-added = { $count ->
+   *[other] { $count } fail dilampirkan
+}
+tasks-file-removed = “{ $name }” dialih keluar
+tasks-files-left-out = Tidak dilampirkan: { $names }. Tugasan menerima fail sehingga { $limit }, bukan folder.
+tasks-file-missing = Fail itu sudah tiada di sini.
 tasks-toast-added = { $count ->
    *[other] { $count } tugasan ditambahkan
 }
@@ -108,3 +146,21 @@ tasks-toast-list-deleted = Senarai dipadam
 tasks-toast-moved = Dialihkan ke { $list }
 tasks-toast-placed = Tugasan dialihkan
 tasks-toast-rescheduled = Tugas dijadual semula
+tasks-toast-rescheduled-several = { $count ->
+   *[other] { $count } tugasan dijadualkan semula
+}
+tasks-toast-done-several = { $count ->
+   *[other] { $count } tugasan selesai
+}
+tasks-toast-open-several = { $count ->
+   *[other] { $count } tugasan ditandakan belum selesai
+}
+tasks-toast-starred = { $count ->
+   *[other] { $count } tugasan dibintangkan
+}
+tasks-toast-unstarred = { $count ->
+   *[other] Bintang dialih keluar daripada { $count } tugasan
+}
+tasks-toast-deleted-several = { $count ->
+   *[other] { $count } tugasan dipadam
+}

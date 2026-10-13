@@ -41,4 +41,5 @@ quick-help = Ìrànlọ́wọ́
 quick-tour = Rin ìrìnàjò àfihàn
 quick-whats-new = Kí ló jẹ́ tuntun
 quick-check-updates = Ṣàyẹ̀wò àwọn ìmúdójúìwọ̀n
+quick-send-feedback = Fi èsì ránṣẹ́
 quick-about = Nípa Katna

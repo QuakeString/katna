@@ -11,8 +11,9 @@ use std::time::{Duration, Instant};
 
 use gpui::{
     AnimationExt, AnyElement, AnyView, App, Bounds, BoxShadow, Div, ElementId, FocusHandle,
-    FontWeight, Pixels, ScrollHandle, SharedString, SpringAnimation, Stateful, StyleRefinement,
-    Transformation, Window, canvas, div, img, point, prelude::*, radians, rgba, svg,
+    FontWeight, Pixels, Role, ScrollHandle, SharedString, SpringAnimation, Stateful,
+    StyleRefinement, Transformation, Window, canvas, div, img, point, prelude::*, radians, rgba,
+    svg,
 };
 use katna_ui::motion::{self, lerp};
 use katna_ui::tokens::{radius, space, state, text};
@@ -24,9 +25,17 @@ use crate::window::MenuKey;
 
 pub const TOOLBAR_HEIGHT: f32 = 48.0;
 
+/// Lays `window` out right to left while the language reads that way
+/// (Arabic, Hebrew, Persian, Urdu, the mirrored pseudo-language). Every
+/// window calls it first thing each frame, so a change of language turns
+/// them all around at once.
+pub fn follow_direction(window: &mut Window) {
+    katna_ui::direction::follow(window, katna_i18n::rtl());
+}
+
 pub fn icon(name: &str, color: u32, size: f32) -> AnyElement {
-    svg()
-        .path(SharedString::from(format!("icons/{name}.svg")))
+    // Back, reply, chevrons and the like turn around right to left.
+    katna_ui::icon_svg(name)
         .size(px(size))
         .flex_none()
         .text_color(rgba(color))
@@ -42,8 +51,7 @@ pub fn morph_icon(from: &str, to: &str, t: f32, color: u32, size: f32) -> AnyEle
         return icon(to, color, size);
     }
     let turned = |name: &str, turn: f32, scale: f32, opacity: f32| {
-        svg()
-            .path(SharedString::from(format!("icons/{name}.svg")))
+        katna_ui::icon_svg(name)
             .absolute()
             .top_0()
             .left_0()
@@ -299,13 +307,25 @@ fn logo_tint(th: &Theme) -> crate::assets::Tint {
 }
 
 /// A tooltip saying `text`, for `.tooltip()`: it shows once the pointer
-/// rests on the element.
+/// rests on the element. Prefer [`Tip::tip`], which also names the
+/// element to screen readers.
 pub fn tip(
     text: impl Into<SharedString>,
     th: &Theme,
 ) -> impl Fn(&mut Window, &mut App) -> AnyView + 'static {
     Tooltip::text(text, rgba(th.snackbar), rgba(th.snackbar_text))
 }
+
+/// A tooltip that also names its element to screen readers (Orca, NVDA):
+/// what the pointer shows is what they read out.
+pub trait Tip: StatefulInteractiveElement + Sized {
+    fn tip(self, text: impl Into<SharedString>, th: &Theme) -> Self {
+        let text = text.into();
+        self.aria_label(text.clone()).tooltip(tip(text, th))
+    }
+}
+
+impl<E: StatefulInteractiveElement> Tip for E {}
 
 /// A round icon button with a centered ripple.
 pub fn icon_button(
@@ -336,6 +356,7 @@ pub fn icon_button_with(
     let id = id.into();
     div()
         .id(id.clone())
+        .role(Role::Button)
         .relative()
         .overflow_hidden()
         .size(px(40.0))
@@ -370,6 +391,15 @@ pub struct Fold {
 }
 
 impl Fold {
+    /// One that starts closed, at no height, so the first time it opens
+    /// glides from nothing (a box that appears rather than unfolds).
+    pub fn closed() -> Self {
+        let fold = Self::default();
+        fold.measured.set(true);
+        fold.was_open.set(Some(false));
+        fold
+    }
+
     /// Call when it opens or closes, so the next frames glide there.
     pub fn turn(&self) {
         self.turns.set(self.turns.get().wrapping_add(1));
@@ -383,7 +413,7 @@ impl Fold {
 
     /// Turns it when `open` changed since the last call, so an arrow
     /// turns however its state changed.
-    fn sync(&self, open: bool) {
+    pub fn sync(&self, open: bool) {
         if self
             .was_open
             .replace(Some(open))
@@ -394,11 +424,11 @@ impl Fold {
     }
 
     /// It turned a moment ago and is still gliding.
-    fn moving(&self) -> bool {
+    pub fn moving(&self) -> bool {
         self.at.get().is_some_and(|at| at.elapsed() < FOLD_GLIDE)
     }
 
-    fn id(&self, name: &str) -> SharedString {
+    pub fn id(&self, name: &str) -> SharedString {
         SharedString::from(format!("{name}-{}", self.turns.get()))
     }
 }
@@ -499,8 +529,11 @@ pub fn pill_button(
 ) -> Stateful<Div> {
     let id = id.into();
     let t = shown.clamp(0.0, 1.0);
+    let label = label.into();
     div()
         .id(id.clone())
+        .role(Role::Button)
+        .aria_label(label.clone())
         .relative()
         .overflow_hidden()
         .h(px(36.0))
@@ -519,7 +552,7 @@ pub fn pill_button(
         .cursor_pointer()
         .keeps_press()
         .child(Glow::new(("glow", id_hash(&id)), rgba(th.hover)).fade())
-        .child(Ripple::new(("ripple", id_hash(&id)), rgba(th.ripple)))
+        .child(Ripple::new(("ripple", id_hash(&id)), rgba(th.ripple)).border(1.0))
         .child(icon(name, th.text_dim, 20.0))
         .child(
             div()
@@ -527,7 +560,7 @@ pub fn pill_button(
                 .whitespace_nowrap()
                 .overflow_hidden()
                 .when(t < 0.999, |d| d.w(px(word * t)).opacity(t))
-                .child(label.into()),
+                .child(label),
         )
 }
 
@@ -620,6 +653,7 @@ pub fn button(id: impl Into<gpui::ElementId>, style: ButtonStyle, th: &Theme) ->
     let ripple = id_hash(&id);
     let base = div()
         .id(id)
+        .role(Role::Button)
         .relative()
         .overflow_hidden()
         .flex_none()
@@ -646,7 +680,7 @@ pub fn button(id: impl Into<gpui::ElementId>, style: ButtonStyle, th: &Theme) ->
             .border_color(rgba(fade(th.text_faint, 0.7)))
             .text_color(rgba(th.accent))
             .child(Glow::new(("glow", ripple), rgba(th.hover)).fade())
-            .child(Ripple::new(("ripple", ripple), rgba(th.ripple))),
+            .child(Ripple::new(("ripple", ripple), rgba(th.ripple)).border(1.0)),
         ButtonStyle::Text => base
             .px(px(space::S4))
             .gap(px(6.0))
@@ -662,7 +696,10 @@ pub fn filled_button(
     label: impl Into<SharedString>,
     th: &Theme,
 ) -> Stateful<Div> {
-    button(id, ButtonStyle::Filled, th).child(label.into())
+    let label = label.into();
+    button(id, ButtonStyle::Filled, th)
+        .aria_label(label.clone())
+        .child(label)
 }
 
 /// An outlined, rounded button with a label.
@@ -671,7 +708,41 @@ pub fn outlined_button(
     label: impl Into<SharedString>,
     th: &Theme,
 ) -> Stateful<Div> {
-    button(id, ButtonStyle::Outlined, th).child(label.into())
+    let label = label.into();
+    button(id, ButtonStyle::Outlined, th)
+        .aria_label(label.clone())
+        .child(label)
+}
+
+/// A pill naming the current choice, with an arrow; a click on it opens
+/// the menu of choices where it was clicked (the sound of an event, the
+/// signature an account starts with). Dimmed while what it is for is off.
+pub fn choice_pill(
+    id: impl Into<gpui::ElementId>,
+    label: impl Into<SharedString>,
+    dim: bool,
+    th: &Theme,
+) -> Stateful<Div> {
+    let label = label.into();
+    div()
+        .id(id)
+        .h(px(space::S7))
+        .flex_none()
+        .pl(px(space::S4 + space::S1))
+        .pr(px(space::S3))
+        .flex()
+        .flex_row()
+        .items_center()
+        .gap(px(space::S2))
+        .rounded(px(radius::FULL))
+        .bg(rgba(th.chip))
+        .text_size(px(text::SMALL))
+        .when(dim, |d| d.text_color(rgba(th.text_faint)))
+        .cursor_pointer()
+        .hover(|s| s.bg(rgba(th.hover)))
+        .aria_label(label.clone())
+        .child(div().flex_1().min_w_0().truncate().child(label))
+        .child(icon("chevron-down", th.text_dim, 16.0))
 }
 
 /// An accent label with an icon before it, and no edge or fill until the
@@ -682,9 +753,11 @@ pub fn text_button(
     label: impl Into<SharedString>,
     th: &Theme,
 ) -> Stateful<Div> {
+    let label = label.into();
     button(id, ButtonStyle::Text, th)
+        .aria_label(label.clone())
         .child(icon(name, th.accent, 18.0))
-        .child(label.into())
+        .child(label)
 }
 
 /// The fill of a [`tonal_icon_button`] at rest and under the pointer: the
@@ -719,6 +792,7 @@ pub fn tonal_icon_button(
     };
     div()
         .id(id)
+        .role(Role::Button)
         .relative()
         .overflow_hidden()
         .size(px(size))
@@ -750,8 +824,16 @@ pub fn choice_chip(
 ) -> Stateful<Div> {
     let id = id.into();
     let ripple = id_hash(&id);
+    let label = label.into();
     div()
         .id(id)
+        .role(Role::RadioButton)
+        .aria_label(label.clone())
+        .aria_toggled(if on {
+            gpui::Toggled::True
+        } else {
+            gpui::Toggled::False
+        })
         .relative()
         .overflow_hidden()
         .flex_none()
@@ -769,13 +851,17 @@ pub fn choice_chip(
         .cursor_pointer()
         .text_size(px(text::SMALL))
         .text_color(rgba(if on { th.nav_selected_text } else { th.text }))
-        .child(Ripple::new(("ripple", ripple), rgba(th.ripple)))
+        .child(
+            Ripple::new(("ripple", ripple), rgba(th.ripple))
+                .rounded(radius::SM)
+                .border(1.0),
+        )
         .when(on, |d| d.child(icon("check", th.nav_selected_text, 16.0)))
         // A long address or name is cut short with "…" rather than
         // running past the row.
         .max_w_full()
         .min_w_0()
-        .child(div().min_w_0().truncate().child(label.into()))
+        .child(div().min_w_0().truncate().child(label))
 }
 
 /// A small grey label that is not clicked (Coming soon, a day in a chat,
@@ -810,6 +896,39 @@ pub fn icon_tag(name: &str, label: impl IntoElement, th: &Theme) -> Div {
         .text_color(rgba(th.text_dim))
         .child(icon(name, th.text_dim, 14.0))
         .child(label)
+}
+
+/// A chip on a mail line (a task's due day, a follow-up's time): a small
+/// outlined capsule with an icon, in `color`, lit on hover. The line's
+/// height does not change for it.
+pub fn line_chip(
+    id: impl Into<ElementId>,
+    glow: impl Into<ElementId>,
+    name: &str,
+    label: impl Into<SharedString>,
+    color: u32,
+    th: &Theme,
+) -> Stateful<Div> {
+    div()
+        .id(id)
+        .flex_none()
+        .min_w_0()
+        .h(px(22.0))
+        .pl(px(space::S2))
+        .pr(px(space::S3))
+        .flex()
+        .flex_row()
+        .items_center()
+        .gap(px(space::S2))
+        .rounded_full()
+        .border_1()
+        .border_color(rgba(fade(th.text, 0.16)))
+        .text_size(px(text::CAPTION))
+        .text_color(rgba(color))
+        .relative()
+        .child(Glow::new(glow, rgba(fade(th.text, 0.08))).fade())
+        .child(icon(name, color, 14.0))
+        .child(div().min_w_0().truncate().child(label.into()))
 }
 
 /// The height a [`row`] is at least.
@@ -861,7 +980,10 @@ fn line_row(id: gpui::ElementId, rest: u32, hover: u32, th: &Theme) -> Stateful<
         .text_size(px(text::BODY))
         .bg(rgba(rest))
         .cursor_pointer()
-        .hover(move |s| s.bg(rgba(hover)))
+        // The hover tint eases in and out, as a button's does.
+        .when(hover != rest, |d| {
+            d.child(Glow::new(("row-glow", ripple), rgba(hover)).corners([radius::SM; 4]))
+        })
         .child(Ripple::new(("ripple", ripple), rgba(th.ripple)).rounded(radius::SM))
 }
 
@@ -945,6 +1067,23 @@ pub fn line_field(
         .child(div().flex_1().min_w_0().child(input.clone()))
 }
 
+/// A [`field`] holding `area`, for text of more than one line: as tall
+/// as a [`line_field`] for one line, and taller with each line added.
+pub fn area_field(
+    id: impl Into<gpui::ElementId>,
+    area: &gpui::Entity<katna_ui::TextArea>,
+    th: &Theme,
+    cx: &App,
+) -> Stateful<Div> {
+    field(id, &gpui::Focusable::focus_handle(area.read(cx), cx), th)
+        .min_h(px(FIELD_HEIGHT))
+        .py(px(space::S3))
+        .flex()
+        .items_center()
+        .line_height(px(20.0))
+        .child(div().flex_1().min_w_0().child(area.clone()))
+}
+
 /// A row of buttons over a card; its empty space moves the window.
 pub fn toolbar(th: &Theme) -> Div {
     div()
@@ -999,29 +1138,35 @@ pub trait FocusRing: Sized {
 
 impl FocusRing for Stateful<Div> {
     fn focus_ring(self, th: &Theme) -> Self {
-        self.tab_index(0).focus_visible(ring_style(th))
+        // A Tab stop is a button to screen readers unless it says otherwise
+        // (a later `.role()` wins).
+        self.role(Role::Button)
+            .tab_index(0)
+            .focus_visible(ring_style(th))
     }
 
     fn focus_ring_filled(self, th: &Theme) -> Self {
         let (gap, ring) = (rgba(th.surface), rgba(th.accent));
-        self.tab_index(0).focus_visible(move |s| {
-            s.shadow(vec![
-                BoxShadow {
-                    color: gap.into(),
-                    offset: point(px(0.0), px(0.0)),
-                    blur_radius: px(0.0),
-                    spread_radius: px(2.0),
-                    inset: false,
-                },
-                BoxShadow {
-                    color: ring.into(),
-                    offset: point(px(0.0), px(0.0)),
-                    blur_radius: px(0.0),
-                    spread_radius: px(4.0),
-                    inset: false,
-                },
-            ])
-        })
+        self.role(Role::Button)
+            .tab_index(0)
+            .focus_visible(move |s| {
+                s.shadow(vec![
+                    BoxShadow {
+                        color: gap.into(),
+                        offset: point(px(0.0), px(0.0)),
+                        blur_radius: px(0.0),
+                        spread_radius: px(2.0),
+                        inset: false,
+                    },
+                    BoxShadow {
+                        color: ring.into(),
+                        offset: point(px(0.0), px(0.0)),
+                        blur_radius: px(0.0),
+                        spread_radius: px(4.0),
+                        inset: false,
+                    },
+                ])
+            })
     }
 
     fn focus_ring_in(mut self, stops: &TabStops, th: &Theme, cx: &App) -> Self {
@@ -1256,13 +1401,23 @@ pub fn raised<E: Styled + ParentElement>(panel: E, th: &Theme, radius: f32, leve
 /// says rather than its tint over the window's. `radius` is the card's
 /// corner radius. Call it before adding the card's children.
 pub fn pane<E: Styled + ParentElement>(card: E, fill: u32, solid: u32, radius: f32) -> E {
+    pane_corners(card, fill, solid, gpui::Corners::all(px(radius)))
+}
+
+/// [`pane`] with each corner its own radius.
+pub fn pane_corners<E: Styled + ParentElement>(
+    card: E,
+    fill: u32,
+    solid: u32,
+    corners: gpui::Corners<gpui::Pixels>,
+) -> E {
     if fill & 0xff == 0xff {
         return card.bg(rgba(fill));
     }
     card.child(katna_ui::frost::clear_fill(
         rgba(fill).into(),
         rgba(solid | 0xff).into(),
-        px(radius),
+        corners,
     ))
 }
 
@@ -1288,6 +1443,15 @@ pub fn card<E: Styled + ParentElement>(
 /// children.
 pub fn tile<E: Styled + ParentElement>(tile: E, th: &Theme) -> E {
     card(tile, th, th.surface, radius::MD, 1.0)
+}
+
+/// A [`tile`]'s shadow `t` of the way from level 1, where it rests, to
+/// level 2 ([`elevation::FLOAT`](katna_ui::tokens::elevation::FLOAT)),
+/// where it rises under the pointer.
+pub fn tile_lift(th: &Theme, t: f32) -> Vec<BoxShadow> {
+    let mut shadows = card_shadow(th, 1.0);
+    shadows.extend(elevation(th, katna_ui::tokens::elevation::FLOAT * t));
+    shadows
 }
 
 /// The hover tint of a [`tile`], easing in and out. Its parent needs an
@@ -1371,6 +1535,8 @@ fn glass<E: Styled + ParentElement>(panel: E, fill: u32, radius: f32, tint: f32,
 pub fn menu_item(id: impl Into<gpui::ElementId>, label: &str, th: &Theme) -> Stateful<Div> {
     div()
         .id(id)
+        .role(Role::MenuItem)
+        .aria_label(label.to_owned())
         .h(px(32.0))
         .px(px(16.0))
         .flex()
@@ -1391,6 +1557,8 @@ pub fn menu_item_icon(
 ) -> Stateful<Div> {
     div()
         .id(id)
+        .role(Role::MenuItem)
+        .aria_label(label.to_owned())
         .h(px(36.0))
         .pl(px(16.0))
         .pr(px(24.0))
@@ -1405,30 +1573,59 @@ pub fn menu_item_icon(
         .child(label.to_owned())
 }
 
-/// A two-state switch drawn at `t` (0 off, 1 on), for animating.
+/// A switch's box: as wide as the thumb's travel plus the thumb, as tall
+/// as the thumb.
+const SWITCH_WIDTH: f32 = 36.0;
+/// The round thumb, which stands out above and below the track.
+const SWITCH_THUMB: f32 = 20.0;
+/// The thin track the thumb slides along.
+const SWITCH_TRACK: f32 = 12.0;
+/// The minus or check on the thumb.
+const SWITCH_MARK: f32 = 14.0;
+
+/// A two-state switch drawn at `t` (0 off, 1 on), for animating: a big
+/// round thumb on a thin track. Off, the thumb is dark with a minus on a
+/// pale track; on, it is the accent with a check on a lighter accent track,
+/// and the minus fades into the check as it slides.
 pub fn switch(t: f32, th: &Theme) -> AnyElement {
-    let track = crate::theme::mix(th.switch_off, th.accent, t);
-    let knob = crate::theme::mix(th.text_faint, th.on_accent, t);
+    let track = crate::theme::mix(th.switch_off, th.switch_on(), t);
+    let thumb = crate::theme::mix(th.text_dim, th.accent, t);
+    let mark = |name: &str, color: u32, opacity: f32| {
+        katna_ui::icon_svg(name)
+            .absolute()
+            .size(px(SWITCH_MARK))
+            .text_color(rgba(color))
+            .opacity(opacity.clamp(0.0, 1.0))
+    };
     div()
         .relative()
-        .w(px(36.0))
-        .h(px(20.0))
+        .w(px(SWITCH_WIDTH))
+        .h(px(SWITCH_THUMB))
         .flex_none()
-        .rounded_full()
-        .bg(rgba(track))
-        .child({
-            // The knob grows a little when on, and stays centered in the
-            // track with the same gap all round.
-            let size = 14.0 + 2.0 * t;
-            let gap = (20.0 - size) / 2.0;
+        .child(
             div()
                 .absolute()
-                .top(px(gap))
-                .left(px(gap + (36.0 - size - 2.0 * gap) * t))
-                .size(px(size))
+                .left_0()
+                .top(px((SWITCH_THUMB - SWITCH_TRACK) / 2.0))
+                .w(px(SWITCH_WIDTH))
+                .h(px(SWITCH_TRACK))
                 .rounded_full()
-                .bg(rgba(knob))
-        })
+                .bg(rgba(track)),
+        )
+        .child(
+            div()
+                .absolute()
+                .top_0()
+                .left(px((SWITCH_WIDTH - SWITCH_THUMB) * t))
+                .size(px(SWITCH_THUMB))
+                .rounded_full()
+                .bg(rgba(thumb))
+                .flex()
+                .items_center()
+                .justify_center()
+                .child(mark("switch-minus", th.page, 1.0 - t * 1.6))
+                .child(mark("switch-check", th.on_accent, t * 1.6 - 0.6)),
+        )
         .into_any_element()
 }
 

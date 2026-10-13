@@ -53,3 +53,4 @@ search-options-show = Zoekopties tonen
 settings = Instellingen
 account-add = Account toevoegen
 account-wheel-hint = Scroll om van account te wisselen
+account-menu-all-detail = { $count } accounts samen

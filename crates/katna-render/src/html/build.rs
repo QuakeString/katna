@@ -12,6 +12,7 @@ use super::{
     Run, RunStyle, TextBlock,
 };
 use crate::MAX_BODY_BYTES;
+use katna_core::bidi::{Direction, first_strong};
 
 /// Elements whose whole subtree is dropped.
 const DROPPED: &[&str] = &[
@@ -104,6 +105,11 @@ struct Ctx {
     /// The table being walked has no width, so it is as wide as its
     /// content, as a signature's layout table is.
     fit: bool,
+    /// The direction the nearest `dir` attribute gives.
+    dir: Option<Direction>,
+    /// The element's own `dir`, where it turns the other way from what
+    /// is around it.
+    box_dir: Option<Direction>,
 }
 
 /// Blocks being collected for one box, and its open paragraph.
@@ -113,6 +119,7 @@ struct Out {
     inlines: Vec<Inline>,
     align: Align,
     pre: bool,
+    dir: Option<Direction>,
     /// The paragraph had a `<br>` (so a blank one still takes a line).
     had_break: bool,
 }
@@ -122,6 +129,7 @@ impl Out {
         if self.inlines.is_empty() {
             self.align = ctx.align;
             self.pre = ctx.pre;
+            self.dir = ctx.dir;
         }
     }
 
@@ -223,10 +231,23 @@ impl Out {
                 style,
             })];
         }
+        let dir = self.dir.or_else(|| {
+            inlines.iter().find_map(|i| match i {
+                Inline::Text(run) => first_strong(&run.text),
+                Inline::Image(_) => None,
+            })
+        });
+        let mut align = self.align;
+        // `text-align: right` in a right-to-left paragraph is where it
+        // starts anyway (senders set it to right-align Arabic or Hebrew).
+        if dir == Some(Direction::Rtl) && align == Align::End {
+            align = Align::Start;
+        }
         self.blocks.push(Block::Text(TextBlock {
             inlines,
-            align: self.align,
+            align,
             preformatted: self.pre,
+            dir,
         }));
     }
 }
@@ -265,6 +286,19 @@ pub(super) fn build_from(
         items: 0,
         counters: Vec::new(),
     };
+    // Direction is carried in, unlike styles: a piece of a right-to-left
+    // message still reads right to left.
+    let dir = roots.first().and_then(|&root| {
+        let mut at = dom.nodes[root].parent;
+        while let Some(id) = at {
+            let node = &dom.nodes[id];
+            if let Some(dir) = node.attr("dir") {
+                return Direction::from_html(dir);
+            }
+            at = node.parent;
+        }
+        None
+    });
     let ctx = Ctx {
         run: RunStyle::default(),
         align: Align::Start,
@@ -275,7 +309,10 @@ pub(super) fn build_from(
         depth: 0,
         lists: 0,
         fit: false,
+        dir,
+        box_dir: None,
     };
+    builder.doc.dir = dir;
     let mut out = Out::default();
     for &root in roots {
         if builder.full() {
@@ -358,6 +395,13 @@ impl Builder<'_> {
         self.count(0);
         let mut ctx = parent.clone();
         ctx.depth += 1;
+        ctx.box_dir = None;
+        if let Some(dir) = node.attr("dir") {
+            ctx.dir = Direction::from_html(dir);
+            ctx.box_dir = ctx
+                .dir
+                .filter(|&d| d != parent.dir.unwrap_or(Direction::Ltr));
+        }
 
         // What the tag itself means, before its `style` attribute.
         let em = ctx.run.size;
@@ -420,6 +464,9 @@ impl Builder<'_> {
                 out.blocks.push(Block::Rule);
             }
             "body" | "html" => {
+                if let Some(dir) = node.attr("dir").and_then(Direction::from_html) {
+                    self.doc.dir = Some(dir);
+                }
                 if let Some(bg) = background(node.attr("bgcolor"), &get) {
                     self.doc.background = Some(bg);
                     self.doc.styled = true;
@@ -566,6 +613,7 @@ impl Builder<'_> {
         let em = ctx.run.size;
         let mut style = BoxStyle {
             margin,
+            dir: ctx.box_dir,
             ..BoxStyle::default()
         };
         if let Some(bg) = background(node.attr("bgcolor"), get) {
@@ -884,7 +932,8 @@ fn push_box(blocks: &mut Vec<Block>, kind: BoxKind, style: BoxStyle, children: V
         && style.width.is_none()
         && style.max_width.is_none()
         && style.min_width == 0.0
-        && !style.center;
+        && !style.center
+        && style.dir.is_none();
     if children.is_empty() && (style.background.is_none() || kind != BoxKind::Stack) {
         return;
     }
@@ -1321,6 +1370,60 @@ mod tests {
             })
             .collect::<Vec<_>>()
             .join(" ")
+    }
+
+    /// Every paragraph's text and direction, in order.
+    fn directions(blocks: &[Block]) -> Vec<(String, Option<Direction>, Align)> {
+        let mut out = Vec::new();
+        for b in blocks {
+            match b {
+                Block::Text(t) => out.push((t.text(), t.dir, t.align)),
+                Block::Box(b) => out.extend(directions(&b.children)),
+                Block::Rule => {}
+            }
+        }
+        out
+    }
+
+    #[test]
+    fn paragraphs_read_their_own_way() {
+        let d = doc("<div dir=\"ltr\"><p>Hi Sara,</p><p>شكرًا يا رافي</p>\
+            <div dir=\"rtl\"><p style=\"text-align:right\">Invoice ٤</p><p>123</p>\
+            <p dir=\"auto\">456</p></div></div><p>مرحبا</p><p>7</p>");
+        use Direction::{Ltr, Rtl};
+        assert_eq!(
+            directions(&d.blocks),
+            [
+                ("Hi Sara,".to_owned(), Some(Ltr), Align::Start),
+                // An explicit `dir` wins over the first strong character.
+                ("شكرًا يا رافي".to_owned(), Some(Ltr), Align::Start),
+                // Right-aligned right-to-left text starts at the right.
+                ("Invoice ٤".to_owned(), Some(Rtl), Align::Start),
+                ("123".to_owned(), Some(Rtl), Align::Start),
+                ("456".to_owned(), None, Align::Start),
+                ("مرحبا".to_owned(), Some(Rtl), Align::Start),
+                ("7".to_owned(), None, Align::Start),
+            ]
+        );
+        assert_eq!(d.dir, None);
+        // Only a box turning the other way is kept for its direction.
+        assert_eq!(
+            outline(&d.blocks[..2]),
+            "box[\"Hi Sara,\"] box[\"شكرًا يا رافي\"]"
+        );
+        let Block::Box(b) = &d.blocks[2] else {
+            panic!("a box");
+        };
+        assert_eq!(b.style.dir, Some(Rtl));
+        let d = doc("<html dir=\"rtl\"><body><p>Hello</p><p>٣</p></body></html>");
+        assert_eq!(d.dir, Some(Rtl));
+        assert_eq!(
+            directions(&d.blocks)
+                .into_iter()
+                .map(|(_, dir, _)| dir)
+                .collect::<Vec<_>>(),
+            [Some(Rtl), Some(Rtl)]
+        );
     }
 
     fn runs(block: &Block) -> Vec<&Run> {

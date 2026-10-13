@@ -53,3 +53,4 @@ search-options-show = సెర్చ్ ఆప్షన్‌లను చూ�
 settings = సెట్టింగ్‌లు
 account-add = ఖాతాను జోడించండి
 account-wheel-hint = ఖాతా మార్చడానికి స్క్రోల్ చేయండి
+account-menu-all-detail = { $count } ఖాతాలు కలిపి

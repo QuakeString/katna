@@ -41,3 +41,4 @@ search-options-show = แสดงตัวเลือกการค้นห�
 settings = การตั้งค่า
 account-add = เพิ่มบัญชี
 account-wheel-hint = เลื่อนเพื่อสลับบัญชี
+account-menu-all-detail = รวม { $count } บัญชี

@@ -8,7 +8,8 @@
 
 use std::path::PathBuf;
 
-use gpui::{Anchor, anchored, deferred};
+use crate::anchored;
+use gpui::{Anchor, deferred};
 
 use super::*;
 use crate::rich::doc::Table;

@@ -34,7 +34,7 @@ contacts-account-signed-in = Abanyela ọzọ na { $address }. Na-enweta kọnta
 contacts-account-sign-in-refused = { $provider } ekweghị ka Katna banye. Nwaa ọzọ, ma kwe ka ọ nweta kọntaktị gị.
 contacts-account-password = Sava ahụ anabataghị okwuntughe ahụ. Yahoo, iCloud, Zoho na ndị ọzọ chọrọ okwuntughe ngwa.
 contacts-account-change-password = Gbanwee okwuntughe
-contacts-account-change-password-tooltip = Mepee Ntọala > Akaụntụ
+contacts-account-change-password-tooltip = Pịnye okwuntughe ọhụrụ; Katna ga-eji sava lelee ya
 contacts-account-failed = Enweghị ike ịgụ kọntaktị.
 # $reason is the server's own words, in English.
 contacts-account-error = Enweghị ike ịgụ kọntaktị: { $reason }

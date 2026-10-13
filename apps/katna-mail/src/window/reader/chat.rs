@@ -12,6 +12,7 @@
 //! The reply box at the bottom is the inline reply (`compose/chat_box.rs`);
 //! a reply just sent shows its undo countdown beside its bubble.
 
+use crate::widgets::Tip as _;
 use std::cell::{Cell, RefCell};
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
@@ -19,7 +20,7 @@ use std::time::Instant;
 
 use gpui::{
     AnimationExt, AnyElement, ClipboardItem, Context, Div, FontWeight, MouseButton, MouseDownEvent,
-    SharedString, Window, div, prelude::*, relative, rgba,
+    SharedString, Window, div, point, prelude::*, relative, rgba,
 };
 use katna_i18n::tr;
 use katna_preview::Kind as FileKind;
@@ -31,6 +32,7 @@ use katna_ui::{px, unpx};
 
 use super::super::attachments::{Thumb, kind_badge};
 use super::super::compose::Kind;
+use super::super::contact::{other_signer, person_name};
 use super::super::context_menu::Rows;
 use super::super::select::Pieces;
 use super::super::{MailWindow, Menu, rich};
@@ -39,7 +41,7 @@ use crate::daemon::Command;
 use crate::data::Mail;
 use crate::format;
 use crate::theme::{Theme, avatar_color, fade, mix};
-use crate::widgets::{icon, icon_button, icon_button_colored, tip};
+use crate::widgets::{icon, icon_button, icon_button_colored};
 
 mod pins;
 
@@ -67,8 +69,8 @@ const GRID: usize = 4;
 const SMALL_PICTURE: u64 = 12 * 1024;
 /// How long a bubble is held on a phone before its menu opens, and how far
 /// the finger may stray meanwhile.
-const LONG_PRESS: std::time::Duration = std::time::Duration::from_millis(450);
-const PRESS_SLOP: f32 = 10.0;
+pub(in crate::window) const LONG_PRESS: std::time::Duration = std::time::Duration::from_millis(450);
+pub(in crate::window) const PRESS_SLOP: f32 = 10.0;
 
 /// The go-down button's size, and how far from the end (in screens) the
 /// feed must be before it shows.
@@ -437,6 +439,10 @@ impl MailWindow {
         let mut people: HashSet<String> = HashSet::new();
         let mut subject: Option<String> = None;
         for (ix, part) in reader.parts.iter().enumerate() {
+            // A read receipt for the user's mail: ticks on it instead.
+            if reader.hidden(ix) {
+                continue;
+            }
             let view = part.body.as_ref().and_then(|b| b.view.as_ref());
             let row = part.row.as_ref();
             let (name, email) = match (view.and_then(|v| v.from.first()), row) {
@@ -551,13 +557,21 @@ impl MailWindow {
             return div().into_any_element();
         };
         let key = reader.key;
+        // The pin bar comes or goes above the feed: the feed scrolls by its
+        // height in this same frame, so nothing in it jumps.
+        let shift = reader.chat.pins.bar_shift();
+        if shift != 0.0 {
+            let offset = self.reader_scroll.offset();
+            self.reader_scroll
+                .set_offset(point(offset.x, offset.y + px(shift)));
+        }
         reader.chat.sight.set((scrolled, scrolled + screen));
         // A screen up from the end, the go-down button fades in; within half
         // a screen of it, out.
         if at_end {
             reader.chat.left_at = None;
         } else if reader.chat.left_at.is_none() {
-            reader.chat.left_at = Some(reader.parts.len());
+            reader.chat.left_at = Some(reader.shown_count());
         }
         let down = reader
             .chat
@@ -575,7 +589,7 @@ impl MailWindow {
         let newer = reader
             .chat
             .left_at
-            .map_or(0, |at| reader.parts.len().saturating_sub(at));
+            .map_or(0, |at| reader.shown_count().saturating_sub(at));
         // Opens at its newest mail, and goes there when mail comes or is
         // sent.
         if reader.chat.shown != reader.parts.len() {
@@ -649,6 +663,11 @@ impl MailWindow {
                 Line::Bubble(bubble) => self.render_bubble_row(bubble, th, cx),
             })
             .collect();
+        // A follow-up waiting to go sits where it will land.
+        let follow_up = self.render_chat_follow_up(phone, th, cx);
+        let reminder = self.render_chat_reminder(th, cx);
+        let snoozed = self.render_chat_snoozed(th, cx);
+        let nudge = self.render_chat_nudge(th, cx);
         self.adopt_chat_reply(key, cx);
         let people = self.chat_people();
         let names: Vec<&str> = people.iter().map(|(n, _)| first_name(n)).collect();
@@ -721,9 +740,13 @@ impl MailWindow {
                                         .justify_end()
                                         .gap(px(2.0))
                                         .px(px(if phone { 10.0 } else { 16.0 }))
-                                        .pt(px(12.0))
+                                        .pt(px(katna_ui::tokens::space::S4))
                                         .pb(px(8.0))
                                         .children(feed)
+                                        .children(follow_up)
+                                        .children(reminder)
+                                        .children(snoozed)
+                                        .children(nudge)
                                         .map(|d| self.text_area(d, cx))
                                         .child(
                                             gpui::canvas(
@@ -826,7 +849,7 @@ impl MailWindow {
                         .cursor_pointer()
                         .shadow(crate::widgets::elevation(th, 2.0))
                         .hover(|s| s.shadow(crate::widgets::elevation(th, 3.0)))
-                        .tooltip(tip(tr!("chat-go-down"), th))
+                        .tip(tr!("chat-go-down"), th)
                         .on_mouse_move(|_, _, cx| cx.stop_propagation())
                         .on_click(cx.listener(|this, _, _, cx| this.glide_chat_to_end(cx)))
                         .child(icon("arrow-down", th.text, 22.0))
@@ -964,6 +987,20 @@ impl MailWindow {
                 .filter(|v| v.from.iter().any(|a| a.email.eq_ignore_ascii_case(email)))
                 .count()
         };
+        // The name the contact card starts from: the first one given on the
+        // newest mail, From before To before Cc (`Mail::message_people`).
+        let named = |email: &str| {
+            views
+                .iter()
+                .rev()
+                .flat_map(|v| v.from.iter().chain(&v.to).chain(&v.cc))
+                .filter(|a| a.email.trim().eq_ignore_ascii_case(email.trim()))
+                .find_map(|a| {
+                    let name = a.name.as_deref()?.trim();
+                    (!name.is_empty() && !name.eq_ignore_ascii_case(email.trim()))
+                        .then(|| name.to_owned())
+                })
+        };
         let mut seen = HashSet::new();
         let mut me: Option<Member> = None;
         let mut members = Vec::new();
@@ -973,8 +1010,16 @@ impl MailWindow {
             if !a.email.contains('@') || !seen.insert(a.email.to_lowercase()) {
                 continue;
             }
+            // As the contact card names them.
+            let known = self.contact_known_name(&a.email);
+            let header = named(&a.email);
+            let signer = reader
+                .signature_of(&a.email)
+                .and_then(|s| other_signer(&s, header.as_deref(), known.as_deref()));
+            let name = person_name(signer.as_deref(), header.as_deref(), known.as_deref())
+                .unwrap_or_else(|| a.email.clone());
             let member = Member {
-                name: a.label().to_owned(),
+                name,
                 email: a.email.clone(),
                 mails: sent(&a.email),
                 me: self.is_me(&a.email),
@@ -1044,11 +1089,21 @@ impl MailWindow {
                 .rounded(px(10.0))
                 .cursor_pointer()
                 .child(crate::widgets::hover_fade("hover-glow", Some(10.0), th))
-                .tooltip(tip(tr!("chat-show-card"), th))
+                .tip(tr!("chat-show-card"), th)
+                .on_hover({
+                    let email = email.clone();
+                    cx.listener(move |this, hovered: &bool, _, cx| {
+                        if *hovered {
+                            this.read_person_ahead(&email, cx);
+                        }
+                    })
+                })
                 .on_click(cx.listener(move |this, e: &gpui::ClickEvent, _, cx| {
                     this.close_chat_people(cx);
-                    this.show_contact_of(key, &email, e.position(), cx);
+                    let at = this.person_at(("chat-member", ix), e.position());
+                    this.show_contact_of(key, &email, at, cx);
                 }))
+                .child(self.person_spot(("chat-member", ix)))
                 .child(self.person_avatar(&m.name, &m.email, 30.0))
                 .child(
                     div()
@@ -1207,7 +1262,9 @@ impl MailWindow {
         };
         let people = self.chat_people();
         let names: Vec<&str> = people.iter().map(|(n, _)| first_name(n)).collect();
-        let mails = reader.parts.iter().filter(|p| p.pending.is_none()).count();
+        let mails = (0..reader.parts.len())
+            .filter(|&ix| reader.parts[ix].pending.is_none() && !reader.hidden(ix))
+            .count();
         let people_open = reader.chat.people.is_some();
         // Overlapping pictures, each ringed in the card's colour.
         let shown = people.len().min(3);
@@ -1228,7 +1285,7 @@ impl MailWindow {
         let phone = self.layout.shape.is_phone();
         let back = phone.then(|| {
             icon_button("chat-back", "back", 20.0, th)
-                .tooltip(tip(tr!("reader-back"), th))
+                .tip(tr!("reader-back"), th)
                 .on_click(cx.listener(|this, _, window, cx| {
                     this.close_message(&super::super::CloseMessage, window, cx)
                 }))
@@ -1236,7 +1293,7 @@ impl MailWindow {
         let end = if phone {
             let more = icon_button("chat-more", "more", 20.0, th)
                 .when(self.menu != Some(Menu::ReaderMore), |d| {
-                    d.tooltip(tip(tr!("reader-more"), th))
+                    d.tip(tr!("reader-more"), th)
                 })
                 .on_click(cx.listener(|this, _, _, cx| this.toggle_menu(Menu::ReaderMore, cx)));
             self.with_menu(more, Menu::ReaderMore, th, cx)
@@ -1326,7 +1383,7 @@ impl MailWindow {
                             ),
                     ),
             )
-            .children(self.summary_button("chat-summary", th, cx))
+            .children(self.summary_pill(th, cx))
             .child(end)
             .into_any_element()
     }
@@ -1348,16 +1405,28 @@ impl MailWindow {
                 .pb(px(lift));
             if bubble.last {
                 let pick = email.clone();
+                let ix = bubble.ix;
                 slot.child(
                     div()
                         .id(("chat-picture", bubble.ix))
+                        .relative()
                         .cursor_pointer()
-                        .tooltip(tip(tr!("chat-show-card"), th))
+                        .tip(tr!("chat-show-card"), th)
+                        .on_hover({
+                            let pick = pick.clone();
+                            cx.listener(move |this, hovered: &bool, _, cx| {
+                                if *hovered {
+                                    this.read_person_ahead(&pick, cx);
+                                }
+                            })
+                        })
                         .on_click(cx.listener(move |this, e: &gpui::ClickEvent, _, cx| {
                             if let Some(key) = key {
-                                this.show_contact_of(key, &pick, e.position(), cx);
+                                let at = this.person_at(("chat-picture", ix), e.position());
+                                this.show_contact_of(key, &pick, at, cx);
                             }
                         }))
+                        .child(self.person_spot(("chat-picture", bubble.ix)))
                         .child(self.person_avatar(&bubble.name, &bubble.email, PICTURE)),
                 )
             } else {
@@ -1481,6 +1550,7 @@ impl MailWindow {
             window: cx.weak_entity(),
             conversation: key_number(r.key),
             part: ix,
+            careful: r.parts.get(ix).is_some_and(|part| self.sender_failed(part)),
         });
         rich::linked_piece(
             pieces,
@@ -1507,18 +1577,31 @@ impl MailWindow {
         let name = (!bubble.mine && bubble.first).then(|| {
             let pick = bubble.email.clone();
             let key = self.reader.as_ref().map(|r| r.key);
+            let ix = bubble.ix;
             div()
-                .id(("chat-name", bubble.ix))
+                .id(("chat-name", ix))
+                .relative()
+                .self_start()
                 .cursor_pointer()
                 .text_size(px(13.0))
                 .font_weight(FontWeight::SEMIBOLD)
                 .text_color(rgba(name_color(&bubble.email, th)))
                 .hover(|s| s.underline())
+                .on_hover({
+                    let pick = pick.clone();
+                    cx.listener(move |this, hovered: &bool, _, cx| {
+                        if *hovered {
+                            this.read_person_ahead(&pick, cx);
+                        }
+                    })
+                })
                 .on_click(cx.listener(move |this, e: &gpui::ClickEvent, _, cx| {
                     if let Some(key) = key {
-                        this.show_contact_of(key, &pick, e.position(), cx);
+                        let at = this.person_at(("chat-name", ix), e.position());
+                        this.show_contact_of(key, &pick, at, cx);
                     }
                 }))
+                .child(self.person_spot(("chat-name", ix)))
                 .child(bubble.name.clone())
         });
         let said = bubble.said.as_ref();
@@ -1575,14 +1658,14 @@ impl MailWindow {
                 .text_size(px(12.0))
                 .text_color(rgba(th.text_dim))
                 .hover(|s| s.text_color(rgba(th.text)))
-                .tooltip(tip(
+                .tip(
                     if open {
                         tr!("chat-hide-quoted")
                     } else {
                         tr!("chat-show-quoted")
                     },
                     th,
-                ))
+                )
                 .on_click(cx.listener(move |this, _, _, cx| {
                     cx.stop_propagation();
                     if let Some(reader) = &mut this.reader
@@ -1982,7 +2065,7 @@ impl MailWindow {
                     th,
                 )
                 .size(px(28.0))
-                .tooltip(tip(tr!("chat-reply-all"), th))
+                .tip(tr!("chat-reply-all"), th)
                 .on_click(cx.listener(move |this, _, window, cx| {
                     cx.stop_propagation();
                     this.chat_reply(Some(id), Kind::ReplyAll, window, cx);
@@ -1997,14 +2080,14 @@ impl MailWindow {
                     th,
                 )
                 .size(px(28.0))
-                .tooltip(tip(
+                .tip(
                     if pinned {
                         tr!("chat-unpin")
                     } else {
                         tr!("chat-pin")
                     },
                     th,
-                ))
+                )
                 .on_click(cx.listener(move |this, _, _, cx| {
                     cx.stop_propagation();
                     this.toggle_chat_pin(id, Pinned::Mail, cx);
@@ -2019,7 +2102,7 @@ impl MailWindow {
                     th,
                 )
                 .size(px(28.0))
-                .tooltip(tip(tr!("chat-more"), th))
+                .tip(tr!("chat-more"), th)
                 .on_mouse_down(
                     MouseButton::Left,
                     cx.listener(move |this, e: &MouseDownEvent, _, cx| {

@@ -55,7 +55,7 @@ calendar-account-signed-in = Ponownie zalogowano do { $address }. Pobieranie kal
 calendar-account-sign-in-refused = { $provider } nie wpuścił aplikacji Katna. Spróbuj ponownie i zezwól na dostęp do kalendarzy.
 calendar-account-refused = Serwer nie przyjął hasła. Yahoo, iCloud, Zoho i inne wymagają hasła do aplikacji.
 calendar-account-change-password = Zmień hasło
-calendar-account-change-password-tooltip = Otwórz Ustawienia > Konta
+calendar-account-change-password-tooltip = Wpisz nowe hasło; Katna sprawdzi je z serwerem
 calendar-account-not-enabled = Dostęp do kalendarzy dla aplikacji Katna nie jest jeszcze włączony.
 calendar-account-failed = Nie udało się odczytać kalendarzy.
 calendar-account-error = Nie udało się odczytać kalendarzy: { $reason }
@@ -71,6 +71,7 @@ calendar-account-try-again = Spróbuj ponownie
 calendar-account-try-again-tooltip = Sprawdź teraz ponownie kalendarze tego konta
 calendar-account-fixing = Trwa naprawianie…
 calendar-birthdays = Urodziny
+calendar-tasks = Zadania
 calendar-birthday-of = Urodziny: { $name }
 calendar-empty-title = Brak kalendarzy
 calendar-empty-text = Katna pokazuje tu kalendarze Twoich kont Google i Microsoft po ich zsynchronizowaniu oraz kalendarze innych serwerów obsługujących CalDAV.
@@ -119,6 +120,7 @@ calendar-add-meet = Dodaj wideokonferencję Google Meet
 calendar-add-teams = Dodaj spotkanie w Teams
 calendar-has-call = Dodano połączenie wideo
 calendar-weekday-day = { $weekday }, { $day }
+calendar-schedule-day = { $weekday }, { $month }
 calendar-all-day-box = Cały dzień
 calendar-more-options = Więcej opcji
 calendar-save = Zapisz
@@ -131,6 +133,7 @@ calendar-event-details = Szczegóły wydarzenia
 # Right-click menus on the calendar: on a free time or day, an event and
 # a task.
 calendar-menu-new-event = Nowe wydarzenie
+calendar-event-window-title = Nowe wydarzenie
 # Shows the day right-clicked on its own, in the Day view.
 calendar-menu-open-day = Otwórz dzień
 calendar-menu-duplicate = Duplikuj

@@ -6,6 +6,11 @@
 
 about-tooltip = Giới thiệu về Katna
 about-tagline = Thư và lịch cho máy tính Linux
+about-version = Katna Mail { $version }
+about-copy-version = Sao chép thông tin phiên bản
+about-version-copied = Đã sao chép
+about-version-built = Ngày dựng: { $date }
+about-version-system = Hệ thống: { $system }
 about-whats-new = Có gì mới
 
 ## Updates, in a box under the version in About (only in packages that
@@ -22,11 +27,13 @@ about-update-ready = Phiên bản { $version } đã sẵn sàng để cài đặ
 about-update-ready-detail = Katna Mail sẽ khởi động lại để hoàn tất việc cập nhật.
 about-update-confirm = Cài đặt phiên bản { $version }?
 about-update-confirm-detail = Katna Mail sẽ đóng lại, cài đặt bản cập nhật rồi mở lại đúng chỗ bạn đang dừng. Máy tính của bạn sẽ hỏi mật khẩu của bạn.
+about-update-confirm-detail-windows = Katna Mail sẽ đóng, cài đặt bản cập nhật và mở lại sau giây lát.
 about-update-installing = Đang cài đặt phiên bản { $version }…
 about-update-installing-detail = Nhập mật khẩu của bạn vào cửa sổ vừa mở.
+about-update-installing-detail-windows = Katna Mail sẽ đóng ngay bây giờ và mở lại khi bản cập nhật đã được cài đặt.
 about-update-cancelled = Bản cập nhật chưa được cài đặt, vì mật khẩu chưa được cung cấp.
 about-update-failed = Không thể cài đặt bản cập nhật: { $error }
-about-update-unsupported = Bản sao Katna Mail này được cập nhật bởi trình quản lý gói của bạn.
+about-update-not-self-updating = Bản Katna Mail này không tự cập nhật. Hãy cập nhật theo cách bạn đã cài đặt nó.
 about-update-restart-failed = Bản cập nhật đã được cài đặt, nhưng Katna Mail không thể mở lại được ({ $error }). Hãy tự mở nó.
 about-update-check = Kiểm tra cập nhật
 about-update-download = Tải xuống
@@ -36,6 +43,8 @@ about-update-restart = Cập nhật và khởi động lại
 about-update-cancel = Để sau
 about-changelog = Nhật ký thay đổi
 about-source = Mã nguồn
+about-debug-report = Sao chép báo cáo gỡ lỗi
+about-debug-report-tip = Phiên bản, kết quả kiểm tra sau khi cập nhật và các dòng nhật ký gần đây, dùng cho báo cáo lỗi. Không có thư hay mật khẩu.
 about-coffee = Mời tôi một ly cà phê
 about-coffee-coffee = Cà phê nhé?
 about-coffee-tea = Trà nhé?
@@ -147,6 +156,7 @@ onboarding-katna-private = Tài khoản có mật khẩu riêng. Thông tin đă
 onboarding-ready-title = Mọi thứ đã sẵn sàng
 onboarding-ready-lead = Katna đang nhận thư của bạn. Thư hiện ra khi về tới, và thư mới sẽ tự xuất hiện.
 onboarding-ready-lead-address = Katna đang nhận thư của { $address }. Thư hiện ra khi về tới, và thư mới sẽ tự xuất hiện.
+onboarding-apps = Ứng dụng bạn sẽ dùng
 onboarding-ready-tour = Tham quan một phút để xem mọi thứ nằm ở đâu?
 onboarding-skip = Để sau
 onboarding-take-tour = Tham quan
@@ -213,11 +223,9 @@ crash-close = Đóng
 ## Sign in again (a bar at the bottom when Google or Microsoft stopped
 ## letting an account in; $provider: Google or Microsoft)
 
-sign-in-again-text = { $provider } yêu cầu bạn đăng nhập lại vào { $address }.
 sign-in-again-button = Đăng nhập
 sign-in-again-tooltip = Mở trang đăng nhập { $provider } trong trình duyệt
 sign-in-again-waiting = Đang chờ trình duyệt…
-sign-in-again-close = Đóng
 google-api-off = { $api } đang bị tắt trong dự án Google Cloud của Katna.
 google-api-turn-on = Bật
 google-api-turn-on-tooltip = Mở Google Cloud để bật { $api }, rồi nhấn Thử lại

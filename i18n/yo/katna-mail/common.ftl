@@ -41,3 +41,4 @@ search-options-show = Fi àwọn àṣàyàn àwárí hàn
 settings = Ètò
 account-add = Ṣàfikún àkáǹtì
 account-wheel-hint = Yí kiri láti yí àkáǹtì padà
+account-menu-all-detail = Àkáǹtì { $count } papọ̀

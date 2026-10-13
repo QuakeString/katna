@@ -14,6 +14,7 @@ search-without = Walang mga salitang
 search-date-within = Petsa sa loob ng
 search-has-attachment = May attachment
 search-attachment-custom = Custom
+search-attachment-image = Larawan
 search-attachment-custom-hint = Mag-type ng extension, gaya ng png, tapos Space
 search-attachment-remove = Alisin
 search-clear-filter = I-clear ang filter
@@ -60,3 +61,13 @@ search-dates-month-back = Nakaraang buwan
 search-dates-month-on = Susunod na buwan
 search-dates-year-back = Nakaraang taon
 search-dates-year-on = Susunod na taon
+
+## More results on server: under the results, mail found by asking the
+## mail server, for mail that is not downloaded to this computer yet.
+
+search-server-more = Iba pang resulta sa server
+search-server-searching = Hinahanap ang mail sa server…
+search-server-empty-searching = Wala pa rito. Hinahanap ang mail sa server…
+search-server-nothing = Wala nang iba pang resulta sa server
+search-server-failed = Hindi makapaghanap sa server.
+search-server-again = Subukan ulit

@@ -7,6 +7,7 @@
 //! The message stays in [`MailWindow::compose`]; the window only draws it,
 //! so sending, the snackbar and the outbox work as in the docked window.
 
+use crate::widgets::Tip as _;
 use gpui::{
     AnyElement, App, Context, Decorations, Entity, ExternalPaths, FocusHandle, Focusable,
     FontWeight, Window, WindowBounds, WindowHandle, div, point, prelude::*, rgba, size,
@@ -23,7 +24,7 @@ use super::super::{MailWindow, RephraseSelection, SendMail};
 use super::Mode;
 use super::recipients::Field;
 use crate::theme::Theme;
-use crate::widgets::{icon, tip};
+use crate::widgets::icon;
 
 /// The size a popped-out message opens at.
 const WIDTH: f32 = 720.0;
@@ -243,6 +244,7 @@ impl Focusable for ComposeWindow {
 
 impl Render for ComposeWindow {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        crate::widgets::follow_direction(window);
         // Text without a size of its own follows Settings > Appearance > Scaling.
         window.set_rem_size(px(16.0));
         self.chrome.sync_look(window, cx);
@@ -305,7 +307,7 @@ fn dock_button(th: &Theme, cx: &mut Context<MailWindow>) -> AnyElement {
         .cursor_pointer()
         .relative()
         .child(crate::widgets::hover_fade("hover-glow", None, th))
-        .tooltip(tip(tr!("compose-back-to-mail"), th))
+        .tip(tr!("compose-back-to-mail"), th)
         .on_click(cx.listener(|this, _, _, cx| this.dock_compose(cx)))
         .child(icon("close-full", th.text_dim, 18.0))
         .into_any_element()

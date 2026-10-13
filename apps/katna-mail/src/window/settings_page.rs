@@ -10,6 +10,7 @@
 //! search box finds settings while the page is open (`settings_search.rs`).
 //! Changes apply at once and are saved to `config.toml`.
 
+use crate::widgets::Tip as _;
 use std::cell::RefCell;
 use std::ops::RangeInclusive;
 use std::rc::Rc;
@@ -22,36 +23,39 @@ use gpui::{
     div, prelude::*, rgba,
 };
 use katna_core::config::{
-    AccountTabs, AutoAdvance, CalendarDensity, Clock, Density, FileGroup, FilesPage, MarkRead,
-    OpenIn, ReadingPane, ReduceMotion, SEND_FROM_CURRENT, ShortcutSet, TabStyle,
+    AccountTabs, AppKind, AutoAdvance, CalendarDensity, Clock, Density, FileGroup, FilesPage,
+    MarkRead, OpenIn, ReadingPane, ReduceMotion, SEND_FROM_CURRENT, ShortcutSet, TabStyle,
     Theme as ThemeChoice, TrayStyle,
 };
 use katna_i18n::tr;
 use katna_ui::motion::{self, lerp};
 use katna_ui::px;
 use katna_ui::rich::RichEvent;
-use katna_ui::tokens::space;
+use katna_ui::tokens::{space, text};
 use katna_ui::{InputEvent, RichEditor, TextInput};
 
 use super::apps::App as RailApp;
 use super::keymap::{self, Group, SHORTCUTS};
 use super::settings::{Change, heading};
-use super::{FocusNext, FocusPrevious, MailWindow, OpenSettings, ShowShortcuts};
+use super::{FocusNext, FocusPrevious, MailWindow, OpenSettings};
 use crate::autostart::Start;
 use crate::tabs::{self, Provider};
 use crate::theme::Theme;
 use crate::widgets::{
-    FocusRing, ScaledEdge, TabStops, choice_chip, field, icon, icon_button, line_field,
-    outlined_button, tip,
+    FocusRing, ScaledEdge, TabStops, avatar_filled, choice_chip, choice_pill, field, icon,
+    icon_button, line_field, outlined_button, tip,
 };
 
 mod ai;
+mod app_accounts;
+mod mcp;
 mod nav;
 mod notifications;
 mod rules;
 mod signature_html;
 mod signature_import;
 mod signature_layout;
+mod snooze_times;
 mod starter_rules;
 mod templates;
 
@@ -92,6 +96,8 @@ pub(super) enum Section {
     McpServer,
     Feedback,
     Experimental,
+    /// Apps: which apps beside Mail are on.
+    Apps,
     /// Mail > Reading: conversations, marking read, the reading pane.
     Reading,
     Inbox,
@@ -102,12 +108,18 @@ pub(super) enum Section {
     /// Mail > Desktop: email links and the desktop's search.
     MailDesktop,
     Calendar,
+    /// Contacts: the accounts it shows.
+    Contacts,
+    /// Tasks: the accounts it shows.
+    Tasks,
+    /// Notes: the accounts it shows.
+    Notes,
     /// Files: the Files page's small pictures and drives.
     Files,
 }
 
 impl Section {
-    pub(super) const ALL: [Self; 18] = [
+    pub(super) const ALL: [Self; 22] = [
         Self::General,
         Self::Appearance,
         Self::Accounts,
@@ -119,12 +131,16 @@ impl Section {
         Self::McpServer,
         Self::Feedback,
         Self::Experimental,
+        Self::Apps,
         Self::Reading,
         Self::Inbox,
         Self::Signatures,
         Self::MailRules,
         Self::MailDesktop,
         Self::Calendar,
+        Self::Contacts,
+        Self::Tasks,
+        Self::Notes,
         Self::Files,
     ];
 
@@ -141,12 +157,16 @@ impl Section {
             Self::McpServer => tr!("settings-tab-mcp-server"),
             Self::Feedback => tr!("settings-tab-feedback"),
             Self::Experimental => tr!("settings-tab-experimental"),
+            Self::Apps => tr!("settings-tab-apps"),
             Self::Reading => tr!("settings-tab-reading"),
             Self::Inbox => tr!("settings-tab-inbox"),
             Self::Signatures => tr!("settings-tab-compose"),
             Self::MailRules => tr!("settings-tab-folders-rules"),
             Self::MailDesktop => tr!("settings-tab-desktop"),
             Self::Calendar => tr!("settings-tab-calendar"),
+            Self::Contacts => tr!("rail-contacts"),
+            Self::Tasks => tr!("rail-tasks"),
+            Self::Notes => tr!("rail-notes"),
             Self::Files => tr!("settings-tab-files"),
         }
     }
@@ -165,12 +185,16 @@ impl Section {
             Self::McpServer => "chip",
             Self::Feedback => "chat",
             Self::Experimental => "pulse",
+            Self::Apps => "apps",
             Self::Reading => "eye",
             Self::Inbox => "inbox",
             Self::Signatures => "pen",
             Self::MailRules => "filter",
             Self::MailDesktop => "home",
             Self::Calendar => "calendar",
+            Self::Contacts => "contacts",
+            Self::Tasks => "tasks",
+            Self::Notes => "notes",
             Self::Files => "attachment",
         }
     }
@@ -184,7 +208,11 @@ impl Section {
             | Self::MailRules
             | Self::MailDesktop => Scope::Mail,
             Self::Calendar => Scope::Calendar,
+            Self::Contacts => Scope::Contacts,
+            Self::Tasks => Scope::Tasks,
+            Self::Notes => Scope::Notes,
             Self::Files => Scope::Files,
+            Self::Apps => Scope::Apps,
             _ => Scope::Katna,
         }
     }
@@ -201,8 +229,13 @@ impl Section {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum Scope {
     Katna,
+    /// The Apps page heading the apps' own pages.
+    Apps,
     Mail,
     Calendar,
+    Contacts,
+    Tasks,
+    Notes,
     Files,
 }
 
@@ -210,8 +243,12 @@ impl Scope {
     pub(super) fn label(self) -> String {
         match self {
             Self::Katna => tr!("settings-group-all-apps"),
+            Self::Apps => tr!("settings-tab-apps"),
             Self::Mail => tr!("rail-mail"),
             Self::Calendar => tr!("rail-calendar"),
+            Self::Contacts => tr!("rail-contacts"),
+            Self::Tasks => tr!("rail-tasks"),
+            Self::Notes => tr!("rail-notes"),
             Self::Files => tr!("rail-files"),
         }
     }
@@ -219,9 +256,25 @@ impl Scope {
     pub(super) fn icon(self) -> &'static str {
         match self {
             Self::Katna => "settings",
+            Self::Apps => "apps",
             Self::Mail => "mail",
             Self::Calendar => "calendar",
+            Self::Contacts => "contacts",
+            Self::Tasks => "tasks",
+            Self::Notes => "notes",
             Self::Files => "attachment",
+        }
+    }
+
+    /// The app whose pages these are, when it can be turned off.
+    pub(super) fn app(self) -> Option<AppKind> {
+        match self {
+            Self::Katna | Self::Apps | Self::Mail => None,
+            Self::Calendar => Some(AppKind::Calendar),
+            Self::Contacts => Some(AppKind::Contacts),
+            Self::Tasks => Some(AppKind::Tasks),
+            Self::Notes => Some(AppKind::Notes),
+            Self::Files => Some(AppKind::Files),
         }
     }
 
@@ -310,6 +363,10 @@ pub(super) struct SettingsPage {
     ai: ai::AiFields,
     /// Settings > Folders & rules: the mail rules and their filter.
     rules: rules::RulesList,
+    /// Settings > MCP server.
+    mcp: mcp::McpPage,
+    /// Settings > Inbox > Snooze times.
+    snooze: snooze_times::SnoozeFields,
 }
 
 /// Katna Mail's desktop file, which `mailto:` links name to open in it.
@@ -368,6 +425,9 @@ impl MailWindow {
     ) {
         self.settings_open = false;
         self.menu = None;
+        // Settings' own list of pages takes the folders' place.
+        self.nav_peek = false;
+        self.peek_task = None;
         let fresh = self.settings_page.is_none();
         let scroll = ScrollHandle::new();
         let accent = rgba(self.theme(window).accent).into();
@@ -375,6 +435,7 @@ impl MailWindow {
         let server = self.config.meetings.jitsi_server.clone();
         let this_files = self.config.mail.files.clone();
         let ai_config = self.config.ai.clone();
+        let snooze_times = self.config.mail.snooze.clone();
         let radius_now = self.window_radius_now();
         let page = self.settings_page.get_or_insert_with(|| {
             let triggers = cx.new(|cx| {
@@ -419,6 +480,7 @@ impl MailWindow {
                 }),
             ];
             let ai = ai::AiFields::new(&ai_config, accent, cx);
+            let snooze = snooze_times::SnoozeFields::new(&snooze_times, accent, cx);
             let radius = number_input(
                 u32::from(radius_now),
                 super::frost_sliders::RADIUS_RANGE,
@@ -471,6 +533,8 @@ impl MailWindow {
                 drives: Vec::new(),
                 ai,
                 rules: Default::default(),
+                mcp: Default::default(),
+                snooze,
             }
         });
         page.mail_app = opens_mail_links();
@@ -502,6 +566,9 @@ impl MailWindow {
         if section == Section::Ai {
             self.load_ai_key_saved(cx);
             self.load_ai_models(cx);
+        }
+        if section == Section::McpServer {
+            self.load_mcp_activity();
         }
         if section == Section::MailRules {
             self.load_rules(cx);
@@ -583,7 +650,9 @@ impl MailWindow {
             RailApp::Mail => Scope::Mail,
             RailApp::Calendar => Scope::Calendar,
             RailApp::Files => Scope::Files,
-            RailApp::Contacts | RailApp::Tasks | RailApp::Notes => Scope::Katna,
+            RailApp::Contacts => Scope::Contacts,
+            RailApp::Tasks => Scope::Tasks,
+            RailApp::Notes => Scope::Notes,
         };
         self.open_settings_page(scope.first(), window, cx);
         if self.layout.shape.is_phone()
@@ -591,15 +660,6 @@ impl MailWindow {
         {
             page.list = true;
         }
-    }
-
-    pub(super) fn show_shortcuts(
-        &mut self,
-        _: &ShowShortcuts,
-        window: &mut Window,
-        cx: &mut Context<Self>,
-    ) {
-        self.open_settings_page(Section::Shortcuts, window, cx);
     }
 
     fn page_section(&mut self, section: Section, window: &mut Window, cx: &mut Context<Self>) {
@@ -649,18 +709,38 @@ impl MailWindow {
             Section::Reading => self.reading_section(th, cx),
             Section::MailDesktop => self.mail_desktop_section(th, cx),
             Section::Ai => self.ai_section(th, cx),
-            Section::Calendar => self.calendar_section(th, cx),
-            Section::Files => self.files_section(th, cx),
+            Section::Apps => self.apps_section(th, cx),
+            // Each app's page starts with its switch from Settings > Apps.
+            Section::Calendar => {
+                let rows = self.calendar_section(th, cx);
+                self.with_app_switch(AppKind::Calendar, rows, th, cx)
+            }
+            Section::Contacts => {
+                let rows = self.app_accounts_rows(AppKind::Contacts, th, cx);
+                self.with_app_switch(AppKind::Contacts, rows, th, cx)
+            }
+            Section::Tasks => {
+                let rows = self.app_accounts_rows(AppKind::Tasks, th, cx);
+                self.with_app_switch(AppKind::Tasks, rows, th, cx)
+            }
+            Section::Notes => {
+                let rows = self.app_accounts_rows(AppKind::Notes, th, cx);
+                self.with_app_switch(AppKind::Notes, rows, th, cx)
+            }
+            Section::Files => {
+                let rows = self.files_section(th, cx);
+                self.with_app_switch(AppKind::Files, rows, th, cx)
+            }
             Section::Accounts => self.accounts_section(th, cx),
             Section::Subscriptions => self.katna_section(th, window, cx),
             Section::Appearance => self.appearance_section(th, window, cx),
-            Section::Signatures => self.signatures_section(th, cx),
+            Section::Signatures => self.signatures_section(th, window, cx),
             Section::DefaultApps => self.default_apps_section(th, cx),
             Section::Shortcuts => self.shortcuts_section(th, cx),
             Section::Experimental => self.experimental_section(th, cx),
             Section::Feedback => self.feedback_section(th, cx),
             Section::MailRules => self.rules_section(th, cx),
-            Section::McpServer => self.coming_soon_section(section, th),
+            Section::McpServer => self.mcp_section(th, cx),
         };
         // On a phone the page fills the window below the top bar, like the
         // list, its sides come in closer, and the list of pages takes the
@@ -704,64 +784,84 @@ impl MailWindow {
         } else {
             tr!("settings")
         };
-        let card = div()
-            .id("settings-page")
-            .size_full()
-            .flex()
-            .flex_col()
-            .map(|d| crate::widgets::card(d, th, th.pane(), shape.card_radius(), 0.0))
-            .overflow_hidden()
-            .child(
-                div()
-                    .flex_none()
-                    .h(px(56.0))
-                    .pl(px(katna_ui::tokens::space::S3))
-                    .pr(px(katna_ui::tokens::space::S5))
-                    .flex()
-                    .flex_row()
-                    .items_center()
-                    .gap(px(katna_ui::tokens::space::S3))
-                    .child(
-                        icon_button("settings-page-back", "back", 20.0, th)
-                            .focus_ring(th)
-                            .on_click(
-                                cx.listener(|this, _, window, cx| this.settings_back(window, cx)),
-                            ),
-                    )
-                    .child(div().text_size(px(22.0)).child(title))
-                    .child(div().flex_1())
-                    .child(self.version_button(th, cx)),
-            )
-            .child(
-                div()
-                    .flex_1()
-                    .min_h_0()
-                    .flex()
-                    .flex_row()
-                    // The scope's pages beside the open one.
-                    .when(!phone, |d| {
-                        d.child(
+        use katna_ui::tokens::space;
+        let radius = shape.card_radius();
+        let back = icon_button("settings-page-back", "back", 20.0, th)
+            .focus_ring(th)
+            .on_click(cx.listener(|this, _, window, cx| this.settings_back(window, cx)));
+        let title = div().min_w_0().truncate().text_size(px(22.0)).child(title);
+        let top = || {
+            div()
+                .flex_none()
+                .h(px(56.0))
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(space::S3))
+        };
+        let card = div().id("settings-page").size_full().flex();
+        let card = if phone {
+            card.flex_col()
+                .child(
+                    top()
+                        .pl(px(space::S3))
+                        .pr(px(space::S5))
+                        .child(back)
+                        .child(title)
+                        .child(div().flex_1())
+                        .child(self.version_button(th, cx)),
+                )
+                .child(div().flex_1().min_h_0().flex().child(page_body))
+        } else {
+            // The list of pages is its own menu: a faint tint from top to
+            // bottom, title included, beside the page. GPUI does not clip
+            // to the card's corners, so the menu rounds its own.
+            card.flex_row()
+                .child(
+                    div()
+                        .flex_none()
+                        .w(px(nav::NAV_WIDTH + space::S3))
+                        .h_full()
+                        .flex()
+                        .flex_col()
+                        .bg(rgba(th.side_menu()))
+                        .rounded_l(px(radius))
+                        .child(top().pl(px(space::S3)).child(back).child(title))
+                        .child(
                             div()
                                 .id("settings-nav")
-                                .flex_none()
-                                .w(px(nav::NAV_WIDTH))
-                                .h_full()
+                                .flex_1()
+                                .min_h_0()
                                 .overflow_y_scroll()
-                                .pl(px(katna_ui::tokens::space::S4))
-                                .pt(px(katna_ui::tokens::space::S3))
-                                .pb(px(katna_ui::tokens::space::S4))
+                                .pl(px(space::S4))
+                                .pr(px(space::S3))
+                                .pt(px(space::S3))
+                                .pb(px(space::S4))
                                 .child(self.settings_nav(section, false, th, cx)),
+                        ),
+                )
+                .child(
+                    div()
+                        .flex_1()
+                        .min_w_0()
+                        .flex()
+                        .flex_col()
+                        .child(
+                            top()
+                                .justify_end()
+                                .pr(px(space::S5))
+                                .child(self.version_button(th, cx)),
                         )
-                    })
-                    .child(page_body),
-            );
+                        .child(div().flex_1().min_h_0().flex().child(page_body)),
+                )
+        };
         div()
             .flex_1()
             .min_w_0()
             .h_full()
             .pr(px(margin))
             .pb(px(margin))
-            .child(card)
+            .child(self.page_frame(th, th.pane(), card))
             .into_any_element()
     }
 
@@ -790,19 +890,11 @@ impl MailWindow {
                 self.offline_choice(th, cx),
                 th,
             ))
-            .when(katna_core::update::Package::current().downloads(), |d| {
+            .when(katna_core::update::Package::current().updates(), |d| {
                 d.child(self.row(
                     tr!("settings-general-updates"),
                     Some(&tr!("settings-general-updates-detail")),
-                    self.switch_row(
-                        "page-auto-download-updates",
-                        tr!("settings-general-auto-download"),
-                        tr!("settings-general-auto-download-detail"),
-                        self.config.updates.auto_download,
-                        Change::AutoDownloadUpdates(!self.config.updates.auto_download),
-                        th,
-                        cx,
-                    ),
+                    self.updates_controls(th, cx),
                     th,
                 ))
             })
@@ -834,6 +926,7 @@ impl MailWindow {
     // Calendar
 
     fn calendar_section(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let accounts = self.app_accounts_rows(AppKind::Calendar, th, cx);
         let calendar = &self.config.calendar;
         let density = [
             (
@@ -885,6 +978,7 @@ impl MailWindow {
         div()
             .flex()
             .flex_col()
+            .child(accounts)
             .child(self.row(
                 tr!("settings-calendar-density"),
                 Some(&tr!("settings-calendar-density-detail")),
@@ -921,6 +1015,7 @@ impl MailWindow {
             .flex()
             .flex_col()
             .child(self.files_page_row(th, cx))
+            .child(self.app_accounts_rows(AppKind::Files, th, cx))
             .into_any_element()
     }
 
@@ -1238,6 +1333,81 @@ impl MailWindow {
             .flex_wrap()
             .gap(px(6.0))
             .children(chips)
+            .into_any_element()
+    }
+
+    /// The update channel, then whether Katna looks for and downloads
+    /// new versions by itself.
+    fn updates_controls(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        use katna_core::update::{Channel, Package, VERSION};
+        let package = Package::current();
+        let now = Channel::of(package, VERSION, self.config.updates.channel);
+        let chips =
+            [
+                (
+                    Channel::Stable,
+                    "update-stable",
+                    tr!("settings-update-stable"),
+                ),
+                (Channel::Beta, "update-beta", tr!("settings-update-beta")),
+                (
+                    Channel::Nightly,
+                    "update-nightly",
+                    tr!("settings-update-nightly"),
+                ),
+            ]
+            .map(|(channel, id, text)| {
+                self.page_control(chip(id, text, channel == now, th), th, cx)
+                    .on_click(cx.listener(move |this, _, _, cx| {
+                        this.apply(Change::UpdateChannel(channel), cx)
+                    }))
+            });
+        let about = match now {
+            Channel::Stable => tr!("settings-update-stable-detail"),
+            Channel::Beta => tr!("settings-update-beta-detail"),
+            Channel::Nightly => tr!("settings-update-nightly-detail"),
+        };
+        div()
+            .flex()
+            .flex_col()
+            .gap(px(space::S2))
+            .child(
+                div()
+                    .px(px(space::S3))
+                    .flex()
+                    .flex_row()
+                    .flex_wrap()
+                    .gap(px(space::S2 + space::S1))
+                    .children(chips),
+            )
+            .child(
+                div()
+                    .px(px(space::S3))
+                    .pb(px(space::S2))
+                    .text_size(px(katna_ui::tokens::text::SMALL))
+                    .text_color(rgba(th.text_dim))
+                    .child(about),
+            )
+            .child(self.switch_row(
+                "page-check-updates",
+                tr!("settings-general-check-updates"),
+                tr!("settings-general-check-updates-detail"),
+                self.config.updates.check,
+                Change::CheckUpdates(!self.config.updates.check),
+                th,
+                cx,
+            ))
+            .when(package.downloads(), |d| {
+                d.child(self.switch_row(
+                    "page-auto-download-updates",
+                    tr!("settings-general-auto-download"),
+                    tr!("settings-general-auto-download-detail"),
+                    self.config.updates.auto_download,
+                    Change::AutoDownloadUpdates(!self.config.updates.auto_download),
+                    th,
+                    cx,
+                ))
+            })
             .into_any_element()
     }
 
@@ -2133,6 +2303,9 @@ impl MailWindow {
                     th,
                 ))
             })
+            .when(self.shows_unified(), |d| {
+                d.child(self.unified_accounts_rows(&accounts, th, cx))
+            })
             .when(on, |d| {
                 d.children(accounts.iter().enumerate().map(|(ix, account)| {
                     let provider = self.provider(account);
@@ -2155,6 +2328,26 @@ impl MailWindow {
             .when(accounts.is_empty() && on, |d| {
                 d.child(self.quiet_note(tr!("settings-inbox-no-accounts"), th))
             })
+            .child(self.row(
+                tr!("settings-snooze-times"),
+                Some(&tr!("settings-snooze-times-detail")),
+                self.snooze_times_rows(th, cx),
+                th,
+            ))
+            .child(self.row(
+                tr!("settings-nudges"),
+                None,
+                self.switch_row(
+                    "page-nudges",
+                    tr!("settings-nudges-on"),
+                    tr!("settings-nudges-on-detail"),
+                    self.config.mail.nudges,
+                    Change::Nudges(!self.config.mail.nudges),
+                    th,
+                    cx,
+                ),
+                th,
+            ))
             .into_any_element()
     }
 
@@ -2424,23 +2617,254 @@ impl MailWindow {
         }
     }
 
+    /// Duplicate: a copy of signature `id` with everything in it (text,
+    /// HTML, layout, pictures, colour) right after it, opened to edit.
+    fn duplicate_signature(&mut self, id: u32, window: &mut Window, cx: &mut Context<Self>) {
+        self.close_context_menu(cx);
+        let sending = &mut self.config.sending;
+        let Some(at) = sending.signatures.iter().position(|s| s.id == id) else {
+            return;
+        };
+        let mut copy = sending.signatures[at].clone();
+        copy.id = sending.signatures.iter().map(|s| s.id).max().unwrap_or(0) + 1;
+        let name = if copy.name.trim().is_empty() {
+            tr!("settings-compose-untitled")
+        } else {
+            copy.name.trim().to_owned()
+        };
+        copy.name = tr!("settings-compose-signature-copy-name", name = name);
+        let new = copy.id;
+        sending.signatures.insert(at + 1, copy);
+        self.save_config();
+        self.edit_signature(Some(new), window, cx);
+    }
+
     fn delete_signature(&mut self, id: u32, window: &mut Window, cx: &mut Context<Self>) {
+        self.close_context_menu(cx);
         self.config.sending.remove_signature(id);
         self.save_config();
-        let next = self.config.sending.signatures.first().map(|s| s.id);
-        self.edit_signature(next, window, cx);
+        // From the right-click menu, another one may be open: it stays.
+        let open = self
+            .settings_page
+            .as_ref()
+            .and_then(|p| p.editing.as_ref())
+            .map(|e| e.id);
+        if open.is_none() || open == Some(id) {
+            let next = self.config.sending.signatures.first().map(|s| s.id);
+            self.edit_signature(next, window, cx);
+        } else {
+            cx.notify();
+        }
         self.show_snackbar(tr!("settings-compose-signature-deleted"), None, cx);
     }
 
-    fn set_default_signature(&mut self, replies: bool, id: Option<u32>, cx: &mut Context<Self>) {
-        let sending = &mut self.config.sending;
-        if replies {
-            sending.reply_signature = id;
-        } else {
-            sending.new_mail_signature = id;
+    /// The right-click menu of signature `id` in the list: Edit,
+    /// Duplicate and Delete.
+    pub(super) fn signature_menu_rows(
+        &self,
+        id: u32,
+        rh: f32,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> super::context_menu::Rows {
+        let mut rows = super::context_menu::Rows::new(rh);
+        let item = |key: &'static str, icon: &str, label: String| {
+            self.context_item(key, icon, label, rh, th, cx)
+        };
+        rows.item(
+            item(
+                "signature-edit",
+                "pen",
+                tr!("settings-compose-signature-edit"),
+            )
+            .on_click(cx.listener(move |this, _, window, cx| {
+                this.close_context_menu(cx);
+                this.edit_signature(Some(id), window, cx);
+            })),
+        );
+        rows.item(
+            item(
+                "signature-duplicate",
+                "copy",
+                tr!("settings-compose-signature-duplicate"),
+            )
+            .on_click(
+                cx.listener(move |this, _, window, cx| this.duplicate_signature(id, window, cx)),
+            ),
+        );
+        rows.rule(th);
+        rows.item(
+            item(
+                "signature-delete",
+                "trash",
+                tr!("settings-compose-signature-delete"),
+            )
+            .on_click(
+                cx.listener(move |this, _, window, cx| this.delete_signature(id, window, cx)),
+            ),
+        );
+        rows
+    }
+
+    /// The menu of signatures mail from `address` can start with, for
+    /// replies and forwards when `replies`, the current one ticked.
+    pub(super) fn default_signature_menu_rows(
+        &self,
+        address: &str,
+        replies: bool,
+        rh: f32,
+        th: &Theme,
+        cx: &mut Context<Self>,
+    ) -> super::context_menu::Rows {
+        let sending = &self.config.sending;
+        let current = sending.default_signature(address, replies);
+        let mut rows = super::context_menu::Rows::new(rh);
+        let choices = std::iter::once((None, tr!("settings-compose-no-signature"))).chain(
+            sending
+                .signatures
+                .iter()
+                .map(|s| (Some(s.id), signature_name(s))),
+        );
+        for (n, (id, label)) in choices.enumerate() {
+            let tick = if current == id {
+                icon("check", th.accent, 20.0)
+            } else {
+                div().size(px(20.0)).into_any_element()
+            };
+            let address = address.to_owned();
+            rows.item(
+                super::context_menu::menu_row_with(
+                    ("default-signature-choice", n),
+                    tick,
+                    label.into(),
+                    th,
+                    rh,
+                )
+                .on_click(cx.listener(move |this, _, _, cx| {
+                    this.close_context_menu(cx);
+                    this.set_default_signature(&address, replies, id, cx);
+                })),
+            );
         }
+        rows
+    }
+
+    fn set_default_signature(
+        &mut self,
+        address: &str,
+        replies: bool,
+        id: Option<u32>,
+        cx: &mut Context<Self>,
+    ) {
+        self.config
+            .sending
+            .set_default_signature(address, replies, id);
         self.save_config();
         cx.notify();
+    }
+
+    /// Each account with the signature its new mail starts with and the
+    /// one its replies and forwards start with, each a pill that opens
+    /// the menu of signatures. On a narrow page the pills go under the
+    /// address.
+    fn default_signatures(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let sending = &self.config.sending;
+        let name_of = |id: Option<u32>| match sending.signature(id) {
+            Some(s) => signature_name(s),
+            None => tr!("settings-compose-no-signature"),
+        };
+        let accounts = self.accounts.iter().enumerate().map(|(ix, account)| {
+            let address = account.address.clone();
+            let pick = |replies: bool| {
+                let label = if replies {
+                    tr!("settings-compose-default-replies")
+                } else {
+                    tr!("settings-compose-default-new-mail")
+                };
+                let current = name_of(sending.default_signature(&address, replies));
+                let address = address.clone();
+                div()
+                    .flex_1()
+                    .min_w(px(140.0))
+                    .flex()
+                    .flex_col()
+                    .gap(px(space::S1))
+                    .child(
+                        div()
+                            .text_size(px(text::CAPTION))
+                            .text_color(rgba(th.text_dim))
+                            .child(label),
+                    )
+                    .child(
+                        self.page_control(
+                            choice_pill(
+                                ("page-default-signature", ix * 2 + usize::from(replies)),
+                                current,
+                                false,
+                                th,
+                            ),
+                            th,
+                            cx,
+                        )
+                        .on_click(cx.listener(
+                            move |this, event: &gpui::ClickEvent, _, cx| {
+                                cx.stop_propagation();
+                                this.open_default_signature_menu(
+                                    address.clone(),
+                                    replies,
+                                    event.position(),
+                                    cx,
+                                );
+                            },
+                        )),
+                    )
+            };
+            let name = account.display_name.trim();
+            // Wide enough for a usual address, else the pills go under it.
+            let who = div()
+                .flex_1()
+                .min_w(px(280.0))
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(space::S3))
+                .child(avatar_filled(
+                    if name.is_empty() { &address } else { name },
+                    self.account_color(&address, th),
+                    24.0,
+                ))
+                .child(
+                    div()
+                        .min_w_0()
+                        .truncate()
+                        .text_size(px(text::BODY))
+                        .child(address.clone()),
+                );
+            div()
+                .flex()
+                .flex_row()
+                .flex_wrap()
+                .items_center()
+                .gap(px(space::S3))
+                .py(px(space::S3))
+                .when(ix > 0, |d| d.border_t_1().border_color(rgba(th.divider)))
+                .child(who)
+                .child(
+                    div()
+                        .flex_1()
+                        .min_w(px(296.0))
+                        .flex()
+                        .flex_row()
+                        .gap(px(space::S3))
+                        .child(pick(false))
+                        .child(pick(true)),
+                )
+        });
+        control_column(240.0)
+            .flex()
+            .flex_col()
+            .children(accounts)
+            .into_any_element()
     }
 
     fn set_send_from(&mut self, address: String, cx: &mut Context<Self>) {
@@ -2566,7 +2990,12 @@ impl MailWindow {
         ]
     }
 
-    fn signatures_section(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+    fn signatures_section(
+        &self,
+        th: &Theme,
+        window: &Window,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
         let sending_rows = self.sending_rows(th, cx);
         let reply_row = self.row(
             tr!("settings-general-reply-button"),
@@ -2606,9 +3035,10 @@ impl MailWindow {
         let layout_tiles = editing_id
             .filter(|_| !pasting_open)
             .map(|id| self.layout_tiles(id, th, cx));
-        let layout_form = self.layout_form(th, cx);
+        let layout_form = self.layout_form(th, window, cx);
         let sending = &self.config.sending;
         let editing = self.settings_page.as_ref().and_then(|p| p.editing.as_ref());
+        let defaults = self.default_signatures(th, cx);
         let list = sending.signatures.iter().map(|s| {
             let on = editing.is_some_and(|e| e.id == s.id);
             let id = s.id;
@@ -2621,17 +3051,20 @@ impl MailWindow {
             .on_click(
                 cx.listener(move |this, _, window, cx| this.edit_signature(Some(id), window, cx)),
             )
+            .on_mouse_down(
+                gpui::MouseButton::Right,
+                cx.listener(move |this, event: &gpui::MouseDownEvent, _, cx| {
+                    cx.stop_propagation();
+                    this.open_signature_menu(id, event.position, cx);
+                }),
+            )
             .child(
                 div()
                     .min_w_0()
                     .py(px(katna_ui::tokens::space::S2))
                     .flex()
                     .flex_col()
-                    .child(div().truncate().child(if s.name.trim().is_empty() {
-                        tr!("settings-compose-untitled")
-                    } else {
-                        s.name.clone()
-                    }))
+                    .child(div().truncate().child(signature_name(s)))
                     .child(
                         div()
                             .truncate()
@@ -2670,70 +3103,24 @@ impl MailWindow {
                 .children(free)
                 .children(form)
                 .children(tools.filter(|_| !from_layout))
-                .child(
-                    div()
-                        .flex()
-                        .flex_row()
-                        .gap(px(katna_ui::tokens::space::S3))
-                        .child(div().flex_1())
-                        .when(designed, |d| {
-                            d.child(
-                                outlined_button(
-                                    "page-signature-edit-html",
-                                    tr!("settings-compose-signature-edit-html"),
-                                    th,
-                                )
-                                .map(|d| self.page_control(d, th, cx))
-                                .on_click(cx.listener(
-                                    move |this, _, window, cx| {
-                                        this.open_paste_html(Some(id), window, cx)
-                                    },
-                                )),
-                            )
-                        })
-                        .child(
+                .when(designed, |d| {
+                    d.child(
+                        div().flex().flex_row().justify_end().child(
                             outlined_button(
-                                "page-signature-delete",
-                                tr!("settings-compose-signature-delete"),
+                                "page-signature-edit-html",
+                                tr!("settings-compose-signature-edit-html"),
                                 th,
                             )
                             .map(|d| self.page_control(d, th, cx))
                             .on_click(cx.listener(
-                                move |this, _, window, cx| this.delete_signature(id, window, cx),
+                                move |this, _, window, cx| {
+                                    this.open_paste_html(Some(id), window, cx)
+                                },
                             )),
                         ),
-                )
-        });
-        let defaults = |replies: bool| {
-            let current = if replies {
-                sending.reply_signature
-            } else {
-                sending.new_mail_signature
-            };
-            let choices = std::iter::once((None, tr!("settings-compose-no-signature"))).chain(
-                sending
-                    .signatures
-                    .iter()
-                    .map(|s| (Some(s.id), s.name.clone())),
-            );
-            div()
-                .flex()
-                .flex_row()
-                .flex_wrap()
-                .gap(px(6.0))
-                .children(choices.enumerate().map(|(n, (id, label))| {
-                    chip(
-                        ("page-signature-default", usize::from(replies) * 1000 + n),
-                        label,
-                        current == id,
-                        th,
                     )
-                    .map(|d| self.page_control(d, th, cx))
-                    .on_click(cx.listener(move |this, _, _, cx| {
-                        this.set_default_signature(replies, id, cx)
-                    }))
-                }))
-        };
+                })
+        });
         div()
             .flex()
             .flex_col()
@@ -2809,15 +3196,9 @@ impl MailWindow {
             )
             .when(!sending.signatures.is_empty(), |d| {
                 d.child(self.row(
-                    tr!("settings-compose-for-new-mail"),
-                    None,
-                    defaults(false),
-                    th,
-                ))
-                .child(self.row(
-                    tr!("settings-compose-for-replies"),
-                    Some(&tr!("settings-compose-for-replies-detail")),
-                    defaults(true),
+                    tr!("settings-compose-default-signature"),
+                    Some(&tr!("settings-compose-default-signature-detail")),
+                    defaults,
                     th,
                 ))
             })
@@ -2945,6 +3326,7 @@ impl MailWindow {
                     .iter()
                     .enumerate()
                     .filter(|(_, s)| s.group == group)
+                    .filter(|(_, s)| s.app().is_none_or(|app| self.config.app_on(app)))
                     .map(|(n, s)| {
                         let keys = keymap::keys(s, config);
                         let custom = config.keys.contains_key(s.name);
@@ -3438,7 +3820,7 @@ pub(super) fn setting_row(
             .rounded_full()
             .cursor_pointer()
             .hover(|d| d.bg(rgba(th.hover)))
-            .tooltip(tip(text, th))
+            .tip(text, th)
             .on_click(move |_, window, _| {
                 let mut shown = info.borrow_mut();
                 *shown = if shown.as_ref() == Some(&name) {
@@ -3582,7 +3964,7 @@ pub(super) fn number_field(
             .cursor_pointer()
             .relative()
             .child(crate::widgets::hover_fade("hover-glow", Some(3.0), th))
-            .tooltip(tip(tip_text, th))
+            .tip(tip_text, th)
             .on_mouse_down(gpui::MouseButton::Left, |_, _, cx| cx.stop_propagation())
             .on_click(move |_, _, cx| {
                 input.update(cx, |input, cx| {
@@ -3619,6 +4001,15 @@ pub(super) fn number_field(
         )
 }
 
+/// A signature's name, "Untitled" when blank.
+fn signature_name(signature: &katna_core::config::Signature) -> String {
+    if signature.name.trim().is_empty() {
+        tr!("settings-compose-untitled")
+    } else {
+        signature.name.clone()
+    }
+}
+
 /// A [`choice_chip`] whose blank name reads "Untitled".
 fn chip(id: impl Into<gpui::ElementId>, label: String, on: bool, th: &Theme) -> Stateful<Div> {
     let label = if label.trim().is_empty() {
@@ -3631,12 +4022,20 @@ fn chip(id: impl Into<gpui::ElementId>, label: String, on: bool, th: &Theme) -> 
 
 /// A key as a keycap; `off` when single keys are turned off.
 fn key_chip(id: impl Into<gpui::ElementId>, label: String, off: bool, th: &Theme) -> Stateful<Div> {
-    div()
+    key_cap(label, off, th)
         .id(id)
         .group("key-chip")
-        .h(px(28.0))
-        .pl(px(10.0))
         .pr(px(6.0))
+        .cursor_pointer()
+        .hover(|s| s.border_color(rgba(th.text_faint)))
+}
+
+/// A key as Settings > Shortcuts and Help > Keyboard shortcuts show it:
+/// struck through while single keys are `off`.
+pub(super) fn key_cap(label: String, off: bool, th: &Theme) -> Div {
+    div()
+        .h(px(28.0))
+        .px(px(10.0))
         .flex()
         .flex_row()
         .items_center()
@@ -3648,8 +4047,6 @@ fn key_chip(id: impl Into<gpui::ElementId>, label: String, off: bool, th: &Theme
         .font_weight(FontWeight::MEDIUM)
         .text_color(rgba(if off { th.text_faint } else { th.text }))
         .when(off, |d| d.line_through())
-        .cursor_pointer()
-        .hover(|s| s.border_color(rgba(th.text_faint)))
         .child(label)
 }
 

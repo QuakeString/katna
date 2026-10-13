@@ -164,6 +164,38 @@ impl MailProvider {
         }
     }
 
+    /// The provider whose mail server `server` is (an
+    /// `Authentication-Results` server name); `Other` when unknown.
+    pub(super) fn for_server(server: &str) -> Self {
+        let server = server.trim().trim_end_matches('.').to_ascii_lowercase();
+        let under = |domain: &str| {
+            server == domain
+                || server
+                    .strip_suffix(domain)
+                    .is_some_and(|rest| rest.ends_with('.'))
+        };
+        if under("google.com") {
+            Self::Google
+        } else if under("outlook.com") || under("hotmail.com") {
+            Self::Microsoft
+        } else if under("yahoo.com") || under("yahoodns.net") {
+            Self::Yahoo
+        } else if under("icloud.com") || under("apple.com") || under("me.com") {
+            Self::ICloud
+        } else if under("zoho.com") || under("zohomail.com") || under("zoho.in") || under("zoho.eu")
+        {
+            Self::Zoho
+        } else if under("messagingengine.com") || under("fastmail.com") {
+            Self::Fastmail
+        } else if under("gmx.net") || under("gmx.com") || under("web.de") {
+            Self::Gmx
+        } else if under("yandex.net") || under("yandex.ru") || under("yandex.com") {
+            Self::Yandex
+        } else {
+            Self::Other
+        }
+    }
+
     /// Its mark, `size` px square.
     pub(super) fn glyph(self, size: f32, th: &Theme) -> AnyElement {
         match self {

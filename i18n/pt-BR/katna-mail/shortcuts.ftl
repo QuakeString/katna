@@ -9,6 +9,13 @@ shortcut-group-actions = Ações
 shortcut-group-go-to = Ir para
 shortcut-group-app = Aplicativo
 
+## Help > Keyboard shortcuts: every shortcut in a dialog over the window
+
+shortcuts-dialog-title = Atalhos do teclado
+shortcuts-dialog-search = Encontrar um atalho
+shortcuts-dialog-none = Nenhum atalho corresponde
+shortcuts-dialog-close = Fechar
+
 ## Settings > Keyboard shortcuts: what each shortcut does
 
 shortcut-next = Próxima conversa
@@ -37,6 +44,8 @@ shortcut-mark-read = Marcar como lida
 shortcut-mark-unread = Marcar como não lida
 shortcut-star = Adicionar ou remover estrela
 shortcut-add-to-tasks = Adicionar às Tarefas
+shortcut-snooze = Adiar
+shortcut-remind = Lembrar-me
 shortcut-important = Marcar como importante
 shortcut-not-important = Marcar como não importante
 shortcut-mute = Silenciar ou reativar a conversa
@@ -61,6 +70,7 @@ shortcut-navigation = Mostrar ou recolher o menu
 shortcut-quick-settings = Configurações rápidas
 shortcut-settings = Todas as configurações
 shortcut-shortcuts = Atalhos do teclado
+shortcut-palette = Paleta de comandos
 shortcut-reload = Verificar novos e-mails
 shortcut-quit = Sair
 

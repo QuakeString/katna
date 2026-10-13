@@ -5,7 +5,7 @@
 //! task dragged onto a day is due then; Completed shows every ticked task
 //! by the day it was ticked, and unticking one brings it back.
 
-use gpui::{AnyElement, Context, FontWeight, SharedString, div, prelude::*, rgba};
+use gpui::{AnyElement, Context, FontWeight, div, prelude::*, rgba};
 use jiff::civil::{Date, Time};
 use katna_i18n::{format, tr};
 use katna_store::tasks::Task as TaskItem;
@@ -17,6 +17,9 @@ use super::{
 };
 use crate::theme::{Theme, fade};
 use crate::widgets::icon;
+
+/// The quiet line's icons, beside 12 px text.
+const QUIET_ICON: f32 = 14.0;
 use crate::window::MailWindow;
 
 /// How many days ahead Upcoming shows, after today.
@@ -115,7 +118,7 @@ impl MailWindow {
         list: Option<&str>,
         th: &Theme,
     ) -> gpui::Div {
-        let color = th.text_dim;
+        let color = th.text_faint;
         let mut parts: Vec<AnyElement> = Vec::new();
         let word = |text: String| div().child(text).into_any_element();
         let with_icon = |name: &'static str, text: String| {
@@ -124,7 +127,7 @@ impl MailWindow {
                 .flex_row()
                 .items_center()
                 .gap(px(space::S2))
-                .child(icon(name, color, 14.0))
+                .child(icon(name, color, QUIET_ICON))
                 .child(text)
                 .into_any_element()
         };
@@ -162,7 +165,7 @@ impl MailWindow {
                     ));
                 }
                 if !task.repeat.is_empty() {
-                    parts.push(icon("refresh", color, 14.0));
+                    parts.push(icon("refresh", color, QUIET_ICON));
                 }
             }
             Quiet::Completed => {}
@@ -267,7 +270,7 @@ impl MailWindow {
                     })),
             );
         }
-        self.single_card("tasks-upcoming-card".into(), th, body)
+        self.single_card("tasks-upcoming-card", th, body, cx)
     }
 
     /// A task's row on Upcoming, and the row adding a step to it.
@@ -306,22 +309,14 @@ impl MailWindow {
         let done = page.completed();
         let mut body = div().child(card_heading(tr!("tasks-completed-view"), th));
         if done.is_empty() {
-            body = body.child(
-                div()
-                    .py(px(space::S6))
-                    .px(px(space::S6))
-                    .flex()
-                    .flex_col()
-                    .items_center()
-                    .gap(px(space::S3))
-                    .text_center()
-                    .child(icon("check-circle", th.text_faint, 40.0))
-                    .child(
-                        self.copyable(tr!("tasks-completed-empty"), th)
-                            .text_size(px(text::BODY))
-                            .text_color(rgba(th.text_dim)),
-                    ),
-            );
+            let text_ = self.copyable(tr!("tasks-completed-empty"), th);
+            body = body.child(self.empty_card(
+                "tasks-completed-empty",
+                Some("check-circle"),
+                text_,
+                th,
+                cx,
+            ));
         }
         let mut last: Option<Date> = None;
         for (c, t) in done {
@@ -333,16 +328,14 @@ impl MailWindow {
                 } else {
                     format::weekday_day_month_long(day.to_datetime(Time::midnight()))
                 };
+                // A quiet day over its tasks, as in the study's mockup.
                 body = body.child(
                     div()
-                        .mt(px(space::S3))
-                        .px(px(space::S6))
-                        .h(px(space::S7))
-                        .flex()
-                        .items_center()
+                        .pt(px(space::S3))
+                        .pb(px(space::S1))
+                        .px(px(space::S5))
                         .text_size(px(text::CAPTION))
-                        .font_weight(FontWeight::MEDIUM)
-                        .text_color(rgba(th.text_dim))
+                        .text_color(rgba(th.text_faint))
                         .child(heading.to_uppercase()),
                 );
             }
@@ -354,18 +347,25 @@ impl MailWindow {
             };
             body = body.child(self.render_task_row_as(t, look, now, th, cx));
         }
-        self.single_card("tasks-completed-card".into(), th, body)
+        self.single_card("tasks-completed-card", th, body, cx)
     }
 
     /// One card in the middle of the page, as Today and Starred show.
-    fn single_card(&self, id: SharedString, th: &Theme, rows: gpui::Div) -> AnyElement {
+    fn single_card(
+        &self,
+        id: &'static str,
+        th: &Theme,
+        rows: gpui::Div,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
+        let card = self.lifted_frame(id, SINGLE_WIDTH, th, rows, cx);
         div()
             .size_full()
             .p(px(space::S5))
             .flex()
             .items_start()
             .justify_center()
-            .child(self.card_frame(id, SINGLE_WIDTH, th, rows))
+            .child(card)
             .into_any_element()
     }
 }
@@ -386,14 +386,14 @@ fn section_heading(label: String, after: String, color: u32, th: &Theme) -> gpui
         .child(
             div()
                 .text_size(px(text::BODY))
-                .font_weight(FontWeight::BOLD)
+                .font_weight(FontWeight::SEMIBOLD)
                 .text_color(rgba(color))
                 .child(label),
         )
         .child(
             div()
                 .text_size(px(text::CAPTION))
-                .text_color(rgba(th.text_dim))
+                .text_color(rgba(th.text_faint))
                 .child(after),
         )
 }

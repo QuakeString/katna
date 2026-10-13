@@ -112,16 +112,29 @@ impl MailWindow {
         if step == 0 {
             return;
         }
-        let Some(ix) = self
-            .pictured_account()
-            .and_then(|shown| self.accounts.iter().position(|a| a.id == shown.id))
-        else {
-            return;
+        // All Accounts is the first stop, before the first account, where
+        // the folder pane has it.
+        let all = self.shows_unified();
+        let ix = if all && self.menu_current() == Some(None) {
+            -1
+        } else {
+            let Some(ix) = self
+                .pictured_account()
+                .and_then(|shown| self.accounts.iter().position(|a| a.id == shown.id))
+            else {
+                return;
+            };
+            ix as isize
         };
         // No wrap past either end: the last account stays until the wheel
         // turns back.
-        let Some(next) = ix
-            .checked_add_signed(step as isize)
+        let next = ix + step as isize;
+        if next == -1 && all {
+            self.pick_all_accounts(cx);
+            return;
+        }
+        let Some(next) = usize::try_from(next)
+            .ok()
             .and_then(|next| self.accounts.get(next))
         else {
             return;

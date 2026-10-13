@@ -53,3 +53,4 @@ search-options-show = تلاش کے اختیارات دکھائیں
 settings = ترتیبات
 account-add = اکاؤنٹ شامل کریں
 account-wheel-hint = اکاؤنٹ تبدیل کرنے کے لیے اسکرول کریں
+account-menu-all-detail = { $count } اکاؤنٹس ایک ساتھ

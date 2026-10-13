@@ -14,6 +14,7 @@ search-without = এইবোৰ নাই
 search-date-within = তাৰিখৰ সময়সীমা
 search-has-attachment = সংলগ্নক আছে
 search-attachment-custom = নিজে বাছক
+search-attachment-image = ছবি
 search-attachment-custom-hint = এটা এক্সটেনশ্যন টাইপ কৰক, যেনে png, তাৰ পাছত Space টিপক
 search-attachment-remove = আঁতৰাওক
 search-clear-filter = ফিল্টাৰ মচক
@@ -60,3 +61,13 @@ search-dates-month-back = আগৰ মাহ
 search-dates-month-on = পিছৰ মাহ
 search-dates-year-back = আগৰ বছৰ
 search-dates-year-on = পিছৰ বছৰ
+
+## More results on server: under the results, mail found by asking the
+## mail server, for mail that is not downloaded to this computer yet.
+
+search-server-more = ছাৰ্ভাৰত অধিক ফলাফল
+search-server-searching = ছাৰ্ভাৰত মেইল সন্ধান কৰি আছে…
+search-server-empty-searching = ইয়াত এতিয়াও একো নাই। ছাৰ্ভাৰত মেইল সন্ধান কৰি আছে…
+search-server-nothing = ছাৰ্ভাৰত আৰু কোনো ফলাফল নাই
+search-server-failed = ছাৰ্ভাৰত সন্ধান কৰিব পৰা নগ'ল।
+search-server-again = পুনৰ চেষ্টা কৰক

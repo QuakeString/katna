@@ -42,8 +42,10 @@ impl Tooltip {
 impl Render for Tooltip {
     fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         let font = cx.try_global::<UiFont>().map(|f| f.0.clone());
-        // Kept below and right of the pointer, clear of the cursor.
-        div().pl(px(4.0)).pt(px(14.0)).child(
+        // Kept below and right of the pointer, clear of the cursor, and
+        // inside the window's content: GPUI only keeps it on the surface,
+        // which with Katna's frame also holds the frame's shadow.
+        let tip = div().pl(px(4.0)).pt(px(14.0)).child(
             div()
                 // Long text wraps rather than running off the window.
                 .max_w(px(320.0))
@@ -56,6 +58,9 @@ impl Render for Tooltip {
                 .line_height(px(16.0))
                 .when_some(font, |d, font| d.font_family(font))
                 .child(self.text.clone()),
-        )
+        );
+        crate::anchored()
+            .snap_to_window_with_margin(px(4.0))
+            .child(tip)
     }
 }

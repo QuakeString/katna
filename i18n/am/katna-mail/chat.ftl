@@ -40,6 +40,7 @@ chat-reply-only = ለ{ $name } ብቻ መልስ
 chat-forward = አስተላልፍ
 chat-copy-text = ጽሑፍ ቅዳ
 chat-show-as-mail = እንደ ደብዳቤ አሳይ
+chat-go-down = ወደ አዲሱ ደብዳቤ ሂድ
 chat-pin = ከላይ ሰካ
 chat-pin-file = ፋይሉን ከላይ ሰካ
 chat-unpin = ንቀል
@@ -59,7 +60,8 @@ chat-pins-cancel = ይቅር
 chat-undo = ቀልብስ
 
 chat-reply-to = ለ{ $names } መልስ
-chat-send = ላክ (Ctrl+Enter)
+chat-send = ላክ (Ctrl+Enter)። ለተጨማሪ በቀኝ ጠቅ ያድርጉ ወይም ተጭነው ይያዙ
+chat-send-now = አሁን ላክ
 chat-attach = አያይዝ
 chat-attach-photo = ፎቶ
 chat-attach-file = ፋይል

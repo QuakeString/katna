@@ -66,6 +66,8 @@ impl Daemon {
     /// once the wait is over, even if no body arrives.
     pub(super) async fn rules_then_notices(self: &Arc<Self>, account: AccountId) {
         let held = self.run_rules(account);
+        self.wake_answered_snoozes();
+        self.find_nudges();
         if let Some(notices) = self.new_mail_notices() {
             notices.synced(&self.store, account).await;
         }

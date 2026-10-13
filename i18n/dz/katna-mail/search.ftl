@@ -14,6 +14,7 @@ search-without = འདི་ཚུ་མེདཔ
 search-date-within = དུས་ཡུན
 search-has-attachment = མཉམ་སྦྲགས་ཡོདཔ
 search-attachment-custom = རང་སྒྲིག
+search-attachment-image = པར
 search-attachment-custom-hint = png བཟུམ་གྱི་ རྒྱ་སྐྱེད་ཅིག་ ཡིག་དཔར་རྐྱབ་ཞིནམ་ལས་ Space ཨེབ།
 search-attachment-remove = བཏོན།
 search-clear-filter = ཚགས་མ་བསལ།
@@ -48,3 +49,13 @@ search-dates-month-back = ཟླ་ཝ་ཧེ་མམ
 search-dates-month-on = ཟླ་ཝ་ཤུལ་མམ
 search-dates-year-back = ལོ་ཧེ་མམ
 search-dates-year-on = ལོ་ཤུལ་མམ
+
+## More results on server: under the results, mail found by asking the
+## mail server, for mail that is not downloaded to this computer yet.
+
+search-server-more = སར་བར་གུ་ གྲུབ་འབྲས་ཧེང་བཀལ
+search-server-searching = སར་བར་གུ་ གློག་འཕྲིན་འཚོལ་དོ…
+search-server-empty-searching = ད་ལྟོ་ཚུན་ ག་ནི་ཡང་མེད། སར་བར་གུ་ གློག་འཕྲིན་འཚོལ་དོ…
+search-server-nothing = སར་བར་གུ་ གྲུབ་འབྲས་ཧེང་བཀལ་མེད
+search-server-failed = སར་བར་འཚོལ་མ་ཚུགས།
+search-server-again = ལོག་འབད་རྩོལ་བསྐྱེད།

@@ -1,59 +1,6 @@
 # Katna Mail, Swedish (Svenska).
 # Machine-drafted by AI; not yet reviewed by a native speaker.
 # Corrections welcome: see i18n/README.md.
-katna-intro = Ett Katna-konto slår på Katnas onlinefunktioner: läskvitton, länkspårning, Aktivitet och automatisk översättning. Det har ett eget lösenord, inte ett e-postlösenord, och dina e-postinloggningar lämnar aldrig den här datorn.
-katna-checking = Kontrollerar…
-katna-email = E-post
-katna-password = Lösenord
-katna-password-detail = Om du ändrar det loggas dina andra datorer ut.
-katna-sign-in = Logga in
-katna-sign-in-detail = Logga in på varje dator där du vill använda onlinefunktionerna.
-katna-create = Skapa konto
-katna-create-detail = Använd en adress du kan läsa: vi skickar en kod dit för att bekräfta den.
-katna-have-account = Jag har ett konto
-katna-forgot = Glömt lösenordet?
-katna-forgot-detail = Vi skickar en kod via e-post så att du kan välja ett nytt lösenord.
-katna-forgot-code-detail = Skriv koden vi skickade till dig och ett nytt lösenord. Dina andra datorer loggas ut.
-katna-send-code = Skicka kod
-katna-back-to-sign-in = Tillbaka till inloggning
-katna-code = Kod
-katna-new-password = Nytt lösenord
-katna-current-password = Nuvarande lösenord
-katna-set-password = Ange lösenord
-katna-save-password = Spara lösenord
-katna-change-password = Ändra lösenord
-katna-cancel = Avbryt
-katna-confirm-title = Bekräfta din adress
-katna-confirm-detail = Vi skickade en sexsiffrig kod till { $email }. Den gäller i 30 minuter.
-katna-confirm = Bekräfta
-katna-resend = Skicka en ny kod
-katna-code-resent = En ny kod är på väg.
-katna-reset-code-sent = Om adressen har ett Katna-konto är en kod på väg.
-katna-password-changed = Lösenordet har ändrats. Dina andra datorer är utloggade.
-katna-signed-in = Inloggad
-katna-signed-in-detail = Onlinefunktionerna fungerar på den här datorn.
-katna-sign-out = Logga ut
-katna-devices = Datorer
-katna-devices-detail = Datorerna som är inloggade på det här kontot. Logga ut dem du inte använder.
-katna-device-unnamed = Namnlös dator
-katna-device-this = Den här datorn · inloggad { $date }
-katna-device-since = Inloggad { $date }
-katna-delete = Radera konto
-katna-delete-detail = Raderar kontot och allt servern sparar för det, till exempel läskvitton. E-posten på den här datorn finns kvar.
-katna-delete-confirm = Radera för gott
-katna-sign-in-needed = Logga in på ett Katna-konto för att använda det här.
-katna-error-wrong-password = Fel e-postadress eller lösenord.
-katna-error-exists = Den här adressen har redan ett Katna-konto. Logga in i stället.
-katna-error-bad-email = Det ser inte ut som en e-postadress.
-katna-error-short-password = Lösenordet måste ha minst 8 tecken.
-katna-error-long-password = Lösenordet är för långt.
-katna-error-wrong-code = Koden stämmer inte.
-katna-error-code-expired = Koden har gått ut. Be om en ny.
-katna-error-too-many = För många försök. Vänta några minuter och försök igen.
-katna-error-mail-failed = E-postmeddelandet med koden kunde inte skickas. Försök igen senare.
-katna-error-signed-out = Den här datorn loggades ut. Logga in igen.
-katna-error-offline = Det gick inte att nå Katnas server. Kontrollera anslutningen och försök igen.
-katna-error-server = Katnas server fick ett problem. Försök igen senare.
 
 ## Settings > Subscription: the Katna account
 

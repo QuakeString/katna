@@ -40,6 +40,7 @@ chat-reply-only = Phendula u-{ $name } kuphela
 chat-forward = Dlulisela
 chat-copy-text = Kopisha umbhalo
 chat-show-as-mail = Bonisa njengemeyili
+chat-go-down = Iya kumeyili entsha kakhulu
 chat-pin = Phina phezulu
 chat-pin-file = Phina ifayela phezulu
 chat-unpin = Susa ukuphina
@@ -59,7 +60,8 @@ chat-pins-cancel = Khansela
 chat-undo = Hlehlisa
 
 chat-reply-to = Phendula u-{ $names }
-chat-send = Thumela (Ctrl+Enter)
+chat-send = Thumela (Ctrl+Enter). Chofoza ngakwesokudla noma ubambe ukuze uthole okwengeziwe
+chat-send-now = Thumela manje
 chat-attach = Namathisela
 chat-attach-photo = Isithombe
 chat-attach-file = Ifayela

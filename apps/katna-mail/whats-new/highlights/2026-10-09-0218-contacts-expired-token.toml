@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Gmail contacts come back by themselves"
+text = """
+When Google forgets where Katna left off reading a Gmail account's
+contacts, Katna now reads them all again by itself, instead of showing
+"Sync token is expired" with a Try again that did nothing.
+"""

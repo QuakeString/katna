@@ -38,6 +38,8 @@ list-range-about = { $first }–{ $last } / yaklaşık { $total }
 list-results = “{ $query }” için sonuçlar
 list-results-corrected = “{ $query }” için sonuçlar gösteriliyor
 list-search-instead = Bunun yerine “{ $query }” için ara
+list-search-no-index = Arama hazır değil: dizin henüz oluşturulmadı.
+list-search-not-ready = Arama hazır değil: { $error }
 list-files-more = +{ $count }
 list-replied = Yanıtladınız
 
@@ -339,8 +341,17 @@ list-empty-tab = { $tab } sekmesinde posta yok.
 list-empty-tab-unknown = Bu sekmede posta yok.
 list-empty-folder = { $folder } klasöründe ileti yok.
 list-empty-folder-unknown = Bu klasörde ileti yok.
+list-empty-waiting = Yanıt bekleyen bir şey yok.
+list-empty-reminders = Hatırlatıcı yok. Eklemek için bir postada H tuşuna basın.
 list-first-sync = Postalarınız alınıyor…
 list-first-sync-detail = Geldikçe burada görünecekler.
+list-store-unreadable = Posta deposu açılamadı
+row-no-subject = (konu yok)
+row-unknown-sender = (bilinmeyen gönderen)
+row-to = Alıcı:
+row-no-recipients = (alıcı yok)
+row-names-separator = {", "}
+row-me = ben
 
 ## Mail list: lines
 
@@ -358,6 +369,14 @@ row-tracking-clicked = { $recipients } alıcıdan { $opened } tanesi açtı, { $
 row-pin = En üste sabitle
 row-unpin = Sabitlemeyi kaldır
 row-snoozed-until = Ertelendi, geri dönüş: { $when }
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = Bugün
+snoozed-group-tomorrow = Yarın
+snoozed-group-this-week = Bu hafta
+snoozed-group-later = Daha sonra
+row-follow-up-step = Takip { $step }/{ $steps } · { $date }
+row-follow-up-waiting = Takip bekliyor
+row-reminder = Hatırlatıcı { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -380,6 +399,7 @@ menu-not-important = Önemli değil olarak işaretle
 menu-pin = En üste sabitle
 menu-unpin = Sabitlemeyi kaldır
 menu-snooze = Ertele
+menu-remind = Bana hatırlat
 menu-unsnooze = Ertelemeyi kaldır
 menu-add-to-tasks = Görevlere ekle
 menu-schedule-meeting = Toplantı planla
@@ -395,7 +415,29 @@ menu-follow-up = Takip et
 # Pin to top.
 menu-more = Diğer
 menu-move-to-heading = Şuraya taşı:
+menu-move-to-search = Taşı…
+menu-label-as = Etiketle
+menu-label-as-search = Etiketle…
+menu-no-folder = “{ $name }” adlı klasör yok
+menu-no-label = “{ $name }” adlı etiket yok
+menu-create-folder = “{ $name }” oluştur
+menu-always-move = { $name } kişisinden gelen postaları her zaman buraya taşı
+toast-always-move-failed = Posta taşındı ama kural oluşturulamadı: { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+       *[other] { $count } ileti dizisi
+    }
+   *[message] { $count ->
+       *[other] { $count } ileti
+    }
+}
 menu-find-from = { $name } tarafından gönderilen e-postaları bul
+menu-make-rule = Kural oluştur…
+toast-key-imported = Anahtar içe aktarıldı
+toast-key-updated = Bu anahtar sizde zaten vardı; artık güncel
+toast-key-removed = Anahtar kaldırıldı
+toast-key-not-removed = Anahtar kaldırılamadı
+toast-fingerprint-copied = Parmak izi kopyalandı
 
 ## Snackbar after an action on mail in the list
 
@@ -429,6 +471,8 @@ toast-moved = { $kind ->
        *[other] { $count } ileti taşındı.
     }
 }
+toast-label-added = “{ $label }” etiketi eklendi.
+toast-label-removed = “{ $label }” etiketi kaldırıldı.
 toast-starred = { $kind ->
     [conversation] { $count ->
         [one] İleti dizisine yıldız eklendi.

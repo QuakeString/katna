@@ -18,19 +18,21 @@
 //! The picker borrows the page's filters while it is open and gives them
 //! back when it closes, so the page's chips, menus and calendar serve it.
 
+use crate::widgets::Tip as _;
 use std::collections::HashSet;
 use std::ops::Range;
 use std::rc::Rc;
 
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, Entity, Focusable, FontWeight, ListAlignment,
-    ListState, SharedString, Subscription, Window, anchored, div, ease_out_quint, list, point,
-    prelude::*, rgba,
+    ListState, SharedString, Subscription, Window, div, ease_out_quint, list, point, prelude::*,
+    rgba,
 };
 use katna_core::{AccountId, OAuthProvider};
 use katna_dbus::CloudEntry;
 use katna_i18n::tr;
 use katna_store::MessageId;
+use katna_ui::anchored;
 use katna_ui::px;
 use katna_ui::text_input::{InputEvent, TextInput};
 use katna_ui::unpx;
@@ -42,7 +44,7 @@ use super::{Direction, Found, Sort, Time, Types};
 use crate::data::EntryKey;
 use crate::format;
 use crate::theme::{Theme, fade};
-use crate::widgets::{filled_button, icon, icon_button, raised, tip};
+use crate::widgets::{filled_button, icon, icon_button, raised};
 
 /// Cards are at least this wide; the rest of a row is shared out.
 const CARD_MIN: f32 = 132.0;
@@ -225,6 +227,11 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) {
         if !self.compose_takes_files() {
+            return;
+        }
+        // With Files off, the paperclip opens the system's file picker.
+        if !self.app_on(crate::window::apps::App::Files) {
+            self.pick_files(false, cx);
             return;
         }
         self.open_picker(None, HashSet::new(), window, cx);
@@ -921,7 +928,7 @@ impl MailWindow {
             .children(search)
             .child(
                 icon_button("picker-close", "close", 20.0, th)
-                    .tooltip(tip(tr!("picker-cancel"), th))
+                    .tip(tr!("picker-cancel"), th)
                     .on_click(cx.listener(|this, _, _, cx| this.close_files_picker(cx))),
             );
         let main = if matches!(source, Source::Drive(_)) {
@@ -1260,7 +1267,7 @@ impl MailWindow {
                     .h(px(THUMB))
                     .w_full()
                     .overflow_hidden()
-                    .child(card_top(thumb, found.kind, 36.0, None, th)),
+                    .child(card_top(thumb, found.kind, 36.0, th)),
             )
             .child(
                 div()
@@ -1517,7 +1524,7 @@ pub(super) fn pick_eye(
         .opacity(0.0)
         .group_hover(group, |s| s.opacity(1.0))
         .hover(|s| s.bg(rgba(th.surface)))
-        .tooltip(tip(tr!("picker-preview"), th))
+        .tip(tr!("picker-preview"), th)
         .child(icon("eye", th.text_dim, 18.0))
 }
 

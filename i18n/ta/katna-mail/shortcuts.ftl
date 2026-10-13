@@ -9,6 +9,13 @@ shortcut-group-actions = செயல்கள்
 shortcut-group-go-to = இதற்குச் செல்
 shortcut-group-app = பயன்பாடு
 
+## Help > Keyboard shortcuts: every shortcut in a dialog over the window
+
+shortcuts-dialog-title = கீபோர்டு ஷார்ட்கட்கள்
+shortcuts-dialog-search = ஷார்ட்கட்டைத் தேடு
+shortcuts-dialog-none = பொருந்தும் ஷார்ட்கட் இல்லை
+shortcuts-dialog-close = மூடு
+
 ## Settings > Keyboard shortcuts: what each shortcut does
 
 shortcut-next = அடுத்த உரையாடல்
@@ -37,6 +44,8 @@ shortcut-mark-read = படித்ததாகக் குறி
 shortcut-mark-unread = படிக்காததாகக் குறி
 shortcut-star = நட்சத்திரமிடு அல்லது அகற்று
 shortcut-add-to-tasks = பணிகளில் சேர்
+shortcut-snooze = உறக்கநிலையில் வை
+shortcut-remind = எனக்கு நினைவூட்டு
 shortcut-important = முக்கியமானது எனக் குறி
 shortcut-not-important = முக்கியமில்லாதது எனக் குறி
 shortcut-mute = உரையாடலை முடக்கு அல்லது முடக்கத்தை நீக்கு
@@ -61,6 +70,7 @@ shortcut-navigation = மெனுவைக் காட்டு அல்ல�
 shortcut-quick-settings = விரைவு அமைப்புகள்
 shortcut-settings = எல்லா அமைப்புகளும்
 shortcut-shortcuts = கீபோர்டு ஷார்ட்கட்கள்
+shortcut-palette = கட்டளைத் தட்டு
 shortcut-reload = புதிய அஞ்சலைச் சரிபார்
 shortcut-quit = வெளியேறு
 

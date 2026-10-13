@@ -158,6 +158,8 @@ struct Google {
     /// Task ID to (list, task JSON).
     tasks: BTreeMap<String, (String, Value)>,
     next: u32,
+    /// Moves that fail as if the connection dropped.
+    failing_moves: u32,
 }
 
 impl Google {
@@ -230,6 +232,13 @@ fn google(state: &mut Google, request: &Seen, _base: &str) -> (u16, Value) {
                 task[key] = value.clone();
             }
             (200, state.put(list, task))
+        }
+        ("POST", ["lists", _, "tasks", _, "move"]) if state.failing_moves > 0 => {
+            state.failing_moves -= 1;
+            (
+                503,
+                json!({ "error": { "code": 503, "message": "Unavailable" } }),
+            )
         }
         ("POST", ["lists", list, "tasks", id, "move"]) => {
             let Some((_, mut task)) = state.tasks.get(*id).cloned() else {
@@ -544,6 +553,82 @@ fn a_task_dragged_here_moves_on_google() {
             .unwrap()
             .is_empty()
     );
+}
+
+#[test]
+fn a_new_task_is_sent_once_when_its_move_fails() {
+    let mut fake = Google::default();
+    fake.lists.insert("L0".into(), "My Tasks".into());
+    fake.put(
+        "L0",
+        json!({ "id": "A", "title": "a", "status": "needsAction", "position": "1" }),
+    );
+    fake.failing_moves = 1;
+    let (api, fake) = serve(fake, google);
+    let service = google_service(&api);
+    let (_dir, store, account) = store();
+    store
+        .lock()
+        .unwrap()
+        .set_account_settings(
+            account,
+            &katna_core::AccountSettings {
+                oauth: Some(OAuthProvider::Google),
+                ..katna_core::AccountSettings::default()
+            },
+        )
+        .unwrap();
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+    let mine = account_lists(&store)[0].id;
+    let a = store.lock().unwrap().tasks_in(mine).unwrap()[0].id;
+    // Added and dragged under `a` before it was ever sent.
+    let new = store
+        .lock()
+        .unwrap()
+        .add_task_to(
+            mine,
+            None,
+            &TaskFields {
+                title: "walk the dog".into(),
+                ..TaskFields::default()
+            },
+        )
+        .unwrap();
+    assert!(
+        store
+            .lock()
+            .unwrap()
+            .place_task(new, mine, Some(a))
+            .unwrap()
+    );
+
+    // Made on Google, then the move fails: the round stops there.
+    assert!(smol::block_on(sync_account(&service, &store, account)).is_err());
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+
+    let titles = |list: &str| -> Vec<String> {
+        let fake = fake.lock().unwrap();
+        fake.0
+            .tasks
+            .values()
+            .filter(|(l, _)| l == list)
+            .map(|(_, t)| t["title"].as_str().unwrap().to_owned())
+            .collect()
+    };
+    assert_eq!(
+        titles("L0").iter().filter(|t| *t == "walk the dog").count(),
+        1
+    );
+    assert_eq!(google_order(&fake, "L0"), ["a", "walk the dog"]);
+    let here: Vec<String> = store
+        .lock()
+        .unwrap()
+        .tasks_in(mine)
+        .unwrap()
+        .into_iter()
+        .map(|t| t.title)
+        .collect();
+    assert_eq!(here, ["a", "walk the dog"]);
 }
 
 #[test]
@@ -1147,6 +1232,8 @@ struct Zoho {
     next: u32,
     /// Every API call answered with this, as for a refused sign-in.
     refuse: Option<(u16, Value)>,
+    /// Empty lists and fields written as `null`, as Zoho sometimes does.
+    nulls: bool,
 }
 
 impl Zoho {
@@ -1168,8 +1255,17 @@ impl Zoho {
             .filter(|(_, p, _)| p.as_deref() == Some(id))
             .count();
         task["numberOfSubtasks"] = json!(count);
-        task["subtasks"] = json!([]);
+        task["subtasks"] = if self.nulls { Value::Null } else { json!([]) };
         task
+    }
+
+    /// `items` as a list in an answer.
+    fn list(&self, items: Vec<Value>) -> Value {
+        if self.nulls && items.is_empty() {
+            Value::Null
+        } else {
+            json!(items)
+        }
     }
 }
 
@@ -1205,7 +1301,7 @@ fn zoho(state: &mut Zoho, request: &Seen, _base: &str) -> (u16, Value) {
                 .iter()
                 .map(|(id, name)| json!({ "id": id.parse::<u64>().unwrap(), "name": name }))
                 .collect();
-            return zoho_ok(json!({ "groups": groups }));
+            return zoho_ok(json!({ "groups": state.list(groups) }));
         }
         ["me", rest @ ..] => ("me".into(), rest),
         ["groups", group, rest @ ..] => ((*group).to_owned(), rest),
@@ -1231,7 +1327,7 @@ fn zoho(state: &mut Zoho, request: &Seen, _base: &str) -> (u16, Value) {
                 .take(limit)
                 .map(|id| state.shown(id))
                 .collect();
-            let mut data = json!({ "tasks": page });
+            let mut data = json!({ "tasks": state.list(page) });
             if from + limit < ids.len() {
                 data["paging"] =
                     json!({ "nextPage": format!("/api/tasks/me?from={}", from + limit) });
@@ -1299,7 +1395,7 @@ fn zoho(state: &mut Zoho, request: &Seen, _base: &str) -> (u16, Value) {
                 .filter(|(_, p, _)| p.as_deref() == Some(*id))
                 .map(|(_, _, t)| t.clone())
                 .collect();
-            zoho_ok(json!({ "tasks": subtasks }))
+            zoho_ok(json!({ "tasks": state.list(subtasks) }))
         }
         _ => zoho_missing(),
     }
@@ -1672,6 +1768,32 @@ fn zoho_lists_stay_as_zoho_has_them() {
     assert_eq!(mine.title, "Personal Tasks");
     assert_eq!(titles_in(&store, mine.id).len(), 2);
     assert!(fake.lock().unwrap().1.iter().all(|s| s.method == "GET"));
+}
+
+#[test]
+fn zoho_nulls_read_as_empty() {
+    // Zoho writes an empty list, and a field it has nothing in, as null.
+    let mut fake = Zoho {
+        nulls: true,
+        ..Zoho::default()
+    };
+    fake.groups.insert("7".into(), "Team".into());
+    fake.put(
+        "me",
+        None,
+        json!({ "id": "P", "title": "Water plants", "description": null,
+                "status": "In Progress", "dueDate": null, "priority": null }),
+    );
+    let (base, _fake) = serve(fake, zoho);
+    let service = zoho_service(&base, None);
+    let (_dir, store, account) = store();
+    smol::block_on(sync_account(&service, &store, account)).unwrap();
+    let lists = account_lists(&store);
+    assert_eq!(lists.len(), 2, "{lists:?}");
+    let mine = lists.iter().find(|l| l.title == "Personal Tasks").unwrap();
+    let team = lists.iter().find(|l| l.title == "Team").unwrap();
+    assert_eq!(titles_in(&store, mine.id), ["Water plants"]);
+    assert!(titles_in(&store, team.id).is_empty());
 }
 
 #[test]

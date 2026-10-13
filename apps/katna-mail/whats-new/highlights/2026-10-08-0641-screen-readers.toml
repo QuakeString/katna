@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Works with screen readers"
+text = """
+Orca and other screen readers can now read Katna Mail: the mail list,
+the folders, the open mail, buttons, menus, switches and dialogs.
+"""

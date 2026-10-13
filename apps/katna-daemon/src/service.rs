@@ -14,7 +14,7 @@ use katna_dbus::{
 use katna_store::{Bell, FolderId, MailCategory, MessageFlags, MessageId, Pinned};
 use zbus::{fdo, object_server::SignalEmitter};
 
-use crate::daemon::{CommandError, Daemon, MuteOf, Notice};
+use crate::daemon::{CommandError, Daemon, MuteOf, Notice, Page};
 use crate::translate::TranslateError;
 
 /// The object at `/in/invenia/katna/Pim1`.
@@ -64,6 +64,11 @@ macro_rules! pim_interface {
     ($interface:tt, $bus_name:tt, $path:tt) => {
         #[zbus::interface(name = $interface)]
         impl PimService {
+            async fn version(&self) -> (String, u32, std::collections::HashMap<String, u32>) {
+                crate::update::check_now();
+                self.daemon.version()
+            }
+
             async fn accounts(&self) -> fdo::Result<Vec<AccountStatus>> {
                 Ok(self.daemon.accounts()?)
             }
@@ -110,7 +115,32 @@ macro_rules! pim_interface {
             ) -> fdo::Result<i64> {
                 let provider = provider.parse().map_err(fdo::Error::InvalidArgs)?;
                 let account = (account != 0).then_some(AccountId(account));
-                Ok(self.daemon.sign_in(provider, account, &address).await?.0)
+                Ok(self
+                    .daemon
+                    .sign_in(provider, account, &address, &Page::Open)
+                    .await?
+                    .0)
+            }
+
+            async fn sign_in_from_app(
+                &self,
+                provider: String,
+                account: i64,
+                address: String,
+                ticket: String,
+                #[zbus(header)] header: zbus::message::Header<'_>,
+            ) -> fdo::Result<i64> {
+                let provider = provider.parse().map_err(fdo::Error::InvalidArgs)?;
+                let account = (account != 0).then_some(AccountId(account));
+                let to = header
+                    .sender()
+                    .ok_or_else(|| fdo::Error::InvalidArgs("no sender".into()))?
+                    .to_string();
+                Ok(self
+                    .daemon
+                    .sign_in(provider, account, &address, &Page::Tell { to, ticket })
+                    .await?
+                    .0)
             }
 
             async fn cancel_sign_in(&self) -> fdo::Result<bool> {
@@ -151,6 +181,11 @@ macro_rules! pim_interface {
                 Ok(self.daemon.delete_all_data().await?)
             }
 
+            async fn restart(&self) -> fdo::Result<()> {
+                self.daemon.restart();
+                Ok(())
+            }
+
             async fn reset_cache(&self) -> fdo::Result<(u64, u64)> {
                 let forgotten = self.daemon.reset_cache().await?;
                 Ok((forgotten.messages as u64, forgotten.bytes))
@@ -167,6 +202,12 @@ macro_rules! pim_interface {
 
             async fn fetch_body(&self, message: i64) -> fdo::Result<()> {
                 Ok(self.daemon.fetch_body(MessageId(message)).await?)
+            }
+
+            async fn search_server(&self, query: &str, account: i64) -> fdo::Result<Vec<i64>> {
+                let account = (account != 0).then_some(AccountId(account));
+                let found = self.daemon.search_server(query, account).await?;
+                Ok(found.into_iter().map(|id| id.0).collect())
             }
 
             async fn set_flags(
@@ -321,6 +362,28 @@ macro_rules! pim_interface {
                 Ok(self.daemon.set_follow_up(id, after)?)
             }
 
+            async fn set_follow_up_mail(
+                &self,
+                id: i64,
+                after: i64,
+                again: i64,
+                mail: Vec<u8>,
+            ) -> fdo::Result<()> {
+                Ok(self.daemon.set_follow_up_mail(id, after, again, &mail)?)
+            }
+
+            async fn send_follow_up_now(&self, id: i64) -> fdo::Result<()> {
+                Ok(self.daemon.send_follow_up_now(id)?)
+            }
+
+            async fn move_follow_up(&self, id: i64, at: i64) -> fdo::Result<()> {
+                Ok(self.daemon.move_follow_up(id, at)?)
+            }
+
+            async fn dismiss_nudge(&self, id: i64) -> fdo::Result<()> {
+                Ok(self.daemon.dismiss_nudge(id)?)
+            }
+
             async fn queue_send(
                 &self,
                 account: i64,
@@ -464,6 +527,10 @@ macro_rules! pim_interface {
                 Ok(self.daemon.undo_send(id)?)
             }
 
+            async fn retry_send(&self, id: i64) -> fdo::Result<bool> {
+                Ok(self.daemon.retry_send(id)?)
+            }
+
             async fn discard_send(&self, id: i64) -> fdo::Result<bool> {
                 Ok(self.daemon.discard_send(id)?)
             }
@@ -479,6 +546,22 @@ macro_rules! pim_interface {
             /// Reads the settings file again (after Katna Mail saved it).
             async fn reload_config(&self) -> fdo::Result<()> {
                 Ok(self.daemon.reload_config()?)
+            }
+
+            /// Sends feedback from Katna Mail's form; returns why it could
+            /// not be sent, or an empty string.
+            async fn send_feedback(&self, text: String, kind: String, reply_to: String) -> String {
+                match crate::crash_upload::send_feedback(&self.daemon, &text, &kind, &reply_to)
+                    .await
+                {
+                    Ok(()) => String::new(),
+                    Err(why) => why,
+                }
+            }
+
+            /// Deletes the local copy of an app turned off.
+            async fn forget_app(&self, app: String) -> fdo::Result<()> {
+                Ok(self.daemon.forget_app(&app)?)
             }
 
             /// Whether the daemon saves data as on a metered network: from
@@ -690,6 +773,14 @@ macro_rules! pim_interface {
 
             async fn sender_picture(&self, address: String) -> fdo::Result<Vec<u8>> {
                 Ok(self.daemon.sender_picture(&address).await?)
+            }
+
+            async fn learn_key(&self, message: i64) -> fdo::Result<()> {
+                Ok(self.daemon.learn_key(MessageId(message)).await?)
+            }
+
+            async fn look_up_key(&self, address: String) -> fdo::Result<String> {
+                Ok(self.daemon.look_up_key(&address).await?)
             }
 
             async fn company_of(&self, address: String, website: String) -> fdo::Result<String> {
@@ -906,6 +997,13 @@ macro_rules! pim_interface {
             async fn update_changed(emitter: &SignalEmitter<'_>) -> zbus::Result<()>;
 
             #[zbus(signal)]
+            async fn sign_in_page(
+                emitter: &SignalEmitter<'_>,
+                ticket: &str,
+                url: &str,
+            ) -> zbus::Result<()>;
+
+            #[zbus(signal)]
             async fn katna_account_changed(emitter: &SignalEmitter<'_>) -> zbus::Result<()>;
 
             #[zbus(signal)]
@@ -919,6 +1017,15 @@ macro_rules! pim_interface {
 
             #[zbus(signal)]
             async fn mail_changed(emitter: &SignalEmitter<'_>, account: i64) -> zbus::Result<()>;
+
+            #[zbus(signal)]
+            async fn changes_refused(
+                emitter: &SignalEmitter<'_>,
+                account: i64,
+                change: &str,
+                count: u32,
+                reason: &str,
+            ) -> zbus::Result<()>;
 
             #[zbus(signal)]
             async fn outbox_changed(emitter: &SignalEmitter<'_>, id: i64) -> zbus::Result<()>;
@@ -1018,6 +1125,18 @@ pub async fn emit_signals(connection: zbus::Connection, notices: Receiver<Notice
             Notice::KatnaAccountChanged => PimService::katna_account_changed(&emitter).await,
             Notice::TrackingChanged => PimService::tracking_changed(&emitter).await,
             Notice::UpdateChanged => PimService::update_changed(&emitter).await,
+            Notice::SignInPage {
+                ref to,
+                ref ticket,
+                ref url,
+            } => match zbus::names::BusName::try_from(to.as_str()) {
+                // Only to the app that asked.
+                Ok(to) => {
+                    let emitter = emitter.to_owned().set_destination(to);
+                    PimService::sign_in_page(&emitter, ticket, url).await
+                }
+                Err(err) => Err(err.into()),
+            },
             Notice::DriveChanged(id) => PimService::drive_changed(&emitter, id).await,
             Notice::CalendarChanged => {
                 // The clock shows the events too.
@@ -1029,6 +1148,12 @@ pub async fn emit_signals(connection: zbus::Connection, notices: Receiver<Notice
             Notice::ContactsChanged => PimService::contacts_changed(&emitter).await,
             Notice::TasksChanged => crate::agenda::AgendaService::changed(&agenda).await,
             Notice::RulesChanged => PimService::rules_changed(&emitter).await,
+            Notice::ChangesRefused {
+                account,
+                change,
+                count,
+                ref reason,
+            } => PimService::changes_refused(&emitter, account.0, change, count, reason).await,
         };
         if let Err(err) = sent {
             tracing::warn!(%err, ?notice, "could not send a signal");

@@ -18,9 +18,10 @@ use std::time::Instant;
 
 use gpui::{
     Animation, AnimationExt, AnyElement, Context, Div, ElementId, FontWeight, KeyDownEvent,
-    MouseButton, Pixels, Point, SharedString, Stateful, Window, anchored, deferred, div,
-    ease_out_quint, point, prelude::*, rgba,
+    MouseButton, Pixels, Point, SharedString, Stateful, Window, deferred, div, ease_out_quint,
+    point, prelude::*, rgba,
 };
+use katna_ui::anchored;
 use katna_ui::px;
 use katna_ui::tokens::duration;
 use katna_ui::unpx;
@@ -28,6 +29,7 @@ use katna_ui::unpx;
 use katna_i18n::tr;
 
 use super::MenuKey;
+use super::apps::App;
 use super::compose::Kind;
 use super::folder_pick::{PickFrom, PickMode};
 use super::sheet::{Fill, Sheet};
@@ -96,6 +98,14 @@ enum MenuFor {
     Calendar(CalTarget),
     /// A color scheme's card in Settings > Appearance > Colors.
     Scheme(&'static str),
+    /// A signature in the list in Settings > Compose > Signatures.
+    Signature(u32),
+    /// The signatures mail from an address starts with, for replies and
+    /// forwards when `replies` (Settings > Compose > Default signature).
+    DefaultSignature {
+        address: String,
+        replies: bool,
+    },
     /// The sounds to pick for an event in Settings > Notifications.
     Sound(SoundEvent),
     /// A mail's bubble in the chat view, or one of its files.
@@ -118,9 +128,12 @@ impl ContextMenu {
     fn line(&self) -> Option<(usize, EntryKey)> {
         match &self.what {
             MenuFor::Mail { ix, key, .. } => Some((*ix, *key)),
-            MenuFor::Calendar(_) | MenuFor::Scheme(_) | MenuFor::Sound(_) | MenuFor::Bubble(..) => {
-                None
-            }
+            MenuFor::Calendar(_)
+            | MenuFor::Scheme(_)
+            | MenuFor::Signature(_)
+            | MenuFor::DefaultSignature { .. }
+            | MenuFor::Sound(_)
+            | MenuFor::Bubble(..) => None,
         }
     }
 }
@@ -144,9 +157,19 @@ impl MailWindow {
                 .flatten(),
             Err(_) => None,
         };
-        let Some(row) = row.map(|r| self.with_pending(r)) else {
+        let Some(mut row) = row.map(|r| self.with_pending(r)) else {
             return;
         };
+        // Several ticked lines: each pair offers what makes them all alike.
+        if self.checked.contains(&key) && self.checked.len() > 1 {
+            let pairs = super::list::Pairs::of(&self.checked_rows());
+            let mut all = (*row).clone();
+            all.unread = pairs.read;
+            all.flagged = !pairs.star;
+            all.important = !pairs.important;
+            all.pinned = !pairs.pin;
+            row = Rc::new(all);
+        }
         self.menu = None;
         self.selected = Some(ix);
         self.context_menu = Some(ContextMenu::new(MenuFor::Mail { ix, key, row }, at));
@@ -174,6 +197,34 @@ impl MailWindow {
     ) {
         self.menu = None;
         self.context_menu = Some(ContextMenu::new(MenuFor::Scheme(id), at));
+        cx.notify();
+    }
+
+    /// Opens the menu of signature `id` in the list of signatures.
+    pub(super) fn open_signature_menu(
+        &mut self,
+        id: u32,
+        at: Point<Pixels>,
+        cx: &mut Context<Self>,
+    ) {
+        self.menu = None;
+        self.context_menu = Some(ContextMenu::new(MenuFor::Signature(id), at));
+        cx.notify();
+    }
+
+    /// Opens the menu of signatures mail from `address` starts with.
+    pub(super) fn open_default_signature_menu(
+        &mut self,
+        address: String,
+        replies: bool,
+        at: Point<Pixels>,
+        cx: &mut Context<Self>,
+    ) {
+        self.menu = None;
+        self.context_menu = Some(ContextMenu::new(
+            MenuFor::DefaultSignature { address, replies },
+            at,
+        ));
         cx.notify();
     }
 
@@ -208,9 +259,12 @@ impl MailWindow {
         let menu = self.take_context_menu()?;
         match menu.what {
             MenuFor::Calendar(target) => Some((target, menu.at)),
-            MenuFor::Mail { .. } | MenuFor::Scheme(_) | MenuFor::Sound(_) | MenuFor::Bubble(..) => {
-                None
-            }
+            MenuFor::Mail { .. }
+            | MenuFor::Scheme(_)
+            | MenuFor::Signature(_)
+            | MenuFor::DefaultSignature { .. }
+            | MenuFor::Sound(_)
+            | MenuFor::Bubble(..) => None,
         }
     }
 
@@ -417,7 +471,12 @@ impl MailWindow {
             }
         };
         let at = (unpx(menu.at.x), unpx(menu.at.y));
-        let x = place(at.0, MENU_WIDTH, vw);
+        // Right to left the menu opens toward the left of the pointer and
+        // its submenus on its left: worked out as if mirrored, then
+        // mirrored back.
+        let rtl = self.layout.shape.rtl;
+        let mirror = |x: f32, width: f32| if rtl { vw - x - width } else { x };
+        let x = mirror(place(mirror(at.0, 0.0), MENU_WIDTH, vw), MENU_WIDTH);
         let y = place(at.1, fits(main.height()), vh);
 
         let open = menu.open.map(|sub| {
@@ -456,11 +515,13 @@ impl MailWindow {
                     .iter()
                     .find(|(s, _)| *s == sub)
                     .map_or(0.0, |(_, top)| *top);
-                let sub_x = if x + MENU_WIDTH - 4.0 + SUB_WIDTH <= vw - MARGIN {
-                    x + MENU_WIDTH - 4.0
+                let start = mirror(x, MENU_WIDTH);
+                let sub_x = if start + MENU_WIDTH - 4.0 + SUB_WIDTH <= vw - MARGIN {
+                    start + MENU_WIDTH - 4.0
                 } else {
-                    (x - SUB_WIDTH + 4.0).max(MARGIN)
+                    (start - SUB_WIDTH + 4.0).max(MARGIN)
                 };
+                let sub_x = mirror(sub_x, SUB_WIDTH);
                 let h = fits(rows.height());
                 let sub_y = (y + top - PADDING).min(vh - MARGIN - h).max(MARGIN);
                 (main, y, Some((sub, rows, sub_x, sub_y)))
@@ -473,6 +534,7 @@ impl MailWindow {
             deferred(
                 anchored()
                     .position(point(px(x), px(y)))
+                    .screen_corner()
                     .snap_to_window_with_margin(px(MARGIN))
                     .child(
                         div().occlude().child(
@@ -492,7 +554,10 @@ impl MailWindow {
                                 .on_key_down(cx.listener(
                                     |this, event: &KeyDownEvent, window, cx| {
                                         if !event.keystroke.modifiers.modified()
-                                            && event.keystroke.key == "left"
+                                            && katna_ui::direction::arrow(
+                                                &event.keystroke.key,
+                                                katna_ui::direction::is_rtl(window),
+                                            ) == "left"
                                             && !this.folder_pick_typing(window, cx)
                                             && this.context_menu_back(cx)
                                         {
@@ -540,6 +605,10 @@ impl MailWindow {
             MenuFor::Mail { ix, .. } => format!("context-menu-{ix}"),
             MenuFor::Calendar(target) => format!("context-menu-{}", target.key()),
             MenuFor::Scheme(id) => format!("context-menu-scheme-{id}"),
+            MenuFor::Signature(id) => format!("context-menu-signature-{id}"),
+            MenuFor::DefaultSignature { address, replies } => {
+                format!("context-menu-default-signature-{address}-{replies}")
+            }
             MenuFor::Sound(event) => format!("context-menu-sound-{event:?}"),
             MenuFor::Bubble(id, file) => format!(
                 "context-menu-bubble-{}-{}",
@@ -610,6 +679,11 @@ impl MailWindow {
             Some(MenuFor::Mail { row, .. }) => self.mail_menu_rows(row, rh, th, cx),
             Some(MenuFor::Calendar(target)) => self.calendar_menu_rows(target, rh, th, cx),
             Some(MenuFor::Scheme(id)) => (self.scheme_menu_rows(id, rh, th, cx), Vec::new()),
+            Some(MenuFor::Signature(id)) => (self.signature_menu_rows(*id, rh, th, cx), Vec::new()),
+            Some(MenuFor::DefaultSignature { address, replies }) => (
+                self.default_signature_menu_rows(address, *replies, rh, th, cx),
+                Vec::new(),
+            ),
             Some(MenuFor::Sound(event)) => (self.sound_menu_rows(*event, rh, th, cx), Vec::new()),
             Some(MenuFor::Bubble(id, file)) => {
                 (self.bubble_menu_rows(*id, *file, rh, th, cx), Vec::new())
@@ -779,6 +853,19 @@ impl MailWindow {
         } else {
             plain("context-star", "star", &tr!("menu-star")).on_click(act(Act::Star(true)))
         });
+        if !drafts && self.app_on(App::Tasks) {
+            main.item(
+                plain("context-add-to-tasks", "tasks", &tr!("menu-add-to-tasks")).on_click(
+                    cx.listener(|this, _, _, cx| {
+                        let Some((_, key)) = this.take_context_line() else {
+                            return;
+                        };
+                        let keys = this.context_targets(key);
+                        this.add_to_tasks_from(keys, cx);
+                    }),
+                ),
+            );
+        }
         main.rule(th);
         let mut parents = Vec::new();
         let gmail = self.tree.is_gmail(row.account);
@@ -792,7 +879,9 @@ impl MailWindow {
         main.rule(th);
         let sender = row.sender.clone();
         if !sender.is_empty() {
-            let name = if row.correspondent.is_empty() || row.correspondent.starts_with("To: ") {
+            let name = if row.correspondent.is_empty()
+                || row.correspondent.starts_with(&crate::data::to_prefix())
+            {
                 sender.clone()
             } else {
                 row.correspondent.clone()
@@ -875,8 +964,13 @@ impl MailWindow {
                     .is_some_and(|m| m.open != Some(sub));
                 this.open_context_sub(on.then_some(sub), cx);
             }))
-            .on_key_down(cx.listener(move |this, event: &KeyDownEvent, _, cx| {
-                if !event.keystroke.modifiers.modified() && event.keystroke.key == "right" {
+            .on_key_down(cx.listener(move |this, event: &KeyDownEvent, window, cx| {
+                if !event.keystroke.modifiers.modified()
+                    && katna_ui::direction::arrow(
+                        &event.keystroke.key,
+                        katna_ui::direction::is_rtl(window),
+                    ) == "right"
+                {
                     this.open_context_sub(Some(sub), cx);
                     cx.stop_propagation();
                 }
@@ -900,7 +994,14 @@ impl MailWindow {
             Some(MenuFor::Calendar(target)) => {
                 return self.calendar_sub_rows(target, sub, rh, th, cx);
             }
-            Some(MenuFor::Scheme(_) | MenuFor::Sound(_) | MenuFor::Bubble(..)) | None => None,
+            Some(
+                MenuFor::Scheme(_)
+                | MenuFor::Signature(_)
+                | MenuFor::DefaultSignature { .. }
+                | MenuFor::Sound(_)
+                | MenuFor::Bubble(..),
+            )
+            | None => None,
         };
         let act = |act: Act| {
             cx.listener(
@@ -923,53 +1024,41 @@ impl MailWindow {
                 }
             }
             Sub::FollowUp => {
-                rows.item(
-                    menu_row(
-                        "context-add-to-tasks",
-                        "tasks",
-                        tr!("menu-add-to-tasks").into(),
-                        th,
-                        rh,
-                    )
-                    .on_click(cx.listener(|this, _, _, cx| {
-                        let Some((_, key)) = this.take_context_line() else {
-                            return;
-                        };
-                        let keys = this.context_targets(key);
-                        this.add_to_tasks_from(keys, cx);
-                    })),
-                );
-                rows.item(
-                    menu_row(
-                        "context-add-note",
-                        "notes",
-                        tr!("menu-add-note").into(),
-                        th,
-                        rh,
-                    )
-                    .on_click(cx.listener(|this, _, window, cx| {
-                        let Some((_, key)) = this.take_context_line() else {
-                            return;
-                        };
-                        let keys = this.context_targets(key);
-                        this.add_note_from(keys, window, cx);
-                    })),
-                );
-                rows.item(
-                    menu_row(
-                        "context-schedule-meeting",
-                        "calendar",
-                        tr!("menu-schedule-meeting").into(),
-                        th,
-                        rh,
-                    )
-                    .on_click(cx.listener(|this, _, window, cx| {
-                        let Some((_, key)) = this.take_context_line() else {
-                            return;
-                        };
-                        this.schedule_meeting_from(Some(key), window, cx);
-                    })),
-                );
+                if self.app_on(App::Notes) {
+                    rows.item(
+                        menu_row(
+                            "context-add-note",
+                            "notes",
+                            tr!("menu-add-note").into(),
+                            th,
+                            rh,
+                        )
+                        .on_click(cx.listener(|this, _, window, cx| {
+                            let Some((_, key)) = this.take_context_line() else {
+                                return;
+                            };
+                            let keys = this.context_targets(key);
+                            this.add_note_from(keys, window, cx);
+                        })),
+                    );
+                }
+                if self.app_on(App::Calendar) {
+                    rows.item(
+                        menu_row(
+                            "context-schedule-meeting",
+                            "calendar",
+                            tr!("menu-schedule-meeting").into(),
+                            th,
+                            rh,
+                        )
+                        .on_click(cx.listener(|this, _, window, cx| {
+                            let Some((_, key)) = this.take_context_line() else {
+                                return;
+                            };
+                            this.schedule_meeting_from(Some(key), window, cx);
+                        })),
+                    );
+                }
                 rows.item(
                     menu_row(
                         "context-start-call",

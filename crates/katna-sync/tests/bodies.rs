@@ -296,3 +296,51 @@ fn a_downloaded_receipt_ticks_its_recipient() {
     let kept = &store.messages_in_folder(inbox).unwrap()[0];
     assert_eq!(kept.category, Some(katna_core::MailCategory::Updates));
 }
+
+#[test]
+fn a_receipt_for_sent_mail_is_marked_read() {
+    let (_tmp, mut store, account) = setup();
+    let server = FakeServer::default();
+    server.create("INBOX", 1);
+    server.create("Sent", 1);
+    server.deliver_header(
+        "Sent",
+        "From: alice@example.org\r\nTo: bea@example.org\r\nSubject: Rates\r\n\
+         Message-ID: <rates@example.org>\r\nDate: Sat, 26 Sep 2026 10:00:00 +0000\r\n\r\n",
+        "The rates.\r\n",
+    );
+    // As Outlook sends it: the message it answers only in `In-Reply-To`.
+    let receipt = |answers: &str| {
+        format!(
+            "From: Bea <bea@example.org>\r\nTo: alice@example.org\r\n\
+             Subject: Read: Rates\r\nIn-Reply-To: <{answers}>\r\n\
+             Date: Sat, 26 Sep 2026 11:00:00 +0000\r\nMIME-Version: 1.0\r\n\
+             Content-Type: multipart/report; report-type=disposition-notification;\r\n \
+             boundary=\"r\"\r\n\r\n"
+        )
+    };
+    let body = "--r\r\nContent-Type: text/plain\r\n\r\nRead.\r\n\
+                --r\r\nContent-Type: message/disposition-notification\r\n\r\n\
+                Final-Recipient: rfc822;bea@example.org\r\n\
+                Disposition: manual-action/MDN-sent-manually; displayed\r\n\
+                --r--\r\n";
+    server.deliver_header("INBOX", &receipt("rates@example.org"), body);
+    server.deliver_header("INBOX", &receipt("someone-else@example.net"), body);
+    let inbox = sync(&server, &mut store, account);
+    download(&server, &mut store, inbox, &thirty_days(), DELIVERED + DAY);
+    let seen: Vec<bool> = store
+        .messages_in_folder(inbox)
+        .unwrap()
+        .iter()
+        .map(|m| m.flags.contains(katna_store::MessageFlags::SEEN))
+        .collect();
+    // Read: it shows as ticks on the sent mail. The other answers no mail
+    // here, so it stays new.
+    assert_eq!(seen, [true, false]);
+    // And the lists leave it out.
+    assert_eq!(store.folder_message_ids(inbox).unwrap().len(), 1);
+    assert_eq!(
+        store.receipts("rates@example.org").unwrap()[0].recipient,
+        "bea@example.org"
+    );
+}

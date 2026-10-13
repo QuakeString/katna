@@ -14,6 +14,7 @@ search-without = Ayinawo
 search-date-within = Usuku ngaphakathi kwesikhathi
 search-has-attachment = Inokunamathiselwe
 search-attachment-custom = Ngokwezifiso
+search-attachment-image = Isithombe
 search-attachment-custom-hint = Thayipha isandiso, njenge-png, bese uchofoza i-Space
 search-attachment-remove = Susa
 search-clear-filter = Sula isihlungi
@@ -60,3 +61,13 @@ search-dates-month-back = Inyanga edlule
 search-dates-month-on = Inyanga ezayo
 search-dates-year-back = Unyaka odlule
 search-dates-year-on = Unyaka ozayo
+
+## More results on server: under the results, mail found by asking the
+## mail server, for mail that is not downloaded to this computer yet.
+
+search-server-more = Imiphumela eyengeziwe kuseva
+search-server-searching = Isesha imeyili kuseva…
+search-server-empty-searching = Akukabikho lutho lapha. Isesha imeyili kuseva…
+search-server-nothing = Ayikho eminye imiphumela kuseva
+search-server-failed = Ayikwazanga ukusesha kuseva.
+search-server-again = Zama futhi

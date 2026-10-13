@@ -124,7 +124,10 @@ pub fn parse(raw: &[u8]) -> Option<Report> {
                 .map(str::to_ascii_lowercase)
         })?;
         outcomes.push((who, Outcome::Read));
-        value(group, "original-message-id").or(headers)
+        // Some apps name the message only in `In-Reply-To`.
+        value(group, "original-message-id")
+            .or(headers)
+            .or_else(|| message.in_reply_to().as_text().map(str::to_owned))
     };
     let original = original?
         .trim()
@@ -132,6 +135,28 @@ pub fn parse(raw: &[u8]) -> Option<Report> {
         .trim_end_matches('>')
         .to_owned();
     (!original.is_empty() && !outcomes.is_empty()).then_some(Report { original, outcomes })
+}
+
+/// Whether `header` (a message's header fields) is a read receipt's:
+/// `multipart/report` with `report-type=disposition-notification`. Known
+/// before the body arrives, so a receipt can be marked read before it
+/// would notify.
+pub fn is_read_receipt(header: &[u8]) -> bool {
+    MessageParser::default()
+        .parse_headers(header)
+        .and_then(|message| {
+            let kind = message.content_type()?;
+            Some(
+                kind.ctype().eq_ignore_ascii_case("multipart")
+                    && kind
+                        .subtype()
+                        .is_some_and(|s| s.eq_ignore_ascii_case("report"))
+                    && kind
+                        .attribute("report-type")
+                        .is_some_and(|t| t.eq_ignore_ascii_case("disposition-notification")),
+            )
+        })
+        .unwrap_or(false)
 }
 
 /// The address a report's field group is about: `Original-Recipient`, the
@@ -265,6 +290,29 @@ Subject: Lunch\r\n\
         );
         let deleted = MDN.replace(" displayed\r\n", " deleted\r\n");
         assert_eq!(parse(deleted.as_bytes()), None);
+    }
+
+    #[test]
+    fn a_read_receipt_without_the_original_id_answers_in_reply_to() {
+        // As Outlook sends them: the message named in `In-Reply-To` only.
+        let outlook = MDN
+            .replace("Original-Message-ID: <m1@example.com>\r\n", "")
+            .replace(
+                "Subject: Read: Lunch\r\n",
+                "Subject: Read: Lunch\r\nIn-Reply-To: <m9@example.com>\r\n",
+            );
+        assert_eq!(
+            parse(outlook.as_bytes()).map(|r| r.original),
+            Some("m9@example.com".into())
+        );
+    }
+
+    #[test]
+    fn a_read_receipt_is_known_by_its_header() {
+        let header = |raw: &str| raw.split("\r\n\r\n").next().unwrap().to_owned() + "\r\n\r\n";
+        assert!(is_read_receipt(header(MDN).as_bytes()));
+        assert!(!is_read_receipt(header(DSN).as_bytes()));
+        assert!(!is_read_receipt(b"Subject: Read: Lunch\r\n\r\n"));
     }
 
     #[test]

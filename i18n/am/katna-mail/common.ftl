@@ -53,3 +53,4 @@ search-options-show = የፍለጋ አማራጮችን አሳይ
 settings = ቅንብሮች
 account-add = መለያ አክል
 account-wheel-hint = መለያዎችን ለመቀያየር ያሸብልሉ
+account-menu-all-detail = { $count } መለያዎች በአንድ ላይ

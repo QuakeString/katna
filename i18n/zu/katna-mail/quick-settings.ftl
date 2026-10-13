@@ -47,4 +47,5 @@ quick-help = Usizo
 quick-tour = Thatha uhambo
 quick-whats-new = Okusha
 quick-check-updates = Qinisekisa izibuyekezo
+quick-send-feedback = Thumela impendulo
 quick-about = Mayelana ne-Katna

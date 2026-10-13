@@ -26,6 +26,7 @@ pub fn unit(exe: &Path) -> String {
          BusName={bus}\n\
          ExecStart={exe}\n\
          Restart=on-failure\n\
+         RestartSec=5\n\
          \n\
          [Install]\n\
          WantedBy=default.target\n",

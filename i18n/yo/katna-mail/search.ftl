@@ -14,6 +14,7 @@ search-without = Kò ní
 search-date-within = Ọjọ́ láàrin
 search-has-attachment = Ní àfikún
 search-attachment-custom = Àdáni
+search-attachment-image = Àwòrán
 search-attachment-custom-hint = Tẹ ìtẹ̀síwájú fáìlì kan, bí png, lẹ́yìn náà tẹ Space
 search-attachment-remove = Yọ kúrò
 search-clear-filter = Pa àlẹ̀mọ́ rẹ́
@@ -56,3 +57,13 @@ search-dates-month-back = Oṣù tó kọjá
 search-dates-month-on = Oṣù tó ń bọ̀
 search-dates-year-back = Ọdún tó kọjá
 search-dates-year-on = Ọdún tó ń bọ̀
+
+## More results on server: under the results, mail found by asking the
+## mail server, for mail that is not downloaded to this computer yet.
+
+search-server-more = Àbájáde míì lórí sáfà
+search-server-searching = À ń ṣàwárí lẹ́tà lórí sáfà…
+search-server-empty-searching = Kò sí nǹkankan níbí síbẹ̀. À ń ṣàwárí lẹ́tà lórí sáfà…
+search-server-nothing = Kò sí àbájáde míì lórí sáfà
+search-server-failed = A kò lè ṣàwárí lórí sáfà.
+search-server-again = Gbìyànjú lẹ́ẹ̀kan sí i

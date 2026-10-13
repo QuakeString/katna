@@ -41,3 +41,4 @@ search-options-show = འཚོལ་ཞིབ་ཀྱི་གདམ་ཁ་�
 settings = སྒྲིག་སྟངས།
 account-add = རྩིས་ཐོ་ཁ་སྐོང་འབད།
 account-wheel-hint = རྩིས་ཐོ་སོར་ནི་ལུ་ བཤུད་བྱིས།
+account-menu-all-detail = རྩིས་ཐོ་ { $count } མཉམ་སྦེ

@@ -4,6 +4,7 @@
 search-category-mail = Почта
 search-category-people = Люди
 search-category-tasks = Задачи
+search-category-notes = Заметки
 search-category-events = Мероприятия
 search-mail-from = От { $sender }
 search-no-subject = (без темы)
@@ -20,6 +21,15 @@ search-event-in-days =
         [many] Через { $count } дней
        *[other] Через { $count } дня
     }
+search-add-task = Добавить задачу «{ $title }»
+search-add-task-to = В { $list }
+search-add-task-when = { $when } · { $list }
+search-add-note = Добавить заметку «{ $title }»
+search-add-note-to = В Заметки: { $place }
+search-add-note-here = В Заметки на этом компьютере
+search-new-task = Новая задача
+search-new-note = Новая заметка
 search-reply-all = Ответить всем
 search-copy-address = Копировать адрес
 search-find-mail = Найти письма
+search-edit-capture = Изменить перед добавлением

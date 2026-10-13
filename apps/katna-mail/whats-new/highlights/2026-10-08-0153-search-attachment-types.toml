@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Search for drawings and pictures"
+text = """
+Search options has two new attachment types: DWG for AutoCAD drawings (and
+DXF), and Image for photos and pictures. XLSX now finds old XLS files too,
+and PPTX finds PPT, so each has one button.
+"""

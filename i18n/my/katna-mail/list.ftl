@@ -38,6 +38,8 @@ list-range-about = ခန့်မှန်း { $total } ခုအနက် { $
 list-results = “{ $query }” အတွက် ရလဒ်များ
 list-results-corrected = “{ $query }” အတွက် ရလဒ်များကို ပြနေသည်
 list-search-instead = “{ $query }” ကို အစားထိုး ရှာရန်
+list-search-no-index = ရှာဖွေမှု အသင့်မဖြစ်သေးပါ- အညွှန်းကို မတည်ဆောက်ရသေးပါ။
+list-search-not-ready = ရှာဖွေမှု အသင့်မဖြစ်သေးပါ- { $error }
 list-files-more = +{ $count }
 list-replied = သင် ပြန်စာရေးပြီး
 
@@ -189,11 +191,20 @@ list-empty-tab = { $tab } တွင် မေးလ် မရှိပါ။
 list-empty-tab-unknown = ဤတဘ်တွင် မေးလ် မရှိပါ။
 list-empty-folder = { $folder } တွင် မက်ဆေ့ဂျ် မရှိပါ။
 list-empty-folder-unknown = ဤဖိုင်တွဲတွင် မက်ဆေ့ဂျ် မရှိပါ။
+list-empty-waiting = ပြန်စာ စောင့်နေသည့် မေးလ် မရှိပါ။
+list-empty-reminders = သတိပေးချက် မရှိပါ။ ထည့်ရန် မေးလ်ပေါ်တွင် H ကို နှိပ်ပါ။
 list-first-sync = သင့်မေးလ်ကို ရယူနေသည်…
 list-first-sync-detail = ရောက်လာသည်နှင့် ဤနေရာတွင် ပေါ်လာမည်။
+list-store-unreadable = မေးလ် သိုလှောင်ရာကို ဖွင့်၍ မရပါ
 
 ## Mail list: lines
 
+row-no-subject = (ခေါင်းစဉ်မရှိ)
+row-unknown-sender = (မသိသော ပို့သူ)
+row-to = သို့-
+row-no-recipients = (လက်ခံသူ မရှိ)
+row-names-separator = {"၊ "}
+row-me = ကျွန်ုပ်
 row-removed = ဤမက်ဆေ့ဂျ်ကို ဖယ်ရှားလိုက်ပြီ။
 row-starred = ကြယ်ပွင့်တပ်ထားသည်
 row-not-starred = ကြယ်ပွင့်မတပ်ထားပါ
@@ -208,6 +219,14 @@ row-tracking-clicked = { $recipients } ဦးအနက် { $opened } ဦး ဖ
 row-pin = ထိပ်တွင် ပင်ထိုးရန်
 row-unpin = ပင်ဖြုတ်ရန်
 row-snoozed-until = { $when } အထိ ခဏဆိုင်းထားသည်
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = ယနေ့
+snoozed-group-tomorrow = မနက်ဖြန်
+snoozed-group-this-week = ဤအပတ်
+snoozed-group-later = နောက်မှ
+row-follow-up-step = နောက်ဆက်တွဲ { $steps } ခုအနက် { $step } · { $date }
+row-follow-up-waiting = နောက်ဆက်တွဲ စောင့်နေသည်
+row-reminder = သတိပေးချက် { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -230,6 +249,7 @@ menu-not-important = အရေးမကြီးအဖြစ် မှတ်ရ�
 menu-pin = ထိပ်တွင် ပင်ထိုးရန်
 menu-unpin = ပင်ဖြုတ်ရန်
 menu-snooze = ခဏဆိုင်းရန်
+menu-remind = သတိပေးရန်
 menu-unsnooze = ခဏဆိုင်းခြင်း ပယ်ရန်
 menu-add-to-tasks = လုပ်ဆောင်စရာများသို့ ထည့်ရန်
 menu-schedule-meeting = အစည်းအဝေး ချိန်းရန်
@@ -241,10 +261,34 @@ menu-move-to = သို့ ရွှေ့ရန်
 menu-follow-up = နောက်ဆက်တွဲ
 menu-more = နောက်ထပ်
 menu-move-to-heading = သို့ ရွှေ့ရန်-
+menu-move-to-search = သို့ ရွှေ့ရန်…
+menu-label-as = အညွှန်းတပ်ရန်
+menu-label-as-search = အညွှန်းတပ်ရန်…
+menu-no-folder = “{ $name }” အမည်ရှိ ဖိုင်တွဲ မရှိပါ
+menu-no-label = “{ $name }” အမည်ရှိ အညွှန်း မရှိပါ
+menu-create-folder = “{ $name }” ကို ပြုလုပ်ရန်
+menu-always-move = { $name } ထံမှ မေးလ်ကို ဤနေရာသို့ အမြဲ ရွှေ့ရန်
+toast-always-move-failed = မေးလ်ကို ရွှေ့ပြီးပါပြီ၊ သို့သော် စည်းမျဉ်း မပြုလုပ်နိုင်ပါ- { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+        [one] စကားဝိုင်း { $count } ခု
+       *[other] စကားဝိုင်း { $count } ခု
+    }
+   *[message] { $count ->
+        [one] မက်ဆေ့ဂျ် { $count } စောင်
+       *[other] မက်ဆေ့ဂျ် { $count } စောင်
+    }
+}
 menu-find-from = { $name } ထံမှ မေးလ်များကို ရှာရန်
+menu-make-rule = စည်းမျဉ်း ပြုလုပ်ရန်…
 
 ## Snackbar after an action on mail in the list
 
+toast-key-imported = ကီး ထည့်သွင်းပြီး
+toast-key-updated = ဤကီး သင့်တွင် ရှိပြီးသားဖြစ်ပြီး ယခု နောက်ဆုံးအခြေအနေ ဖြစ်သွားပါပြီ
+toast-key-removed = ကီး ဖယ်ရှားပြီး
+toast-key-not-removed = ကီးကို ဖယ်ရှား၍ မရပါ
+toast-fingerprint-copied = လက်ဗွေ ကူးယူပြီး
 toast-archived = { $kind ->
     [conversation] စကားဝိုင်း { $count } ခုကို မှတ်တမ်းသိမ်းလိုက်ပြီ။
    *[message] မက်ဆေ့ဂျ် { $count } စောင်ကို မှတ်တမ်းသိမ်းလိုက်ပြီ။
@@ -257,6 +301,8 @@ toast-moved = { $kind ->
     [conversation] စကားဝိုင်း { $count } ခုကို ရွှေ့လိုက်ပြီ။
    *[message] မက်ဆေ့ဂျ် { $count } စောင်ကို ရွှေ့လိုက်ပြီ။
 }
+toast-label-added = အညွှန်း “{ $label }” ကို ထည့်လိုက်ပြီ။
+toast-label-removed = အညွှန်း “{ $label }” ကို ဖယ်လိုက်ပြီ။
 toast-starred = { $kind ->
     [conversation] စကားဝိုင်း { $count } ခုကို ကြယ်ပွင့်တပ်လိုက်ပြီ။
    *[message] မက်ဆေ့ဂျ် { $count } စောင်ကို ကြယ်ပွင့်တပ်လိုက်ပြီ။

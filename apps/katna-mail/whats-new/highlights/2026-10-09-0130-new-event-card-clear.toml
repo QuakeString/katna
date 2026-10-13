@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "The New event card is clear again"
+text = """
+Clicking an empty time in Calendar opened the small New event card as a
+blurred, empty pane with frosted menus on. Its title, times, calendar and
+Save now show sharply over the frost again.
+"""

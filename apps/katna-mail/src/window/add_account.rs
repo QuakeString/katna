@@ -20,6 +20,7 @@
 //! when this build has the provider's client ID. Also the account menu of
 //! the app rail, which leads here.
 
+use crate::widgets::Tip as _;
 use std::collections::HashMap;
 use std::time::Duration;
 
@@ -32,9 +33,9 @@ use katna_core::{OAuthProvider, Pop3Keep};
 use katna_dbus::{NewImapAccount, NewPop3Account, ServerSpec};
 use katna_i18n::tr;
 use katna_ui::motion::{self, Spring, lerp};
-use katna_ui::px;
 use katna_ui::unpx;
 use katna_ui::{InputEvent, TextInput};
+use katna_ui::{px, tokens};
 
 use super::MailWindow;
 use super::MenuKey;
@@ -42,7 +43,7 @@ use super::mail_providers::{MailProvider, PasswordHelp};
 use crate::daemon::{self, AddError};
 use crate::outgoing;
 use crate::theme::{Theme, fade};
-use crate::widgets::{FocusRing, ScaledEdge, filled_button, icon, icon_button, raised, tip};
+use crate::widgets::{FocusRing, ScaledEdge, filled_button, icon, icon_button, raised};
 
 /// The dialog's width with the provider tiles, and on the other steps.
 const WIDE: f32 = 640.0;
@@ -873,7 +874,7 @@ impl MailWindow {
                         }
                         this.after_discovery(window, cx);
                     }
-                    Err(err) if err == daemon::NOT_RUNNING => this.add_account_error(err, cx),
+                    Err(err) if err == daemon::not_running() => this.add_account_error(err, cx),
                     Err(err) => {
                         tracing::info!(%err, "no servers found");
                         this.fill_servers(&guess(&address), None, None, cx);
@@ -1108,7 +1109,8 @@ impl MailWindow {
         let Some(dialog) = &self.add_account else {
             return;
         };
-        let key = event.keystroke.key.as_str();
+        let key =
+            katna_ui::direction::arrow(&event.keystroke.key, katna_ui::direction::is_rtl(window));
         let modified = event.keystroke.modifiers.modified();
         match (key, dialog.step) {
             ("escape", _) if !modified => {
@@ -1118,7 +1120,7 @@ impl MailWindow {
             ("right" | "down" | "left" | "up", Step::Provider) if !modified => {
                 cx.stop_propagation();
                 // Up and Down go a whole row, over both columns.
-                let width = unpx(window.viewport_size().width).min(WIDE + 32.0) - 32.0;
+                let width = self.room_width().min(WIDE + 32.0) - 32.0;
                 let columns = if width - 80.0 >= TWO_COLUMNS { 2 } else { 1 };
                 let steps = if matches!(key, "up" | "down") {
                     columns
@@ -2067,9 +2069,10 @@ impl MailWindow {
         if !self.account_menu {
             return None;
         }
-        // With one account at a time, the shown one is marked and a click
-        // switches to another.
-        let shown = self.shown_account();
+        // What is open is marked: All Accounts or one account. A click
+        // on another switches to it.
+        let open = self.menu_current();
+        let all = self.all_accounts_row(open == Some(None), th, cx);
         let app_menu = self.render_app_menu(th, cx);
         let language = self.render_language_button(th, cx);
         let menu_button = self.app_menu_button(th, cx);
@@ -2080,7 +2083,8 @@ impl MailWindow {
                 account.display_name.clone()
             };
             let id = account.id;
-            let current = shown == Some(id);
+            let current = open == Some(Some(id));
+            let offline = self.offline_text(id);
             let unread = self
                 .tree
                 .accounts
@@ -2097,16 +2101,21 @@ impl MailWindow {
                 .gap(px(12.0))
                 .rounded(px(8.0))
                 .cursor_pointer()
-                .when(current, |d| d.bg(rgba(th.nav_selected)))
-                .hover(move |s| s.bg(rgba(if current { th.nav_selected } else { th.hover })))
+                .when(current, |d| d.bg(rgba(th.row_selected)))
+                .hover(move |s| s.bg(rgba(if current { th.row_selected } else { th.hover })))
                 .menu_key(th)
                 .on_click(cx.listener(move |this, _, _, cx| {
                     this.account_menu = false;
                     this.pick_account(id, cx);
                 }))
-                .child(self.account_ring(
-                    &account.address,
-                    self.person_avatar(&name, &account.address, 32.0),
+                .child(self.offline_badge(
+                    self.account_ring(
+                        &account.address,
+                        self.person_avatar(&name, &account.address, 32.0),
+                        th,
+                    ),
+                    32.0,
+                    offline.is_some(),
                     th,
                 ))
                 .child(
@@ -2127,25 +2136,29 @@ impl MailWindow {
                                 .truncate()
                                 .text_size(px(12.0))
                                 .text_color(rgba(th.text_faint))
-                                .child(account.address.clone()),
+                                // An offline account says so, and what waits.
+                                .child(offline.clone().unwrap_or_else(|| account.address.clone())),
                         ),
                 )
+                .when(offline.is_some(), |d| {
+                    d.child(self.offline_mark(
+                        ("account-row-offline", ix),
+                        id,
+                        tokens::space::S7,
+                        th,
+                        cx,
+                    ))
+                })
                 .when(unread > 0, |d| {
                     d.child(
                         div()
                             .text_size(px(12.0))
                             .font_weight(FontWeight::SEMIBOLD)
-                            .text_color(rgba(if current {
-                                th.nav_selected_text
-                            } else {
-                                th.text_dim
-                            }))
+                            .text_color(rgba(th.text_dim))
                             .child(crate::format::thousands(unread)),
                     )
                 })
-                .when(current, |d| {
-                    d.child(icon("check", th.nav_selected_text, 20.0))
-                })
+                .when(current, |d| d.child(icon("check", th.text, 20.0)))
         });
         // The icon row at the top: Settings and the language, with the
         // application menu at its end.
@@ -2158,7 +2171,7 @@ impl MailWindow {
             .gap(px(4.0))
             .child(
                 icon_button("account-settings", "settings", 22.0, th)
-                    .tooltip(tip(tr!("settings"), th))
+                    .tip(tr!("settings"), th)
                     .on_click(cx.listener(|this, _, window, cx| {
                         this.account_menu = false;
                         this.open_settings_here(window, cx);
@@ -2195,22 +2208,28 @@ impl MailWindow {
             } else {
                 tr!("add-account-menu-another")
             });
+        let motion = self.page_motion(cx);
         let card = app_menu.unwrap_or_else(|| {
-            div()
+            let card = div()
                 .id("account-menu")
                 .key_context(crate::widgets::MENU_CONTEXT)
                 .occlude()
                 .absolute()
                 .right(px(16.0))
                 .top(px(4.0))
-                .w(px(MENU_WIDTH))
+                // Narrower on a narrow phone, with the same room each side.
+                .w(px(MENU_WIDTH.min(self.room_width() - 32.0)))
                 .p(px(8.0))
                 .flex()
                 .flex_col()
-                .gap(px(2.0))
                 .map(|d| raised(d, th, super::PANEL_RADIUS, 2.0))
-                .text_color(rgba(th.text))
+                .text_color(rgba(th.text));
+            let page = div()
+                .flex()
+                .flex_col()
+                .gap(px(2.0))
                 .child(icons)
+                .children(self.work_offline_row(th, cx))
                 .when(!self.accounts.is_empty(), |d| {
                     d.child(
                         div()
@@ -2220,6 +2239,7 @@ impl MailWindow {
                             .bg(rgba(th.divider)),
                     )
                 })
+                .children(all)
                 .children(rows)
                 .when(!self.accounts.is_empty(), |d| {
                     d.child(
@@ -2230,14 +2250,8 @@ impl MailWindow {
                             .bg(rgba(th.divider)),
                     )
                 })
-                .child(add)
-                .with_animation(
-                    "account-menu",
-                    Animation::new(katna_ui::motion::time(Duration::from_millis(180)))
-                        .with_easing(gpui::ease_out_quint()),
-                    |el, t| el.opacity(t).mt(px(-8.0 * (1.0 - t))),
-                )
-                .into_any_element()
+                .child(add);
+            self.menu_page_card("account-menu-page", card, page, None, 8.0, motion)
         });
         let close = || {
             cx.listener(|this: &mut Self, _: &MouseDownEvent, _, cx| {

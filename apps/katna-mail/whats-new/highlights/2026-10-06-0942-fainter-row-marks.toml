@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Quieter tick boxes and stars"
+text = """
+In the mail list, the tick box, star and Important marker of a line rest
+fainter until you point at the line. Set stars and markers show as before.
+"""

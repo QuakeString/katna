@@ -25,6 +25,11 @@ changelog and every library Katna is built on.
 animation = "reply-row"
 ```
 
+A highlight about another app than Mail can say so with
+`apps = ["tasks"]` (any of `calendar`, `contacts`, `tasks`, `notes`,
+`files`): while every app it names is turned off in Settings › Apps, it is
+left out.
+
 The text is one paragraph; line breaks in the file become spaces. The
 build stops on a bad name, an unknown key, a missing title or text, or a
 missing animation file.

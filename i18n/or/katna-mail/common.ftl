@@ -53,3 +53,4 @@ search-options-show = ସନ୍ଧାନ ବିକଳ୍ପ ଦେଖାନ୍�
 settings = ସେଟିଂସ
 account-add = ଏକ ଆକାଉଣ୍ଟ ଯୋଗ କରନ୍ତୁ
 account-wheel-hint = ଆକାଉଣ୍ଟ ବଦଳାଇବାକୁ ସ୍କ୍ରୋଲ କରନ୍ତୁ
+account-menu-all-detail = { $count }ଟି ଆକାଉଣ୍ଟ ଏକାଠି

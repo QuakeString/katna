@@ -7,6 +7,7 @@
 
 mod dates;
 
+use crate::widgets::Tip as _;
 use gpui::{
     AnyElement, Context, Div, Entity, Focusable, FontWeight, Subscription, Window, canvas, div,
     prelude::*, rgba,
@@ -20,13 +21,15 @@ use katna_ui::{InputEvent, TextInput};
 use super::compose::address_suggestions;
 use super::{FocusNext, MailWindow};
 use crate::theme::Theme;
-use crate::widgets::{CHIP_HEIGHT, choice_chip, filled_button, icon, icon_button, raised, tip};
+use crate::widgets::{CHIP_HEIGHT, choice_chip, filled_button, icon, icon_button, raised};
 use dates::{CustomDates, DateError};
 
 /// Width of a field's label.
 const LABEL: f32 = 120.0;
 /// The narrowest the panel gets while the window has room.
 pub(super) const MIN_WIDTH: f32 = 640.0;
+/// The widest it gets under a long search box.
+pub(super) const MAX_WIDTH: f32 = 720.0;
 /// Below this width labels go above their fields.
 const STACK_BELOW: f32 = 600.0;
 
@@ -51,17 +54,32 @@ fn within_label(age: &str) -> String {
 const CUSTOM: usize = WITHIN.len();
 
 /// Attachment types offered after "Has attachment", each with the
-/// extensions it stands for; the label is the first, in capitals. "ODF"
-/// is an OpenDocument text file.
+/// extensions it stands for; the label is the first, in capitals, except
+/// for [`IMAGE`]. "ODF" is an OpenDocument text file, and a chip stands
+/// for the old format along with the new one (XLSX for .xls too).
 const TYPES: [&[&str]; 7] = [
     &["pdf"],
-    &["xlsx"],
+    &["xlsx", "xls"],
     &["odf", "odt"],
-    &["xls"],
     &["ods"],
-    &["ppt"],
-    &["pptx"],
+    &["pptx", "ppt"],
+    &["dwg", "dxf"],
+    &[
+        "jpg", "jpeg", "png", "gif", "webp", "heic", "bmp", "tif", "tiff", "svg",
+    ],
 ];
+
+/// The picture types in [`TYPES`], labeled "Image".
+const IMAGE: usize = 6;
+
+/// What an attachment type chip says.
+fn type_label(ix: usize) -> String {
+    if ix == IMAGE {
+        tr!("search-attachment-image")
+    } else {
+        TYPES[ix][0].to_uppercase()
+    }
+}
 
 /// A typed extension as searched: lowercase letters and digits, the part
 /// after the last dot. Empty when there is nothing of the sort.
@@ -338,6 +356,7 @@ impl MailWindow {
             )
         }));
         window.focus(&from.focus_handle(cx), cx);
+        self.note_usage(katna_core::usage::Feature::SearchOptions);
         self.search_panel = Some(SearchPanel {
             from,
             to,
@@ -555,10 +574,10 @@ impl MailWindow {
         let mut chips: Vec<AnyElement> = TYPES
             .iter()
             .enumerate()
-            .map(|(ix, exts)| {
+            .map(|(ix, _)| {
                 choice_chip(
                     ("attachment-type", ix),
-                    exts[0].to_uppercase(),
+                    type_label(ix),
                     types.chosen[ix],
                     th,
                 )
@@ -622,7 +641,7 @@ impl MailWindow {
                             .cursor_pointer()
                             .relative()
                             .child(crate::widgets::hover_fade("hover-glow", None, th))
-                            .tooltip(tip(tr!("search-attachment-remove"), th))
+                            .tip(tr!("search-attachment-remove"), th)
                             .on_click(cx.listener(move |this, _, _, cx| {
                                 if let Some(panel) = &mut this.search_panel
                                     && ix < panel.types.typed.len()
@@ -814,7 +833,7 @@ impl MailWindow {
                         // far from the right edge as from the top.
                         icon_button("search-panel-close", "close", 20.0, th)
                             .mr(px(-12.0))
-                            .tooltip(tip(tr!("search-options-close"), th))
+                            .tip(tr!("search-options-close"), th)
                             .on_click(cx.listener(|this, _, _, cx| {
                                 this.search_panel = None;
                                 cx.notify();
@@ -978,6 +997,17 @@ mod tests {
             filename_query(&types.extensions()),
             "filename:(pdf OR odf OR odt)"
         );
+        // One chip asks for the old format with the new one.
+        let mut types = Types::default();
+        types.chosen[1] = true;
+        types.chosen[4] = true;
+        assert_eq!(
+            filename_query(&types.extensions()),
+            "filename:(xlsx OR xls OR pptx OR ppt)"
+        );
+        assert_eq!(type_label(1), "XLSX");
+        assert_eq!(type_label(5), "DWG");
+        assert_eq!(type_label(IMAGE), "Image");
         assert_eq!(extension(" .AVIF "), "avif");
         assert_eq!(extension("tar.gz"), "gz");
         assert_eq!(extension("..."), "");

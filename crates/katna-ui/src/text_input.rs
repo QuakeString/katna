@@ -446,7 +446,29 @@ impl TextInput {
         self.accent = accent;
     }
 
-    fn left(&mut self, _: &Left, _: &mut Window, cx: &mut Context<Self>) {
+    /// Whether Left goes forward: the text, or else the window, reads
+    /// right to left.
+    fn left_goes_on(&self, window: &Window) -> bool {
+        crate::direction::left_goes_on(&self.content, window)
+    }
+
+    fn left(&mut self, _: &Left, window: &mut Window, cx: &mut Context<Self>) {
+        if self.left_goes_on(window) {
+            self.forward(cx)
+        } else {
+            self.back(cx)
+        }
+    }
+
+    fn right(&mut self, _: &Right, window: &mut Window, cx: &mut Context<Self>) {
+        if self.left_goes_on(window) {
+            self.back(cx)
+        } else {
+            self.forward(cx)
+        }
+    }
+
+    fn back(&mut self, cx: &mut Context<Self>) {
         if self.selected_range.is_empty() {
             self.move_to(self.previous_boundary(self.cursor_offset()), cx);
         } else {
@@ -454,7 +476,7 @@ impl TextInput {
         }
     }
 
-    fn right(&mut self, _: &Right, _: &mut Window, cx: &mut Context<Self>) {
+    fn forward(&mut self, cx: &mut Context<Self>) {
         if self.selected_range.is_empty() {
             self.move_to(self.next_boundary(self.selected_range.end), cx);
         } else {
@@ -462,12 +484,22 @@ impl TextInput {
         }
     }
 
-    fn select_left(&mut self, _: &SelectLeft, _: &mut Window, cx: &mut Context<Self>) {
-        self.select_to(self.previous_boundary(self.cursor_offset()), cx);
+    fn select_left(&mut self, _: &SelectLeft, window: &mut Window, cx: &mut Context<Self>) {
+        let to = if self.left_goes_on(window) {
+            self.next_boundary(self.cursor_offset())
+        } else {
+            self.previous_boundary(self.cursor_offset())
+        };
+        self.select_to(to, cx);
     }
 
-    fn select_right(&mut self, _: &SelectRight, _: &mut Window, cx: &mut Context<Self>) {
-        self.select_to(self.next_boundary(self.cursor_offset()), cx);
+    fn select_right(&mut self, _: &SelectRight, window: &mut Window, cx: &mut Context<Self>) {
+        let to = if self.left_goes_on(window) {
+            self.previous_boundary(self.cursor_offset())
+        } else {
+            self.next_boundary(self.cursor_offset())
+        };
+        self.select_to(to, cx);
     }
 
     fn select_all(&mut self, _: &SelectAll, _: &mut Window, cx: &mut Context<Self>) {
@@ -999,6 +1031,9 @@ impl Element for TextElement {
         // cursor follow it without anything else changing.
         if input.centered && line.width < width {
             scroll_x = (line.width - width) / 2.0;
+        } else if line.width < width && window.layout_direction().is_rtl() {
+            // In a right-to-left layout text that fits starts at the right.
+            scroll_x = line.width - width;
         }
         let left = bounds.left() - scroll_x;
 
@@ -1092,6 +1127,16 @@ impl Render for TextInput {
     fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         self.request_grammar(cx);
         div()
+            // Screen readers hear the field: its hint names it, and what is
+            // typed is its value (never a password's).
+            .id(("text-input", cx.entity_id().as_u64()))
+            .role(if self.masked {
+                gpui::Role::PasswordInput
+            } else {
+                gpui::Role::TextInput
+            })
+            .aria_label(self.placeholder.clone())
+            .when(!self.masked, |d| d.aria_value(self.content.clone()))
             .flex()
             .flex_1()
             .min_w_0()

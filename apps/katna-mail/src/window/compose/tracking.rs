@@ -11,12 +11,13 @@
 //! (SMTP DSN, RFC 3461), which mails one back per recipient when it
 //! delivers; not every server offers them (Gmail does not).
 
+use crate::widgets::Tip as _;
 use gpui::{AnyElement, Context, prelude::*};
 use katna_i18n::tr;
 use katna_ui::px;
 
 use crate::theme::Theme;
-use crate::widgets::{icon_button_colored, tip};
+use crate::widgets::icon_button_colored;
 use crate::window::MailWindow;
 use crate::window::settings_page::Section;
 
@@ -52,7 +53,7 @@ impl MailWindow {
         let toggle = |id: &'static str, name: &'static str, on: bool, label: String| {
             icon_button_colored(id, name, 18.0, if on { th.accent } else { th.text_dim }, th)
                 .size(px(28.0))
-                .tooltip(tip(label, th))
+                .tip(label, th)
         };
         let track = sealing.track && signed_in;
         let offered = self.delivery_receipts_offered() != Some(false);

@@ -24,9 +24,10 @@ use std::rc::Rc;
 use gpui::{
     AnyElement, App, Bounds, ClipboardItem, Context, DispatchPhase, Div, FocusHandle,
     HighlightStyle, MouseButton, MouseDownEvent, MouseMoveEvent, MouseUpEvent, Pixels, Point,
-    SharedString, StyledText, TextLayout, WeakEntity, Window, WindowId, actions, anchored, canvas,
-    deferred, div, prelude::*, rgba,
+    SharedString, StyledText, TextLayout, WeakEntity, Window, WindowId, actions, canvas, deferred,
+    div, prelude::*, rgba,
 };
+use katna_ui::anchored;
 
 use katna_i18n::tr;
 use katna_ui::{px, unpx};
@@ -58,6 +59,7 @@ const UI_WINDOW_PARTS: usize = 1 << 16;
 /// rest are handed out in drawing order ([`TextSelection::next_pieces`]).
 pub(super) const ABOUT_SLOT: usize = 0;
 pub(super) const WHATS_NEW_SLOT: usize = 1;
+pub(super) const SHORTCUTS_SLOT: usize = 2;
 const SLOTS: usize = 64;
 
 /// A run of text drawn by `part` of the text (a message of the

@@ -27,6 +27,7 @@ use std::{
 
 use async_channel::{Receiver, Sender};
 use futures_lite::FutureExt;
+use katna_core::config::AppKind;
 use katna_core::{Account, AccountId, AccountKind, AccountSettings, OAuthProvider};
 use katna_dbus::calendar_state;
 use katna_store::{
@@ -37,7 +38,7 @@ use katna_sync::{
     calendar::{
         CalendarError,
         caldav::CalDav,
-        edit::{self, Applied, EditError, Remote},
+        edit::{self, Applied, EditError, Remote, Step},
         google::GoogleCalendar,
         graph::GraphCalendar,
         zoho::ZohoCalendar,
@@ -68,6 +69,9 @@ pub(crate) struct Calendars {
     services: smol::lock::Mutex<Services>,
     /// Changes written to the store, to send to their services.
     changes: (Sender<Applied>, Receiver<Applied>),
+    /// Changes to calendars of accounts taken offline, sent once they
+    /// are back ([`Daemon::resend_held_event_changes`]).
+    held: Mutex<Vec<Applied>>,
     /// Accounts to look for again from scratch next round ("Try again"),
     /// not waiting out a server found without calendars.
     recheck: Mutex<HashSet<AccountId>>,
@@ -80,6 +84,7 @@ impl Default for Calendars {
             status: Mutex::default(),
             services: smol::lock::Mutex::default(),
             changes: async_channel::unbounded(),
+            held: Mutex::default(),
             recheck: Mutex::default(),
         }
     }
@@ -168,6 +173,37 @@ impl Daemon {
         Ok(())
     }
 
+    /// "Remove the copy" of the Calendar, turned off: the account
+    /// calendars go, but not one with a change still to send (held for an
+    /// account offline). While a change is on its way, nothing goes: its
+    /// steps name event rows, which must not go first. Returns how many
+    /// calendars went.
+    pub(super) fn forget_calendar_copy(&self) -> Result<usize, CommandError> {
+        if !self.calendars.changes.1.is_empty() {
+            return Err(CommandError::Failed(
+                "calendar changes are still being sent; try again in a moment".into(),
+            ));
+        }
+        let keep: HashSet<i64> = self
+            .calendars
+            .held
+            .lock()
+            .unwrap()
+            .iter()
+            .flat_map(|applied| &applied.steps)
+            .flat_map(|step| match step {
+                Step::GoogleMove { calendar, to, .. } => vec![*calendar, *to],
+                step => vec![step.calendar()],
+            })
+            .collect();
+        let gone = self.store().forget_account_calendars(&keep)?;
+        self.calendars.status.lock().unwrap().clear();
+        if gone > 0 {
+            let _ = self.notices.try_send(Notice::CalendarChanged);
+        }
+        Ok(gone)
+    }
+
     /// Forgets the calendars of `account`, which went away.
     pub(super) fn forget_calendars(&self, account: AccountId) {
         self.calendars.status.lock().unwrap().remove(&account);
@@ -241,6 +277,9 @@ impl Daemon {
         account: &Account,
         method: Method,
     ) -> Result<Option<&'a Service>, String> {
+        if self.is_offline(account.id) {
+            return Err("the account is offline".into());
+        }
         let at = (account.id, method);
         match self.calendar_service(account, method).await? {
             Some((key, service)) => {
@@ -499,6 +538,11 @@ async fn run(daemon: Weak<Daemon>, wake: Receiver<()>) {
         if daemon.resetting.load(std::sync::atomic::Ordering::SeqCst) {
             continue;
         }
+        // Turned off in Settings > Apps: nothing syncs until it is on again,
+        // which wakes this.
+        if !daemon.app_on(AppKind::Calendar) {
+            continue;
+        }
         let store = match &mut store {
             Some(store) => store,
             None => match Store::open(&daemon.paths, Mode::ReadWrite) {
@@ -534,6 +578,10 @@ async fn send_changes(daemon: Weak<Daemon>, changes: Receiver<Applied>) {
                 }
             },
         };
+        if daemon.offline_change(store, &applied) {
+            daemon.calendars.held.lock().unwrap().push(applied);
+            continue;
+        }
         match daemon.send_change(store, &applied).await {
             Ok(()) => {
                 if let Err(err) = store.events_pushed(&applied.rows) {
@@ -549,6 +597,26 @@ async fn send_changes(daemon: Weak<Daemon>, changes: Receiver<Applied>) {
 }
 
 impl Daemon {
+    /// Whether `applied` changes a calendar of an account taken offline.
+    fn offline_change(&self, store: &Store, applied: &Applied) -> bool {
+        applied.steps.iter().any(|step| {
+            store
+                .calendar(step.calendar())
+                .ok()
+                .flatten()
+                .and_then(|calendar| calendar.account)
+                .is_some_and(|account| self.is_offline(account))
+        })
+    }
+
+    /// Sends the event changes held while their accounts were offline;
+    /// any still offline are held again.
+    pub(super) fn resend_held_event_changes(&self) {
+        for applied in std::mem::take(&mut *self.calendars.held.lock().unwrap()) {
+            let _ = self.calendars.changes.0.try_send(applied);
+        }
+    }
+
     /// Gives up sending `applied`: its calendars sync again.
     fn give_up_change(&self, store: Option<&mut Store>, applied: &Applied) {
         let forgot = match store {
@@ -630,6 +698,10 @@ impl Daemon {
         for account in &accounts {
             if self.closing() {
                 return;
+            }
+            // It keeps its last status until it is back online.
+            if self.is_offline(account.id) {
+                continue;
             }
             let (status, synced) = self.sync_calendars(store, services, account).await;
             changed |= synced;

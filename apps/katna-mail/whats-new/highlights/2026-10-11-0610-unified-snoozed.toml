@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Snoozed in the unified inbox"
+text = """
+While any mail is snoozed, the unified inbox lists Snoozed after
+Starred, with the snoozed mail of every account in one place.
+"""

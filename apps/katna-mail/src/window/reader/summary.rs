@@ -11,6 +11,7 @@
 //! after it is added only when asked. None of it shows while writing
 //! help is off.
 
+use crate::widgets::Tip as _;
 use std::cell::Cell;
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
@@ -18,7 +19,7 @@ use std::time::{Duration, Instant};
 
 use gpui::{
     AnimationExt, AnyElement, ClipboardItem, Context, FontWeight, MouseButton, Pixels, Point,
-    SharedString, Task, Window, anchored, canvas, deferred, div, point, prelude::*, rgba,
+    SharedString, Task, Window, canvas, deferred, div, point, prelude::*, rgba,
 };
 use katna_ai::summary::{self, PointKind, SummarizeRequest, Summary};
 use katna_ai::wire::{plan, problem};
@@ -26,6 +27,8 @@ use katna_core::config::AiSource;
 use katna_i18n::tr;
 use katna_render::trim;
 use katna_store::{MessageId, SummaryKind};
+use katna_ui::anchored;
+use katna_ui::tokens::space;
 use katna_ui::{px, unpx};
 
 use super::super::MailWindow;
@@ -36,7 +39,7 @@ use crate::data::EntryKey;
 use crate::theme::{Theme, fade, mix};
 use crate::widgets::{
     Fold, filled_button, fold_arrow, fold_box, icon, icon_button_colored, icon_button_with,
-    outlined_button, raised, tip,
+    outlined_button, raised,
 };
 
 mod peek_reply;
@@ -45,6 +48,10 @@ mod peek_reply;
 const PEEK_WIDTH: f32 = 420.0;
 /// The room kept between a card and the window's edge.
 const MARGIN: f32 = 8.0;
+/// How long the chat's card takes to drop down and to fold back up.
+const DROP_IN: Duration = Duration::from_millis(180);
+const DROP_OUT: Duration = Duration::from_millis(140);
+
 /// How soon after a press outside folded the dropped card a click on
 /// its strip counts as that same press.
 const JUST_FOLDED: Duration = Duration::from_millis(400);
@@ -104,6 +111,10 @@ struct Sum {
     dropped: bool,
     /// The glide between the card and its folded line.
     fold: Fold,
+    /// The glide as it shows or hides (the sparkle, ×).
+    show: Fold,
+    /// The chat's card dropping from its strip, and the strip's arrow.
+    drop: Fold,
     _task: Option<Task<()>>,
 }
 
@@ -219,6 +230,8 @@ impl MailWindow {
                 folded: false,
                 dropped: false,
                 fold: Fold::default(),
+                show: Fold::closed(),
+                drop: Fold::closed(),
                 _task: None,
             },
         );
@@ -354,6 +367,8 @@ impl MailWindow {
             folded: false,
             dropped: false,
             fold: Fold::default(),
+            show: Fold::closed(),
+            drop: Fold::closed(),
             _task: None,
         });
         sum.shown = true;
@@ -699,19 +714,70 @@ impl MailWindow {
                 th,
             )
             .when(on, |d| d.bg(rgba(fade(th.accent, 0.14))))
-            .tooltip(tip(
+            .tip(
                 if on {
                     tr!("summary-hide")
                 } else {
                     tr!("summary-summarize")
                 },
                 th,
-            ))
+            )
             .on_click(cx.listener(|this, _, _, cx| {
                 cx.stop_propagation();
                 this.toggle_summary(cx);
             }))
             .into_any_element(),
+        )
+    }
+
+    /// The chat header's sparkle: a pill of its own beside the Chat | Mail
+    /// switch, as tall as it, whose inside lifts like the switch's picked
+    /// side while the summary shows.
+    pub(super) fn summary_pill(&self, th: &Theme, cx: &mut Context<Self>) -> Option<AnyElement> {
+        if !self.summaries_on() {
+            return None;
+        }
+        let on = self.summary_shown();
+        Some(
+            div()
+                .flex_none()
+                .p(px(space::S1))
+                .rounded_full()
+                .bg(rgba(th.chip))
+                .child(
+                    div()
+                        .id("chat-summary")
+                        .h(px(28.0))
+                        .w(px(36.0))
+                        .flex()
+                        .items_center()
+                        .justify_center()
+                        .rounded_full()
+                        .cursor_pointer()
+                        .when(on, |d| {
+                            d.bg(rgba(th.surface))
+                                .shadow(crate::widgets::elevation(th, 0.5))
+                        })
+                        .when(!on, |d| d.hover(|s| s.bg(rgba(th.hover))))
+                        .child(icon(
+                            "sparkle",
+                            if on { th.accent } else { th.text_dim },
+                            16.0,
+                        ))
+                        .tip(
+                            if on {
+                                tr!("summary-hide")
+                            } else {
+                                tr!("summary-summarize")
+                            },
+                            th,
+                        )
+                        .on_click(cx.listener(|this, _, _, cx| {
+                            cx.stop_propagation();
+                            this.toggle_summary(cx);
+                        })),
+                )
+                .into_any_element(),
         )
     }
 
@@ -724,23 +790,30 @@ impl MailWindow {
     ) -> Option<AnyElement> {
         let reader = self.reader.as_ref()?;
         let key = reader.key;
-        let sum = self.summaries.by_key.get(&key).filter(|s| s.shown)?;
+        let sum = self.summaries.by_key.get(&key)?;
         if !self.summaries_on() {
             return None;
         }
-        let inner = if sum.folded {
-            self.summary_strip(key, true, th, cx)
-        } else {
-            self.summary_content(key, Place::Card, th, cx)?
-        };
-        Some(
+        // It glides open from the sparkle and closed with ×, as folds do.
+        sum.show.sync(sum.shown);
+        if !sum.shown && !sum.show.moving() {
+            return None;
+        }
+        let card = if sum.shown {
+            let inner = if sum.folded {
+                self.summary_strip(key, true, th, cx)
+            } else {
+                self.summary_content(key, Place::Card, th, cx)?
+            };
             div()
                 .pl(px(self.reader_indent()))
                 .pr(px(16.0))
                 .pb(px(12.0))
                 .child(fold_box("summary-fold", &sum.fold, inner))
-                .into_any_element(),
-        )
+        } else {
+            div()
+        };
+        Some(fold_box("summary-show", &sum.show, card))
     }
 
     /// The chat's strip under its header, and the card it drops down.
@@ -750,11 +823,20 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
         let key = self.reader.as_ref()?.key;
-        self.summaries.by_key.get(&key).filter(|s| s.shown)?;
+        let sum = self.summaries.by_key.get(&key)?;
         if !self.summaries_on() {
             return None;
         }
-        Some(self.summary_strip(key, false, th, cx))
+        sum.show.sync(sum.shown);
+        if !sum.shown && !sum.show.moving() {
+            return None;
+        }
+        let strip = if sum.shown {
+            self.summary_strip(key, false, th, cx)
+        } else {
+            div().into_any_element()
+        };
+        Some(fold_box("chat-summary-show", &sum.show, strip))
     }
 
     /// The card the chat's strip drops over the chat.
@@ -764,21 +846,26 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> Option<AnyElement> {
         let key = self.reader.as_ref()?.key;
-        self.summaries
-            .by_key
-            .get(&key)
-            .filter(|s| s.shown && s.dropped)?;
+        let sum = self.summaries.by_key.get(&key)?;
         if !self.summaries_on() {
             return None;
         }
+        let open = sum.shown && sum.dropped;
+        sum.drop.sync(open);
+        // Folding up, it fades back the way it came and lets clicks
+        // through to the chat at once.
+        if !open && !sum.drop.moving() {
+            return None;
+        }
         let content = self.summary_content(key, Place::Drop, th, cx)?;
-        Some(
-            div()
-                .absolute()
-                .top(px(8.0))
-                .left(px(12.0))
-                .right(px(12.0))
-                .occlude()
+        let card = div()
+            .absolute()
+            .top(px(8.0))
+            .left(px(12.0))
+            .right(px(12.0))
+            .child(content);
+        let card = if open {
+            card.occlude()
                 .on_mouse_down_out(cx.listener(move |this, _, _, cx| {
                     if let Some(sum) = this.summaries.by_key.get_mut(&key)
                         && sum.dropped
@@ -788,14 +875,25 @@ impl MailWindow {
                         cx.notify();
                     }
                 }))
-                .child(content)
-                .with_animation(
-                    "chat-summary-drop",
-                    gpui::Animation::new(katna_ui::motion::time(Duration::from_millis(180)))
-                        .with_easing(gpui::ease_out_quint()),
-                    |el, t| el.opacity(t).mt(px(-6.0 * (1.0 - t))),
-                )
-                .into_any_element(),
+        } else {
+            card
+        };
+        let (time, from, to) = if open {
+            (DROP_IN, 0.0, 1.0)
+        } else {
+            (DROP_OUT, 1.0, 0.0)
+        };
+        Some(
+            card.with_animation(
+                sum.drop.id("chat-summary-drop"),
+                gpui::Animation::new(katna_ui::motion::time(time))
+                    .with_easing(gpui::ease_out_quint()),
+                move |el, t| {
+                    let t = from + (to - from) * t;
+                    el.opacity(t).mt(px(-6.0 * (1.0 - t)))
+                },
+            )
+            .into_any_element(),
         )
     }
 
@@ -905,11 +1003,7 @@ impl MailWindow {
             .child(if card {
                 fold_arrow("summary-arrow", &sum.fold, false, th.text_dim, 16.0)
             } else {
-                icon(
-                    if open { "chevron-up" } else { "chevron-down" },
-                    th.text_dim,
-                    16.0,
-                )
+                fold_arrow("summary-drop-arrow", &sum.drop, open, th.text_dim, 16.0)
             });
         div()
             .flex_none()
@@ -958,7 +1052,7 @@ impl MailWindow {
         let small_button = |name: &str, icon_name: &'static str, label: String| {
             icon_button_colored(id(name), icon_name, 17.0, th.text_dim, th)
                 .size(px(30.0))
-                .tooltip(tip(label, th))
+                .tip(label, th)
         };
 
         // The header: what it sums up, and its buttons.
@@ -1070,7 +1164,7 @@ impl MailWindow {
                             th,
                         )
                         .size(px(30.0))
-                        .tooltip(tip(tr!("summary-fold"), th))
+                        .tip(tr!("summary-fold"), th)
                         .on_click(cx.listener(move |this, _, _, cx| {
                             if let Some(sum) = this.summaries.by_key.get_mut(&key) {
                                 sum.folded = true;
@@ -1280,7 +1374,7 @@ impl MailWindow {
                                 this.go_to_summed(message, cx);
                             }))
                     })
-                    .tooltip(tip(
+                    .tip(
                         match sent
                             .date
                             .and_then(|d| crate::format::local(d, &jiff::tz::TimeZone::system()))
@@ -1293,7 +1387,7 @@ impl MailWindow {
                             None => sent.name.clone(),
                         },
                         th,
-                    ))
+                    )
                     .child(self.person_avatar(&sent.name, &sent.email, 16.0))
                     .child(first_name(&sent.name).to_owned())
                     .into_any_element(),
@@ -1431,14 +1525,14 @@ impl MailWindow {
             .child(
                 icon_button_colored(id("copy".into()), "copy", 17.0, th.text_dim, th)
                     .size(px(30.0))
-                    .tooltip(tip(tr!("summary-copy"), th))
+                    .tip(tr!("summary-copy"), th)
                     .on_click(cx.listener(move |this, _, _, cx| this.copy_summary(key, cx))),
             )
             .when(!peek, |d| {
                 d.child(
                     icon_button_colored(id("again".into()), "refresh", 17.0, th.text_dim, th)
                         .size(px(30.0))
-                        .tooltip(tip(tr!("summary-again"), th))
+                        .tip(tr!("summary-again"), th)
                         .on_click(cx.listener(move |this, _, _, cx| {
                             let catch_up = matches!(
                                 this.summaries.by_key.get(&key).map(|s| &s.state),
@@ -1480,7 +1574,7 @@ impl MailWindow {
                 d.child(
                     pill("open", "open-external", tr!("summary-open"), false)
                         .ml(px(4.0))
-                        .tooltip(tip(tr!("summary-open-tip"), th))
+                        .tip(tr!("summary-open-tip"), th)
                         .on_click(cx.listener(move |this, _, window, cx| {
                             this.close_summary_peek(cx);
                             if let Some(ix) = this.entries.iter().position(|e| e.key == open_key) {
@@ -1490,7 +1584,7 @@ impl MailWindow {
                 )
                 .child(
                     pill("reply", "pen-sparkle", tr!("summary-reply"), true)
-                        .tooltip(tip(tr!("summary-reply-tip"), th))
+                        .tip(tr!("summary-reply-tip"), th)
                         .on_click(
                             cx.listener(|this, _, window, cx| this.start_peek_reply(window, cx)),
                         ),

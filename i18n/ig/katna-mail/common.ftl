@@ -41,3 +41,4 @@ search-options-show = Gosi nhọrọ ọchụchọ
 settings = Ntọala
 account-add = Tinye akaụntụ
 account-wheel-hint = Mpịnye ka i gbanwee akaụntụ
+account-menu-all-detail = Akaụntụ { $count } ọnụ

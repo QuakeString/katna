@@ -8,12 +8,15 @@
 //! No GPUI here.
 
 use std::collections::HashMap;
+use std::io::IsTerminal;
 use std::path::PathBuf;
+use std::time::Duration;
 
 use async_channel::{Receiver, Sender};
 use futures_lite::future;
 use katna_core::ids;
 use katna_dbus::app_action;
+use katna_i18n::tr;
 use zbus::Connection;
 use zbus::fdo::{RequestNameFlags, RequestNameReply};
 use zbus::zvariant::{OwnedValue, Value};
@@ -142,14 +145,27 @@ impl Request {
     }
 }
 
+/// How long the running app has to show it is not stuck: its window's
+/// thread answers a ping (see [`answer_pings`]). Under the 5 s the tray
+/// waits, so a stuck app still lets the tray start a new one.
+const ANSWER_WITHIN: Duration = Duration::from_secs(3);
+/// How long a new launch waits for the running app to take its request.
+const HAND_OFF_WITHIN: Duration = Duration::from_secs(6);
+/// A running app younger than this may only be slow to start: it is left
+/// alone rather than taken over.
+#[cfg(unix)]
+const STARTING_FOR: Duration = Duration::from_secs(30);
+
 /// How this process started.
 pub enum Started {
-    /// This is the app: requests arrive on the receiver. `connection` is
-    /// `None` without a session bus.
+    /// This is the app: requests arrive on the receiver, and pings on
+    /// `pings` (see [`answer_pings`]). `connection` is `None` without a
+    /// session bus.
     First {
         connection: Option<Connection>,
         sender: Sender<Request>,
         requests: Receiver<Request>,
+        pings: Receiver<Sender<()>>,
     },
     /// Another instance was running and took the request; exit.
     HandedOff,
@@ -158,17 +174,45 @@ pub enum Started {
 /// `org.freedesktop.Application` on the app's object path.
 struct Application {
     requests: Sender<Request>,
+    pings: Sender<Sender<()>>,
+}
+
+impl Application {
+    /// Waits for the window's thread to answer, so that a caller learns
+    /// when the app is stuck (its bus connection answers on a thread of its
+    /// own) and can start a new one instead of waiting for nothing.
+    async fn answered(&self) -> zbus::fdo::Result<()> {
+        let (pong, answer) = async_channel::bounded(1);
+        let answered = self.pings.try_send(pong).is_ok()
+            && future::or(async { answer.recv().await.is_ok() }, async {
+                after(ANSWER_WITHIN).await;
+                false
+            })
+            .await;
+        if answered {
+            Ok(())
+        } else {
+            Err(zbus::fdo::Error::Failed(
+                "Katna Mail is not responding".into(),
+            ))
+        }
+    }
 }
 
 #[zbus::interface(name = "org.freedesktop.Application")]
 impl Application {
-    fn activate(&self, platform_data: HashMap<String, OwnedValue>) {
+    async fn activate(&self, platform_data: HashMap<String, OwnedValue>) -> zbus::fdo::Result<()> {
         keep_activation_token(&platform_data);
         let _ = self.requests.try_send(Request::Activate);
+        self.answered().await
     }
 
     /// Opens `mailto:` links; Katna Mail opens no files.
-    fn open(&self, uris: Vec<String>, platform_data: HashMap<String, OwnedValue>) {
+    async fn open(
+        &self,
+        uris: Vec<String>,
+        platform_data: HashMap<String, OwnedValue>,
+    ) -> zbus::fdo::Result<()> {
         keep_activation_token(&platform_data);
         let mut sent = false;
         for uri in uris
@@ -180,14 +224,15 @@ impl Application {
         if !sent {
             let _ = self.requests.try_send(Request::Activate);
         }
+        self.answered().await
     }
 
-    fn activate_action(
+    async fn activate_action(
         &self,
         action_name: String,
         parameter: Vec<OwnedValue>,
         platform_data: HashMap<String, OwnedValue>,
-    ) {
+    ) -> zbus::fdo::Result<()> {
         keep_activation_token(&platform_data);
         if action_name == app_action::ATTACH {
             let params = parameter
@@ -195,7 +240,7 @@ impl Application {
                 .filter_map(|value| String::try_from(value).ok())
                 .collect();
             let _ = self.requests.try_send(Request::from_attach_params(params));
-            return;
+            return self.answered().await;
         }
         if app_action::takes_text(&action_name) {
             if let Some(text) = parameter
@@ -209,7 +254,7 @@ impl Application {
                     _ => Request::Page(text),
                 });
             }
-            return;
+            return self.answered().await;
         }
         let mut parameter = parameter.into_iter();
         let message = parameter.next().and_then(|value| i64::try_from(value).ok());
@@ -221,6 +266,34 @@ impl Application {
             message,
             text,
         });
+        self.answered().await
+    }
+}
+
+/// Answers the pings of [`Application::answered`]. Run it on the window's
+/// thread, as early as the app starts.
+pub async fn answer_pings(pings: Receiver<Sender<()>>) {
+    while let Ok(pong) = pings.recv().await {
+        let _ = pong.try_send(());
+    }
+}
+
+/// Finishes after `duration`. Launching is rare, so a sleeping thread is
+/// enough.
+async fn after(duration: Duration) {
+    let (done, finished) = async_channel::bounded::<()>(1);
+    std::thread::spawn(move || {
+        std::thread::sleep(duration);
+        let _ = done.try_send(());
+    });
+    let _ = finished.recv().await;
+}
+
+/// One line for whoever started Katna Mail in a terminal; nothing when it
+/// was started from the desktop.
+fn say(line: String) {
+    if std::io::stderr().is_terminal() {
+        eprintln!("katna-mail: {line}");
     }
 }
 
@@ -242,6 +315,7 @@ fn keep_activation_token(platform_data: &HashMap<String, OwnedValue>) {
 /// data directory (`--data-dir`): such a window stands on its own.
 pub fn start(request: Option<Request>, single: bool) -> Started {
     let (sender, requests) = async_channel::unbounded();
+    let (pinger, pings) = async_channel::unbounded();
     let connection = future::block_on(async {
         let connection = katna_dbus::session().await.ok()?;
         if !single {
@@ -249,6 +323,7 @@ pub fn start(request: Option<Request>, single: bool) -> Started {
         }
         let object = Application {
             requests: sender.clone(),
+            pings: pinger,
         };
         if let Err(err) = connection
             .object_server()
@@ -258,27 +333,22 @@ pub fn start(request: Option<Request>, single: bool) -> Started {
             tracing::warn!(%err, "cannot serve org.freedesktop.Application");
             return Some(Ok(connection));
         }
-        let owned = connection
-            .request_name_with_flags(ids::MAIL_APP_ID, RequestNameFlags::DoNotQueue.into())
-            .await;
-        match owned {
-            Ok(RequestNameReply::PrimaryOwner | RequestNameReply::AlreadyOwner) => {
-                Some(Ok(connection))
-            }
-            Ok(RequestNameReply::Exists | RequestNameReply::InQueue)
-            | Err(zbus::Error::NameTaken) => Some(Err(connection)),
-            Err(err) => {
-                tracing::warn!(%err, "cannot take the app's bus name");
-                Some(Ok(connection))
-            }
+        match take_name(&connection).await {
+            Some(true) => Some(Ok(connection)),
+            Some(false) => Some(Err(connection)),
+            None => Some(Ok(connection)),
         }
     });
     match connection {
         Some(Err(connection)) => {
             if future::block_on(hand_off(&connection, request.as_ref())) {
+                say(tr!("launch-showing-window"));
                 return Started::HandedOff;
             }
-            // The other instance did not answer; run anyway.
+            // The other instance did not answer: it is stuck, so this one
+            // takes its place (or, when it can't, runs beside it).
+            say(tr!("launch-not-answering"));
+            future::block_on(take_over(&connection));
             if let Some(request) = request {
                 let _ = sender.try_send(request.at_start());
             }
@@ -286,6 +356,7 @@ pub fn start(request: Option<Request>, single: bool) -> Started {
                 connection: Some(connection),
                 sender,
                 requests,
+                pings,
             }
         }
         Some(Ok(connection)) => {
@@ -296,6 +367,7 @@ pub fn start(request: Option<Request>, single: bool) -> Started {
                 connection: Some(connection),
                 sender,
                 requests,
+                pings,
             }
         }
         None => {
@@ -306,13 +378,84 @@ pub fn start(request: Option<Request>, single: bool) -> Started {
                 connection: None,
                 sender,
                 requests,
+                pings,
             }
         }
     }
 }
 
+/// Takes the app's bus name: `Some(true)` when this process has it,
+/// `Some(false)` when another Katna Mail does, `None` when the bus would
+/// not say.
+async fn take_name(connection: &Connection) -> Option<bool> {
+    let owned = connection
+        .request_name_with_flags(ids::MAIL_APP_ID, RequestNameFlags::DoNotQueue.into())
+        .await;
+    match owned {
+        Ok(RequestNameReply::PrimaryOwner | RequestNameReply::AlreadyOwner) => Some(true),
+        Ok(RequestNameReply::Exists | RequestNameReply::InQueue) | Err(zbus::Error::NameTaken) => {
+            Some(false)
+        }
+        Err(err) => {
+            tracing::warn!(%err, "cannot take the app's bus name");
+            None
+        }
+    }
+}
+
+/// Ends the stuck Katna Mail that holds the app's bus name and takes the
+/// name, so launches, the tray and notifications reach this one from now
+/// on. A Katna Mail that may only be starting slowly is left alone.
+#[cfg(unix)]
+async fn take_over(connection: &Connection) {
+    let Ok(dbus) = zbus::fdo::DBusProxy::new(connection).await else {
+        return;
+    };
+    let Ok(name) = zbus::names::BusName::try_from(ids::MAIL_APP_ID) else {
+        return;
+    };
+    let Ok(pid) = dbus.get_connection_unix_process_id(name).await else {
+        return;
+    };
+    let proc = PathBuf::from(format!("/proc/{pid}"));
+    // Only ever another Katna Mail, never whatever else took the name.
+    let ours =
+        std::fs::read_to_string(proc.join("comm")).is_ok_and(|comm| comm.trim() == "katna-mail");
+    let started = std::fs::metadata(&proc)
+        .and_then(|meta| meta.modified())
+        .ok()
+        .and_then(|time| time.elapsed().ok());
+    if !ours || pid == std::process::id() || started.is_none_or(|age| age < STARTING_FOR) {
+        tracing::warn!(
+            pid,
+            "another Katna Mail holds the app's name; running beside it"
+        );
+        return;
+    }
+    tracing::warn!(pid, "ending the Katna Mail that does not answer");
+    let ended = std::process::Command::new("kill")
+        .args(["-TERM", &pid.to_string()])
+        .status()
+        .is_ok_and(|status| status.success());
+    if !ended {
+        return;
+    }
+    for _ in 0..30 {
+        if take_name(connection).await == Some(true) {
+            return;
+        }
+        after(Duration::from_millis(100)).await;
+    }
+    tracing::warn!(pid, "the stuck Katna Mail keeps the app's name");
+}
+
+/// Elsewhere there is no `/proc` to tell a stuck Katna Mail from a
+/// starting one: run beside it.
+#[cfg(not(unix))]
+async fn take_over(_connection: &Connection) {}
+
 /// Asks the running instance to do `request`; `false` if it did not answer.
-async fn hand_off(connection: &Connection, request: Option<&Request>) -> bool {
+async fn call(connection: &Connection, request: Option<&Request>) -> bool {
     let mut platform: HashMap<&str, Value<'_>> = HashMap::new();
     // The launcher's token lets the other instance's window take focus.
     let token = std::env::var("XDG_ACTIVATION_TOKEN").ok();
@@ -414,6 +557,17 @@ async fn hand_off(connection: &Connection, request: Option<&Request>) -> bool {
             false
         }
     }
+}
+
+/// [`call`] with a deadline: a Katna Mail that is frozen whole would
+/// otherwise keep the call waiting for D-Bus's 25 s.
+async fn hand_off(connection: &Connection, request: Option<&Request>) -> bool {
+    future::or(call(connection, request), async {
+        after(HAND_OFF_WITHIN).await;
+        tracing::warn!("the running Katna Mail did not answer in time");
+        false
+    })
+    .await
 }
 
 #[cfg(test)]

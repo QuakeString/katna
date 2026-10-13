@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Presses fill the whole button"
+text = """
+Clicking a chip or an outlined button now fills it to its own edge and
+corners, instead of showing a smaller pill inside it.
+"""

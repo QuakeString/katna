@@ -54,6 +54,11 @@ list-results = Results for “{ $query }”
 list-results-corrected = Showing results for “{ $query }”
 # A link that runs the search as typed. $query: what the user typed.
 list-search-instead = Search instead for “{ $query }”
+# In place of the results while the search index cannot be read: before
+# Katna's service has built it, or (with $error, what went wrong) when it
+# fails to open.
+list-search-no-index = Search is not ready: the index has not been built yet.
+list-search-not-ready = Search is not ready: { $error }
 # The "+3" button after a line's attachment chips: $count more files.
 list-files-more = +{ $count }
 # Tooltip of the reply arrow on a line the user has answered.
@@ -368,12 +373,29 @@ list-empty-tab-unknown = No mail in this tab.
 # $folder: the folder's name.
 list-empty-folder = No messages in { $folder }.
 list-empty-folder-unknown = No messages in this folder.
+list-empty-waiting = Nothing is waiting for a reply.
+list-empty-reminders = No reminders. Press H on a mail to add one.
 # While the first sync of a new account downloads its mail.
 list-first-sync = Getting your mail…
 list-first-sync-detail = It shows up here as it arrives.
+# In place of the list when Katna Mail cannot read its mail store; what
+# went wrong shows under it.
+list-store-unreadable = The mail store could not be opened
 
 ## Mail list: lines
 
+# A line's sender, or its subject, when the mail has none.
+row-no-subject = (no subject)
+row-unknown-sender = (unknown sender)
+# In sent and draft folders a line shows the recipients instead: "To:" goes
+# before their names (a space follows it), or this when there are none.
+row-to = To:
+row-no-recipients = (no recipients)
+# Between the names on a line ("Ravi Kumar, me"; Arabic "Ravi Kumar، أنا"):
+# keep the quotes, they hold the space after the comma.
+row-names-separator = {", "}
+# You, among the senders of a conversation ("Ravi, me").
+row-me = me
 # A line whose message was deleted elsewhere while the list showed it.
 row-removed = This message was removed.
 # Tooltips of a line's star.
@@ -399,6 +421,21 @@ row-pin = Pin to top
 row-unpin = Unpin
 # Tooltip of the time on a snoozed line. $when: date and time it comes back.
 row-snoozed-until = Snoozed until { $when }
+# The time on a snoozed line coming back this week. $day: short weekday, such as "Thu". $time: such as "8:00 AM".
+row-snoozed-day-time = { $day } { $time }
+# The Snoozed folder groups its lines by when they come back.
+snoozed-group-today = Today
+snoozed-group-tomorrow = Tomorrow
+snoozed-group-this-week = This week
+snoozed-group-later = Later
+# On a line of sent mail Katna follows up on twice: which one is next, and
+# when it goes out.
+row-follow-up-step = Follow-up { $step } of { $steps } · { $date }
+# A follow-up that fell due while the computer was off and was not sent
+# late.
+row-follow-up-waiting = Follow-up waiting
+# The chip on a mail with a reminder (Remind me). $date: "Oct 9, 8:00 AM".
+row-reminder = Reminder { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -426,6 +463,7 @@ menu-pin = Pin to top
 menu-unpin = Unpin
 # Opens the snooze times.
 menu-snooze = Snooze
+menu-remind = Remind me
 # In the Snoozed folder: brings the mail back to the inbox now.
 menu-unsnooze = Unsnooze
 # Makes a task from the mail, as Gmail's "Add to Tasks".
@@ -493,6 +531,11 @@ menu-make-rule = Make a rule…
 # $kind: "conversation" or "message", as the list groups mail.
 # $count: how many were acted on.
 
+toast-key-imported = Key imported
+toast-key-updated = You had this key already; it's up to date now
+toast-key-removed = Key removed
+toast-key-not-removed = The key couldn't be removed
+toast-fingerprint-copied = Fingerprint copied
 toast-archived = { $kind ->
     [conversation] { $count ->
         [one] Conversation archived.

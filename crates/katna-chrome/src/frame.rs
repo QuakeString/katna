@@ -7,7 +7,7 @@ use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
 use gpui::{
-    AnyElement, App, Bounds, BoxShadow, ClickEvent, Context, CursorStyle, Decorations, Div,
+    AnyElement, App, Bounds, BoxShadow, ClickEvent, Context, CursorStyle, Decorations, Div, Edges,
     FontWeight, Global, HitboxBehavior, Hsla, IntoElement, MouseButton, ParentElement, PathBuilder,
     Pixels, ResizeEdge, SharedString, Size, Styled, Tiling, TitlebarOptions, Window,
     WindowAppearance, WindowBackgroundAppearance, WindowButton, WindowButtonLayout,
@@ -365,23 +365,36 @@ impl WindowChrome {
     /// The width the content gets: the window's surface less the shadow,
     /// resize margins and border that the frame draws around it.
     pub fn inner_width(&self, window: &Window) -> f32 {
-        let width = unpx(window.viewport_size().width);
+        let [_, right, _, left] = self.insets(window);
+        (unpx(window.viewport_size().width) - left - right).max(0.0)
+    }
+
+    /// The height the content gets, as [`WindowChrome::inner_width`] the width.
+    pub fn inner_height(&self, window: &Window) -> f32 {
+        let [top, _, bottom, _] = self.insets(window);
+        (unpx(window.viewport_size().height) - top - bottom).max(0.0)
+    }
+
+    /// How far in from each edge of the window's surface the content
+    /// starts (top, right, bottom, left): the shadow or resize margin and
+    /// the border the frame draws on an edge that is not tiled.
+    fn insets(&self, window: &Window) -> [f32; 4] {
         let Decorations::Client { tiling } = window.window_decorations() else {
-            return width;
+            return [0.0; 4];
         };
-        let full = self.env.borrow().full_client_frame();
-        if !full && tiling.top && tiling.right && tiling.bottom && tiling.left {
-            return width;
-        }
-        let inset = if full {
+        let inset = if self.env.borrow().full_client_frame() {
             self.tokens(window).shadow_inset
         } else {
             RESIZE_HANDLE
         };
-        // The margin and the border on an edge that is not tiled.
         let border = self.border_width();
         let edge = |tiled: bool| if tiled { 0.0 } else { inset + border };
-        (width - edge(tiling.left) - edge(tiling.right)).max(0.0)
+        [
+            edge(tiling.top),
+            edge(tiling.right),
+            edge(tiling.bottom),
+            edge(tiling.left),
+        ]
     }
 
     /// The radius of the content's bottom left and bottom right corners
@@ -476,6 +489,18 @@ impl WindowChrome {
         cx: &mut App,
     ) -> Div {
         let t = self.tokens(window);
+        // Menus, popovers and tooltips keep inside the content.
+        let [top, right, bottom, left] = self.insets(window).map(px);
+        katna_ui::anchored::set_content_insets(
+            window,
+            Edges {
+                top,
+                right,
+                bottom,
+                left,
+            },
+            cx,
+        );
         match window.window_decorations() {
             Decorations::Server => {
                 self.set_input_region(None, window);
@@ -591,6 +616,10 @@ impl WindowChrome {
             .rounded_tr(r_tr)
             .rounded_bl(r_bl)
             .rounded_br(r_br)
+            // Clipped here rather than below the bar, so the cards' edges
+            // and shadows along the top of the content still show, as
+            // under the desktop's own frame.
+            .overflow_hidden()
             .border_color(rgba(t.outline))
             .border_t(border(tiled.top))
             .border_r(border(tiled.right))
@@ -611,7 +640,6 @@ impl WindowChrome {
                 div()
                     .flex_1()
                     .min_h_0()
-                    .overflow_hidden()
                     .rounded_bl(inner(r_bl))
                     .rounded_br(inner(r_br))
                     .child(content),

@@ -11,6 +11,46 @@ rail-tasks = Majukumu
 rail-notes = Madokezo
 rail-files = Faili
 
+## Rail right-click menu
+
+rail-menu-open = Fungua { $app }
+rail-menu-settings = Mipangilio ya { $app }
+rail-menu-turn-off = Zima { $app }…
+
+## Turning an app off (Settings > Apps)
+
+app-off-title = Zima { $app }?
+app-off-body = Katna itaacha kusawazisha { $app } na kuiondoa kwenye:
+app-off-keep = Weka nakala kwenye kompyuta hii
+app-off-keep-detail = Kuiwasha tena ni papo hapo
+app-off-remove = Ondoa nakala kwenye kompyuta hii
+app-off-remove-detail = Hakuna kinachobadilika kwenye akaunti zako, na kuiwasha tena huipakua upya. Kilicho kwenye kompyuta hii pekee, au ambacho bado hakijatumwa, kinabaki.
+app-off-cancel = Ghairi
+app-off-confirm = Zima
+app-off-done = { $app } imezimwa
+app-off-note = { $app } imezimwa
+app-off-turn-on = Washa
+app-off-leaves-calendar-rail = Upau wa programu na Ctrl+2
+app-off-leaves-calendar-agenda = Ajenda kando ya barua zako
+app-off-leaves-calendar-meeting = Panga mkutano, na Fungua kwenye Kalenda kwenye mialiko
+app-off-leaves-calendar-reminders = Vikumbusho vya matukio
+app-off-leaves-calendar-desktop = Matukio kwenye KRunner na saa ya kompyuta ya mezani
+app-off-leaves-contacts-rail = Upau wa programu na Ctrl+3
+app-off-leaves-contacts-card = Ongeza kwenye anwani kwenye kadi ya mtumaji
+app-off-leaves-contacts-birthdays = Siku za kuzaliwa kwenye Kalenda
+app-off-leaves-tasks-rail = Upau wa programu na Ctrl+4
+app-off-leaves-tasks-mail = Ongeza kwenye Majukumu kwenye barua, na Shift+T
+app-off-leaves-tasks-calendar = Majukumu kwenye Kalenda
+app-off-leaves-tasks-tray = Jukumu jipya kwenye trei, na Meta+Alt+T
+app-off-leaves-tasks-reminders = Vikumbusho vya majukumu
+app-off-leaves-notes-rail = Upau wa programu na Ctrl+5
+app-off-leaves-notes-mail = Ongeza dokezo kwenye barua
+app-off-leaves-notes-meetings = Madokezo ya mikutano kwenye matukio
+app-off-leaves-notes-tray = Dokezo jipya kwenye trei, na Meta+Alt+N
+app-off-leaves-notes-reminders = Vikumbusho vya madokezo
+app-off-leaves-files-rail = Upau wa programu na Ctrl+7
+app-off-leaves-files-compose = Faili wakati wa kuambatisha kwenye Tunga
+
 ## Pages of apps still to come
 
 app-page-title = Katna { $app }

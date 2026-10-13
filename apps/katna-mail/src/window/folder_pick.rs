@@ -224,7 +224,9 @@ impl MailWindow {
             let row = row?;
             let address = row.sender.as_str();
             // Sent mail and drafts show their recipients.
-            if row.account != account || address.is_empty() || row.correspondent.starts_with("To: ")
+            if row.account != account
+                || address.is_empty()
+                || row.correspondent.starts_with(&crate::data::to_prefix())
             {
                 return None;
             }
@@ -476,7 +478,7 @@ impl MailWindow {
     }
 
     /// Puts `label` on the lines `keys`, or takes it off, with an Undo.
-    fn toggle_label(
+    pub(super) fn toggle_label(
         &mut self,
         keys: Vec<EntryKey>,
         label: FolderId,

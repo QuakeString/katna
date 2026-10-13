@@ -38,6 +38,8 @@ list-range-about = சுமார் { $total } இல் { $first }–{ $last 
 list-results = “{ $query }” க்கான முடிவுகள்
 list-results-corrected = “{ $query }” க்கான முடிவுகள் காட்டப்படுகின்றன
 list-search-instead = அதற்குப் பதிலாக “{ $query }” என்று தேடு
+list-search-no-index = தேடல் தயாராக இல்லை: அட்டவணை இன்னும் உருவாக்கப்படவில்லை.
+list-search-not-ready = தேடல் தயாராக இல்லை: { $error }
 list-files-more = +{ $count }
 list-replied = நீங்கள் பதிலளித்தீர்கள்
 
@@ -339,11 +341,20 @@ list-empty-tab = { $tab } இல் அஞ்சல் எதுவுமில�
 list-empty-tab-unknown = இந்தத் தாவலில் அஞ்சல் எதுவுமில்லை.
 list-empty-folder = { $folder } இல் மெசேஜ்கள் எதுவுமில்லை.
 list-empty-folder-unknown = இந்த ஃபோல்டரில் மெசேஜ்கள் எதுவுமில்லை.
+list-empty-waiting = பதிலுக்காக எதுவும் காத்திருக்கவில்லை.
+list-empty-reminders = நினைவூட்டல்கள் இல்லை. ஒன்றைச் சேர்க்க அஞ்சலில் H ஐ அழுத்துங்கள்.
 list-first-sync = உங்கள் அஞ்சலைப் பெறுகிறது…
 list-first-sync-detail = அஞ்சல் வர வர இங்கே காட்டப்படும்.
+list-store-unreadable = அஞ்சல் சேமிப்பகத்தைத் திறக்க முடியவில்லை
 
 ## Mail list: lines
 
+row-no-subject = (பொருள் இல்லை)
+row-unknown-sender = (தெரியாத அனுப்புநர்)
+row-to = பெறுநர்:
+row-no-recipients = (பெறுநர்கள் இல்லை)
+row-names-separator = {", "}
+row-me = நான்
 row-removed = இந்த மெசேஜ் அகற்றப்பட்டது.
 row-starred = நட்சத்திரமிட்டது
 row-not-starred = நட்சத்திரமிடவில்லை
@@ -358,6 +369,14 @@ row-tracking-clicked = { $recipients } பேரில் { $opened } பேர�
 row-pin = மேலே பின் செய்
 row-unpin = பின்னை அகற்று
 row-snoozed-until = { $when } வரை உறக்கநிலையில்
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = இன்று
+snoozed-group-tomorrow = நாளை
+snoozed-group-this-week = இந்த வாரம்
+snoozed-group-later = பின்னர்
+row-follow-up-step = ஃபாலோ-அப் { $steps } இல் { $step } · { $date }
+row-follow-up-waiting = ஃபாலோ-அப் காத்திருக்கிறது
+row-reminder = நினைவூட்டல் { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -380,6 +399,7 @@ menu-not-important = முக்கியமில்லாதது எனக�
 menu-pin = மேலே பின் செய்
 menu-unpin = பின்னை அகற்று
 menu-snooze = உறக்கநிலையில் வை
+menu-remind = எனக்கு நினைவூட்டு
 menu-unsnooze = உறக்கநிலையை நீக்கு
 menu-add-to-tasks = பணிகளில் சேர்
 menu-schedule-meeting = கூட்டத்தைத் திட்டமிடு
@@ -391,10 +411,34 @@ menu-move-to = இதற்கு நகர்த்து
 menu-follow-up = பின்தொடர்
 menu-more = மேலும்
 menu-move-to-heading = இதற்கு நகர்த்து:
+menu-move-to-search = இதற்கு நகர்த்து…
+menu-label-as = லேபிளிடு
+menu-label-as-search = லேபிளிடு…
+menu-no-folder = “{ $name }” என்ற ஃபோல்டர் இல்லை
+menu-no-label = “{ $name }” என்ற லேபிள் இல்லை
+menu-create-folder = “{ $name }” ஐ உருவாக்கு
+menu-always-move = { $name } இடமிருந்து வரும் அஞ்சலை எப்போதும் இங்கே நகர்த்து
+toast-always-move-failed = அஞ்சல் நகர்த்தப்பட்டது, ஆனால் விதி உருவாக்கப்படவில்லை: { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } உரையாடல்
+       *[other] { $count } உரையாடல்கள்
+    }
+   *[message] { $count ->
+        [one] { $count } மெசேஜ்
+       *[other] { $count } மெசேஜ்கள்
+    }
+}
 menu-find-from = { $name } அனுப்பிய மின்னஞ்சல்களைக் கண்டறி
+menu-make-rule = விதியை உருவாக்கு…
 
 ## Snackbar after an action on mail in the list
 
+toast-key-imported = கீ இறக்குமதி செய்யப்பட்டது
+toast-key-updated = இந்தக் கீ ஏற்கனவே உங்களிடம் இருந்தது; இப்போது அது புதுப்பிக்கப்பட்டுள்ளது
+toast-key-removed = கீ அகற்றப்பட்டது
+toast-key-not-removed = கீயை அகற்ற முடியவில்லை
+toast-fingerprint-copied = ஃபிங்கர்பிரிண்ட் நகலெடுக்கப்பட்டது
 toast-archived = { $kind ->
     [conversation] { $count ->
         [one] உரையாடல் காப்பகப்படுத்தப்பட்டது.
@@ -425,6 +469,8 @@ toast-moved = { $kind ->
        *[other] { $count } மெசேஜ்கள் நகர்த்தப்பட்டன.
     }
 }
+toast-label-added = “{ $label }” லேபிள் சேர்க்கப்பட்டது.
+toast-label-removed = “{ $label }” லேபிள் அகற்றப்பட்டது.
 toast-starred = { $kind ->
     [conversation] { $count ->
         [one] உரையாடல் நட்சத்திரமிடப்பட்டது.

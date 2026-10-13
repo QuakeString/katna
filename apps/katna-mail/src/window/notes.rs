@@ -21,8 +21,9 @@ mod select;
 
 pub(super) use line_tasks::note_of_task;
 
+use crate::widgets::Tip as _;
 use std::cell::RefCell;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, Ordering};
@@ -30,8 +31,9 @@ use std::time::{Duration, Instant};
 
 use gpui::{
     AnimationExt, AnyElement, Bounds, Context, Div, DragMoveEvent, ElementId, Entity, Focusable,
-    FontWeight, SharedString, Subscription, Task, Window, div, prelude::*, rgba,
+    FontWeight, MouseButton, SharedString, Subscription, Task, Window, div, prelude::*, rgba,
 };
+use katna_core::config::AppKind;
 use katna_dbus::{NoteItem, NotePictureItem};
 use katna_i18n::tr;
 use katna_store::Note;
@@ -44,7 +46,7 @@ use super::MailWindow;
 use crate::daemon::{self, Command};
 use crate::data::EntryKey;
 use crate::theme::{Theme, fade};
-use crate::widgets::{ScaledEdge, elevation, icon, icon_button, icon_button_colored, tip};
+use crate::widgets::{ScaledEdge, elevation, icon, icon_button, icon_button_colored};
 
 /// A card's width on the board, as Keep's.
 const CARD_WIDTH: f32 = 240.0;
@@ -168,6 +170,9 @@ pub(super) struct NotesPage {
     /// The ⋮ menu of the open note or of the ticked cards, open at a
     /// point in the window.
     more: Option<select::MoreMenu>,
+    /// The card right-clicked when it isn't ticked: its menu and popovers
+    /// act on it alone, leaving the ticks as they are.
+    menu_card: Option<i64>,
     /// The colour or label popover of the ticked cards.
     bulk: Option<select::Bulk>,
     /// The version history of the open note, when shown.
@@ -497,6 +502,7 @@ impl MailWindow {
             checked: Vec::new(),
             check_anchor: None,
             more: None,
+            menu_card: None,
             bulk: None,
             history: None,
             _load: None,
@@ -506,6 +512,11 @@ impl MailWindow {
 
     /// Reads the notes from the store again.
     pub(super) fn load_notes(&mut self, cx: &mut Context<Self>) {
+        let hidden: HashSet<i64> = self
+            .hidden_ids(AppKind::Notes)
+            .into_iter()
+            .map(|a| a.0)
+            .collect();
         let Some(page) = self.notes.as_mut() else {
             return;
         };
@@ -527,7 +538,11 @@ impl MailWindow {
                             Some((id, (image, w, h)))
                         })
                         .collect::<Vec<_>>();
-                    (crate::data::notes(&paths), covers)
+                    let notes = crate::data::notes(&paths).map(|mut notes| {
+                        notes.retain(|n| n.account_id.is_none_or(|a| !hidden.contains(&a)));
+                        notes
+                    });
+                    (notes, covers)
                 })
                 .await;
             this.update(cx, |this, cx| {
@@ -997,6 +1012,9 @@ impl MailWindow {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
+        if !self.needs_app(AppKind::Notes, cx) {
+            return;
+        }
         let Some((subject, header)) = keys
             .first()
             .and_then(|key| self.mail.as_ref().ok()?.task_source(*key))
@@ -1049,14 +1067,14 @@ impl MailWindow {
         .bg(rgba(tint))
         .cursor_pointer()
         .hover(|s| s.bg(rgba(chip_hover(tint, th))))
-        .tooltip(tip(
+        .tip(
             if event.is_some() {
                 tr!("notes-open-event")
             } else {
                 tr!("notes-open-mail")
             },
             th,
-        ))
+        )
         .on_click(cx.listener(move |this, _, window, cx| {
             cx.stop_propagation();
             match event {
@@ -1158,7 +1176,7 @@ impl MailWindow {
             .bg(rgba(bg.unwrap_or(th.surface)))
             .cursor_pointer()
             .hover(|s| s.shadow(elevation(th, 1.0)))
-            .tooltip(tip(tr!("notes-open-note"), th))
+            .tip(tr!("notes-open-note"), th)
             .on_click(cx.listener(move |this, _, window, cx| {
                 this.open_note(Some(&open), false, None, window, cx)
             }))
@@ -2047,7 +2065,7 @@ impl MailWindow {
                 )
                 .child(
                     icon_button("notes-new-list", "checkbox-checked", 22.0, th)
-                        .tooltip(tip(tr!("notes-new-list"), th))
+                        .tip(tr!("notes-new-list"), th)
                         .on_click(cx.listener(|this, _, window, cx| {
                             cx.stop_propagation();
                             this.open_note(None, true, None, window, cx)
@@ -2157,7 +2175,7 @@ impl MailWindow {
         let footer = |name: &'static str, tip_text: String| {
             icon_button(("note-act", id as usize ^ name.len()), name, 18.0, th)
                 .size(px(34.0))
-                .tooltip(tip(tip_text, th))
+                .tip(tip_text, th)
         };
         let actions = if trashed {
             div()
@@ -2229,14 +2247,14 @@ impl MailWindow {
                         th,
                     )
                     .size(px(34.0))
-                    .tooltip(tip(
+                    .tip(
                         if note.pinned {
                             tr!("notes-unpin")
                         } else {
                             tr!("notes-pin")
                         },
                         th,
-                    ))
+                    )
                     .on_click(cx.listener(move |this, _, _, cx| {
                         cx.stop_propagation();
                         this.change_note(item.clone(), cx)
@@ -2263,7 +2281,7 @@ impl MailWindow {
                     .group_hover(group.clone(), |s| s.opacity(0.85))
             })
             .cursor_pointer()
-            .tooltip(tip(tr!("notes-select"), th))
+            .tip(tr!("notes-select"), th)
             .on_click(cx.listener(move |this, _, _, cx| {
                 cx.stop_propagation();
                 this.toggle_note_check(id, cx)
@@ -2298,6 +2316,13 @@ impl MailWindow {
                     } else if !trashed {
                         this.open_note(Some(&open), false, None, window, cx)
                     }
+                }),
+            )
+            .on_mouse_down(
+                MouseButton::Right,
+                cx.listener(move |this, event: &gpui::MouseDownEvent, _, cx| {
+                    cx.stop_propagation();
+                    this.open_card_menu(id, event.position, cx)
                 }),
             )
             .when_some(section.filter(|_| !trashed), |d, section| {
@@ -2493,7 +2518,7 @@ impl MailWindow {
                 th,
             )
             .size(px(34.0))
-            .tooltip(tip(tip_text, th))
+            .tip(tip_text, th)
         };
         let palette = editor.palette.then(|| {
             let current = editor.color;
@@ -2532,7 +2557,7 @@ impl MailWindow {
                         }))
                         .cursor_pointer()
                         .hover(|s| s.border_color(rgba(th.text_dim)))
-                        .tooltip(tip(name, th))
+                        .tip(name, th)
                         .on_click(cx.listener(move |this, _, _, cx| {
                             if item.id == 0 {
                                 if let Some(editor) =
@@ -2556,7 +2581,7 @@ impl MailWindow {
             }
             item
         };
-        let width = EDITOR_WIDTH.min(unpx(window.viewport_size().width) - 32.0);
+        let width = EDITOR_WIDTH.min(self.room_width() - 32.0);
         let pictures = self.render_note_pictures(width, th, cx);
         let remind = editor
             .remind_at
@@ -2569,9 +2594,7 @@ impl MailWindow {
             .relative()
             .when(inline, |d| d.w_full().max_w(px(EDITOR_WIDTH)))
             .when(!inline, |d| {
-                d.w(px(
-                    EDITOR_WIDTH.min(unpx(window.viewport_size().width) - 32.0)
-                ))
+                d.w(px(EDITOR_WIDTH.min(self.room_width() - 32.0)))
             })
             .max_h(px(vh * 0.7))
             .flex()
@@ -2617,14 +2640,14 @@ impl MailWindow {
                                     th.text_dim,
                                     th,
                                 )
-                                .tooltip(tip(
+                                .tip(
                                     if pinned {
                                         tr!("notes-unpin")
                                     } else {
                                         tr!("notes-pin")
                                     },
                                     th,
-                                ))
+                                )
                                 .on_click(cx.listener(
                                     move |this, _, _, cx| {
                                         if for_pin.id == 0 {
@@ -2694,7 +2717,7 @@ impl MailWindow {
                             .cursor_pointer()
                             .relative()
                             .child(crate::widgets::hover_fade("hover-glow", Some(6.0), th))
-                            .tooltip(tip(tr!("notes-where"), th))
+                            .tip(tr!("notes-where"), th)
                             .on_click(cx.listener(|this, _, _, cx| {
                                 if let Some(editor) =
                                     this.notes.as_mut().and_then(|p| p.editor.as_mut())
@@ -2792,6 +2815,7 @@ impl MailWindow {
                                 page.more = Some(select::MoreMenu {
                                     at: event.position(),
                                     open_note: true,
+                                    card: false,
                                 });
                             }
                             cx.notify();

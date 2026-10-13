@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A tidier desktop clock"
+text = """
+In Katna Digital Clock, your time zones now sit beside the date at the top,
+and the Tasks list folds away with a click on its heading. Adding an event
+opens a small New event window instead of the whole app. New tasks no
+longer show up twice after a sync hiccup.
+"""

@@ -53,3 +53,4 @@ search-options-show = Onyesha chaguo za utafutaji
 settings = Mipangilio
 account-add = Ongeza akaunti
 account-wheel-hint = Sogeza ili kubadilisha akaunti
+account-menu-all-detail = Akaunti { $count } pamoja

@@ -53,3 +53,7 @@ search-options-show = Bonisa okukhethwa kukho kosesho
 settings = Izilungiselelo
 account-add = Engeza i-akhawunti
 account-wheel-hint = Skrola ukushintsha i-akhawunti
+account-menu-all-detail = { $count ->
+    [one] I-akhawunti engu-{ $count } ndawonye
+   *[other] Ama-akhawunti angu-{ $count } ndawonye
+}

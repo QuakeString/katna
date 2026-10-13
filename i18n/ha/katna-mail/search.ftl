@@ -14,6 +14,7 @@ search-without = Ba shi da
 search-date-within = Kwanan wata a cikin
 search-has-attachment = Yana da abin haɗawa
 search-attachment-custom = Na musamman
+search-attachment-image = Hoto
 search-attachment-custom-hint = Rubuta ƙarin sunan fayil, kamar png, sannan danna Space
 search-attachment-remove = Cire
 search-clear-filter = Share matattara
@@ -60,3 +61,13 @@ search-dates-month-back = Watan da ya gabata
 search-dates-month-on = Wata na gaba
 search-dates-year-back = Shekarar da ta gabata
 search-dates-year-on = Shekara ta gaba
+
+## More results on server: under the results, mail found by asking the
+## mail server, for mail that is not downloaded to this computer yet.
+
+search-server-more = Ƙarin sakamako a sabar
+search-server-searching = Ana bincika wasiƙu a sabar…
+search-server-empty-searching = Babu komai a nan tukuna. Ana bincika wasiƙu a sabar…
+search-server-nothing = Babu ƙarin sakamako a sabar
+search-server-failed = Ba a iya bincika sabar ba.
+search-server-again = Sake gwadawa

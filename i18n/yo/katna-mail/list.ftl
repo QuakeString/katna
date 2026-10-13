@@ -38,6 +38,8 @@ list-range-about = { $first }–{ $last } nínú bí { $total }
 list-results = Àbájáde fún “{ $query }”
 list-results-corrected = Ó ń fi àbájáde hàn fún “{ $query }”
 list-search-instead = Ṣàwárí “{ $query }” dípò
+list-search-no-index = Àwárí kò tíì ṣetán: a kò tíì kọ́ atọ́ka rẹ̀.
+list-search-not-ready = Àwárí kò tíì ṣetán: { $error }
 list-files-more = +{ $count }
 list-replied = O ti fèsì
 
@@ -189,8 +191,17 @@ list-empty-tab = Kò sí lẹ́tà nínú { $tab }.
 list-empty-tab-unknown = Kò sí lẹ́tà nínú táàbù yìí.
 list-empty-folder = Kò sí ìfiránṣẹ́ nínú { $folder }.
 list-empty-folder-unknown = Kò sí ìfiránṣẹ́ nínú fódà yìí.
+list-empty-waiting = Kò sí ohun tó ń dúró de èsì.
+list-empty-reminders = Kò sí ìránnilétí. Tẹ H lórí lẹ́tà kan láti fi ọ̀kan kún un.
 list-first-sync = À ń gba lẹ́tà rẹ…
 list-first-sync-detail = Wọn yóò hàn níbí bí wọ́n ṣe ń dé.
+list-store-unreadable = A kò lè ṣí ibi ìpamọ́ lẹ́tà
+row-no-subject = (kò sí àkọlé)
+row-unknown-sender = (olùfiránṣẹ́ àìmọ̀)
+row-to = Sí:
+row-no-recipients = (kò sí olùgbà)
+row-names-separator = {", "}
+row-me = èmi
 
 ## Mail list: lines
 
@@ -208,6 +219,14 @@ row-tracking-clicked = { $opened } nínú { $recipients } ló ṣí i, { $clicke
 row-pin = Lẹ̀ mọ́ òkè
 row-unpin = Yọ kúrò ní òkè
 row-snoozed-until = A sún un síwájú di { $when }
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = Òní
+snoozed-group-tomorrow = Ọ̀la
+snoozed-group-this-week = Ọ̀sẹ̀ yìí
+snoozed-group-later = Lẹ́yìn náà
+row-follow-up-step = Ìtẹ̀lé { $step } nínú { $steps } · { $date }
+row-follow-up-waiting = Ìtẹ̀lé ń dúró
+row-reminder = Ìránnilétí { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -230,6 +249,7 @@ menu-not-important = Sàmì sí bí kò ṣe pàtàkì
 menu-pin = Lẹ̀ mọ́ òkè
 menu-unpin = Yọ kúrò ní òkè
 menu-snooze = Sún síwájú
+menu-remind = Rán mi létí
 menu-unsnooze = Mú padà báyìí
 menu-add-to-tasks = Fi kún Iṣẹ́
 menu-schedule-meeting = Ṣètò ìpàdé
@@ -245,7 +265,25 @@ menu-follow-up = Tẹ̀lé e
 # Pin to top.
 menu-more = Síwájú sí i
 menu-move-to-heading = Gbé lọ sí:
+menu-move-to-search = Gbé lọ sí…
+menu-label-as = Fi àmì sí
+menu-label-as-search = Fi àmì sí…
+menu-no-folder = Kò sí fódà tí orúkọ rẹ̀ ń jẹ́ “{ $name }”
+menu-no-label = Kò sí àmì tí orúkọ rẹ̀ ń jẹ́ “{ $name }”
+menu-create-folder = Ṣẹ̀dá “{ $name }”
+menu-always-move = Máa gbé lẹ́tà láti ọ̀dọ̀ { $name } wá síbí nígbà gbogbo
+toast-always-move-failed = A ti gbé lẹ́tà náà, ṣùgbọ́n a kò ṣe òfin náà: { $error }
+drag-mail = { $kind ->
+    [conversation] Ìjíròrò { $count }
+   *[message] Ìfiránṣẹ́ { $count }
+}
 menu-find-from = Wá àwọn ímeèlì láti ọ̀dọ̀ { $name }
+menu-make-rule = Ṣe òfin kan…
+toast-key-imported = A ti gbé kọ́kọ́rọ́ náà wọlé
+toast-key-updated = O ti ní kọ́kọ́rọ́ yìí tẹ́lẹ̀; ó ti dé ìwọ̀n tuntun báyìí
+toast-key-removed = A ti yọ kọ́kọ́rọ́ náà kúrò
+toast-key-not-removed = A kò lè yọ kọ́kọ́rọ́ náà kúrò
+toast-fingerprint-copied = A ti ṣẹ̀dà ìtẹ̀ka náà
 
 ## Snackbar after an action on mail in the list
 
@@ -261,6 +299,8 @@ toast-moved = { $kind ->
     [conversation] A ti gbé ìjíròrò { $count } lọ.
    *[message] A ti gbé ìfiránṣẹ́ { $count } lọ.
 }
+toast-label-added = A ti fi àmì “{ $label }” kún un.
+toast-label-removed = A ti yọ àmì “{ $label }” kúrò.
 toast-starred = { $kind ->
     [conversation] A ti fi ìràwọ̀ sí ìjíròrò { $count }.
    *[message] A ti fi ìràwọ̀ sí ìfiránṣẹ́ { $count }.

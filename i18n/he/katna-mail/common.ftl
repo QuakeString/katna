@@ -57,3 +57,4 @@ search-options-show = הצגת אפשרויות החיפוש
 settings = הגדרות
 account-add = הוספת חשבון
 account-wheel-hint = גלילה להחלפת חשבונות
+account-menu-all-detail = { $count } חשבונות יחד

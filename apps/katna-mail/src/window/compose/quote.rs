@@ -6,6 +6,7 @@
 //! the text grows and shrinks smoothly. The x on the button's corner takes
 //! the quote out of the reply, and Undo (or Ctrl+Z) puts it back.
 
+use crate::widgets::Tip as _;
 use std::time::{Duration, Instant};
 
 use gpui::{
@@ -20,7 +21,7 @@ use super::super::MailWindow;
 use super::tools::{Popup, below_end};
 use crate::daemon::Command;
 use crate::theme::Theme;
-use crate::widgets::{icon, tip};
+use crate::widgets::icon;
 
 /// How long the quote takes to open or close.
 const GLIDE: Duration = Duration::from_millis(220);
@@ -278,7 +279,7 @@ impl MailWindow {
                     .flex_row()
                     .items_end()
                     .cursor_pointer()
-                    .tooltip(tip(tr!("compose-hide-trimmed"), th))
+                    .tip(tr!("compose-hide-trimmed"), th)
                     .on_click(cx.listener(|this, _, window, cx| {
                         cx.stop_propagation();
                         this.toggle_quote(window, cx);
@@ -387,7 +388,7 @@ impl MailWindow {
             .border_color(rgba(th.outline))
             .cursor_pointer()
             .hover(|s| s.bg(rgba(th.hover)))
-            .tooltip(tip(tr!("compose-remove-trimmed"), th))
+            .tip(tr!("compose-remove-trimmed"), th)
             .on_click(cx.listener(|this, _, window, cx| {
                 cx.stop_propagation();
                 this.remove_quote(window, cx);
@@ -416,14 +417,14 @@ impl MailWindow {
                     .cursor_pointer()
                     .relative()
                     .child(crate::widgets::hover_fade("hover-glow", Some(8.0), th))
-                    .tooltip(tip(
+                    .tip(
                         if shown {
                             tr!("compose-hide-trimmed")
                         } else {
                             tr!("compose-show-trimmed")
                         },
                         th,
-                    ))
+                    )
                     .on_click(cx.listener(|this, _, window, cx| {
                         cx.stop_propagation();
                         this.toggle_quote(window, cx);
@@ -655,9 +656,7 @@ pub(in crate::window) fn signature_tag(
         .text_size(px(11.5))
         .text_color(rgba(th.text_dim))
         .cursor_pointer()
-        .when(!open, |d| {
-            d.tooltip(tip(tr!("compose-signature-tag-tip"), th))
-        })
+        .when(!open, |d| d.tip(tr!("compose-signature-tag-tip"), th))
         .on_mouse_down(gpui::MouseButton::Left, |_, _, cx| cx.stop_propagation())
         .child(icon("signature", th.text_dim, 12.0))
         .child(name)

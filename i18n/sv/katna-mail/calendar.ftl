@@ -53,7 +53,7 @@ calendar-account-signed-in = Inloggad på { $address } igen. Hämtar dina kalend
 calendar-account-sign-in-refused = { $provider } släppte inte in Katna. Försök igen och ge åtkomst till dina kalendrar.
 calendar-account-refused = Servern godtog inte lösenordet. Yahoo, iCloud, Zoho och andra kräver ett applösenord.
 calendar-account-change-password = Ändra lösenord
-calendar-account-change-password-tooltip = Öppna Inställningar > Konton
+calendar-account-change-password-tooltip = Ange det nya lösenordet; Katna kontrollerar det med servern
 calendar-account-not-enabled = Kalenderåtkomst för Katna är inte påslagen än.
 calendar-account-failed = Det gick inte att läsa kalendrarna.
 calendar-account-error = Det gick inte att läsa kalendrarna: { $reason }
@@ -69,6 +69,7 @@ calendar-account-try-again = Försök igen
 calendar-account-try-again-tooltip = Kontrollera det här kontots kalendrar igen nu
 calendar-account-fixing = Arbetar på det…
 calendar-birthdays = Födelsedagar
+calendar-tasks = Uppgifter
 calendar-birthday-of = Födelsedag för { $name }
 calendar-empty-title = Inga kalendrar ännu
 calendar-empty-text = Katna visar här kalendrarna för dina Google- och Microsoft-konton när de har synkroniserats, och kalendrar från andra servrar som erbjuder CalDAV.
@@ -115,6 +116,7 @@ calendar-add-meet = Lägg till videomöte i Google Meet
 calendar-add-teams = Lägg till Teams-möte
 calendar-has-call = Videomöte har lagts till
 calendar-weekday-day = { $weekday }, { $day }
+calendar-schedule-day = { $weekday }, { $month }
 calendar-all-day-box = Heldag
 calendar-more-options = Fler alternativ
 calendar-save = Spara
@@ -127,6 +129,7 @@ calendar-event-details = Händelseinformation
 # Right-click menus on the calendar: on a free time or day, an event and
 # a task.
 calendar-menu-new-event = Ny händelse
+calendar-event-window-title = Ny händelse
 # Shows the day right-clicked on its own, in the Day view.
 calendar-menu-open-day = Öppna dag
 calendar-menu-duplicate = Duplicera

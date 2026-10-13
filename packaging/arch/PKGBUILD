@@ -66,13 +66,9 @@ _bins=(katna-mail katna-daemon katnactl)
 
 pkgver() {
   cd katna
-  local version
-  # Only version tags: the arch-latest release tag is not a version.
-  if version=$(git describe --long --tags --abbrev=7 --match 'v[0-9]*' 2>/dev/null); then
-    printf '%s' "${version#v}" | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
-  else
-    printf '0.0.0.r%s.g%s' "$(git rev-list --count HEAD)" "$(git rev-parse --short=7 HEAD)"
-  fi
+  # From the version tags (docs/RELEASING.md); the arch-latest release tag
+  # is not a version.
+  sh packaging/linux/version.sh
 }
 
 prepare() {
@@ -114,11 +110,22 @@ package() {
   # of this file (crates/katna-core/tests/packaging.rs checks them).
   install -Dm644 -t "$pkgdir/usr/lib/systemd/user" packaging/systemd/*.service
   install -Dm644 -t "$pkgdir/usr/share/dbus-1/services" packaging/dbus/*.service
-  install -Dm644 -t "$pkgdir/usr/share/applications" packaging/desktop/*.desktop
-  install -Dm644 -t "$pkgdir/usr/share/krunner/dbusplugins" packaging/krunner/*.desktop
+  # .desktop files get their names in every language on the way.
+  local file dir
+  for file in packaging/desktop/*.desktop packaging/krunner/*.desktop packaging/kio/*.desktop; do
+    case $file in
+      packaging/desktop/*) dir=applications ;;
+      packaging/krunner/*) dir=krunner/dbusplugins ;;
+      packaging/kio/*) dir=kio/servicemenus ;;
+    esac
+    install -dm755 "$pkgdir/usr/share/$dir"
+    sh packaging/linux/localize-desktop.sh "$file" "$pkgdir/usr/share/$dir/${file##*/}"
+    chmod 644 "$pkgdir/usr/share/$dir/${file##*/}"
+  done
+  # Katna Mail's entry in Discover and GNOME Software.
+  install -Dm644 -t "$pkgdir/usr/share/metainfo" packaging/metainfo/*.metainfo.xml
   install -Dm644 -t "$pkgdir/usr/share/gnome-shell/search-providers" packaging/gnome-shell/*.ini
-  # "Send with Katna Mail" on files and folders in Dolphin and GNOME Files.
-  install -Dm644 -t "$pkgdir/usr/share/kio/servicemenus" packaging/kio/*.desktop
+  # "Send with Katna Mail" on files and folders in Dolphin (above) and GNOME Files.
   install -Dm644 -t "$pkgdir/usr/share/nautilus-python/extensions" packaging/nautilus/*.py
   install -Dm644 -t "$pkgdir/usr/share/icons/hicolor/scalable/apps" packaging/icons/*.svg
   for dir in packaging/icons/hicolor/*/apps; do

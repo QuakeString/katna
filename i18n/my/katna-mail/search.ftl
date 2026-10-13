@@ -14,6 +14,7 @@ search-without = မပါဝင်သော စကားလုံးမျာ�
 search-date-within = ရက်စွဲ အတွင်း
 search-has-attachment = ပူးတွဲဖိုင် ပါသည်
 search-attachment-custom = စိတ်ကြိုက်
+search-attachment-image = ရုပ်ပုံ
 search-attachment-custom-hint = png ကဲ့သို့ extension တစ်ခု ရိုက်ပြီး Space နှိပ်ပါ
 search-attachment-remove = ဖယ်ရှားရန်
 search-clear-filter = စစ်ထုတ်မှု ရှင်းရန်
@@ -48,3 +49,12 @@ search-dates-month-back = ယခင်လ
 search-dates-month-on = နောက်လ
 search-dates-year-back = ယခင်နှစ်
 search-dates-year-on = နောက်နှစ်
+
+## mail server, for mail that is not downloaded to this computer yet.
+
+search-server-more = ဆာဗာပေါ်ရှိ နောက်ထပ် ရလဒ်များ
+search-server-searching = ဆာဗာပေါ်ရှိ မေးလ်ကို ရှာနေသည်…
+search-server-empty-searching = ဘာမျှ မရှိသေးပါ။ ဆာဗာပေါ်ရှိ မေးလ်ကို ရှာနေသည်…
+search-server-nothing = ဆာဗာပေါ်တွင် နောက်ထပ် ရလဒ် မရှိပါ
+search-server-failed = ဆာဗာကို ရှာ၍ မရပါ။
+search-server-again = ထပ်ကြိုးစားရန်

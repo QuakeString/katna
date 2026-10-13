@@ -41,3 +41,4 @@ search-options-show = ສະແດງຕົວເລືອກການຊອກ�
 settings = ການຕັ້ງຄ່າ
 account-add = ເພີ່ມບັນຊີ
 account-wheel-hint = ເລື່ອນເພື່ອສະຫຼັບບັນຊີ
+account-menu-all-detail = { $count } ບັນຊີລວມກັນ

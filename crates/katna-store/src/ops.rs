@@ -6,7 +6,7 @@
 //! The operations themselves are JSON owned by `katna-sync`; this module
 //! only stores and schedules them.
 
-use katna_core::AccountId;
+use katna_core::{AccountId, MailCategory};
 use rusqlite::{OptionalExtension, params};
 
 use crate::error::Result;
@@ -43,6 +43,31 @@ pub struct PinnedMessage {
 }
 
 impl Store {
+    /// How many changes and messages wait to go to each account's
+    /// servers: queued operations and unsent mail in the outbox. Accounts
+    /// with none are left out.
+    pub fn waiting(&self) -> Result<std::collections::HashMap<AccountId, u64>> {
+        let mut waiting = std::collections::HashMap::new();
+        let mut stmt = self.mail.prepare_cached(
+            "SELECT account_id, count(*) FROM op_queue
+             WHERE state IN ('pending', 'running') GROUP BY account_id",
+        )?;
+        let rows = stmt.query_map([], |row| Ok((row.get::<_, i64>(0)?, row.get::<_, i64>(1)?)))?;
+        for row in rows {
+            let (account, count) = row?;
+            *waiting.entry(AccountId(account)).or_insert(0) += count.max(0) as u64;
+        }
+        for entry in self.outbox()? {
+            if matches!(
+                entry.state,
+                crate::SendState::Queued | crate::SendState::Sending
+            ) {
+                *waiting.entry(entry.account).or_insert(0) += 1;
+            }
+        }
+        Ok(waiting)
+    }
+
     /// Every pinned message, most recently pinned first.
     pub fn pinned(&self) -> Result<Vec<PinnedMessage>> {
         let mut stmt = self.mail.prepare_cached(
@@ -106,6 +131,16 @@ impl Store {
             })
         })?;
         Ok(rows.collect::<rusqlite::Result<_>>()?)
+    }
+
+    /// The inbox tab `message` was sorted into, if it was.
+    pub fn message_category(&self, message: MessageId) -> Result<Option<MailCategory>> {
+        let stored: Option<Option<i64>> = self
+            .mail
+            .prepare_cached("SELECT category FROM message WHERE id = ?1")?
+            .query_row([message.0], |row| row.get(0))
+            .optional()?;
+        Ok(stored.flatten().and_then(MailCategory::from_storage))
     }
 }
 
@@ -326,6 +361,36 @@ impl MailBatch<'_> {
     pub fn remove_from_folder(&mut self, message: MessageId, folder: FolderId) -> Result<()> {
         remove_location(self.tx(), message, folder)
     }
+
+    /// Takes back a move the server refused: `message` goes from `to` back
+    /// to `from` at `uid`. When a sync has meanwhile listed that UID in
+    /// `from` as another message, that one stays and `message` only leaves
+    /// `to`, so the mail isn't shown twice.
+    pub fn move_back(
+        &mut self,
+        message: MessageId,
+        to: FolderId,
+        from: FolderId,
+        uid: Option<u32>,
+    ) -> Result<()> {
+        let tx = self.tx();
+        let taken = match uid {
+            Some(uid) => tx
+                .prepare_cached(
+                    "SELECT 1 FROM message_location
+                     WHERE folder_id = ?1 AND uid = ?2 AND message_id != ?3",
+                )?
+                .query_row(params![from.0, uid, message.0], |_| Ok(()))
+                .optional()?
+                .is_some(),
+            None => false,
+        };
+        if taken {
+            return remove_location(tx, message, to);
+        }
+        self.move_location(message, to, from, uid)?;
+        Ok(())
+    }
 }
 
 #[cfg(test)]
@@ -346,6 +411,7 @@ mod tests {
         let first = batch.enqueue_op(account, r#"{"op":"a"}"#).unwrap();
         let second = batch.enqueue_op(account, r#"{"op":"b"}"#).unwrap();
         batch.commit().unwrap();
+        assert_eq!(store.waiting().unwrap().get(&account), Some(&2));
         assert_eq!(store.next_op_due(account).unwrap(), Some(0));
         let due = store.due_ops(account, 100, 10).unwrap();
         assert_eq!(
@@ -373,6 +439,7 @@ mod tests {
         assert_eq!(batch.clear_ops(account).unwrap(), 2, "failed ones too");
         batch.commit().unwrap();
         assert_eq!(store.next_op_due(account).unwrap(), None);
+        assert!(store.waiting().unwrap().is_empty());
     }
 
     #[test]

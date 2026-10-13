@@ -38,6 +38,8 @@ list-range-about = लगभग { $total } में से { $first }–{ $last
 list-results = “{ $query }” के नतीजे
 list-results-corrected = “{ $query }” के नतीजे दिखाए जा रहे हैं
 list-search-instead = इसके बजाय “{ $query }” खोजें
+list-search-no-index = खोज अभी तैयार नहीं है: इंडेक्स अभी बना नहीं है।
+list-search-not-ready = खोज अभी तैयार नहीं है: { $error }
 list-files-more = +{ $count }
 list-replied = आपने जवाब दिया
 
@@ -339,8 +341,20 @@ list-empty-tab = { $tab } में कोई मेल नहीं है।
 list-empty-tab-unknown = इस टैब में कोई मेल नहीं है।
 list-empty-folder = { $folder } में कोई मैसेज नहीं है।
 list-empty-folder-unknown = इस फ़ोल्डर में कोई मैसेज नहीं है।
+list-empty-waiting = कुछ भी जवाब के इंतज़ार में नहीं है।
+list-empty-reminders = कोई रिमाइंडर नहीं। जोड़ने के लिए किसी मेल पर H दबाएं।
 list-first-sync = आपका मेल लाया जा रहा है…
 list-first-sync-detail = मेल आते ही यहां दिखेगा।
+list-store-unreadable = मेल स्टोर खोला नहीं जा सका
+
+## Mail list: lines
+
+row-no-subject = (कोई विषय नहीं)
+row-unknown-sender = (अज्ञात भेजने वाला)
+row-to = को:
+row-no-recipients = (कोई प्राप्तकर्ता नहीं)
+row-names-separator = {", "}
+row-me = मैं
 
 ## Mail list: lines
 
@@ -358,6 +372,14 @@ row-tracking-clicked = { $recipients } में से { $opened } ने ख�
 row-pin = सबसे ऊपर पिन करें
 row-unpin = अनपिन करें
 row-snoozed-until = { $when } तक स्नूज़ किया गया
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = आज
+snoozed-group-tomorrow = कल
+snoozed-group-this-week = इस हफ़्ते
+snoozed-group-later = बाद में
+row-follow-up-step = फ़ॉलो-अप { $steps } में से { $step } · { $date }
+row-follow-up-waiting = फ़ॉलो-अप इंतज़ार में
+row-reminder = रिमाइंडर { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -380,6 +402,7 @@ menu-not-important = ज़रूरी नहीं के रूप में 
 menu-pin = सबसे ऊपर पिन करें
 menu-unpin = अनपिन करें
 menu-snooze = स्नूज़ करें
+menu-remind = मुझे याद दिलाएं
 menu-unsnooze = स्नूज़ हटाएं
 menu-add-to-tasks = टास्क में जोड़ें
 menu-schedule-meeting = मीटिंग शेड्यूल करें
@@ -395,7 +418,34 @@ menu-follow-up = फ़ॉलो अप
 # Pin to top.
 menu-more = और
 menu-move-to-heading = इसमें ले जाएं:
+menu-move-to-search = इसमें ले जाएं…
+menu-label-as = लेबल लगाएं
+menu-label-as-search = लेबल लगाएं…
+menu-no-folder = “{ $name }” नाम का कोई फ़ोल्डर नहीं
+menu-no-label = “{ $name }” नाम का कोई लेबल नहीं
+menu-create-folder = “{ $name }” बनाएं
+menu-always-move = { $name } के मेल हमेशा यहां ले जाएं
+toast-always-move-failed = मेल ले जाया गया, लेकिन नियम नहीं बना: { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } बातचीत
+       *[other] { $count } बातचीत
+    }
+   *[message] { $count ->
+        [one] { $count } मैसेज
+       *[other] { $count } मैसेज
+    }
+}
 menu-find-from = { $name } से आए ईमेल ढूंढें
+menu-make-rule = नियम बनाएं…
+
+## Snackbar after an action on mail in the list
+
+toast-key-imported = कुंजी इंपोर्ट की गई
+toast-key-updated = यह कुंजी आपके पास पहले से थी; अब यह अप-टू-डेट है
+toast-key-removed = कुंजी हटाई गई
+toast-key-not-removed = कुंजी हटाई नहीं जा सकी
+toast-fingerprint-copied = फ़िंगरप्रिंट कॉपी किया गया
 
 ## Snackbar after an action on mail in the list
 
@@ -429,6 +479,8 @@ toast-moved = { $kind ->
        *[other] { $count } मैसेज ले जाए गए।
     }
 }
+toast-label-added = लेबल “{ $label }” लगाया गया।
+toast-label-removed = लेबल “{ $label }” हटाया गया।
 toast-starred = { $kind ->
     [conversation] { $count ->
         [one] बातचीत तारांकित की गई।

@@ -113,7 +113,8 @@ impl Daemon {
             .collect();
         let rules = self.store().rules()?;
         for &account in &mail {
-            if !all && !accounts.contains(&account) {
+            // Placed again when it is back online.
+            if (!all && !accounts.contains(&account)) || self.is_offline(account) {
                 continue;
             }
             // Without the folders a rule names in its other accounts.

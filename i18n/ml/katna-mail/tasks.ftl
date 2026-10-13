@@ -7,8 +7,11 @@
 tasks-create = പുതിയ ടാസ്‌ക്
 tasks-all = എല്ലാ ടാസ്‌ക്കുകളും
 tasks-today = ഇന്ന്
+tasks-upcoming = വരാനിരിക്കുന്നവ
 tasks-starred = നക്ഷത്രമിട്ടവ
+tasks-completed-view = പൂർത്തിയാക്കിയവ
 tasks-new-list = പുതിയ ലിസ്റ്റ് സൃഷ്ടിക്കുക
+tasks-labels-heading = ലേബലുകൾ
 tasks-on-this-computer = ഈ കമ്പ്യൂട്ടറിൽ
 tasks-my-tasks = എന്റെ ടാസ്‌ക്കുകൾ
 tasks-account-sign-in = ടാസ്‌ക്കുകൾ കാണിക്കാൻ വീണ്ടും സൈൻ ഇൻ ചെയ്യുക
@@ -16,7 +19,7 @@ tasks-account-signed-in = { $address }-ൽ വീണ്ടും സൈൻ ഇ�
 tasks-account-sign-in-refused = { $provider } Katna-യെ അകത്ത് കയറ്റിയില്ല. വീണ്ടും ശ്രമിക്കുക, നിങ്ങളുടെ ടാസ്‌ക്കുകളിലേക്ക് ആക്‌സസ് അനുവദിക്കുക.
 tasks-account-refused = സെർവർ പാസ്‌വേഡ് സ്വീകരിച്ചില്ല. Yahoo, iCloud, Zoho എന്നിവയ്ക്കും മറ്റുള്ളവയ്ക്കും ഒരു ആപ്പ് പാസ്‌വേഡ് വേണം.
 tasks-account-change-password = പാസ്‌വേഡ് മാറ്റുക
-tasks-account-change-password-tooltip = ക്രമീകരണം > അക്കൗണ്ടുകൾ തുറക്കുക
+tasks-account-change-password-tooltip = പുതിയ പാസ്‌വേഡ് ടൈപ്പ് ചെയ്യുക; Katna അത് സെർവറുമായി പരിശോധിക്കും
 tasks-account-not-enabled = Katna-യ്ക്കുള്ള ടാസ്‌ക് ആക്‌സസ് ഇതുവരെ ഓണാക്കിയിട്ടില്ല.
 tasks-account-failed = ടാസ്‌ക് ലിസ്റ്റുകൾ വായിക്കാൻ കഴിഞ്ഞില്ല.
 tasks-account-error = ടാസ്‌ക് ലിസ്റ്റുകൾ വായിക്കാൻ കഴിഞ്ഞില്ല: { $reason }
@@ -41,7 +44,14 @@ tasks-title-placeholder = ശീർഷകം
 tasks-add-step = ഉപടാസ്‌ക് ചേർക്കുക
 tasks-empty = ടാസ്‌ക്കുകളൊന്നുമില്ല. മുകളിൽ ഒന്ന് ചേർക്കുക.
 tasks-starred-empty = ഇവിടെ കാണാൻ ഒരു ടാസ്‌ക്കിന് നക്ഷത്രമിടുക.
+tasks-label-empty = ഈ ലേബലുള്ള തുറന്ന ടാസ്‌ക്കുകളൊന്നുമില്ല.
 tasks-today-empty = ഇന്നത്തേക്ക് ഒന്നുമില്ല.
+tasks-completed-empty = നിങ്ങൾ പൂർത്തിയാക്കുന്ന ടാസ്‌ക്കുകൾ ഇവിടെ കാണാം.
+tasks-upcoming-add = { $day }-ലേക്ക് ഒരു ടാസ്‌ക് ചേർക്കുക
+tasks-upcoming-overdue-day = { $weekday } { $day }
+tasks-from-mail-quiet = മെയിലിൽ നിന്ന്
+tasks-from-note-quiet = കുറിപ്പിൽ നിന്ന്
+tasks-steps-done = { $done }/{ $count }
 tasks-today-date = { $weekday }, { $day }
 tasks-overdue = കാലഹരണപ്പെട്ടത്
 tasks-completed = { $count ->
@@ -49,6 +59,11 @@ tasks-completed = { $count ->
    *[other] പൂർത്തിയായവ ({ $count })
 }
 tasks-list-options = ലിസ്റ്റ് ഓപ്ഷനുകൾ
+tasks-sort-by = ഇതനുസരിച്ച് അടുക്കുക
+tasks-sort-my-order = എന്റെ ക്രമം
+tasks-sort-date = തീയതി
+tasks-sort-starred = അടുത്തിടെ നക്ഷത്രമിട്ടവ
+tasks-sort-title = ശീർഷകം
 tasks-rename-list = ലിസ്റ്റിന്റെ പേര് മാറ്റുക
 tasks-delete-list = ലിസ്റ്റ് ഇല്ലാതാക്കുക
 tasks-mark-done = പൂർത്തിയായതായി അടയാളപ്പെടുത്തുക
@@ -65,6 +80,17 @@ tasks-from-note = കുറിപ്പ്
 tasks-open-note = കുറിപ്പ് തുറക്കുക
 tasks-note-gone = ആ കുറിപ്പ് ഇപ്പോൾ ഇവിടെ ഇല്ല.
 tasks-no-subject = (വിഷയമില്ല)
+
+## Several tasks selected (Ctrl+click, Shift+click)
+
+tasks-selected = { $count ->
+    [one] { $count } തിരഞ്ഞെടുത്തു
+   *[other] { $count } തിരഞ്ഞെടുത്തു
+}
+tasks-select-clear = തിരഞ്ഞെടുപ്പ് മായ്‌ക്കുക
+tasks-select-move = ലിസ്റ്റിലേക്ക് നീക്കുക
+tasks-select-date = തീയതി സജ്ജീകരിക്കുക
+tasks-next-week = അടുത്ത ആഴ്‌ച
 
 ## The details dialog
 
@@ -85,6 +111,13 @@ tasks-remind-on-time = ആ സമയത്ത്
 tasks-remind-morning = അന്നേ ദിവസം, { $time }
 tasks-remind-hour-before = ഒരു മണിക്കൂർ മുമ്പ്
 tasks-remind-day-before = ഒരു ദിവസം മുമ്പ്
+tasks-label-add = ലേബൽ ചേർക്കുക
+tasks-label-task = ടാസ്‌ക് ലേബൽ ചെയ്യുക
+tasks-files-attach = ഫയലുകൾ അറ്റാച്ച് ചെയ്യുക
+tasks-files-pick = അറ്റാച്ച് ചെയ്യുക
+tasks-file-open = തുറക്കുക
+tasks-file-remove = ഫയൽ നീക്കം ചെയ്യുക
+tasks-file-here = ഈ കമ്പ്യൂട്ടറിൽ മാത്രം
 tasks-cancel = റദ്ദാക്കുക
 tasks-save = സംരക്ഷിക്കുക
 tasks-not-a-time = “{ $text }” ഒരു സമയമല്ല, ഉദാഹരണത്തിന് { $example }.
@@ -101,6 +134,13 @@ tasks-due-at = { $day }, { $time }
 tasks-toast-done = ടാസ്‌ക് പൂർത്തിയായി
 tasks-toast-next = കഴിഞ്ഞു. അടുത്തത് { $date }-ന്
 tasks-toast-deleted = ടാസ്‌ക് ഇല്ലാതാക്കി
+tasks-files-added = { $count ->
+    [one] ഫയൽ അറ്റാച്ച് ചെയ്‌തു
+   *[other] { $count } ഫയലുകൾ അറ്റാച്ച് ചെയ്‌തു
+}
+tasks-file-removed = “{ $name }” നീക്കം ചെയ്‌തു
+tasks-files-left-out = അറ്റാച്ച് ചെയ്‌തില്ല: { $names }. ഒരു ടാസ്‌ക്കിൽ { $limit } വരെയുള്ള ഫയലുകൾ ചേർക്കാം, ഫോൾഡറുകൾ പറ്റില്ല.
+tasks-file-missing = ആ ഫയൽ ഇപ്പോൾ ഇവിടെയില്ല.
 tasks-toast-added = { $count ->
     [one] ടാസ്‌ക്കുകളിലേക്ക് ചേർത്തു
    *[other] { $count } ടാസ്‌ക്കുകൾ ചേർത്തു
@@ -110,3 +150,27 @@ tasks-toast-list-deleted = ലിസ്റ്റ് ഇല്ലാതാക്�
 tasks-toast-moved = { $list } എന്നതിലേക്ക് നീക്കി
 tasks-toast-placed = ടാസ്‌ക് നീക്കി
 tasks-toast-rescheduled = ടാസ്‌ക്കിന്റെ സമയം മാറ്റി
+tasks-toast-rescheduled-several = { $count ->
+    [one] ടാസ്‌ക്കിന്റെ സമയം മാറ്റി
+   *[other] { $count } ടാസ്‌ക്കുകളുടെ സമയം മാറ്റി
+}
+tasks-toast-done-several = { $count ->
+    [one] ടാസ്‌ക് പൂർത്തിയാക്കി
+   *[other] { $count } ടാസ്‌ക്കുകൾ പൂർത്തിയാക്കി
+}
+tasks-toast-open-several = { $count ->
+    [one] ടാസ്‌ക് പൂർത്തിയാകാത്തതായി അടയാളപ്പെടുത്തി
+   *[other] { $count } ടാസ്‌ക്കുകൾ പൂർത്തിയാകാത്തതായി അടയാളപ്പെടുത്തി
+}
+tasks-toast-starred = { $count ->
+    [one] ടാസ്‌ക്കിന് നക്ഷത്രമിട്ടു
+   *[other] { $count } ടാസ്‌ക്കുകൾക്ക് നക്ഷത്രമിട്ടു
+}
+tasks-toast-unstarred = { $count ->
+    [one] നക്ഷത്രം നീക്കം ചെയ്‌തു
+   *[other] { $count } ടാസ്‌ക്കുകളിൽ നിന്ന് നക്ഷത്രം നീക്കം ചെയ്‌തു
+}
+tasks-toast-deleted-several = { $count ->
+    [one] ടാസ്‌ക് ഇല്ലാതാക്കി
+   *[other] { $count } ടാസ്‌ക്കുകൾ ഇല്ലാതാക്കി
+}

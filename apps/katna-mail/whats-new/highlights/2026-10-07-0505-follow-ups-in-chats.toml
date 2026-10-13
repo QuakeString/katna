@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Follow-ups in Chat View"
+text = """
+In Chat View, a follow-up waiting to go shows as a faint bubble at the end
+of the chat, with Edit, Send now and Stop. To set one, right-click or hold
+Send and pick Follow up if no reply.
+"""

@@ -4,6 +4,7 @@
 //! menu, putting a template in the message, and saving the message as a
 //! new template. Templates live in `pim.db`; the daemon saves them.
 
+use crate::widgets::Tip as _;
 use std::sync::Arc;
 
 use gpui::{AnyElement, Context, Focusable, Window, div, prelude::*, rgba};
@@ -21,7 +22,7 @@ use crate::data;
 use crate::outgoing::Mailbox;
 use crate::templates;
 use crate::theme::Theme;
-use crate::widgets::{icon_button, menu, menu_item, tip};
+use crate::widgets::{icon_button, menu, menu_item};
 
 impl MailWindow {
     /// The Templates button beside the signature one, and its menu: the
@@ -36,7 +37,7 @@ impl MailWindow {
             .child(
                 icon_button("compose-templates", "template", super::tools::TRAY_ICON, th)
                     .size(px(super::tools::TRAY_TOOL))
-                    .tooltip(tip(tr!("compose-tool-templates"), th))
+                    .tip(tr!("compose-tool-templates"), th)
                     .on_click(cx.listener(|this, _, _, cx| {
                         this.toggle_popup(Popup::Templates, cx);
                         this.load_templates(cx);
@@ -193,7 +194,7 @@ impl MailWindow {
     }
 
     /// The name the open message goes out under, for `{my name}`.
-    fn compose_sender(&self) -> Mailbox {
+    pub(super) fn compose_sender(&self) -> Mailbox {
         let account = self.compose.as_ref().and_then(|c| {
             c.from
                 .and_then(|id| self.accounts.iter().find(|a| a.id == id))

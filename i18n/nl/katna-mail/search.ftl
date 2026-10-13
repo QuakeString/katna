@@ -14,6 +14,7 @@ search-without = Bevat niet
 search-date-within = Datum binnen
 search-has-attachment = Heeft bijlage
 search-attachment-custom = Aangepast
+search-attachment-image = Afbeelding
 search-attachment-custom-hint = Typ een extensie, zoals png, en dan Spatie
 search-attachment-remove = Verwijderen
 search-clear-filter = Filter wissen
@@ -60,3 +61,13 @@ search-dates-month-back = Vorige maand
 search-dates-month-on = Volgende maand
 search-dates-year-back = Vorig jaar
 search-dates-year-on = Volgend jaar
+
+## More results on server: under the results, mail found by asking the
+## mail server, for mail that is not downloaded to this computer yet.
+
+search-server-more = Meer resultaten op de server
+search-server-searching = E-mail op de server doorzoeken…
+search-server-empty-searching = Hier staat nog niets. E-mail op de server doorzoeken…
+search-server-nothing = Geen resultaten meer op de server
+search-server-failed = Kan de server niet doorzoeken.
+search-server-again = Opnieuw proberen

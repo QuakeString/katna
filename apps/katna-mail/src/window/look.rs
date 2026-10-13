@@ -295,12 +295,11 @@ impl MailWindow {
                 cx,
             );
         }
-        let why = if cfg!(windows) {
-            tr!("look-frosted-popups-none-windows")
-        } else {
-            tr!("look-frosted-popups-none")
-        };
-        unavailable(tr!("look-frosted-popups"), why, th)
+        unavailable(
+            tr!("look-frosted-popups"),
+            tr!("look-frosted-popups-none"),
+            th,
+        )
     }
 }
 

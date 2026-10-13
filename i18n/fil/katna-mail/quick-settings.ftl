@@ -47,4 +47,5 @@ quick-help = Tulong
 quick-tour = Mag-tour
 quick-whats-new = Ano’ng bago
 quick-check-updates = Suriin ang mga update
+quick-send-feedback = Magpadala ng feedback
 quick-about = Tungkol sa Katna

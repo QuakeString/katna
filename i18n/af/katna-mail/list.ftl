@@ -38,6 +38,8 @@ list-range-about = { $first }–{ $last } van ongeveer { $total }
 list-results = Resultate vir “{ $query }”
 list-results-corrected = Wys resultate vir “{ $query }”
 list-search-instead = Soek eerder vir “{ $query }”
+list-search-no-index = Soek is nie gereed nie: die indeks is nog nie gebou nie.
+list-search-not-ready = Soek is nie gereed nie: { $error }
 list-files-more = +{ $count }
 list-replied = Jy het geantwoord
 
@@ -339,8 +341,17 @@ list-empty-tab = Geen e-pos in { $tab } nie.
 list-empty-tab-unknown = Geen e-pos in hierdie oortjie nie.
 list-empty-folder = Geen boodskappe in { $folder } nie.
 list-empty-folder-unknown = Geen boodskappe in hierdie vouer nie.
+list-empty-waiting = Niks wag vir 'n antwoord nie.
+list-empty-reminders = Geen herinneringe nie. Druk H op 'n e-pos om een by te voeg.
 list-first-sync = Kry tans jou e-pos…
 list-first-sync-detail = Dit verskyn hier soos dit aankom.
+list-store-unreadable = Die e-posstoor kon nie oopgemaak word nie
+row-no-subject = (geen onderwerp)
+row-unknown-sender = (onbekende sender)
+row-to = Aan:
+row-no-recipients = (geen ontvangers)
+row-names-separator = {", "}
+row-me = ek
 
 ## Mail list: lines
 
@@ -358,6 +369,14 @@ row-tracking-clicked = Oopgemaak deur { $opened } van { $recipients }, 'n skakel
 row-pin = Speld bo vas
 row-unpin = Ontspeld
 row-snoozed-until = Gesluimer tot { $when }
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = Vandag
+snoozed-group-tomorrow = Môre
+snoozed-group-this-week = Hierdie week
+snoozed-group-later = Later
+row-follow-up-step = Opvolg { $step } van { $steps } · { $date }
+row-follow-up-waiting = Opvolg wag
+row-reminder = Herinnering { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -380,6 +399,7 @@ menu-not-important = Merk as nie belangrik nie
 menu-pin = Speld bo vas
 menu-unpin = Ontspeld
 menu-snooze = Sluimer
+menu-remind = Herinner my
 menu-unsnooze = Ontsluimer
 menu-add-to-tasks = Voeg by Take
 menu-schedule-meeting = Skeduleer ’n vergadering
@@ -395,7 +415,31 @@ menu-follow-up = Volg op
 # Pin to top.
 menu-more = Meer
 menu-move-to-heading = Skuif na:
+menu-move-to-search = Skuif na…
+menu-label-as = Etiketteer as
+menu-label-as-search = Etiketteer as…
+menu-no-folder = Geen vouer genaamd “{ $name }” nie
+menu-no-label = Geen etiket genaamd “{ $name }” nie
+menu-create-folder = Skep “{ $name }”
+menu-always-move = Skuif altyd e-pos van { $name } hierheen
+toast-always-move-failed = Die e-pos is geskuif, maar die reël is nie gemaak nie: { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } gesprek
+       *[other] { $count } gesprekke
+    }
+   *[message] { $count ->
+        [one] { $count } boodskap
+       *[other] { $count } boodskappe
+    }
+}
 menu-find-from = Vind e-posse van { $name }
+menu-make-rule = Maak 'n reël…
+toast-key-imported = Sleutel ingevoer
+toast-key-updated = Jy het hierdie sleutel reeds gehad; dit is nou op datum
+toast-key-removed = Sleutel verwyder
+toast-key-not-removed = Die sleutel kon nie verwyder word nie
+toast-fingerprint-copied = Vingerafdruk gekopieer
 
 ## Snackbar after an action on mail in the list
 
@@ -429,6 +473,8 @@ toast-moved = { $kind ->
        *[other] { $count } boodskappe geskuif.
     }
 }
+toast-label-added = Etiket “{ $label }” bygevoeg.
+toast-label-removed = Etiket “{ $label }” verwyder.
 toast-starred = { $kind ->
     [conversation] { $count ->
         [one] Gesprek gester.

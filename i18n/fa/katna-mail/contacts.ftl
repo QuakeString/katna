@@ -34,7 +34,7 @@ contacts-account-signed-in = دوباره به { $address } وارد شدید. �
 contacts-account-sign-in-refused = { $provider } به Katna اجازهٔ ورود نداد. دوباره امتحان کنید و اجازهٔ دسترسی به مخاطبین‌تان را بدهید.
 contacts-account-password = سرور گذرواژه را نپذیرفت. Yahoo، iCloud، Zoho و دیگران به گذرواژهٔ برنامه نیاز دارند.
 contacts-account-change-password = تغییر گذرواژه
-contacts-account-change-password-tooltip = باز کردن تنظیمات > حساب‌ها
+contacts-account-change-password-tooltip = گذرواژهٔ جدید را تایپ کنید؛ Katna آن را با سرور بررسی می‌کند
 contacts-account-failed = خواندن مخاطبین ممکن نشد.
 # $reason is the server's own words, in English.
 contacts-account-error = خواندن مخاطبین ممکن نشد: { $reason }

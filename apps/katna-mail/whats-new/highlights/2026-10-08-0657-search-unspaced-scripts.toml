@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Search in Thai, Lao, Khmer and Burmese"
+text = """
+Search finds a word in Thai, Lao, Khmer or Burmese mail even where the
+sentence has no spaces between words.
+"""

@@ -53,6 +53,11 @@ compose-tool-numbered-list = Numbered list (Ctrl+Shift+7)
 compose-tool-bulleted-list = Bulleted list (Ctrl+Shift+8)
 compose-tool-indent-less = Indent less (Ctrl+[)
 compose-tool-indent-more = Indent more (Ctrl+])
+# Makes the paragraph read left to right (English, say). Ctrl+Shift+X
+# turns it the other way.
+compose-tool-ltr = Left-to-right (Ctrl+Shift+X)
+# Makes the paragraph read right to left (Arabic, Hebrew, Persian, Urdu).
+compose-tool-rtl = Right-to-left (Ctrl+Shift+X)
 # Makes the paragraph a quote.
 compose-tool-quote = Quote (Ctrl+Shift+9)
 compose-tool-strikethrough = Strikethrough (Alt+Shift+5)
@@ -154,6 +159,11 @@ compose-tool-signature-untitled = Untitled
 compose-tool-signature-manage = Manage signatures
 # The faint tag naming the signature beside it in the text.
 compose-signature-tag-tip = Choose another signature
+# After choosing another account in From, which starts with its own
+# signature. $name: the signature's name.
+compose-signature-changed = Signature changed to { $name }
+# After choosing another account in From, which starts without a signature.
+compose-signature-taken-out = Signature taken out
 
 ## The templates menu, and saving a message as a template
 

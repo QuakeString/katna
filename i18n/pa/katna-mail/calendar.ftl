@@ -53,7 +53,7 @@ calendar-account-signed-in = { $address } ਵਿੱਚ ਦੁਬਾਰਾ ਸਾ
 calendar-account-sign-in-refused = { $provider } ਨੇ Katna ਨੂੰ ਅੰਦਰ ਨਹੀਂ ਆਉਣ ਦਿੱਤਾ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ, ਅਤੇ ਆਪਣੇ ਕੈਲੰਡਰਾਂ ਤੱਕ ਪਹੁੰਚ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ।
 calendar-account-refused = ਸਰਵਰ ਨੇ ਪਾਸਵਰਡ ਸਵੀਕਾਰ ਨਹੀਂ ਕੀਤਾ। Yahoo, iCloud, Zoho ਅਤੇ ਹੋਰਾਂ ਨੂੰ ਐਪ ਪਾਸਵਰਡ ਚਾਹੀਦਾ ਹੈ।
 calendar-account-change-password = ਪਾਸਵਰਡ ਬਦਲੋ
-calendar-account-change-password-tooltip = ਸੈਟਿੰਗਾਂ > ਖਾਤੇ ਖੋਲ੍ਹੋ
+calendar-account-change-password-tooltip = ਨਵਾਂ ਪਾਸਵਰਡ ਟਾਈਪ ਕਰੋ; Katna ਇਸਨੂੰ ਸਰਵਰ ਨਾਲ ਜਾਂਚਦਾ ਹੈ
 calendar-account-not-enabled = Katna ਲਈ ਕੈਲੰਡਰ ਪਹੁੰਚ ਅਜੇ ਚਾਲੂ ਨਹੀਂ ਕੀਤੀ ਗਈ।
 calendar-account-failed = ਕੈਲੰਡਰ ਪੜ੍ਹੇ ਨਹੀਂ ਜਾ ਸਕੇ।
 calendar-account-error = ਕੈਲੰਡਰ ਪੜ੍ਹੇ ਨਹੀਂ ਜਾ ਸਕੇ: { $reason }
@@ -69,6 +69,7 @@ calendar-account-try-again = ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ
 calendar-account-try-again-tooltip = ਇਸ ਖਾਤੇ ਦੇ ਕੈਲੰਡਰ ਹੁਣੇ ਦੁਬਾਰਾ ਜਾਂਚੋ
 calendar-account-fixing = ਕੰਮ ਚੱਲ ਰਿਹਾ ਹੈ…
 calendar-birthdays = ਜਨਮਦਿਨ
+calendar-tasks = ਕਾਰਜ
 calendar-birthday-of = { $name } ਦਾ ਜਨਮਦਿਨ
 calendar-empty-title = ਹਾਲੇ ਕੋਈ ਕੈਲੰਡਰ ਨਹੀਂ
 calendar-empty-text = Katna ਤੁਹਾਡੇ Google ਅਤੇ Microsoft ਖਾਤਿਆਂ ਦੇ ਕੈਲੰਡਰ, ਅਤੇ CalDAV ਦੇਣ ਵਾਲੇ ਹੋਰ ਸਰਵਰਾਂ ਦੇ ਕੈਲੰਡਰ ਸਿੰਕ ਹੋਣ ਤੋਂ ਬਾਅਦ ਇੱਥੇ ਦਿਖਾਉਂਦਾ ਹੈ।
@@ -115,6 +116,7 @@ calendar-add-meet = Google Meet ਵੀਡੀਓ ਕਾਲ ਸ਼ਾਮਲ ਕਰ
 calendar-add-teams = Teams ਮੀਟਿੰਗ ਸ਼ਾਮਲ ਕਰੋ
 calendar-has-call = ਵੀਡੀਓ ਕਾਲ ਸ਼ਾਮਲ ਕੀਤੀ ਗਈ
 calendar-weekday-day = { $weekday }, { $day }
+calendar-schedule-day = { $weekday }, { $month }
 calendar-all-day-box = ਸਾਰਾ ਦਿਨ
 calendar-more-options = ਹੋਰ ਵਿਕਲਪ
 calendar-save = ਰੱਖਿਅਤ ਕਰੋ
@@ -127,6 +129,7 @@ calendar-event-details = ਇਵੈਂਟ ਦੇ ਵੇਰਵੇ
 # Right-click menus on the calendar: on a free time or day, an event and
 # a task.
 calendar-menu-new-event = ਨਵਾਂ ਇਵੈਂਟ
+calendar-event-window-title = ਨਵਾਂ ਇਵੈਂਟ
 # Shows the day right-clicked on its own, in the Day view.
 calendar-menu-open-day = ਦਿਨ ਖੋਲ੍ਹੋ
 calendar-menu-duplicate = ਡੁਪਲੀਕੇਟ ਬਣਾਓ

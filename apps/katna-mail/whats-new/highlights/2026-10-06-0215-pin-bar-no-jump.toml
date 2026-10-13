@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Pinning keeps the chat still"
+text = """
+In the chat view, pinning or unpinning a mail no longer makes the
+conversation jump, even at its very end: the pinned bar fades in above it
+and the messages stay where they were.
+"""

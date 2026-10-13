@@ -40,6 +40,7 @@ chat-reply-only = କେବଳ { $name }ଙ୍କୁ ଉତ୍ତର ଦିଅ�
 chat-forward = ଫରୱାର୍ଡ କରନ୍ତୁ
 chat-copy-text = ଟେକ୍ସଟ କପି କରନ୍ତୁ
 chat-show-as-mail = ମେଲ ଭାବେ ଦେଖାନ୍ତୁ
+chat-go-down = ସବୁଠୁ ନୂଆ ମେଲକୁ ଯାଆନ୍ତୁ
 chat-pin = ଉପରେ ପିନ କରନ୍ତୁ
 chat-pin-file = ଫାଇଲକୁ ଉପରେ ପିନ କରନ୍ତୁ
 chat-unpin = ଅନପିନ କରନ୍ତୁ
@@ -59,7 +60,8 @@ chat-pins-cancel = ବାତିଲ କରନ୍ତୁ
 chat-undo = ପୂର୍ବବତ୍ କରନ୍ତୁ
 
 chat-reply-to = { $names }ଙ୍କୁ ଉତ୍ତର ଦିଅନ୍ତୁ
-chat-send = ପଠାନ୍ତୁ (Ctrl+Enter)
+chat-send = ପଠାନ୍ତୁ (Ctrl+Enter)। ଅଧିକ ପାଇଁ ଡାହାଣ-କ୍ଲିକ କରନ୍ତୁ କିମ୍ବା ଧରି ରଖନ୍ତୁ
+chat-send-now = ଏବେ ପଠାନ୍ତୁ
 chat-attach = ଆଟାଚ କରନ୍ତୁ
 chat-attach-photo = ଫଟୋ
 chat-attach-file = ଫାଇଲ

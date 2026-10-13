@@ -14,6 +14,7 @@ search-without = ഇവ ഇല്ലാത്തത്
 search-date-within = തീയതി പരിധി
 search-has-attachment = അറ്റാച്ച്‌മെന്റ് ഉള്ളത്
 search-attachment-custom = ഇഷ്‌ടാനുസൃതം
+search-attachment-image = ചിത്രം
 search-attachment-custom-hint = png പോലുള്ള ഒരു എക്സ്റ്റൻഷൻ ടൈപ്പ് ചെയ്യുക, തുടർന്ന് Space അമർത്തുക
 search-attachment-remove = നീക്കം ചെയ്യുക
 search-clear-filter = ഫിൽട്ടർ മായ്‌ക്കുക
@@ -60,3 +61,12 @@ search-dates-month-back = മുൻ മാസം
 search-dates-month-on = അടുത്ത മാസം
 search-dates-year-back = മുൻ വർഷം
 search-dates-year-on = അടുത്ത വർഷം
+
+## mail server, for mail that is not downloaded to this computer yet.
+
+search-server-more = സെർവറിൽ കൂടുതൽ ഫലങ്ങൾ
+search-server-searching = സെർവറിൽ മെയിൽ തിരയുന്നു…
+search-server-empty-searching = ഇവിടെ ഇതുവരെ ഒന്നുമില്ല. സെർവറിൽ മെയിൽ തിരയുന്നു…
+search-server-nothing = സെർവറിൽ കൂടുതൽ ഫലങ്ങളില്ല
+search-server-failed = സെർവറിൽ തിരയാനായില്ല.
+search-server-again = വീണ്ടും ശ്രമിക്കുക

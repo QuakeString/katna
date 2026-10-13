@@ -1,0 +1,7 @@
+title = "Leave an account out of an app"
+text = """
+Settings now has a page for Contacts, Tasks and Notes, and each of these and
+Files lists your accounts with a switch. Turn one off to leave that account
+out of the app, and its reminders stay quiet. Its items keep syncing, so
+they come back as soon as you turn it on again.
+"""

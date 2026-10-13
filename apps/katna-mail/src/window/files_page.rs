@@ -13,6 +13,7 @@
 //! downloading its mail if needed. Thumbnails are made in the background
 //! for mail already downloaded, and only for the cards on show.
 
+use crate::widgets::Tip as _;
 use std::cell::Cell;
 use std::collections::{HashMap, HashSet};
 use std::ops::Range;
@@ -22,29 +23,31 @@ use std::sync::Arc;
 use gpui::{
     Animation, AnimationExt, AnyElement, Bounds, ClipboardItem, Context, FocusHandle, FontWeight,
     KeyDownEvent, ListAlignment, ListState, MouseButton, MouseDownEvent, MouseUpEvent, Pixels,
-    Point, ScrollHandle, ScrollWheelEvent, SharedString, Task, Window, anchored, canvas, deferred,
-    div, ease_out_quint, linear_color_stop, linear_gradient, list, point, prelude::*, rgba,
+    Point, ScrollHandle, ScrollWheelEvent, SharedString, Task, Window, canvas, deferred, div,
+    ease_out_quint, linear_color_stop, linear_gradient, list, point, prelude::*, rgba,
 };
 use jiff::civil::Date;
 use katna_core::AccountId;
+use katna_core::config::AppKind;
 use katna_core::wildcard;
 use katna_i18n::tr;
 use katna_preview::Kind;
 use katna_store::{LibraryFile, MessageId};
+use katna_ui::anchored;
 use katna_ui::{ScrollBar, px};
 
 use super::MailWindow;
 use super::account_roll::Notches;
 use super::apps::App;
 use super::attachments::{
-    CARD_RADIUS, Item, Thumb, card_top, has_thumbnail, hover_panel, kind_badge, panel_button,
+    CARD_RADIUS, Item, Lifted, Thumb, card_top, corner_button, has_thumbnail, kind_badge,
     row_file_index, thumbnail,
 };
 use super::compose::schedule;
 use crate::data::RowFile;
 use crate::format;
 use crate::theme::{Theme, fade};
-use crate::widgets::{icon, icon_button, raised, tip};
+use crate::widgets::{icon, icon_button, raised};
 use katna_ui::text_input::{InputEvent, TextInput};
 
 mod drive;
@@ -843,6 +846,7 @@ impl MailWindow {
         let mut senders: HashMap<String, Sender> = HashMap::new();
         let mut per_account = HashMap::new();
         let rule = self.config.mail.files.clone();
+        let hidden = self.hidden_ids(AppKind::Files);
         let library = &mut self.library;
         // Sizes of files no longer on the page are forgotten.
         let present: HashSet<(MessageId, usize)> =
@@ -851,6 +855,7 @@ impl MailWindow {
         library.unmeasured.clear();
         let found: Vec<Found> = files
             .into_iter()
+            .filter(|file| !hidden.contains(&file.account))
             .filter_map(|file| {
                 let kind = katna_preview::kind(&file.mime, &file.name);
                 // Signature logos and the like.
@@ -1042,7 +1047,13 @@ impl MailWindow {
             return;
         }
         if self.library.cloud.view.is_some() {
-            if !m.shift && self.on_drive_key(keys.key.as_str(), window, cx) {
+            if !m.shift
+                && self.on_drive_key(
+                    katna_ui::direction::arrow(&keys.key, katna_ui::direction::is_rtl(window)),
+                    window,
+                    cx,
+                )
+            {
                 cx.stop_propagation();
             }
             return;
@@ -1056,7 +1067,10 @@ impl MailWindow {
             .cursor
             .and_then(|ix| self.library.shown.iter().position(|&s| s == ix));
         let last = count - 1;
-        let to = match (keys.key.as_str(), place) {
+        let to = match (
+            katna_ui::direction::arrow(&keys.key, katna_ui::direction::is_rtl(window)),
+            place,
+        ) {
             ("enter" | "space", Some(place)) => {
                 let file = self
                     .library
@@ -1783,7 +1797,7 @@ impl MailWindow {
             let on = grid_now == grid;
             icon_button(id, name, 20.0, th)
                 .when(on, |d| d.bg(rgba(th.search)))
-                .tooltip(tip(label, th))
+                .tip(label, th)
                 .on_click(cx.listener(move |this, _, _, cx| {
                     this.library.grid = grid;
                     this.library.changed();
@@ -1890,7 +1904,7 @@ impl MailWindow {
             }))
             .map(|d| {
                 if days {
-                    d.tooltip(tip(tr!("files-time-wheel"), th)).child(
+                    d.tip(tr!("files-time-wheel"), th).child(
                         div()
                             .id("files-time-clear")
                             .size(px(20.0))
@@ -1964,7 +1978,7 @@ impl MailWindow {
             ))
             .map(|d| {
                 if folded {
-                    d.tooltip(tip(types.label(), th))
+                    d.tip(types.label(), th)
                 } else {
                     d.child(div().whitespace_nowrap().child(types.label()))
                 }
@@ -2097,15 +2111,13 @@ impl MailWindow {
         let thumb_height = thumb_height(width);
         let file = found.row_file();
         let message = file.message;
-        let group = SharedString::from(format!("files-card-{ix}"));
-        let frost = thumb.as_ref().and_then(Thumb::frosted);
-        let show = panel_button(("files-card-mail", ix), "mail", tr!("files-show-mail"), th)
+        let show = corner_button(("files-card-mail", ix), "mail", tr!("files-show-mail"), th)
             .on_click(cx.listener(move |this, _, window, cx| {
                 cx.stop_propagation();
                 this.show_file_mail(message, window, cx);
             }));
         let save_file = file.clone();
-        let save = panel_button(
+        let save = corner_button(
             ("files-card-save", ix),
             "download",
             tr!("attachment-save"),
@@ -2115,14 +2127,6 @@ impl MailWindow {
             cx.stop_propagation();
             this.file_act(save_file.clone(), Act::Save, window, cx);
         }));
-        let panel = hover_panel(
-            group.clone(),
-            found.file.name.clone(),
-            found.file.size,
-            frost,
-            vec![show.into_any_element(), save.into_any_element()],
-            th,
-        );
         let fill = self.chip_fill(&file, false, th);
         let date = found
             .file
@@ -2138,21 +2142,18 @@ impl MailWindow {
         } else {
             found.file.subject.clone()
         };
-        // The thumbnail and name, which the hover panel covers; the lines
-        // under them stay, so the subject can be clicked.
         let head = div()
             .relative()
             .flex_none()
             .h(px(thumb_height + NAME_HEIGHT))
             .flex()
             .flex_col()
-            .child(div().h(px(thumb_height)).w_full().child(card_top(
-                thumb,
-                found.kind,
-                44.0,
-                Some(group.clone()),
-                th,
-            )))
+            .child(
+                div()
+                    .h(px(thumb_height))
+                    .w_full()
+                    .child(card_top(thumb, found.kind, 44.0, th)),
+            )
             .child(
                 div()
                     .relative()
@@ -2175,11 +2176,9 @@ impl MailWindow {
                             .text_color(rgba(th.text))
                             .child(found.file.name.clone()),
                     ),
-            )
-            .child(panel);
+            );
         let card = div()
             .id(("files-card", ix))
-            .group(group)
             .relative()
             .flex_1()
             .flex_basis(px(0.0))
@@ -2225,7 +2224,7 @@ impl MailWindow {
                     .text_size(px(12.0))
                     .text_color(rgba(th.accent))
                     .hover(|s| s.underline())
-                    .tooltip(tip(tr!("files-show-mail"), th))
+                    .tip(tr!("files-show-mail"), th)
                     .on_click(cx.listener(move |this, _, window, cx| {
                         cx.stop_propagation();
                         this.show_file_mail(message, window, cx);
@@ -2234,7 +2233,8 @@ impl MailWindow {
                     .child(div().min_w_0().truncate().child(subject)),
             );
         // The arrow keys' cursor: a ring over the card's edge.
-        let card = card.when(self.library.cursor == Some(ix), |d| {
+        let cursor = self.library.cursor == Some(ix);
+        let card = card.when(cursor, |d| {
             d.child(
                 div()
                     .absolute()
@@ -2244,7 +2244,12 @@ impl MailWindow {
                     .border_color(rgba(th.accent)),
             )
         });
-        self.file_handlers(card, ix, file, cx).into_any_element()
+        let card = self.file_handlers(card, ix, file, cx);
+        Lifted::new(card, format!("files-card-{ix}"), th)
+            .size(found.file.size)
+            .buttons(vec![show, save])
+            .cursor(cursor)
+            .into_any_element()
     }
 
     fn render_file_row(
@@ -2340,7 +2345,7 @@ impl MailWindow {
                         .text_size(px(13.0))
                         .text_color(rgba(th.accent))
                         .hover(|s| s.underline())
-                        .tooltip(tip(tr!("files-show-mail"), th))
+                        .tip(tr!("files-show-mail"), th)
                         .on_click(cx.listener(move |this, _, window, cx| {
                             cx.stop_propagation();
                             this.show_file_mail(message, window, cx);
@@ -2359,7 +2364,7 @@ impl MailWindow {
             )
             .child(
                 icon_button(("files-row-mail", ix), "mail", 20.0, th)
-                    .tooltip(tip(tr!("files-show-mail"), th))
+                    .tip(tr!("files-show-mail"), th)
                     .on_click(cx.listener(move |this, _, window, cx| {
                         cx.stop_propagation();
                         this.show_file_mail(message, window, cx);
@@ -2732,7 +2737,7 @@ impl MailWindow {
         let turn = |id: &'static str, name: &'static str, by: i32, label: String| {
             icon_button(id, name, 18.0, th)
                 .size(px(28.0))
-                .tooltip(tip(label, th))
+                .tip(label, th)
                 .on_click(cx.listener(move |this, _, _, cx| {
                     if let Some(Menu::Time { month, .. }) = &mut this.library.menu
                         && let Ok(to) = month.checked_add(jiff::Span::new().months(by))
@@ -2848,7 +2853,7 @@ impl MailWindow {
                                         this.pick_days(Time::between(from, day), cx);
                                     }
                                 }))
-                                .child(katna_i18n::format::number(day.day() as u64)),
+                                .child(katna_i18n::format::day_number(day)),
                         )
                         .into_any_element()
                     }))

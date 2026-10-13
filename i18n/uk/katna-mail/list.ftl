@@ -38,6 +38,8 @@ list-range-about = { $first }–{ $last } з приблизно { $total }
 list-results = Результати за запитом «{ $query }»
 list-results-corrected = Показано результати за запитом «{ $query }»
 list-search-instead = Натомість шукати «{ $query }»
+list-search-no-index = Пошук ще не готовий: індекс ще не створено.
+list-search-not-ready = Пошук ще не готовий: { $error }
 list-files-more = +{ $count }
 list-replied = Ви відповіли
 
@@ -439,8 +441,17 @@ list-empty-tab = На вкладці «{ $tab }» немає листів.
 list-empty-tab-unknown = На цій вкладці немає листів.
 list-empty-folder = У папці «{ $folder }» немає листів.
 list-empty-folder-unknown = У цій папці немає листів.
+list-empty-waiting = Немає нічого, що очікує відповіді.
+list-empty-reminders = Нагадувань немає. Натисніть H на листі, щоб додати.
 list-first-sync = Отримуємо вашу пошту…
 list-first-sync-detail = Листи з’являтимуться тут у міру надходження.
+list-store-unreadable = Не вдалося відкрити сховище пошти
+row-no-subject = (без теми)
+row-unknown-sender = (невідомий відправник)
+row-to = Кому:
+row-no-recipients = (без одержувачів)
+row-names-separator = {", "}
+row-me = я
 
 ## Mail list: lines
 
@@ -458,6 +469,14 @@ row-tracking-clicked = Відкрили: { $opened } з { $recipients }, пер�
 row-pin = Закріпити вгорі
 row-unpin = Відкріпити
 row-snoozed-until = Відкладено до { $when }
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = Сьогодні
+snoozed-group-tomorrow = Завтра
+snoozed-group-this-week = Цього тижня
+snoozed-group-later = Пізніше
+row-follow-up-step = Повторний лист { $step } з { $steps } · { $date }
+row-follow-up-waiting = Повторний лист очікує
+row-reminder = Нагадування { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -480,6 +499,7 @@ menu-not-important = Позначити як неважливе
 menu-pin = Закріпити вгорі
 menu-unpin = Відкріпити
 menu-snooze = Відкласти
+menu-remind = Нагадати мені
 menu-unsnooze = Скасувати відкладення
 menu-add-to-tasks = Додати до Завдань
 menu-schedule-meeting = Запланувати зустріч
@@ -495,7 +515,35 @@ menu-follow-up = Подальші кроки
 # Pin to top.
 menu-more = Більше
 menu-move-to-heading = Перемістити в:
+menu-move-to-search = Перемістити в…
+menu-label-as = Позначити міткою
+menu-label-as-search = Позначити міткою…
+menu-no-folder = Немає папки «{ $name }»
+menu-no-label = Немає мітки «{ $name }»
+menu-create-folder = Створити «{ $name }»
+menu-always-move = Завжди переміщувати сюди листи від { $name }
+toast-always-move-failed = Лист переміщено, але правило не створено: { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } ланцюжок
+        [few] { $count } ланцюжки
+        [many] { $count } ланцюжків
+       *[other] { $count } ланцюжка
+    }
+   *[message] { $count ->
+        [one] { $count } лист
+        [few] { $count } листи
+        [many] { $count } листів
+       *[other] { $count } листа
+    }
+}
 menu-find-from = Знайти листи від { $name }
+menu-make-rule = Створити правило…
+toast-key-imported = Ключ імпортовано
+toast-key-updated = Цей ключ у вас уже був; тепер він актуальний
+toast-key-removed = Ключ вилучено
+toast-key-not-removed = Не вдалося вилучити ключ
+toast-fingerprint-copied = Відбиток скопійовано
 
 ## Snackbar after an action on mail in the list
 
@@ -541,6 +589,8 @@ toast-moved = { $kind ->
        *[other] { $count } листа переміщено.
     }
 }
+toast-label-added = Мітку «{ $label }» додано.
+toast-label-removed = Мітку «{ $label }» прибрано.
 toast-starred = { $kind ->
     [conversation] { $count ->
         [one] { $count } ланцюжок позначено зірочкою.

@@ -38,6 +38,8 @@ list-range-about = { $first }–{ $last } de unos { $total }
 list-results = Resultados de «{ $query }»
 list-results-corrected = Mostrando resultados de «{ $query }»
 list-search-instead = Buscar «{ $query }» en su lugar
+list-search-no-index = La búsqueda no está lista: el índice aún no se ha creado.
+list-search-not-ready = La búsqueda no está lista: { $error }
 list-files-more = +{ $count }
 list-replied = Respondiste
 
@@ -389,11 +391,20 @@ list-empty-tab = No hay correo en { $tab }.
 list-empty-tab-unknown = No hay correo en esta pestaña.
 list-empty-folder = No hay mensajes en { $folder }.
 list-empty-folder-unknown = No hay mensajes en esta carpeta.
+list-empty-waiting = Nada espera respuesta.
+list-empty-reminders = No hay recordatorios. Pulsa H en un correo para añadir uno.
 list-first-sync = Obteniendo tu correo…
 list-first-sync-detail = Aparecerá aquí a medida que llegue.
+list-store-unreadable = No se ha podido abrir el almacén de correo
 
 ## Mail list: lines
 
+row-no-subject = (sin asunto)
+row-unknown-sender = (remitente desconocido)
+row-to = Para:
+row-no-recipients = (sin destinatarios)
+row-names-separator = {", "}
+row-me = yo
 row-removed = Este mensaje se ha eliminado.
 row-starred = Destacado
 row-not-starred = No destacado
@@ -408,6 +419,14 @@ row-tracking-clicked = Abierto por { $opened } de { $recipients }, enlace seguid
 row-pin = Fijar arriba
 row-unpin = No fijar
 row-snoozed-until = Pospuesto hasta { $when }
+row-snoozed-day-time = { $day } { $time }
+snoozed-group-today = Hoy
+snoozed-group-tomorrow = Mañana
+snoozed-group-this-week = Esta semana
+snoozed-group-later = Más adelante
+row-follow-up-step = Seguimiento { $step } de { $steps } · { $date }
+row-follow-up-waiting = Seguimiento pendiente
+row-reminder = Recordatorio { $date }
 
 ## Mail list: More menu and right-click menu
 
@@ -430,6 +449,7 @@ menu-not-important = Marcar como no importante
 menu-pin = Fijar arriba
 menu-unpin = No fijar
 menu-snooze = Posponer
+menu-remind = Recordármelo
 menu-unsnooze = Dejar de posponer
 menu-add-to-tasks = Añadir a Tareas
 menu-schedule-meeting = Programar una reunión
@@ -445,10 +465,36 @@ menu-follow-up = Hacer seguimiento
 # Pin to top.
 menu-more = Más
 menu-move-to-heading = Mover a:
+menu-move-to-search = Mover a…
+menu-label-as = Etiquetar como
+menu-label-as-search = Etiquetar como…
+menu-no-folder = No hay ninguna carpeta llamada «{ $name }»
+menu-no-label = No hay ninguna etiqueta llamada «{ $name }»
+menu-create-folder = Crear «{ $name }»
+menu-always-move = Mover siempre aquí el correo de { $name }
+toast-always-move-failed = El correo se ha movido, pero no se ha creado la regla: { $error }
+drag-mail = { $kind ->
+    [conversation] { $count ->
+        [one] { $count } conversación
+        [many] { $count } de conversaciones
+       *[other] { $count } conversaciones
+    }
+   *[message] { $count ->
+        [one] { $count } mensaje
+        [many] { $count } de mensajes
+       *[other] { $count } mensajes
+    }
+}
 menu-find-from = Buscar correos de { $name }
+menu-make-rule = Crear una regla…
 
 ## Snackbar after an action on mail in the list
 
+toast-key-imported = Clave importada
+toast-key-updated = Ya tenías esta clave; ahora está actualizada
+toast-key-removed = Clave eliminada
+toast-key-not-removed = No se ha podido eliminar la clave
+toast-fingerprint-copied = Huella digital copiada
 toast-archived = { $kind ->
     [conversation] { $count ->
         [one] Se ha archivado la conversación.
@@ -485,6 +531,8 @@ toast-moved = { $kind ->
        *[other] Se han movido { $count } mensajes.
     }
 }
+toast-label-added = Se ha añadido la etiqueta «{ $label }».
+toast-label-removed = Se ha quitado la etiqueta «{ $label }».
 toast-starred = { $kind ->
     [conversation] { $count ->
         [one] Se ha destacado la conversación.
