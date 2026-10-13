@@ -1260,22 +1260,23 @@ impl MailWindow {
             )
     }
 
-    /// Where a new note goes: the account whose mail is open, if its
-    /// server keeps folders, else the first that does.
+    /// The accounts a note can be kept in: those whose server keeps
+    /// folders, but not one left out of Notes in Settings.
+    fn note_accounts(&self) -> Vec<&katna_core::Account> {
+        let left_out = self.hidden_ids(AppKind::Notes);
+        self.accounts
+            .iter()
+            .filter(|a| a.kind == katna_core::AccountKind::Imap && !left_out.contains(&a.id))
+            .collect()
+    }
+
+    /// Where a new note goes: the account whose mail is open, if it can
+    /// keep notes, else the first that can.
     fn notes_account(&self) -> Option<i64> {
-        let imap = |id: katna_core::AccountId| {
-            self.accounts
-                .iter()
-                .any(|a| a.id == id && a.kind == katna_core::AccountKind::Imap)
-        };
+        let accounts = self.note_accounts();
         self.account()
-            .filter(|id| imap(*id))
-            .or_else(|| {
-                self.accounts
-                    .iter()
-                    .find(|a| a.kind == katna_core::AccountKind::Imap)
-                    .map(|a| a.id)
-            })
+            .filter(|id| accounts.iter().any(|a| a.id == *id))
+            .or_else(|| accounts.first().map(|a| a.id))
             .map(|id| id.0)
     }
 
@@ -2504,9 +2505,8 @@ impl MailWindow {
         let places = editor.places.then(|| {
             let current = editor.account;
             let mut options: Vec<(Option<i64>, String)> = self
-                .accounts
-                .iter()
-                .filter(|a| a.kind == katna_core::AccountKind::Imap)
+                .note_accounts()
+                .into_iter()
                 .map(|a| (Some(a.id.0), a.display_name.clone()))
                 .collect();
             options.push((None, tr!("notes-on-this-computer")));

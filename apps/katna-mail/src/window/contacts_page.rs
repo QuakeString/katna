@@ -647,11 +647,15 @@ impl MailWindow {
         th: &Theme,
         cx: &mut Context<Self>,
     ) -> AnyElement {
-        // A mail archive on this computer has no address book.
+        // A mail archive on this computer has no address book; an account
+        // left out of Contacts in Settings shows nothing here.
+        let left_out = self.hidden_ids(AppKind::Contacts);
         let accounts: Vec<(i64, String)> = self
             .accounts
             .iter()
-            .filter(|a| a.kind.is_mail() && a.kind != AccountKind::Local)
+            .filter(|a| {
+                a.kind.is_mail() && a.kind != AccountKind::Local && !left_out.contains(&a.id)
+            })
             .map(|a| (a.id.0, a.address.clone()))
             .collect();
         let rows = accounts.into_iter().enumerate().map(|(ix, (id, address))| {

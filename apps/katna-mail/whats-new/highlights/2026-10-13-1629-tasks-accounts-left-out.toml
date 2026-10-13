@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-title = "Tasks: accounts you switch off stay out"
+title = "Accounts you switch off stay out"
 text = """
-An account switched off for Tasks in Settings no longer shows on the
-Tasks page. A list your mail service won't delete comes back instead of
-stopping that account's tasks from loading.
+An account switched off for Tasks, Contacts or Notes in Settings no longer
+shows on that page, and new notes no longer offer it. A task list your mail
+service won't delete comes back instead of stopping that account's tasks.
 """
