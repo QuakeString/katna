@@ -323,7 +323,7 @@ impl MailWindow {
                     // GPUI does not clip to the card's corners: the top
                     // row rounds its own.
                     let (left, right) = (r == 0 && c == 0, r == 0 && c + 1 == per_row);
-                    let corner = px(15.0);
+                    let corner = px(radius::LG);
                     let group: SharedString = format!("note-picture-{ix}").into();
                     div()
                         .id(("note-picture", ix))
@@ -397,9 +397,16 @@ impl MailWindow {
             div()
                 .w_full()
                 .h(px(height))
-                .rounded_t(px(radius::SM - 1.0))
+                .rounded_t(px(radius::MD))
                 .overflow_hidden()
-                .child(img(image.clone()).size_full().object_fit(ObjectFit::Cover))
+                // GPUI clips to a rectangle only: the picture rounds its
+                // own top corners to the card's.
+                .child(
+                    img(image.clone())
+                        .size_full()
+                        .object_fit(ObjectFit::Cover)
+                        .rounded_t(px(radius::MD)),
+                )
                 .into_any_element(),
         )
     }

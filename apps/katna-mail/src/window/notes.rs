@@ -2291,7 +2291,7 @@ impl MailWindow {
                 if checked { th.on_accent } else { th.page },
                 14.0,
             ));
-        let cover = self.render_card_cover(id, width - 2.0);
+        let cover = self.render_card_cover(id, width);
         div()
             .id(("note", id as usize))
             .group(group.clone())
