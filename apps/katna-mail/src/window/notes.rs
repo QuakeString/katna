@@ -361,6 +361,34 @@ fn check_of(line: &str) -> Option<(bool, &str)> {
     }
 }
 
+/// The list marker `line` starts with, as typed: its length and the
+/// marker the next line takes. A checkbox goes on unticked, a number
+/// ("1." or "1)") goes up by one, and a bullet ("-", "*" or "•") stays;
+/// the spaces before the marker go on too.
+fn line_marker(line: &str) -> Option<(usize, String)> {
+    let rest = line.trim_start_matches([' ', '\t']);
+    let lead = &line[..line.len() - rest.len()];
+    if let Some((_, after)) = check_of(rest) {
+        return Some((line.len() - after.len(), format!("{lead}{UNTICKED}")));
+    }
+    let marker = rest.split_once(' ')?.0;
+    let next = match marker {
+        "-" | "*" | "•" => marker.to_owned(),
+        _ => {
+            let (digits, dot) = marker.split_at(marker.len().checked_sub(1)?);
+            if !matches!(dot, "." | ")")
+                || digits.is_empty()
+                || digits.len() > 3
+                || !digits.bytes().all(|b| b.is_ascii_digit())
+            {
+                return None;
+            }
+            format!("{}{dot}", digits.parse::<u32>().ok()? + 1)
+        }
+    };
+    Some((lead.len() + marker.len() + 1, format!("{lead}{next} ")))
+}
+
 /// `body` with line `ix` ticked or unticked.
 fn toggle_line(body: &str, ix: usize) -> String {
     body.split('\n')
@@ -628,6 +656,8 @@ impl MailWindow {
             // does; a click on a link to a note opens it.
             area.set_tab_indents(true);
             area.set_open_links(true);
+            // "1.", "-" and checkboxes go on to the next line, as in Keep.
+            area.set_line_markers(Some(std::rc::Rc::new(line_marker)));
             let doc = format::doc_of(&body_text, &body_html);
             let end = doc.end();
             area.set_doc(doc, end, cx);
@@ -653,6 +683,7 @@ impl MailWindow {
                 window,
                 |this, _, event: &RichEvent, window, cx| match event {
                     RichEvent::Changed => {
+                        this.typed_checkbox(cx);
                         this.lift_note_pictures(cx);
                         this.note_typed(cx);
                         this.update_link_pick(cx);
@@ -745,6 +776,26 @@ impl MailWindow {
             page.editor = Some(editor);
         }
         cx.notify();
+    }
+
+    /// "[ ] " or "[] " typed at a line's start becomes a checkbox, and
+    /// "[x] " a ticked one, as in Markdown.
+    fn typed_checkbox(&mut self, cx: &mut Context<Self>) {
+        let Some(editor) = self.notes.as_ref().and_then(|p| p.editor.as_ref()) else {
+            return;
+        };
+        let body = editor.body.clone();
+        let typed = body.read(cx).text_before_cursor();
+        let rest = typed.trim_start_matches([' ', '\t']);
+        let check = match rest {
+            "[ ] " | "[] " => UNTICKED,
+            "[x] " | "[X] " => TICKED,
+            _ => return,
+        };
+        let len = rest.len();
+        body.update(cx, |area, cx| {
+            area.replace_before_cursor(len, check, None, cx)
+        });
     }
 
     fn note_typed(&mut self, cx: &mut Context<Self>) {
@@ -2972,6 +3023,21 @@ mod tests {
         assert_eq!(toggle_checklist("milk\neggs"), "☐ milk\n☐ eggs");
         assert_eq!(toggle_checklist("☐ milk\n☑ eggs"), "milk\neggs");
         assert_eq!(toggle_checklist(""), "☐ ");
+    }
+
+    #[test]
+    fn typed_markers_go_on_to_the_next_line() {
+        let next = line_marker;
+        assert_eq!(next("1. Photo frame"), Some((3, "2. ".to_owned())));
+        assert_eq!(next("9) Call"), Some((3, "10) ".to_owned())));
+        assert_eq!(next("- milk"), Some((2, "- ".to_owned())));
+        assert_eq!(next("• milk"), Some(("• ".len(), "• ".to_owned())));
+        assert_eq!(next("  * eggs"), Some((4, "  * ".to_owned())));
+        assert_eq!(next("☑ eggs"), Some(("☑ ".len(), "☐ ".to_owned())));
+        assert_eq!(next("☐ "), Some(("☐ ".len(), "☐ ".to_owned())));
+        for plain in ["", "milk", "1.5 kg", "2026. was", "-milk", "1.", "a. b"] {
+            assert_eq!(next(plain), None, "{plain}");
+        }
     }
 
     #[test]

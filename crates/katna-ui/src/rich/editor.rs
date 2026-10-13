@@ -34,6 +34,10 @@ use super::html;
 
 /// Draws a block of designed HTML `width` pixels wide.
 pub type HtmlView = Rc<dyn Fn(&doc::HtmlBlock, f32, &mut gpui::App) -> AnyElement>;
+
+/// The typed marker a line starts with, if any: its length in bytes and
+/// the marker the next line takes ([`RichEditor::set_line_markers`]).
+pub type LineMarkers = Rc<dyn Fn(&str) -> Option<(usize, String)>>;
 use super::layout::{Deco, ParaElement, ParaLayout, TextBase};
 use crate::TEXT_AREA_CONTEXT;
 use katna_core::bidi::Direction;
@@ -412,6 +416,8 @@ pub struct RichEditor {
     picking: bool,
     /// Tab indents any paragraph, not only list items.
     tab_indents: bool,
+    /// Typed list markers Enter carries on ([`Self::set_line_markers`]).
+    line_markers: Option<LineMarkers>,
     /// The direction of a paragraph that has no strong character and none
     /// set: the interface language's ([`Self::set_base_direction`]).
     pub(crate) base_direction: Direction,
@@ -475,6 +481,7 @@ impl RichEditor {
             clicked_link: None,
             picking: false,
             tab_indents: false,
+            line_markers: None,
             base_direction: if katna_i18n::rtl() {
                 Direction::Rtl
             } else {
@@ -529,6 +536,28 @@ impl RichEditor {
             self.picking = on;
             cx.notify();
         }
+    }
+
+    /// Carries on markers typed at a line's start ("1.", "-", a checkbox):
+    /// Enter starts the next line with `markers`' next marker, Enter on a
+    /// line with only a marker takes it away, and Backspace right after
+    /// one takes it away.
+    pub fn set_line_markers(&mut self, markers: Option<LineMarkers>) {
+        self.line_markers = markers;
+    }
+
+    /// The typed marker paragraph `path` starts with: its length and the
+    /// marker the next line takes.
+    fn line_marker(&self, path: Path) -> Option<(usize, String)> {
+        let markers = self.line_markers.as_ref()?;
+        if path.cell.is_some() {
+            return None;
+        }
+        let para = self.doc.para(path)?;
+        if para.style.list != List::None {
+            return None;
+        }
+        markers(&para.text)
     }
 
     /// Whether Tab and Shift+Tab indent any paragraph, as a checklist
@@ -1505,6 +1534,18 @@ impl RichEditor {
     }
 
     fn backspace(&mut self, _: &Backspace, _: &mut Window, cx: &mut Context<Self>) {
+        // Backspace right after a typed marker takes the whole marker away.
+        if self.selected_image.is_none()
+            && !self.has_selection()
+            && let Some((len, _)) = self.line_marker(self.head.path)
+            && self.head.offset == len
+        {
+            let path = self.head.path;
+            self.edit(EditKind::Other, cx, |doc, _| {
+                doc.delete(Pos::new(path, 0), Pos::new(path, len))
+            });
+            return;
+        }
         if self.selected_image.is_none() && !self.has_selection() && self.head.offset == 0 {
             let path = self.head.path;
             self.edit(EditKind::Other, cx, |doc, _| doc.join_backward(path));
@@ -1568,6 +1609,33 @@ impl RichEditor {
             return;
         }
         let typing = self.style_for_typing();
+        let (start, end) = self.ordered();
+        if start.path == end.path
+            && let Some((len, next)) = self.line_marker(start.path)
+            && start.offset >= len
+        {
+            let para = self.doc.para(start.path).map_or("", |p| p.text.as_str());
+            let only_marker = para.get(len..).is_some_and(|rest| rest.trim().is_empty());
+            let marker_style = self
+                .doc
+                .para(start.path)
+                .map(|p| p.style_at(0))
+                .unwrap_or_default();
+            self.edit(EditKind::Other, cx, |doc, (start, end)| {
+                if only_marker {
+                    // Enter on an item with nothing in it ends the list.
+                    let len = doc.para(start.path).map_or(0, Para::len);
+                    return doc.delete(Pos::new(start.path, 0), Pos::new(start.path, len));
+                }
+                let at = doc.delete(start, end);
+                let at = doc.split(at);
+                doc.insert_text(at, &next, &marker_style)
+            });
+            if !typing.is_plain() {
+                self.typing = Some(typing);
+            }
+            return;
+        }
         self.edit(EditKind::Other, cx, |doc, (start, end)| {
             let at = doc.delete(start, end);
             if at.path.cell.is_none()
