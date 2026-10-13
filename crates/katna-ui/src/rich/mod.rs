@@ -14,8 +14,8 @@ pub use doc::{
     Pos, Size, Table, image_size,
 };
 pub use editor::{
-    Complete, GrammarCheck, GrammarFix, GrammarIssue, HtmlView, Palette, PasteLabels, PasteOption,
-    PickKey, Picture, RICH_TEXT_CONTEXT, RichEditor, RichEvent, SpellCheck, Suggest, TableEdit,
-    TablePicture, Transfer, bind_keys, image_mime, insert_signature_doc,
+    Complete, GrammarCheck, GrammarFix, GrammarIssue, HtmlView, LineMarkers, Palette, PasteLabels,
+    PasteOption, PickKey, Picture, RICH_TEXT_CONTEXT, RichEditor, RichEvent, SpellCheck, Suggest,
+    TableEdit, TablePicture, Transfer, bind_keys, image_mime, insert_signature_doc,
 };
 pub(crate) use editor::{GRAMMAR_WAIT, HINT_WAIT};

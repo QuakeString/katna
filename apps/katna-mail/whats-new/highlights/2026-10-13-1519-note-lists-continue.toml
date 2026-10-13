@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Notes: lists carry on as you type"
+text = """
+Start a line in a note with "1.", "-", "•" or a checkbox and Enter starts
+the next one for you. Enter on an empty item ends the list, and "[ ]"
+becomes a checkbox.
+"""
