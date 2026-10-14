@@ -18,6 +18,9 @@ tab-notifications = Notifications
 # Settings > Inbox tabs, "Automatic: Gmail (sorted by Katna)": for accounts
 # that are not Gmail, Outlook or Zoho, Katna sorts mail into tabs itself.
 tab-provider-other = sorted by Katna
+# Right-click menu of an inbox tab
+tab-menu-select-all = Select all
+tab-menu-settings = Tab settings
 
 ## Mail list: toolbar
 

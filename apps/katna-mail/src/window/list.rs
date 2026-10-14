@@ -1729,7 +1729,7 @@ impl MailWindow {
         }
     }
 
-    fn pick(&mut self, pick: Pick, cx: &mut Context<Self>) {
+    pub(super) fn pick(&mut self, pick: Pick, cx: &mut Context<Self>) {
         self.menu = None;
         self.checked_all = false;
         self.page_pick = None;
@@ -2213,7 +2213,16 @@ impl MailWindow {
                     d.relative()
                         .child(crate::widgets::hover_fade(("tab-glow", ix), None, th))
                 })
-                .when(label < 0.5, |d| d.tip(tab.label(), th))
+                .when(label < 0.5 && self.context_menu.is_none(), |d| {
+                    d.tip(tab.label(), th)
+                })
+                .on_mouse_down(
+                    gpui::MouseButton::Right,
+                    cx.listener(move |this, event: &gpui::MouseDownEvent, _, cx| {
+                        cx.stop_propagation();
+                        this.open_tab_menu(ix, event.position, cx)
+                    }),
+                )
                 .on_click(cx.listener(move |this, _, _, cx| {
                     // The open tab goes back to its top, as its folder does.
                     if this.tab == ix {

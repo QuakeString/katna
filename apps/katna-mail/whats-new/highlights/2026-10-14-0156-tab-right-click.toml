@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Right-click an inbox tab"
+text = """
+Right-click Primary, Promotions or any other inbox tab to mark all its mail
+as read (with Undo), select all of it, or open the tab settings.
+"""
