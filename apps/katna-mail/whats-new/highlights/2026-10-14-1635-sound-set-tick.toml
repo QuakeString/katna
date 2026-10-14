@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A clean tick on the picked sound set"
+text = """
+In Settings > Notifications, the tick on the picked set of sounds now sits
+above the set's outline, ringed apart from it, instead of being crossed by it.
+"""
