@@ -110,6 +110,8 @@ enum MenuFor {
     Sound(SoundEvent),
     /// A mail's bubble in the chat view, or one of its files.
     Bubble(katna_store::MessageId, Option<usize>),
+    /// Inbox tab `ix` over the mail list.
+    Tab(usize),
 }
 
 impl ContextMenu {
@@ -133,7 +135,8 @@ impl ContextMenu {
             | MenuFor::Signature(_)
             | MenuFor::DefaultSignature { .. }
             | MenuFor::Sound(_)
-            | MenuFor::Bubble(..) => None,
+            | MenuFor::Bubble(..)
+            | MenuFor::Tab(_) => None,
         }
     }
 }
@@ -240,6 +243,68 @@ impl MailWindow {
         cx.notify();
     }
 
+    /// Opens the menu of inbox tab `ix`.
+    pub(super) fn open_tab_menu(&mut self, ix: usize, at: Point<Pixels>, cx: &mut Context<Self>) {
+        self.menu = None;
+        self.context_menu = Some(ContextMenu::new(MenuFor::Tab(ix), at));
+        cx.notify();
+    }
+
+    /// The lines of inbox tab `ix`, open or not.
+    fn tab_entries(&mut self, ix: usize) -> Vec<crate::data::Entry> {
+        let open = std::mem::replace(&mut self.tab, ix);
+        let entries = if let Some(folder) = self.folder {
+            self.list_entries(folder).0
+        } else if let Some((view, account)) = self.unified {
+            self.unified_entries(view, account).0
+        } else {
+            Vec::new()
+        };
+        self.tab = open;
+        entries
+    }
+
+    /// A tab's menu: Mark all as read and Select all for its mail, then
+    /// the inbox tab settings.
+    fn tab_menu_rows(&self, ix: usize, rh: f32, th: &Theme, cx: &mut Context<Self>) -> Rows {
+        let mut rows = Rows::new(rh);
+        let item = |key: &'static str, icon: &str, label: String| {
+            self.context_item(key, icon, label, rh, th, cx)
+        };
+        rows.item(
+            item("tab-mark-read", "mark-read", tr!("menu-mark-all-read")).on_click(cx.listener(
+                move |this, _, _, cx| {
+                    this.close_context_menu(cx);
+                    let keys = this.tab_entries(ix).into_iter().map(|e| e.key).collect();
+                    this.act(Act::Read(true), keys, cx);
+                    this.refresh(false, cx);
+                },
+            )),
+        );
+        rows.item(
+            item(
+                "tab-select-all",
+                "checkbox-checked",
+                tr!("tab-menu-select-all"),
+            )
+            .on_click(cx.listener(move |this, _, _, cx| {
+                this.close_context_menu(cx);
+                this.open_tab(ix, cx);
+                this.pick(super::list::Pick::All, cx);
+            })),
+        );
+        rows.rule(th);
+        rows.item(
+            item("tab-settings", "settings", tr!("tab-menu-settings")).on_click(cx.listener(
+                |this, _, window, cx| {
+                    this.close_context_menu(cx);
+                    this.open_settings_page(super::settings_page::Section::Inbox, window, cx)
+                },
+            )),
+        );
+        rows
+    }
+
     /// Opens the menu of mail `id`'s bubble in the chat view.
     pub(super) fn open_chat_context_menu(
         &mut self,
@@ -264,7 +329,8 @@ impl MailWindow {
             | MenuFor::Signature(_)
             | MenuFor::DefaultSignature { .. }
             | MenuFor::Sound(_)
-            | MenuFor::Bubble(..) => None,
+            | MenuFor::Bubble(..)
+            | MenuFor::Tab(_) => None,
         }
     }
 
@@ -615,6 +681,7 @@ impl MailWindow {
                 id.0,
                 file.map_or(-1, |f| f as i64)
             ),
+            MenuFor::Tab(ix) => format!("context-menu-tab-{ix}"),
         };
         let key = match (menu.open, drills) {
             (Some(sub), true) => format!("{base}-{sub:?}"),
@@ -688,6 +755,7 @@ impl MailWindow {
             Some(MenuFor::Bubble(id, file)) => {
                 (self.bubble_menu_rows(*id, *file, rh, th, cx), Vec::new())
             }
+            Some(MenuFor::Tab(ix)) => (self.tab_menu_rows(*ix, rh, th, cx), Vec::new()),
             None => (Rows::new(rh), Vec::new()),
         }
     }
@@ -999,7 +1067,8 @@ impl MailWindow {
                 | MenuFor::Signature(_)
                 | MenuFor::DefaultSignature { .. }
                 | MenuFor::Sound(_)
-                | MenuFor::Bubble(..),
+                | MenuFor::Bubble(..)
+                | MenuFor::Tab(_),
             )
             | None => None,
         };
