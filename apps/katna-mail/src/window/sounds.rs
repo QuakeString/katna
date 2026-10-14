@@ -213,7 +213,8 @@ impl MailWindow {
                         cx.stop_propagation();
                         sound::play(first);
                     }));
-                self.page_control(div().id(("sound-set", ix)), th, cx)
+                let tile = self
+                    .page_control(div().id(("sound-set", ix)), th, cx)
                     .relative()
                     .min_w_0()
                     .h(px(56.0))
@@ -265,22 +266,27 @@ impl MailWindow {
                                     .child(detail),
                             ),
                     )
-                    .child(play)
-                    .when(on, |d| {
-                        d.child(
-                            div()
-                                .absolute()
-                                .top(px(-7.0))
-                                .right(px(-7.0))
-                                .size(px(18.0))
-                                .rounded_full()
-                                .bg(rgba(th.accent))
-                                .flex()
-                                .items_center()
-                                .justify_center()
-                                .child(icon("check", th.on_accent, 12.0)),
-                        )
-                    })
+                    .child(play);
+                // GPUI draws a border over its own children, so the check
+                // sits beside the tile, not in it, to stay above the ring.
+                // Its own ring in the card's colour parts it from the tile's.
+                div().relative().min_w_0().child(tile).when(on, |d| {
+                    d.child(
+                        div()
+                            .absolute()
+                            .top(px(-8.0))
+                            .right(px(-8.0))
+                            .size(px(22.0))
+                            .rounded_full()
+                            .border_2()
+                            .border_color(rgba(th.surface))
+                            .bg(rgba(th.accent))
+                            .flex()
+                            .items_center()
+                            .justify_center()
+                            .child(icon("check", th.on_accent, 12.0)),
+                    )
+                })
             }))
             .into_any_element()
     }
