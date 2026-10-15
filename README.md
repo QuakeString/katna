@@ -21,6 +21,7 @@
 <p align="center">
   <a href="https://github.com/QuakeString/katna/actions/workflows/ci.yml"><img src="https://github.com/QuakeString/katna/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://github.com/QuakeString/katna/releases/tag/arch-latest"><img src="https://github.com/QuakeString/katna/actions/workflows/arch-package.yml/badge.svg" alt="Arch package"></a>
+  <a href="https://github.com/QuakeString/katna/releases"><img src="https://img.shields.io/github/downloads/QuakeString/katna/total?label=downloads" alt="Downloads"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue" alt="License: GPL-3.0-or-later"></a>
 </p>
 
