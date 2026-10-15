@@ -116,12 +116,15 @@ impl Running {
             .unwrap()
     }
 
+    /// Drops the handle and waits for the worker to return. The limit only
+    /// catches a worker that never stops: a slow Windows CI runner can keep
+    /// parallel workers' last database writes going past 5 s.
     async fn stop(self) {
         drop(self.handle);
         self.done
             .recv()
             .or(async {
-                Timer::after(Duration::from_secs(5)).await;
+                Timer::after(Duration::from_secs(20)).await;
                 panic!("worker did not stop");
             })
             .await
