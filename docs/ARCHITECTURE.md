@@ -2328,11 +2328,17 @@ Gemini or confidential mode):
   included), inbox tabs, undo-send delay, signatures and conversation view.
   Changes apply at once and are saved to `config.toml` (`[mail]`,
   `[sending]` and `[shortcuts]`).
-- **Scaling.** Settings > Appearance > Scaling makes the whole interface
-  75% to 200% of its size, on top of the desktop's scale, and applies at
-  once. GPUI takes the display's scale from the desktop and cannot add to
-  it, so Katna scales its own lengths: every length goes through
-  `katna_ui::px`, which multiplies by the scale, and every length read
+- **Scaling.** Settings > Appearance > Scaling follows the desktop's
+  scale (the "Same as the desktop" switch, on by default), or, switched
+  off, gives Katna its own scale from 75% to 300%, as Telegram does, and
+  applies at once. The own scale counts the screen's pixels as the
+  desktop does (`mail.own_scale`), so 200% matches a desktop set to 200%
+  on KDE and Windows alike, and it is redone as the window moves between
+  screens of different scales. Older versions' scale on top of the
+  desktop's (`mail.scale`) becomes the own scale once. GPUI takes the
+  display's scale from the desktop and cannot change it, so Katna scales
+  its own lengths by its scale over the desktop's: every length goes
+  through `katna_ui::px`, which multiplies by that factor, and every length read
   back from GPUI (layout bounds, the window's size, the pointer) through
   `katna_ui::unpx`, which divides by it (`crates/katna-ui/src/scale.rs`).
   The layouts follow the scaled width, as a web page's do when zoomed:

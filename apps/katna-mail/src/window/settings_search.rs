@@ -272,7 +272,7 @@ const ENTRIES: &[Entry] = &[
         Section::Appearance,
         "settings-appearance-scaling",
         "settings-appearance-scaling-summary",
-        "scale zoom size bigger smaller larger font text dpi magnify",
+        "scale zoom size bigger smaller larger font text dpi hidpi magnify interface desktop system default",
     ),
     entry(
         Section::Appearance,
