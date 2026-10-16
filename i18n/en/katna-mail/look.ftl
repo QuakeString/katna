@@ -5,6 +5,11 @@
 
 ## Settings > Appearance > Scaling
 
+# A switch above the scale slider: on, Katna Mail is as big as the
+# desktop's own scale says, and the slider is dimmed.
+scale-desktop = Same as the desktop
+# Under scale-desktop. $percent: the desktop's scale, a number such as 180.
+scale-desktop-detail = Your desktop is set to { $percent }%
 # A sample letter drawn small and large at the two ends of the scale slider.
 # Use a common letter of your script.
 scale-letter = A

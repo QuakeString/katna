@@ -1,29 +1,37 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! Settings > Appearance > Scaling: a slider from a small "A" to a large
-//! one, with a mark at 100%. Dragging previews the value and lets go to
-//! apply it, so the slider doesn't grow under the pointer; the arrow keys,
-//! Home and End apply at once. See `katna_ui::scale`.
+//! Settings > Appearance > Scaling: a switch to follow the desktop's
+//! scale, and under it a slider for Katna's own, with the value at its
+//! end. While the switch is on the slider is dimmed at the desktop's
+//! value. Dragging previews the value and lets go to apply it, so the
+//! slider doesn't grow under the pointer; the arrow keys, Home and End
+//! apply at once. The value counts the screen's pixels as the desktop
+//! does, so 200% is twice as big as at a desktop scale of 100% on any
+//! screen; see `katna_ui::scale`.
 
 use std::cell::Cell;
 use std::rc::Rc;
 
 use gpui::{
     AnyElement, Bounds, Context, DispatchPhase, KeyDownEvent, MouseButton, MouseDownEvent,
-    MouseMoveEvent, MouseUpEvent, Pixels, canvas, div, prelude::*, relative, rgba,
+    MouseMoveEvent, MouseUpEvent, Pixels, Window, canvas, div, prelude::*, relative, rgba,
 };
 use katna_i18n::tr;
 use katna_ui::px;
+use katna_ui::tokens::{space, state, text};
 
 use super::MailWindow;
 use super::settings::Change;
 use crate::theme::Theme;
-use crate::widgets::{ScaledEdge, outlined_button};
+use crate::widgets::ScaledEdge;
 
 /// The range, in percent, and the step.
 pub(super) const MIN: u16 = 75;
-pub(super) const MAX: u16 = 200;
+pub(super) const MAX: u16 = 300;
 const STEP: u16 = 5;
+/// Room for the value at the slider's end, so the slider keeps its
+/// length from 75% to 300%.
+const VALUE_WIDTH: f32 = 44.0;
 /// The knob's width.
 const KNOB: f32 = 18.0;
 
@@ -52,216 +60,275 @@ fn fraction(value: u16) -> f32 {
     f32::from(value.clamp(MIN, MAX) - MIN) / f32::from(MAX - MIN)
 }
 
+/// `percent` on the slider's steps, inside its range.
+fn snap(percent: f32) -> u16 {
+    let percent = if percent.is_finite() { percent } else { 100.0 };
+    ((percent / f32::from(STEP)).round() as u16 * STEP).clamp(MIN, MAX)
+}
+
+/// The desktop's scale, in whole percent.
+fn desktop_percent(desktop: f32) -> u16 {
+    (desktop * 100.0).round().clamp(1.0, f32::from(u16::MAX)) as u16
+}
+
+/// What Katna's lengths are multiplied by for its own scale `own` on a
+/// desktop at `desktop`; 1 while it follows the desktop.
+pub(super) fn factor(own: Option<u16>, desktop: f32) -> f32 {
+    match own {
+        Some(percent) if desktop > 0.0 => f32::from(percent) / 100.0 / desktop,
+        _ => 1.0,
+    }
+}
+
 impl MailWindow {
+    /// Reads the desktop's scale for this window, which changes as it
+    /// moves between screens, and scales Katna to match: the desktop's
+    /// own, or Katna's own in its place. An older version's scale on top
+    /// of the desktop's becomes Katna's own here, the first time the
+    /// desktop's is known.
+    pub(super) fn sync_scale(&mut self, window: &Window, cx: &mut Context<Self>) {
+        let desktop = window.scale_factor();
+        if !desktop.is_finite() || desktop <= 0.0 {
+            return;
+        }
+        self.desktop_scale = desktop;
+        let view = &mut self.config.mail;
+        if view.own_scale.is_none() && view.scale != 100 {
+            view.own_scale = Some(snap(f32::from(view.scale) * desktop));
+            view.scale = 100;
+            self.save_config();
+        }
+        let want = factor(self.config.mail.own_scale, desktop)
+            .clamp(katna_ui::scale::MIN, katna_ui::scale::MAX);
+        if (want - katna_ui::scale::scale()).abs() > 0.001 {
+            katna_ui::scale::set_scale(want);
+            // Every row is a new height; the other windows draw again
+            // after this one.
+            self.list_state.remeasure();
+            cx.defer(|cx| cx.refresh_windows());
+        }
+    }
+
     pub(super) fn scale_control(&self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
-        let applied = self.config.mail.scale.clamp(MIN, MAX);
+        let desktop = desktop_percent(self.desktop_scale);
+        let own = self.config.mail.own_scale;
+        let follows = own.is_none();
+        let applied = own.map_or(desktop, |own| own.clamp(MIN, MAX));
         let (dragging, track) = match &self.settings_page {
-            Some(page) => (page.scale.value, page.scale.track.clone()),
-            None => (None, Rc::default()),
+            Some(page) if !follows => (page.scale.value, page.scale.track.clone()),
+            _ => (None, Rc::default()),
         };
         let value = dragging.unwrap_or(applied);
         let at = fraction(value);
         let entity = cx.entity().downgrade();
         let down_track = track.clone();
         let paint_track = track.clone();
-        let slider = self
-            .page_control(div().id("page-scale"), th, cx)
+        let slider = div()
+            .id("page-scale")
             .flex_1()
             .min_w(px(160.0))
             .h(px(36.0))
-            .px(px(KNOB / 2.0 + 4.0))
-            .rounded(px(8.0))
-            .cursor_pointer()
-            .on_key_down(cx.listener(|this, event: &KeyDownEvent, window, cx| {
-                let now = this.config.mail.scale.clamp(MIN, MAX);
-                let next = match katna_ui::direction::arrow(
-                    &event.keystroke.key,
-                    katna_ui::direction::is_rtl(window),
-                ) {
-                    "left" | "down" => now.saturating_sub(STEP),
-                    "right" | "up" => now + STEP,
-                    "home" => MIN,
-                    "end" => MAX,
-                    _ => return,
-                };
-                cx.stop_propagation();
-                this.apply(Change::Scale(next.clamp(MIN, MAX)), cx);
-            }))
-            .on_mouse_down(
-                MouseButton::Left,
-                cx.listener(move |this, event: &MouseDownEvent, window, cx| {
-                    let Some(track) = down_track.get() else {
-                        return;
+            .px(px(KNOB / 2.0))
+            .rounded(px(katna_ui::tokens::radius::SM));
+        // While it follows the desktop, the slider shows the desktop's
+        // scale in the disabled colour. Mixed rather than see-through, so
+        // the line doesn't show through the knob.
+        let fill = if follows {
+            crate::theme::mix(th.surface, th.accent, state::DISABLED)
+        } else {
+            th.accent
+        };
+        let slider = if follows {
+            slider
+        } else {
+            self.page_control(slider, th, cx)
+                .cursor_pointer()
+                .on_key_down(cx.listener(move |this, event: &KeyDownEvent, window, cx| {
+                    let now = this
+                        .config
+                        .mail
+                        .own_scale
+                        .unwrap_or(desktop)
+                        .clamp(MIN, MAX);
+                    let next = match katna_ui::direction::arrow(
+                        &event.keystroke.key,
+                        katna_ui::direction::is_rtl(window),
+                    ) {
+                        "left" | "down" => now.saturating_sub(STEP),
+                        "right" | "up" => now + STEP,
+                        "home" => MIN,
+                        "end" => MAX,
+                        _ => return,
                     };
-                    if let Some(page) = this.settings_page.as_mut() {
-                        page.scale.value = Some(value_at(
-                            track,
-                            event.position.x,
-                            katna_ui::direction::is_rtl(window),
-                        ));
-                        cx.notify();
-                    }
-                }),
-            )
-            .child(
-                div()
-                    .relative()
-                    .size_full()
-                    // The line, filled up to the knob.
-                    .child(
+                    cx.stop_propagation();
+                    this.apply(Change::Scale(Some(next.clamp(MIN, MAX))), cx);
+                }))
+                .on_mouse_down(
+                    MouseButton::Left,
+                    cx.listener(move |this, event: &MouseDownEvent, window, cx| {
+                        let Some(track) = down_track.get() else {
+                            return;
+                        };
+                        if let Some(page) = this.settings_page.as_mut() {
+                            page.scale.value = Some(value_at(
+                                track,
+                                event.position.x,
+                                katna_ui::direction::is_rtl(window),
+                            ));
+                            cx.notify();
+                        }
+                    }),
+                )
+        };
+        let slider = slider.child(
+            div()
+                .relative()
+                .size_full()
+                // The line, filled up to the knob.
+                .child(
+                    div()
+                        .absolute()
+                        .left_0()
+                        .right_0()
+                        .top(px(16.0))
+                        .h(px(4.0))
+                        .rounded_full()
+                        .bg(rgba(th.switch_off)),
+                )
+                .child(
+                    div()
+                        .absolute()
+                        .left_0()
+                        .top(px(16.0))
+                        .h(px(4.0))
+                        .w(relative(at))
+                        .rounded_full()
+                        .bg(rgba(fill)),
+                )
+                // The mark at the desktop's scale.
+                .when(!follows && (MIN..=MAX).contains(&desktop), |d| {
+                    d.child(
                         div()
                             .absolute()
-                            .left_0()
-                            .right_0()
-                            .top(px(16.0))
-                            .h(px(4.0))
-                            .rounded_full()
-                            .bg(rgba(th.divider)),
-                    )
-                    .child(
-                        div()
-                            .absolute()
-                            .left_0()
-                            .top(px(16.0))
-                            .h(px(4.0))
-                            .w(relative(at))
-                            .rounded_full()
-                            .bg(rgba(th.accent)),
-                    )
-                    // The mark at 100%.
-                    .child(
-                        div()
-                            .absolute()
-                            .left(relative(fraction(100)))
+                            .left(relative(fraction(desktop)))
                             .top(px(6.0))
                             .w(px(1.0))
                             .h(px(24.0))
                             .bg(rgba(th.text_faint)),
                     )
-                    .child(
-                        div()
-                            .absolute()
-                            .left(relative(at))
-                            .ml(px(-KNOB / 2.0))
-                            .top(px(18.0 - KNOB / 2.0))
-                            .size(px(KNOB))
-                            .rounded_full()
-                            .bg(rgba(th.accent))
-                            .border_px(2.0)
-                            .border_color(rgba(th.surface)),
-                    )
-                    .child(
-                        canvas(
-                            move |bounds, _, _| track.set(Some(bounds)),
-                            move |_, _, window, _| {
-                                if dragging.is_none() {
-                                    return;
-                                }
-                                // While dragging, the pointer counts
-                                // anywhere in the window.
-                                let (moved, released) = (entity.clone(), entity.clone());
-                                let track = paint_track.clone();
-                                window.on_mouse_event(
-                                    move |event: &MouseMoveEvent, phase, window, cx| {
-                                        let Some(bounds) = track.get() else {
-                                            return;
-                                        };
-                                        if phase != DispatchPhase::Bubble {
-                                            return;
-                                        }
-                                        let value = value_at(
-                                            bounds,
-                                            event.position.x,
-                                            katna_ui::direction::is_rtl(window),
-                                        );
-                                        moved
-                                            .update(cx, |this, cx| {
-                                                let Some(page) = this.settings_page.as_mut() else {
-                                                    return;
-                                                };
-                                                if page.scale.value.is_some()
-                                                    && page.scale.value != Some(value)
-                                                {
-                                                    page.scale.value = Some(value);
-                                                    cx.notify();
-                                                }
-                                            })
-                                            .ok();
-                                    },
-                                );
-                                window.on_mouse_event(move |_: &MouseUpEvent, phase, _, cx| {
+                })
+                .child(
+                    div()
+                        .absolute()
+                        .left(relative(at))
+                        .ml(px(-KNOB / 2.0))
+                        .top(px(18.0 - KNOB / 2.0))
+                        .size(px(KNOB))
+                        .rounded_full()
+                        .bg(rgba(fill))
+                        .border_px(2.0)
+                        .border_color(rgba(th.surface)),
+                )
+                .child(
+                    canvas(
+                        move |bounds, _, _| track.set(Some(bounds)),
+                        move |_, _, window, _| {
+                            if dragging.is_none() {
+                                return;
+                            }
+                            // While dragging, the pointer counts
+                            // anywhere in the window.
+                            let (moved, released) = (entity.clone(), entity.clone());
+                            let track = paint_track.clone();
+                            window.on_mouse_event(
+                                move |event: &MouseMoveEvent, phase, window, cx| {
+                                    let Some(bounds) = track.get() else {
+                                        return;
+                                    };
                                     if phase != DispatchPhase::Bubble {
                                         return;
                                     }
-                                    released
+                                    let value = value_at(
+                                        bounds,
+                                        event.position.x,
+                                        katna_ui::direction::is_rtl(window),
+                                    );
+                                    moved
                                         .update(cx, |this, cx| {
-                                            let value = this
-                                                .settings_page
-                                                .as_mut()
-                                                .and_then(|page| page.scale.value.take());
-                                            if let Some(value) = value {
-                                                this.apply(Change::Scale(value), cx);
+                                            let Some(page) = this.settings_page.as_mut() else {
+                                                return;
+                                            };
+                                            if page.scale.value.is_some()
+                                                && page.scale.value != Some(value)
+                                            {
+                                                page.scale.value = Some(value);
                                                 cx.notify();
                                             }
                                         })
                                         .ok();
-                                });
-                            },
-                        )
-                        .absolute()
-                        .size_full(),
-                    ),
-            );
-        let letter = |size: f32| {
-            div()
-                .flex_none()
-                .w(px(24.0))
-                .flex()
-                .justify_center()
-                .text_size(px(size))
-                .text_color(rgba(th.text_dim))
-                .child(tr!("scale-letter"))
-        };
+                                },
+                            );
+                            window.on_mouse_event(move |_: &MouseUpEvent, phase, _, cx| {
+                                if phase != DispatchPhase::Bubble {
+                                    return;
+                                }
+                                released
+                                    .update(cx, |this, cx| {
+                                        let value = this
+                                            .settings_page
+                                            .as_mut()
+                                            .and_then(|page| page.scale.value.take());
+                                        if let Some(value) = value {
+                                            this.apply(Change::Scale(Some(value)), cx);
+                                            cx.notify();
+                                        }
+                                    })
+                                    .ok();
+                            });
+                        },
+                    )
+                    .absolute()
+                    .size_full(),
+                ),
+        );
+        let value_text = div()
+            .flex_none()
+            .w(px(VALUE_WIDTH))
+            .flex()
+            .justify_end()
+            .text_size(px(text::BODY))
+            .text_color(rgba(if follows { th.text_dim } else { th.accent }))
+            .child(tr!("scale-percent", percent = value));
         div()
             .flex()
             .flex_col()
-            .gap(px(8.0))
+            .gap(px(space::S1))
+            .child(self.switch_row(
+                "page-scale-desktop",
+                tr!("scale-desktop"),
+                tr!("scale-desktop-detail", percent = desktop),
+                follows,
+                // Off starts Katna's own at the desktop's, so nothing moves.
+                Change::Scale(if follows {
+                    Some(snap(f32::from(desktop)))
+                } else {
+                    None
+                }),
+                th,
+                cx,
+            ))
             .child(
                 div()
                     .flex()
                     .flex_row()
                     .items_center()
-                    .gap(px(4.0))
-                    .child(letter(13.0))
+                    .gap(px(space::S4))
+                    // In line with the switch row's text and switch: the
+                    // knob's edge under the text, the value under the
+                    // switch's end.
+                    .px(px(space::S3))
                     .child(slider)
-                    .child(letter(24.0)),
-            )
-            .child(
-                div()
-                    .h(px(36.0))
-                    .flex()
-                    .flex_row()
-                    .items_center()
-                    .gap(px(12.0))
-                    .child(
-                        div()
-                            .text_size(px(14.0))
-                            .text_color(rgba(th.text_dim))
-                            .child(tr!("scale-percent", percent = value)),
-                    )
-                    .when(applied != 100 && dragging.is_none(), |d| {
-                        d.child(
-                            outlined_button(
-                                "page-scale-reset",
-                                tr!("scale-reset", percent = 100),
-                                th,
-                            )
-                            .map(|d| self.page_control(d, th, cx))
-                            .on_click(
-                                cx.listener(|this, _, _, cx| this.apply(Change::Scale(100), cx)),
-                            ),
-                        )
-                    }),
+                    .child(value_text),
             )
             .into_any_element()
     }
@@ -272,6 +339,16 @@ mod tests {
     use gpui::{point, size};
 
     use super::*;
+
+    #[test]
+    fn own_scale_replaces_the_desktops() {
+        assert_eq!(factor(None, 1.8), 1.0);
+        assert!((factor(Some(180), 1.8) - 1.0).abs() < 1e-6);
+        assert!((factor(Some(100), 2.0) - 0.5).abs() < 1e-6);
+        assert_eq!(snap(1.25 * 180.0), 225);
+        assert_eq!(snap(f32::NAN), 100);
+        assert_eq!(desktop_percent(1.75), 175);
+    }
 
     #[test]
     fn values_snap_to_steps_inside_the_range() {

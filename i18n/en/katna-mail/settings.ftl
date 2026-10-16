@@ -318,7 +318,7 @@ settings-appearance-density = Density
 settings-appearance-density-default = Default
 settings-appearance-density-compact = Compact
 settings-appearance-scaling = Scaling
-settings-appearance-scaling-detail = Makes everything in Katna Mail bigger or smaller, on top of the desktop's own scale: text, icons, spacing and dividers. Mail you send keeps its own font size. Very small sizes can make icons hard to click.
+settings-appearance-scaling-detail = How big everything in Katna Mail is: text, icons, spacing and dividers. It follows the desktop's scale, or turn that off and pick Katna's own, for a HiDPI screen. Mail you send keeps its own font size. Very small sizes can make icons hard to click.
 settings-appearance-motion-speed = Animation speed
 settings-appearance-motion-speed-detail = How long folds, slides and fades take.
 # The desktop's own animation speed setting (KDE: System Settings > Animation speed).

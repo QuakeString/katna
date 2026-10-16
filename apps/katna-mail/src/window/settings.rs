@@ -120,8 +120,9 @@ pub(super) enum Change {
     SendCrashReports(bool),
     /// Anonymous usage statistics sent once a week.
     SendUsageStatistics(bool),
-    /// The interface scale, in percent.
-    Scale(u16),
+    /// Katna's own interface scale, in percent, or `None` for the
+    /// desktop's.
+    Scale(Option<u16>),
     /// Katna's own animation speed, as a percentage of normal length, or
     /// `None` for the desktop's.
     AnimationSpeed(Option<u16>),
@@ -555,12 +556,12 @@ impl MailWindow {
             }
             Change::UndoSend(seconds) => sending.undo_send_seconds = seconds,
             Change::Density(density) => view.density = density,
-            Change::Scale(percent) => {
-                if view.scale == percent {
+            Change::Scale(own) => {
+                if view.own_scale == own {
                     return;
                 }
-                view.scale = percent;
-                katna_ui::scale::set_scale(f32::from(percent) / 100.0);
+                view.own_scale = own;
+                katna_ui::scale::set_scale(super::scale_slider::factor(own, self.desktop_scale));
                 // Every row is a new height, and every window a new size.
                 self.list_state.remeasure();
                 cx.refresh_windows();
