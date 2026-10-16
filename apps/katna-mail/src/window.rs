@@ -843,6 +843,8 @@ pub struct MailWindow {
     activity_button: std::rc::Rc<std::cell::Cell<Option<gpui::Bounds<gpui::Pixels>>>>,
     /// The Settings page, when open in place of the list.
     settings_page: Option<settings_page::SettingsPage>,
+    /// The desktop's scale for this window, as GPUI last gave it.
+    desktop_scale: f32,
     /// The question before removing an account or deleting all data.
     danger: Option<accounts::Danger>,
     /// The question before deleting several lines, or deleting for good.
@@ -1187,6 +1189,7 @@ impl MailWindow {
             activity_unseen: 0,
             activity_button: std::rc::Rc::default(),
             settings_page: None,
+            desktop_scale: 1.0,
             danger: None,
             delete_ask: None,
             sender_checks: Default::default(),
@@ -3775,6 +3778,9 @@ impl MailWindow {
 impl Render for MailWindow {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         crate::widgets::follow_direction(window);
+        if !self.detached && !self.event_only {
+            self.sync_scale(window, cx);
+        }
         // Text without a size of its own follows Settings > Appearance > Scaling.
         window.set_rem_size(px(16.0));
         // Before anything draws text that can be selected.

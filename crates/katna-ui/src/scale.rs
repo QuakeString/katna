@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! The interface scale: Settings > Appearance > Scaling makes everything
-//! bigger or smaller on top of the desktop's own scale.
+//! The interface scale: Settings > Appearance > Scaling follows the
+//! desktop's scale, or sets Katna's own in its place.
 //!
-//! GPUI takes the display's scale from the desktop and has no way to add
-//! to it, so Katna scales its own lengths instead: every length in the
-//! GPUI crates goes through [`px`], which multiplies by the scale, and
-//! every length read back from GPUI (a layout's bounds, the window's size,
-//! the pointer) goes through [`unpx`], which divides by it. Code between
+//! GPUI takes the display's scale from the desktop and has no way to
+//! change it, so Katna scales its own lengths instead, by its own scale
+//! divided by the desktop's: every length in the GPUI crates goes through
+//! [`px`], which multiplies by the scale, and every length read back from
+//! GPUI (a layout's bounds, the window's size, the pointer) goes through
+//! [`unpx`], which divides by it. Code between
 //! the two works in unscaled design units, so a change applies at the next
 //! frame. Never use `gpui::px` in the app (clippy's `disallowed-methods`
 //! stops it).
@@ -16,15 +17,16 @@ use std::cell::Cell;
 
 use gpui::Pixels;
 
-/// The smallest and the largest scale.
-pub const MIN: f32 = 0.75;
-pub const MAX: f32 = 2.0;
+/// The smallest and the largest scale: Katna's own 75% on a desktop at
+/// 300%, and its own 300% on a desktop at 100%.
+pub const MIN: f32 = 0.25;
+pub const MAX: f32 = 3.0;
 
 thread_local! {
     static SCALE: Cell<f32> = const { Cell::new(1.0) };
 }
 
-/// The interface scale, 1.0 by default.
+/// The interface scale, on top of the desktop's: 1.0 by default.
 pub fn scale() -> f32 {
     SCALE.with(Cell::get)
 }
@@ -63,6 +65,8 @@ mod tests {
         set_scale(1.5);
         assert_eq!(f32::from(px(10.0)), 15.0);
         assert_eq!(unpx(px(10.0)), 10.0);
+        set_scale(0.1);
+        assert_eq!(scale(), MIN);
         set_scale(9.0);
         assert_eq!(scale(), MAX);
         set_scale(f32::NAN);

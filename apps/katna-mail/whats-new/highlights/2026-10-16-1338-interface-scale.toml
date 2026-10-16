@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Your own interface scale"
+text = """
+Settings > Appearance > Scaling follows your desktop's scale, or turn off
+Same as the desktop and slide Katna to its own size, from 75% to 300%:
+handy on a HiDPI screen.
+"""

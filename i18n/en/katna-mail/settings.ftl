@@ -318,7 +318,7 @@ settings-appearance-density = Density
 settings-appearance-density-default = Default
 settings-appearance-density-compact = Compact
 settings-appearance-scaling = Scaling
-settings-appearance-scaling-detail = Makes everything in Katna Mail bigger or smaller, on top of the desktop's own scale: text, icons, spacing and dividers. Mail you send keeps its own font size. Very small sizes can make icons hard to click.
+settings-appearance-scaling-detail = How big everything in Katna Mail is: text, icons, spacing and dividers. It follows the desktop's scale, or turn that off and pick Katna's own, for a HiDPI screen. Mail you send keeps its own font size. Very small sizes can make icons hard to click.
 settings-appearance-motion-speed = Animation speed
 settings-appearance-motion-speed-detail = How long folds, slides and fades take.
 # The desktop's own animation speed setting (KDE: System Settings > Animation speed).
@@ -677,7 +677,7 @@ settings-notifications-count-summary = The unread count on the taskbar icon
 settings-notifications-muted-summary = Unmute folders, accounts, conversations and senders
 settings-accounts-accounts-summary = Add or remove an account, or change its picture
 settings-appearance-density-summary = Default or compact lines in the list
-settings-appearance-scaling-summary = Make everything bigger or smaller: text, icons, spacing and dividers
+settings-appearance-scaling-summary = Follow the desktop's scale or pick Katna's own: text, icons, spacing and dividers
 settings-appearance-motion-speed-summary = How long folds, slides and fades take: the desktop's speed or Katna's own
 settings-appearance-reduce-motion-summary = Turn animations off, or follow the desktop
 settings-appearance-theme-summary = System, light or dark

@@ -1216,9 +1216,15 @@ pub struct MailView {
     /// wear one picked from their address.
     pub account_colors: BTreeMap<String, String>,
     pub density: Density,
-    /// The size of everything in the windows, in percent, on top of the
-    /// desktop's own scale (75 to 200).
+    /// Older versions' interface scale, in percent on top of the
+    /// desktop's own scale. The window turns anything but 100 into
+    /// [`Self::own_scale`] the first time it knows the desktop's scale.
     pub scale: u16,
+    /// Katna's own interface scale, in percent of the screen's pixels as
+    /// the desktop counts them (75 to 300), whatever the desktop's scale.
+    /// Not set: the desktop's scale.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub own_scale: Option<u16>,
     /// How long animations take compared with normal (0.25 to 4): Katna's
     /// own speed. Not set: the desktop's animation speed.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -1519,6 +1525,7 @@ impl Default for MailView {
             account_colors: BTreeMap::new(),
             density: Density::Default,
             scale: 100,
+            own_scale: None,
             animation_speed: None,
             reduce_motion: ReduceMotion::Desktop,
             theme: Theme::System,

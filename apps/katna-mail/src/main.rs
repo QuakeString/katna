@@ -297,8 +297,11 @@ fn main() -> ExitCode {
             }
             // Settings > Experimental > Look & Feel, before the first window.
             let config = Config::load(&paths.config_file()).unwrap_or_default();
-            // Settings > Appearance > Scaling, before any length is made.
-            katna_ui::scale::set_scale(f32::from(config.mail.scale) / 100.0);
+            // Settings > Appearance > Scaling, before any length is made:
+            // as if the desktop were at 100% until the window knows.
+            katna_ui::scale::set_scale(
+                f32::from(config.mail.own_scale.unwrap_or(config.mail.scale)) / 100.0,
+            );
             let look = window::look(&config);
             cx.set_global(look);
             let mut env = Environment::from_env();
