@@ -6703,3 +6703,14 @@ startup task starts it at sign-in, since a package's registry writes
 (the `Run` key) stay inside the package; and its toasts use the package's
 app ID. The manifest's identity values come from Partner Center and the
 submission is the owner's.
+
+## 28. Katna PDF (planned)
+
+Katna PDF (`apps/katna-pdf`) is a PDF viewer, editor, signer and library
+manager in the Katna family: Acrobat Reader–class viewing, Master PDF
+Editor–class editing, Indian DSC and PAdES signing with Aadhaar eSign, and
+Okular-style night reading. It reuses `katna-ui`, `katna-chrome`,
+`katna-platform` and `katna-i18n`, so it looks like Katna Mail, and it
+reads cloud drives through the daemon's `Cloud*` D-Bus calls (§13.8). Its
+own crates are named `katna-pdf-*`. Unlike Katna Mail it is planned for
+macOS too, after Linux and Windows. The full plan is `docs/PDF.md`.
