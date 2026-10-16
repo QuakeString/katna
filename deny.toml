@@ -14,6 +14,10 @@ ignore = [
     { id = "RUSTSEC-2026-0192", reason = "ttf-parser: via gpui-pre (fontdb, rustybuzz); unmaintained, no known vulnerability" },
     # Unmaintained (not vulnerable) crate pulled in by Harper's grammar rules.
     { id = "RUSTSEC-2025-0141", reason = "bincode 2: via harper-core (harper-brill, burn); unmaintained, no known vulnerability" },
+    # Yanked, not vulnerable: crates.io pulled every zip 7.x and 8.x, and
+    # calamine 0.36 and harper-core 2.11 still need ^8.6. Remove when both
+    # move to zip 9 (Mozammel's call, Oct 16 2026).
+    { crate = "zip@8.6.0", reason = "yanked with all of zip 8; calamine and harper-core still require ^8.6" },
 ]
 
 [licenses]
