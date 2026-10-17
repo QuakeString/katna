@@ -6386,6 +6386,7 @@ dependencies = [
  "gpui-pre-windows",
  "katna-core",
  "katna-i18n",
+ "katna-platform",
  "unicode-bidi",
  "unicode-segmentation",
 ]

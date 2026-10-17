@@ -11,7 +11,7 @@ code already used most, so moving code onto them changes little on screen.
 | --- | --- |
 | Radii, spacing, text sizes, state opacities, elevation levels, durations | `katna_ui::tokens` (`crates/katna-ui/src/tokens.rs`) |
 | Springs | `katna_ui::motion` (`SMOOTH`, `GENTLE`, `SLIDE`, `QUICK`) |
-| Colour roles | Katna Mail's `Theme` (`apps/katna-mail/src/theme.rs`), built from the schemes in `katna_ui::schemes` |
+| Colour roles | `katna_ui::theme::Theme` (`crates/katna-ui/src/theme.rs`), built from the schemes in `katna_ui::schemes`; shared with Katna PDF |
 | Lengths | always through `katna_ui::px` (interface scale) |
 | Shared controls | `apps/katna-mail/src/widgets.rs`, moving to `katna-ui` as they are shared beyond Mail |
 
