@@ -18,6 +18,17 @@ ignore = [
     # calamine 0.36 and harper-core 2.11 still need ^8.6. Remove when both
     # move to zip 9 (Mozammel's call, Oct 16 2026).
     { crate = "zip@8.6.0", reason = "yanked with all of zip 8; calamine and harper-core still require ^8.6" },
+    # zip 8 extraction flaws, fixed only in zip 9. Katna, calamine and
+    # harper-core read entries in memory and never call extract(), so none
+    # applies. Remove with the zip@8.6.0 entry above.
+    { id = "RUSTSEC-2026-0367", reason = "zip 8: SUID/SGID kept by extract(); never called" },
+    { id = "RUSTSEC-2026-0368", reason = "zip 8: symlinks escape in extract(); never called" },
+    { id = "RUSTSEC-2026-0369", reason = "zip 8: permissions through symlinks in extract(); never called" },
+    # Unmaintained (not vulnerable): folded into zbus 6, but zbus 5 still
+    # comes in through GPUI (accesskit_unix, ashpd, oo7). Revisit with zbus 6.
+    { id = "RUSTSEC-2026-0370", reason = "zvariant: merged into zbus 6; via zbus 5; no known vulnerability" },
+    { id = "RUSTSEC-2026-0371", reason = "zbus_names: merged into zbus 6; via zbus 5; no known vulnerability" },
+    { id = "RUSTSEC-2026-0372", reason = "zvariant_derive: merged into zbus 6; via zbus 5; no known vulnerability" },
 ]
 
 [licenses]
