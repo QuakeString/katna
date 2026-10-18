@@ -20,6 +20,7 @@ pub mod text_input;
 pub mod theme;
 pub mod tokens;
 pub mod tooltip;
+pub mod widgets;
 pub mod window_drag;
 
 /// How strongly hint text in an empty field shows, against the field's
