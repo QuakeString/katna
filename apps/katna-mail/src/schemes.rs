@@ -1,33 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! The color schemes built into Katna (`katna_ui::schemes`), as the
-//! desktop schemes `Theme::from_scheme` takes.
+//! The color schemes built into Katna (`katna_ui::schemes`).
 
-use katna_platform::colors::Scheme;
 pub use katna_ui::schemes::*;
-
-/// A built-in side as a desktop scheme.
-pub trait SideScheme {
-    /// The side as a desktop scheme, for `Theme::from_scheme`.
-    fn scheme(&self, name: &str) -> Scheme;
-}
-
-impl SideScheme for Side {
-    fn scheme(&self, name: &str) -> Scheme {
-        Scheme {
-            name: name.to_owned(),
-            window_bg: self.page,
-            window_fg: self.text,
-            view_bg: self.card,
-            view_fg: self.text,
-            inactive_fg: self.faint,
-            accent: self.accent,
-            accent_fg: 0xffffffff,
-            negative: self.error,
-            neutral: None,
-        }
-    }
-}
+pub use katna_ui::theme::SideScheme;
 
 #[cfg(test)]
 mod tests {

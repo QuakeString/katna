@@ -3,7 +3,7 @@
 //! The color schemes built into Katna (Katna Mail's Settings > Appearance >
 //! Colors). Each has a light and a dark side, so every scheme works with
 //! every mode. Katna's own palette is not here: it is hand-tuned in
-//! Katna Mail's `theme.rs` (`Theme::new`). Besides Katna's own (Katna,
+//! `theme.rs` (`Theme::new`). Besides Katna's own (Katna,
 //! Clear, Graphite), the palettes are those of popular editor and desktop
 //! themes, all published under the MIT licence; the About page credits
 //! them. No GPUI types here: Katna Setup draws its window in them too.
@@ -13,7 +13,7 @@ pub const SYSTEM: &str = "system";
 /// The id of Katna's own palette.
 pub const KATNA: &str = "katna";
 
-/// The colors a scheme is made from; Katna Mail's `Theme::from_scheme`
+/// The colors a scheme is made from; `Theme::from_scheme`
 /// works out the rest. `0xRRGGBBAA`, opaque.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Side {
