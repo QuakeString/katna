@@ -131,20 +131,36 @@ impl OneDrive {
             self.api,
             http::escape(name)
         );
-        self.upload_at(&url, path, progress).await
+        self.upload_at(&url, path, "rename", progress).await
+    }
+
+    /// Puts the file at `path` in place of the contents of item `id`,
+    /// keeping its name, folder, sharing and versions, as
+    /// [`Self::upload`] sends a new one. For saving back a file opened
+    /// from the drive.
+    pub async fn replace(
+        &self,
+        id: &str,
+        path: &Path,
+        progress: &(dyn Fn(u64, u64) + Sync),
+    ) -> Result<DriveFile> {
+        let url = format!("{}/createUploadSession", self.item_url(id));
+        self.upload_at(&url, path, "replace", progress).await
     }
 
     /// Uploads the file at `path` through the upload session that `url`
-    /// (a `createUploadSession`) starts.
+    /// (a `createUploadSession`) starts; `conflict` says what OneDrive does
+    /// when the name is taken (`rename`, or `replace` for new contents).
     async fn upload_at(
         &self,
         url: &str,
         path: &Path,
+        conflict: &str,
         progress: &(dyn Fn(u64, u64) + Sync),
     ) -> Result<DriveFile> {
         let size = std::fs::metadata(path)?.len();
         let body = serde_json::json!({
-            "item": { "@microsoft.graph.conflictBehavior": "rename" }
+            "item": { "@microsoft.graph.conflictBehavior": conflict }
         })
         .to_string();
         let started = self.call("POST", url, Some(body.as_bytes())).await?;

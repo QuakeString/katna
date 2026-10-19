@@ -647,6 +647,18 @@ macro_rules! pim_interface {
                     .await?)
             }
 
+            async fn cloud_replace(
+                &self,
+                account: i64,
+                file: String,
+                path: String,
+            ) -> fdo::Result<i64> {
+                Ok(self
+                    .daemon
+                    .cloud_replace(AccountId(account), &file, &path)
+                    .await?)
+            }
+
             async fn cloud_link(&self, account: i64, entry: CloudEntry) -> fdo::Result<i64> {
                 Ok(self.daemon.cloud_link(AccountId(account), &entry)?)
             }

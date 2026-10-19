@@ -219,6 +219,66 @@ impl Daemon {
         Ok(id)
     }
 
+    /// Starts putting the file at `path` in place of the contents of file
+    /// `file` of the drive of `account`, as Katna PDF saves back a PDF
+    /// opened from a drive. The file keeps its name, folder, sharing and
+    /// history. Its progress comes as `DriveChanged`, as an upload's does;
+    /// cancelling it never bins the file.
+    pub async fn cloud_replace(
+        self: &Arc<Self>,
+        account: AccountId,
+        file: &str,
+        path: &str,
+    ) -> Result<i64, CommandError> {
+        let path = PathBuf::from(path);
+        let size = std::fs::metadata(&path)
+            .ok()
+            .filter(|m| m.is_file())
+            .ok_or_else(|| CommandError::InvalidArgs(format!("no file {}", path.display())))?
+            .len();
+        if file.is_empty() {
+            return Err(CommandError::InvalidArgs("no drive file to replace".into()));
+        }
+        let Some(drive) = self.cloud(account).await? else {
+            return Err(CommandError::InvalidArgs(
+                "only accounts signed in with Google or Microsoft have a drive".into(),
+            ));
+        };
+        let name = path
+            .file_name()
+            .map_or_else(|| "file".to_owned(), |n| n.to_string_lossy().into_owned());
+        let id = self.uploads.next.fetch_add(1, Ordering::Relaxed) + 1;
+        let status = DriveUpload {
+            id,
+            account: account.0,
+            name: name.clone(),
+            sent: 0,
+            size,
+            state: drive_state::UPLOADING.into(),
+            link: String::new(),
+            error: String::new(),
+        };
+        let task = smol::spawn(replace(
+            Arc::downgrade(self),
+            drive,
+            id,
+            file.to_owned(),
+            path,
+            name,
+        ));
+        self.uploads.all.lock().unwrap().insert(
+            id,
+            Upload {
+                status,
+                file: None,
+                owned: false,
+                task: Some(task),
+            },
+        );
+        tracing::info!(upload = id, %account, size, "saving a drive file back");
+        Ok(id)
+    }
+
     /// Links file `entry`, already in the drive of `account`, to a
     /// message as a finished upload, so it is shared at Send as an
     /// uploaded file is. Cancelling it leaves the file where it is.
@@ -541,6 +601,56 @@ async fn upload_tree(daemon: Weak<Daemon>, drive: Cloud, id: i64, into: String, 
         u.status.sent = u.status.size;
         u.status.state = drive_state::DONE.into();
     });
+}
+
+/// Sends `path` as the new contents of drive file `file`, keeping
+/// upload `id` up to date.
+async fn replace(
+    daemon: Weak<Daemon>,
+    drive: Cloud,
+    id: i64,
+    file: String,
+    path: PathBuf,
+    name: String,
+) {
+    let update = |change: &dyn Fn(&mut Upload)| {
+        if let Some(daemon) = daemon.upgrade() {
+            daemon.update_upload(id, change);
+        }
+    };
+    let shown = Mutex::new(u64::MAX);
+    let progress = |sent: u64, size: u64| {
+        let percent = (sent * 100).checked_div(size).unwrap_or(100);
+        if std::mem::replace(&mut *shown.lock().unwrap(), percent) != percent {
+            update(&|u| u.status.sent = sent);
+        }
+    };
+    match drive.replace(&file, &path, &name, &progress).await {
+        Ok(saved) => {
+            tracing::info!(upload = id, "saved the drive file back");
+            update(&|u| {
+                u.status.sent = u.status.size;
+                u.status.state = drive_state::DONE.into();
+                u.status.link = saved.link.clone();
+                u.file = Some(saved.id.clone());
+            });
+        }
+        Err(Error::Auth(message)) => {
+            tracing::info!(upload = id, %message, "the drive refused the save");
+            update(&|u| u.status.state = drive_state::NEEDS_PERMISSION.into());
+        }
+        Err(err) => {
+            tracing::warn!(upload = id, %err, "saving the drive file back failed");
+            let message = match err {
+                Error::NotEnabled(detail) => detail,
+                err => err.to_string(),
+            };
+            update(&|u| {
+                u.status.state = drive_state::FAILED.into();
+                u.status.error = message.clone();
+            });
+        }
+    }
 }
 
 /// The type Drive files a file under, from its name; Drive works out

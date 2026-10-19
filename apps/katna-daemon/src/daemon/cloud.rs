@@ -125,6 +125,24 @@ impl Cloud {
         }
     }
 
+    /// New contents for file `id`, which keeps its name, place and
+    /// sharing.
+    pub(super) async fn replace(
+        &self,
+        id: &str,
+        path: &Path,
+        name: &str,
+        progress: &(dyn Fn(u64, u64) + Sync),
+    ) -> SyncResult<DriveFile> {
+        match self {
+            Self::Google(drive) => {
+                let mime = super::drive::mime_of(name);
+                drive.replace(id, path, mime, progress).await
+            }
+            Self::Microsoft(onedrive) => onedrive.replace(id, path, progress).await,
+        }
+    }
+
     pub(super) async fn upload_into(
         &self,
         path: &Path,

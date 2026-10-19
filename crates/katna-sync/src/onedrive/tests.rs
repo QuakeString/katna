@@ -128,7 +128,10 @@ fn fake_microsoft(state: State) -> (String, Arc<Mutex<State>>) {
                         );
                     }
                 }
-                ("POST", path) if path.ends_with(":/createUploadSession") => {
+                ("POST", path)
+                    if path.ends_with(":/createUploadSession")
+                        || path.ends_with("/items/item-7/createUploadSession") =>
+                {
                     assert!(bearer);
                     answer(&mut stream, 200, &format!(r#"{{"uploadUrl":"{session}"}}"#));
                 }
@@ -313,4 +316,20 @@ fn next_offsets() {
     assert_eq!(next_offset(&["26-".into()]), Some(26));
     assert_eq!(next_offset(&["77-99".into(), "26-50".into()]), Some(26));
     assert_eq!(next_offset(&[]), None);
+}
+
+#[test]
+fn replaces_an_items_contents_in_place() {
+    let (api, state) = fake_microsoft(State::default());
+    let (file, data) = file_of(CHUNK + 10);
+    smol::block_on(onedrive(&api).replace("item-7", file.path(), &|_, _| {})).unwrap();
+    let state = state.lock().unwrap();
+    assert_eq!(state.stored, data);
+    let start = state
+        .seen
+        .iter()
+        .find(|s| s.path.ends_with("createUploadSession"))
+        .unwrap();
+    assert_eq!(start.path, "/me/drive/items/item-7/createUploadSession");
+    assert!(start.text().contains("replace"));
 }
