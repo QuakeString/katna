@@ -443,7 +443,7 @@ fn folder_by_path(message: i64, path: &str) -> Result<i64> {
 }
 
 /// Programs whose crashes are looked for in `systemd-coredump`.
-const CRASH_APPS: [&str; 3] = ["katna-mail", "katna-daemon", "katnactl"];
+const CRASH_APPS: [&str; 4] = ["katna-mail", "katna-daemon", "katnactl", "katna-pdf"];
 
 fn crashes(args: &[String]) -> Result<()> {
     let paths = Paths::from_env().map_err(error)?;
