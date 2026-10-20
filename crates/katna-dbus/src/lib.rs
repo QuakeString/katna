@@ -1124,6 +1124,14 @@ macro_rules! pim_proxy {
             /// `DriveUploadStatus` and `DriveChanged`; `DriveCancel` stops it.
             fn cloud_upload(&self, account: i64, folder: &str, path: &str) -> zbus::Result<i64>;
 
+            /// Starts putting file `path` in place of the contents of file
+            /// `file` (a `CloudEntry::id`) of the drive of `account`, keeping
+            /// its name, folder, sharing and history: Katna PDF saving back
+            /// a PDF it opened from the drive. Returns an upload id followed
+            /// as `DriveUploadStatus` and `DriveChanged`; `DriveCancel` stops
+            /// it and leaves the file as it was.
+            fn cloud_replace(&self, account: i64, file: &str, path: &str) -> zbus::Result<i64>;
+
             /// Links file `entry` of the drive of `account` to a message as
             /// a finished upload: its id works with `DriveShare` and
             /// `DriveShareWithLink`, and `DriveCancel` forgets it without

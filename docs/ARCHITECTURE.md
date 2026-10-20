@@ -3313,7 +3313,10 @@ desktop's own app stays one click away.
   The daemon's `Cloud` (`daemon/cloud.rs`) picks the provider by the
   account's sign-in and answers `CloudReadable`, `CloudList`,
   `CloudFetch`, `CloudThumbnail`, `CloudWritable` and `CloudUpload`
-  over D-Bus, and keeps fetched files in `cache/drives/` for 24 hours (gone
+  over D-Bus, and `CloudReplace`, which sends new contents for a file
+  in place (Drive's resumable `PATCH`, OneDrive's upload session with
+  `replace`; name, folder, sharing and history kept) for Katna PDF to save
+  back a PDF it opened from a drive, and keeps fetched files in `cache/drives/` for 24 hours (gone
   on Reset cache). `CloudTrash` and `CloudRename` change an item of the
   account's own drive (not Shared with me): the item menu's **Rename**
   types over the name in place (the part before the extension selected;

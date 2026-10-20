@@ -348,7 +348,7 @@ impl OneDrive {
             self.item_url(parent),
             http::escape(name)
         );
-        self.upload_at(&url, path, progress).await
+        self.upload_at(&url, path, "rename", progress).await
     }
 }
 

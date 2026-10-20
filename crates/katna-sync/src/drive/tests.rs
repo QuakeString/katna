@@ -126,6 +126,11 @@ fn fake_drive(state: State) -> (String, Arc<Mutex<State>>) {
                 {
                     answer(&mut stream, 200, &[("Location", session.clone())], "");
                 }
+                ("PATCH", path)
+                    if path.starts_with("/upload/drive/v3/files/file-1?uploadType=resumable") =>
+                {
+                    answer(&mut stream, 200, &[("Location", session.clone())], "");
+                }
                 ("PUT", "/session/1") => {
                     let range = request.header("Content-Range").unwrap().to_owned();
                     let total: usize = range.rsplit('/').next().unwrap().parse().unwrap();
@@ -345,4 +350,25 @@ fn uploads_into_a_folder() {
     let start: serde_json::Value = serde_json::from_slice(&state.seen[0].body).unwrap();
     assert_eq!(start["parents"], serde_json::json!(["folder-9"]));
     assert_eq!(start["name"], "notes.txt");
+}
+
+#[test]
+fn replaces_a_files_contents_in_place() {
+    let (api, state) = fake_drive(State::default());
+    let (file, data) = file_of(CHUNK + 10);
+    let replaced =
+        smol::block_on(drive(&api).replace("file-1", file.path(), "application/pdf", &|_, _| {}))
+            .unwrap();
+    assert_eq!(replaced.id, "file-1");
+    let state = state.lock().unwrap();
+    assert_eq!(state.stored, data);
+    let start = &state.seen[0];
+    assert_eq!(start.method, "PATCH");
+    assert!(start.path.contains("supportsAllDrives=true"));
+    assert_eq!(
+        start.header("X-Upload-Content-Type"),
+        Some("application/pdf")
+    );
+    // No new name or folder: the file keeps its own.
+    assert_eq!(start.body, b"{}");
 }

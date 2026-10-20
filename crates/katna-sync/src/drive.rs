@@ -171,7 +171,54 @@ impl Drive {
         let session = started
             .location
             .ok_or_else(|| Error::Protocol("Drive gave no upload address".into()))?;
+        self.send(&session, path, size, progress).await
+    }
 
+    /// Puts the file at `path` in place of the contents of file `id`,
+    /// keeping its name, folder, sharing and history, as [`Self::upload`]
+    /// sends a new one. For saving back a file opened from the drive.
+    pub async fn replace(
+        &self,
+        id: &str,
+        path: &Path,
+        mime: &str,
+        progress: &(dyn Fn(u64, u64) + Sync),
+    ) -> Result<DriveFile> {
+        let size = std::fs::metadata(path)?.len();
+        let length = size.to_string();
+        let url = format!(
+            "{}/upload/drive/v3/files/{}?uploadType=resumable&fields=id,webViewLink&supportsAllDrives=true",
+            self.api,
+            http::escape(id)
+        );
+        let started = self
+            .call(
+                "PATCH",
+                &url,
+                &[
+                    ("X-Upload-Content-Type", mime),
+                    ("X-Upload-Content-Length", &length),
+                ],
+                Some(("application/json; charset=UTF-8", b"{}")),
+                None,
+            )
+            .await?;
+        check(&started, "starting the upload")?;
+        let session = started
+            .location
+            .ok_or_else(|| Error::Protocol("Drive gave no upload address".into()))?;
+        self.send(&session, path, size, progress).await
+    }
+
+    /// Sends the file at `path`, `size` bytes, through upload `session`,
+    /// a chunk at a time.
+    async fn send(
+        &self,
+        session: &str,
+        path: &Path,
+        size: u64,
+        progress: &(dyn Fn(u64, u64) + Sync),
+    ) -> Result<DriveFile> {
         let mut offset = 0;
         let mut failures = 0;
         progress(0, size);
@@ -188,7 +235,7 @@ impl Drive {
             let reply = self
                 .call(
                     "PUT",
-                    &session,
+                    session,
                     &[("Content-Range", &range)],
                     Some(("application/octet-stream", &chunk)),
                     Some(&sent),
@@ -208,7 +255,7 @@ impl Drive {
                         };
                     }
                     async_io::Timer::after(Duration::from_secs(1 << failures)).await;
-                    match self.received(&session, size).await {
+                    match self.received(session, size).await {
                         Ok(Some(have)) => {
                             offset = have;
                             progress(offset, size);
