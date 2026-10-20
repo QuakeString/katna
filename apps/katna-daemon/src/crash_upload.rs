@@ -23,7 +23,7 @@ use katna_sync::net::Tls;
 use crate::daemon::{Daemon, settings};
 
 /// The programs whose core dumps become reports before sending.
-const APPS: [&str; 2] = ["katna-mail", "katna-daemon"];
+const APPS: [&str; 3] = ["katna-mail", "katna-daemon", "katna-pdf"];
 
 /// The first look waits a little, so starting stays quick.
 const FIRST_LOOK: Duration = Duration::from_secs(20);

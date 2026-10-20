@@ -5582,7 +5582,8 @@ consent.
 **Part 1: crash reports on this machine (no network).**
 
 - **Rust panics.** `katna_core::crash::install(app)` runs first in
-  `main` of `katna-mail`, `katna-calendar`, `katna-daemon` and `katnactl`.
+  `main` of `katna-mail`, `katna-calendar`, `katna-daemon` and `katnactl`,
+  and of Katna PDF (its own repository), which shares the crash folder.
   It sets a panic hook that writes a report and then calls the previous
   hook, so the journal still gets the panic line. A panic on a worker
   thread that the app survives is still reported.
@@ -5590,7 +5591,7 @@ consent.
   abort). Katna forbids `unsafe`, so it does not install signal handlers.
   Instead, when Katna Mail starts (and on `katnactl crashes`),
   `katna_core::crash::collect_core_dumps` asks `systemd-coredump` for core
-  dumps of `katna-mail` and `katna-daemon` newer than the last look
+  dumps of `katna-mail`, `katna-daemon` and `katna-pdf` newer than the last look
   (`coredumpctl --json=short list COREDUMP_COMM=<app>`, then
   `coredumpctl info` for each), on a background thread with a 10 s limit.
   Each becomes a report with the signal, the package line and the modules

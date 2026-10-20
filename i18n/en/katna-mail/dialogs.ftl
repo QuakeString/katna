@@ -311,6 +311,12 @@ crash-mail = { $more ->
     [one] Katna Mail closed unexpectedly last time. One more crash report is saved.
    *[other] Katna Mail closed unexpectedly last time. { $more } more crash reports are saved.
 }
+# Katna PDF keeps its crash reports with Katna's; Katna Mail tells of them.
+crash-pdf = { $more ->
+    [0] Katna PDF closed unexpectedly.
+    [one] Katna PDF closed unexpectedly. One more crash report is saved.
+   *[other] Katna PDF closed unexpectedly. { $more } more crash reports are saved.
+}
 crash-view = View report
 crash-view-tooltip = Open the report, saved on this computer
 crash-copy = Copy report

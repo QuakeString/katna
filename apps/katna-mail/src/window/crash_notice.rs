@@ -17,7 +17,7 @@ use crate::theme::Theme;
 use crate::widgets::{elevation, icon};
 
 /// The programs whose crashes the note tells about.
-const APPS: [&str; 2] = ["katna-mail", "katna-daemon"];
+const APPS: [&str; 3] = ["katna-mail", "katna-daemon", "katna-pdf"];
 
 /// A crash report the user has not seen yet.
 pub(super) struct CrashNotice {
@@ -33,6 +33,7 @@ impl CrashNotice {
         let more = self.more;
         match self.report.app.as_str() {
             "katna-daemon" => tr!("crash-daemon", more = more),
+            "katna-pdf" => tr!("crash-pdf", more = more),
             _ => tr!("crash-mail", more = more),
         }
     }
@@ -234,6 +235,10 @@ mod tests {
         assert_eq!(
             notice("katna-daemon", 1).text(),
             "Katna's background service stopped unexpectedly. One more crash report is saved."
+        );
+        assert_eq!(
+            notice("katna-pdf", 0).text(),
+            "Katna PDF closed unexpectedly."
         );
         assert_eq!(
             notice("katna-mail", 3).text(),
