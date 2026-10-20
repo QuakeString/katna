@@ -224,6 +224,7 @@ async fn ask(
             Err(problem) => {
                 tracing::warn!(
                     provider = service.provider,
+                    model = %service.model,
                     problem,
                     "AI service gave no answer"
                 )
@@ -235,7 +236,7 @@ async fn ask(
 
 /// `service`'s answer to `prompt` and the body it came in, or what went
 /// wrong in a few words (never the service's message, which may quote the
-/// text).
+/// text; that goes to the log only).
 pub(crate) async fn ask_one(
     service: &AiService,
     prompt: &Prompt,
@@ -260,8 +261,16 @@ pub(crate) async fn ask_one(
         Ok(text) => Ok((text, body)),
         Err(ProviderError::Key) => Err("refused the key"),
         Err(ProviderError::TooMany) => Err("is over its limits"),
-        Err(ProviderError::Failed(_)) if status == 404 => Err("does not know the model"),
-        Err(ProviderError::Failed(_)) => Err("failed"),
+        Err(ProviderError::Failed(detail)) => {
+            // The status and the service's own error (cut short, never the
+            // key) say why; error messages name fields, not the mail.
+            tracing::warn!(provider = service.provider, model = %service.model, detail, "AI service failed");
+            Err(if status == 404 {
+                "does not know the model"
+            } else {
+                "failed"
+            })
+        }
     }
 }
 

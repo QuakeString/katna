@@ -380,7 +380,12 @@ pub fn usage(kind: Kind, body: &[u8]) -> Option<(u64, u64)> {
 fn error_message(value: &Value) -> Option<String> {
     let error = &value["error"];
     let message = error["message"].as_str().or_else(|| error.as_str())?;
-    Some(message.chars().take(200).collect())
+    let message: String = message.chars().take(200).collect();
+    // Gemini's reason, such as FAILED_PRECONDITION or INVALID_ARGUMENT.
+    Some(match error["status"].as_str() {
+        Some(reason) => format!("{reason}: {message}"),
+        None => message,
+    })
 }
 
 #[cfg(test)]
@@ -533,6 +538,13 @@ mod tests {
         assert_eq!(
             failed,
             Err(ProviderError::Failed("HTTP 400 bad model".into()))
+        );
+        let gemini = br#"{"error":{"code":400,"message":"User location is not supported","status":"FAILED_PRECONDITION"}}"#;
+        assert_eq!(
+            answer(Kind::Gemini, 400, gemini),
+            Err(ProviderError::Failed(
+                "HTTP 400 FAILED_PRECONDITION: User location is not supported".into()
+            ))
         );
     }
 }
