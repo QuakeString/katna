@@ -848,7 +848,7 @@
     },
     {
       "name": "webpki-roots",
-      "version": "1.0.9",
+      "version": "1.0.10",
       "description": "Mozilla's CA root certificates for use with webpki",
       "license": "CDLA-Permissive-2.0",
       "authors": [
