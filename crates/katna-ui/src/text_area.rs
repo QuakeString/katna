@@ -1376,7 +1376,7 @@ impl Element for TextElement {
                 point(bounds.left(), top),
                 layout.line_height,
                 layout.align,
-                Some(bounds.size.width),
+                Some(bounds),
                 window,
                 cx,
             );
