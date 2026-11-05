@@ -136,6 +136,8 @@ pub struct TextArea {
     /// One wrapped line: enter submits and pasted line breaks become
     /// spaces.
     single_line: bool,
+    /// How the rows line up in the area's width.
+    align: TextAlign,
 }
 
 impl EventEmitter<InputEvent> for TextArea {}
@@ -155,6 +157,16 @@ impl TextArea {
             last_layout: None,
             is_selecting: false,
             single_line: false,
+            align: TextAlign::Left,
+        }
+    }
+
+    /// Lines the rows up at the left (as at first), in the middle or at
+    /// the right of the area's width; the cursor and selection follow.
+    pub fn set_align(&mut self, align: TextAlign, cx: &mut Context<Self>) {
+        if self.align != align {
+            self.align = align;
+            cx.notify();
         }
     }
 
@@ -804,6 +816,8 @@ struct Layout {
     line_height: Pixels,
     /// The placeholder is displayed, so no offset but 0 exists.
     placeholder: bool,
+    /// How the rows line up in the bounds' width.
+    align: TextAlign,
 }
 
 impl Layout {
@@ -811,8 +825,8 @@ impl Layout {
         row_index(&self.rows, offset, upstream)
     }
 
-    /// The x of `offset` relative to the start of visual row `row_ix`.
-    fn x_in_row(&self, row_ix: usize, offset: usize) -> Pixels {
+    /// The x of `offset` from the first glyph of visual row `row_ix`.
+    fn x_from_row_start(&self, row_ix: usize, offset: usize) -> Pixels {
         if self.placeholder {
             return px(0.);
         }
@@ -823,6 +837,27 @@ impl Layout {
         let layout = &line.unwrapped_layout;
         let offset = offset.clamp(row.start, row.end);
         layout.x_for_index(offset - row.line_start) - layout.x_for_index(row.start - row.line_start)
+    }
+
+    /// How far visual row `row_ix` starts in from the bounds' left, as
+    /// the rows line up (0 at the left).
+    fn row_shift(&self, row_ix: usize) -> Pixels {
+        let factor = match self.align {
+            TextAlign::Left => return px(0.),
+            TextAlign::Center => 0.5,
+            TextAlign::Right => 1.0,
+        };
+        let Some(row) = self.rows.get(row_ix) else {
+            return px(0.);
+        };
+        let width = self.x_from_row_start(row_ix, row.end);
+        ((self.bounds.size.width - width) * factor).max(px(0.))
+    }
+
+    /// The x of `offset` relative to the bounds' left, in visual row
+    /// `row_ix`.
+    fn x_in_row(&self, row_ix: usize, offset: usize) -> Pixels {
+        self.row_shift(row_ix) + self.x_from_row_start(row_ix, offset)
     }
 
     /// Where the cursor at `offset` is drawn, relative to the bounds' origin.
@@ -843,6 +878,7 @@ impl Layout {
         };
         let layout = &line.unwrapped_layout;
         let row_x = layout.x_for_index(row.start - row.line_start);
+        let x = x - self.row_shift(row_ix);
         let local = layout.closest_index_for_x(row_x + x.max(px(0.)));
         let offset =
             floor_grapheme(text, (row.line_start + local).clamp(row.start, row.end)).max(row.start);
@@ -1246,6 +1282,7 @@ impl Element for TextElement {
             bounds,
             line_height: shaping.line_height,
             placeholder,
+            align: input.align,
         };
 
         let line_height = layout.line_height;
@@ -1338,8 +1375,8 @@ impl Element for TextElement {
             let _ = line.paint(
                 point(bounds.left(), top),
                 layout.line_height,
-                TextAlign::Left,
-                None,
+                layout.align,
+                Some(bounds.size.width),
                 window,
                 cx,
             );
