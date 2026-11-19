@@ -1037,6 +1037,12 @@ impl MailWindow {
     fn on_files_key(&mut self, event: &KeyDownEvent, window: &mut Window, cx: &mut Context<Self>) {
         let keys = &event.keystroke;
         let m = keys.modifiers;
+        // Ctrl+Shift+N: New folder, as in file managers.
+        if m.control && m.shift && !m.alt && keys.key == "n" && self.drive_owned() {
+            self.start_drive_new(katna_dbus::cloud_kind::FOLDER, window, cx);
+            cx.stop_propagation();
+            return;
+        }
         if m.control || m.alt || m.platform {
             return;
         }
@@ -2387,7 +2393,12 @@ impl MailWindow {
                 .gap(px(14.0))
                 .cursor_pointer()
                 .hover(|s| s.bg(rgba(th.hover)))
-                .child(icon(name, th.text_dim, 18.0))
+                .child(match name {
+                    drive::NEW_DOCUMENT => kind_badge(Kind::Document, 18.0),
+                    drive::NEW_SHEET => kind_badge(Kind::Sheet { csv: false }, 18.0),
+                    drive::NEW_SLIDES => kind_badge(Kind::Slides, 18.0),
+                    _ => icon(name, th.text_dim, 18.0).into_any_element(),
+                })
                 .child(div().flex_1().min_w_0().truncate().child(label))
                 .when(on, |d| d.child(icon("check", th.accent, 18.0)))
         };

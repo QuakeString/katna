@@ -101,13 +101,23 @@ impl OneDrive {
     /// Sends a request to Graph with the account's access token, trying
     /// once more with a fresh token when Graph refuses the one it had.
     async fn call(&self, method: &str, url: &str, body: Option<&[u8]>) -> Result<Reply> {
+        self.call_typed(method, url, body.map(|b| ("application/json", b)))
+            .await
+    }
+
+    /// [`OneDrive::call`] with a body of another type.
+    async fn call_typed(
+        &self,
+        method: &str,
+        url: &str,
+        body: Option<(&str, &[u8])>,
+    ) -> Result<Reply> {
         loop {
             let token = format!(
                 "Bearer {}",
                 self.tokens.access_token_for(MICROSOFT_FILES).await?
             );
             let headers = [("Authorization", token.as_str())];
-            let body = body.map(|b| ("application/json", b));
             let reply =
                 http::exchange(method, url, &headers, body, None, &self.tls, TIMEOUT).await?;
             if reply.status == 401 && self.tokens.forget_access_token_for(MICROSOFT_FILES) {

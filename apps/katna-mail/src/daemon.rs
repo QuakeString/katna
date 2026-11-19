@@ -1786,6 +1786,24 @@ pub async fn cloud_upload(
         .map_err(|err| describe(&err))
 }
 
+/// Makes a folder or blank document (`kind`, one of
+/// `katna_dbus::cloud_kind`) called `name` in folder `folder` of the drive
+/// of `account`, and returns it.
+pub async fn cloud_create(
+    connection: &Connection,
+    account: i64,
+    folder: &str,
+    name: &str,
+    kind: &str,
+) -> Result<katna_dbus::CloudEntry, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.cloud_create(account, folder, name, kind)
+        .await
+        .map_err(|err| describe(&err))
+}
+
 /// Who may open item `id` of the drive of `account`.
 pub async fn cloud_access(
     connection: &Connection,
