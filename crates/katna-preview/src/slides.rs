@@ -167,12 +167,13 @@ fn slide_parts(zip: &mut ZipArchive<Cursor<Vec<u8>>>) -> Vec<String> {
         let mut numbered: Vec<(u32, String)> = zip
             .file_names()
             .filter_map(|name| {
+                let name = name.ok()?;
                 let n = name
                     .strip_prefix("ppt/slides/slide")?
                     .strip_suffix(".xml")?
                     .parse()
                     .ok()?;
-                Some((n, name.to_owned()))
+                Some((n, name.into_owned()))
             })
             .collect();
         numbered.sort();
