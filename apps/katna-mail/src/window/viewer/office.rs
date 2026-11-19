@@ -176,7 +176,13 @@ impl SheetView {
         };
         let sheet = self.sheet();
         let mut out = String::new();
-        for row in r0..=r1.min(sheet.rows.len().saturating_sub(1)) {
+        for (row, cells) in sheet
+            .rows
+            .iter()
+            .enumerate()
+            .take(r1.saturating_add(1))
+            .skip(r0)
+        {
             if row > r0 {
                 out.push('\n');
             }
@@ -184,7 +190,7 @@ impl SheetView {
                 if column > c0 {
                     out.push('\t');
                 }
-                let cell = sheet.rows[row].get(column).map_or("", String::as_str);
+                let cell = cells.get(column).map_or("", String::as_str);
                 if cell.contains(['\t', '\n', '"']) {
                     out.push('"');
                     out.push_str(&cell.replace('"', "\"\""));
