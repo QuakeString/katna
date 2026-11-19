@@ -190,6 +190,17 @@ pub mod drive_state {
     pub const NEEDS_PERMISSION: &str = "needs-permission";
 }
 
+/// What `CloudCreate` makes.
+pub mod cloud_kind {
+    pub const FOLDER: &str = "folder";
+    /// A Google Doc, or a Word file on OneDrive.
+    pub const DOCUMENT: &str = "document";
+    /// A Google Sheet, or an Excel file.
+    pub const SPREADSHEET: &str = "spreadsheet";
+    /// Google Slides, or a PowerPoint file.
+    pub const PRESENTATION: &str = "presentation";
+}
+
 /// A file or folder in an account's cloud drive, from `CloudList`.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
 pub struct CloudEntry {
@@ -1143,6 +1154,13 @@ macro_rules! pim_proxy {
             /// moved. A work OneDrive cannot take items back out.
             fn cloud_trash(&self, account: i64, ids: &[String], trashed: bool)
                 -> zbus::Result<u32>;
+
+            /// Makes a folder, or a blank document of the drive's own kind,
+            /// called `name` in folder `folder` of the drive of `account`
+            /// (empty for the top) and returns it. `kind` is one of
+            /// [`cloud_kind`]. OneDrive gives a name already there a number.
+            fn cloud_create(&self, account: i64, folder: &str, name: &str, kind: &str)
+                -> zbus::Result<CloudEntry>;
 
             /// Renames item `id` of the drive of `account` to `name`.
             fn cloud_rename(&self, account: i64, id: &str, name: &str) -> zbus::Result<()>;

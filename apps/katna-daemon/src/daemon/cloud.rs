@@ -14,7 +14,7 @@ use katna_core::{AccountId, OAuthProvider};
 use katna_dbus::{CloudAccess, CloudEntry, CloudListing, cloud_place, cloud_state};
 use katna_sync::{
     Error, Result as SyncResult,
-    cloud::{Access, CloudItem, CloudPage, Fetched, Place, ROOT, Role},
+    cloud::{Access, CloudItem, CloudPage, Fetched, NewKind, Place, ROOT, Role},
     drive::{Drive, DriveFile},
     net::Tls,
     onedrive::OneDrive,
@@ -74,6 +74,13 @@ impl Cloud {
         match self {
             Self::Google(drive) => drive.create_folder(name, parent).await,
             Self::Microsoft(onedrive) => onedrive.create_folder(name, parent).await,
+        }
+    }
+
+    async fn create(&self, name: &str, parent: &str, kind: NewKind) -> SyncResult<CloudItem> {
+        match self {
+            Self::Google(drive) => drive.create(name, parent, kind).await,
+            Self::Microsoft(onedrive) => onedrive.create(name, parent, kind).await,
         }
     }
 
@@ -303,6 +310,29 @@ impl Daemon {
             .await?
             .ok_or_else(|| CommandError::InvalidArgs("no drive".into()))?;
         drive.rename(id, name).await.map_err(failed)
+    }
+
+    /// Makes a folder or a blank document (`kind`, a `NewKind` name)
+    /// called `name` in folder `folder` of the drive of `account`, empty
+    /// for the top, and returns it.
+    pub async fn cloud_create(
+        &self,
+        account: AccountId,
+        folder: &str,
+        name: &str,
+        kind: &str,
+    ) -> Result<CloudEntry, CommandError> {
+        let name = name.trim();
+        if name.is_empty() || name.contains('/') {
+            return Err(CommandError::InvalidArgs(format!("no name {name:?}")));
+        }
+        let kind = NewKind::parse(kind)
+            .ok_or_else(|| CommandError::InvalidArgs(format!("no kind {kind}")))?;
+        let drive = self.cloud_to_change(account).await?;
+        let folder = if folder == ROOT { "" } else { folder };
+        let made = drive.create(name, folder, kind).await.map_err(failed)?;
+        tracing::info!(%account, kind = kind.as_str(), "made a drive item");
+        Ok(entry(made))
     }
 
     /// The drive of `account`, for a change to one of its items.

@@ -19,7 +19,7 @@ use super::{OneDrive, TIMEOUT, check, parse};
 use crate::{
     Error, Result,
     autoconfig::http::{self, Reply},
-    cloud::{CloudItem, CloudPage, Fetched, MAX_FETCH, MAX_THUMBNAIL, Place, ROOT},
+    cloud::{CloudItem, CloudPage, Fetched, MAX_FETCH, MAX_THUMBNAIL, NewKind, Place, ROOT},
     drive::DriveFile,
     oauth::MICROSOFT_FILES,
 };
@@ -32,6 +32,25 @@ const MAX_LISTING: usize = 2 * 1024 * 1024;
 
 /// What Graph is asked to tell about each item.
 const SELECT: &str = "id,name,size,lastModifiedDateTime,webUrl,file,folder,remoteItem";
+
+/// Blank Office files for [`OneDrive::create`] (`assets/blank/README.md`).
+const BLANK_DOCX: &[u8] = include_bytes!("../../assets/blank/blank.docx");
+const BLANK_XLSX: &[u8] = include_bytes!("../../assets/blank/blank.xlsx");
+const BLANK_PPTX: &[u8] = include_bytes!("../../assets/blank/blank.pptx");
+
+/// Their types: Word, Excel, PowerPoint.
+const OFFICE_MIME: [&str; 3] = [
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+];
+
+/// The item Graph made, from its answer.
+fn made(body: &[u8]) -> Result<CloudItem> {
+    let item: Item = parse(body)?;
+    item.item()
+        .ok_or_else(|| Error::Protocol("OneDrive made something Files can't show".into()))
+}
 
 #[derive(Deserialize)]
 struct Listing {
@@ -334,6 +353,46 @@ impl OneDrive {
         Ok(item.id)
     }
 
+    /// Makes a folder, or a blank Word, Excel or PowerPoint file, called
+    /// `name` in folder `parent` (empty for the top). A file's name gets
+    /// its extension when it has none, and a name already there gets a
+    /// number.
+    pub async fn create(&self, name: &str, parent: &str, kind: NewKind) -> Result<CloudItem> {
+        let (extension, blank, mime): (&str, &[u8], &str) = match kind {
+            NewKind::Folder => {
+                let url = format!("{}/children", self.item_url(parent));
+                let body = serde_json::json!({
+                    "name": name,
+                    "folder": {},
+                    "@microsoft.graph.conflictBehavior": "rename",
+                })
+                .to_string();
+                let reply = self.call("POST", &url, Some(body.as_bytes())).await?;
+                check(&reply, "making a folder")?;
+                return made(&reply.body);
+            }
+            NewKind::Document => ("docx", BLANK_DOCX, OFFICE_MIME[0]),
+            NewKind::Spreadsheet => ("xlsx", BLANK_XLSX, OFFICE_MIME[1]),
+            NewKind::Presentation => ("pptx", BLANK_PPTX, OFFICE_MIME[2]),
+        };
+        let has_extension = name
+            .rsplit_once('.')
+            .is_some_and(|(_, ext)| ext.eq_ignore_ascii_case(extension));
+        let name = if has_extension {
+            name.to_owned()
+        } else {
+            format!("{name}.{extension}")
+        };
+        let url = format!(
+            "{}:/{}:/content?@microsoft.graph.conflictBehavior=rename",
+            self.item_url(parent),
+            http::escape(&name)
+        );
+        let reply = self.call_typed("PUT", &url, Some((mime, blank))).await?;
+        check(&reply, "making a new file")?;
+        made(&reply.body)
+    }
+
     /// Uploads the file at `path` as `name` into folder `parent` (empty
     /// for the top), as [`OneDrive::upload`] does into Katna's folder.
     pub async fn upload_into(
@@ -504,6 +563,37 @@ mod tests {
             seen[0].text().contains(r#""folder":{}"#),
             "{}",
             seen[0].text()
+        );
+    }
+
+    #[test]
+    fn makes_a_blank_word_file() {
+        let (api, seen) = serve(|_, _| {
+            (
+                201,
+                Vec::new(),
+                r#"{"id": "w1", "name": "Quotes.docx", "size": 4870, "webUrl": "https://onedrive.test/w1",
+                    "file": {"mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"}}"#
+                    .into(),
+            )
+        });
+        let drive = onedrive(&api);
+        let item = smol::block_on(drive.create("Quotes", "", NewKind::Document)).unwrap();
+        assert_eq!(item.name, "Quotes.docx");
+        assert_eq!(item.link, "https://onedrive.test/w1");
+        let first = seen.lock().unwrap();
+        assert_eq!(first[0].method, "PUT");
+        assert_eq!(
+            first[0].path,
+            "/me/drive/root:/Quotes.docx:/content?@microsoft.graph.conflictBehavior=rename"
+        );
+        assert_eq!(first[0].body, BLANK_DOCX);
+        drop(first);
+        // A name with its extension keeps it.
+        smol::block_on(drive.create("Plan.PPTX", "f1", NewKind::Presentation)).unwrap();
+        assert_eq!(
+            seen.lock().unwrap()[1].path,
+            "/me/drive/items/f1:/Plan.PPTX:/content?@microsoft.graph.conflictBehavior=rename"
         );
     }
 }

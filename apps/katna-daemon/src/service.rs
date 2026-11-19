@@ -722,6 +722,19 @@ macro_rules! pim_interface {
                     .await?)
             }
 
+            async fn cloud_create(
+                &self,
+                account: i64,
+                folder: String,
+                name: String,
+                kind: String,
+            ) -> fdo::Result<CloudEntry> {
+                Ok(self
+                    .daemon
+                    .cloud_create(AccountId(account), &folder, &name, &kind)
+                    .await?)
+            }
+
             async fn cloud_rename(
                 &self,
                 account: i64,
