@@ -104,7 +104,10 @@ mod tests {
         assert_eq!(zipped.file_name().unwrap(), "Garden plans.zip");
 
         let mut archive = zip::ZipArchive::new(File::open(&zipped).unwrap()).unwrap();
-        let mut names: Vec<_> = archive.file_names().map(str::to_owned).collect();
+        let mut names: Vec<_> = archive
+            .file_names()
+            .map(|name| name.unwrap().into_owned())
+            .collect();
         names.sort();
         assert_eq!(
             names,

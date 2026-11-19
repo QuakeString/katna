@@ -5,7 +5,7 @@
 
 Katna stands on the work of these open-source libraries and the people
 who make them. Thank you. This is every crate Katna uses directly; they
-bring in 853 more of their own. Each keeps its own license.
+bring in 857 more of their own. Each keeps its own license.
 
 | Library | By | License | What it does |
 |---|---|---|---|
@@ -20,7 +20,7 @@ bring in 853 more of their own. Each keeps its own license.
 | [base64](https://github.com/marshallpierce/rust-base64) 0.22.1 | Marshall Pierce | MIT OR Apache-2.0 | encodes and decodes base64 as bytes or utf8 |
 | [blake3](https://github.com/BLAKE3-team/BLAKE3) 1.8.7 | Jack O'Connor, Samuel Neves | CC0-1.0 OR Apache-2.0 OR Apache-2.0 WITH LLVM-exception | the BLAKE3 hash function |
 | [blocking](https://github.com/smol-rs/blocking) 1.7.0 | smol-rs | Apache-2.0 OR MIT | A thread pool for isolating blocking I/O in async programs |
-| [calamine](https://github.com/tafia/calamine) 0.36.1 | Johann Tuffe | MIT | An Excel/OpenDocument Spreadsheet reader and deserializer in pure Rust |
+| [calamine](https://github.com/tafia/calamine) 0.38.0 | Johann Tuffe | MIT | An Excel/OpenDocument Spreadsheet reader and deserializer in pure Rust |
 | [cfb](https://github.com/mdsteele/rust-cfb) 0.15.0 | Matthew D. Steele | MIT | Read/write Compound File Binary (structured storage) files |
 | [chrono](https://github.com/chronotope/chrono) 0.4.45 | chronotope | MIT OR Apache-2.0 | Date and time library for Rust |
 | [deadpool-postgres](https://github.com/deadpool-rs/deadpool) 0.14.2 | Michael P. Jung | MIT OR Apache-2.0 | Dead simple async pool for tokio-postgres |
@@ -56,7 +56,7 @@ bring in 853 more of their own. Each keeps its own license.
 | [io-smtp](https://github.com/pimalaya/io-smtp) 0.3.0 | soywod | MIT OR Apache-2.0 | SMTP client library for Rust |
 | [jiff](https://github.com/BurntSushi/jiff) 0.2.37 | Andrew Gallant | Unlicense OR MIT | A date-time library that encourages you to jump into the pit of success. This library is heavily inspired by the Temporal project. |
 | [krilla](https://github.com/LaurenzV/krilla) 0.8.2 | Laurenz Stampfl | MIT OR Apache-2.0 | A high-level crate for creating PDF files. |
-| [lettre](https://github.com/lettre/lettre) 0.11.23 | Alexis Mousset, Paolo Barbolini | MIT | Email client |
+| [lettre](https://github.com/lettre/lettre) 0.11.24 | Alexis Mousset, Paolo Barbolini | MIT | Email client |
 | [levenshtein_automata](https://github.com/tantivy-search/levenshtein-automata) 0.2.1 | Paul Masurel | MIT | Creates Levenshtein Automata in an efficient manner. |
 | [lopdf](https://github.com/J-F-Liu/lopdf) 0.45.0 | Emulator, Junfeng Liu | MIT | A Rust library for PDF document manipulation. |
 | [mail-parser](https://github.com/stalwartlabs/mail-parser) 0.11.9 | Stalwart Labs | Apache-2.0 OR MIT | Fast and robust e-mail parsing library for Rust |
@@ -68,7 +68,7 @@ bring in 853 more of their own. Each keeps its own license.
 | [ring](https://github.com/briansmith/ring) 0.17.14 | briansmith | Apache-2.0 AND ISC | An experiment. |
 | [roxmltree](https://github.com/RazrFalcon/roxmltree) 0.21.1 | Yevhenii Reizner | MIT OR Apache-2.0 | Represent an XML as a read-only tree. |
 | [rpassword](https://github.com/conradkleinespel/rpassword) 7.5.4 | Conrad Kleinespel | Apache-2.0 | Read passwords in console applications (unix, windows, macos, wasm). |
-| [rusqlite](https://github.com/rusqlite/rusqlite) 0.40.2 | The rusqlite developers | MIT | Ergonomic wrapper for SQLite |
+| [rusqlite](https://github.com/rusqlite/rusqlite) 0.41.1 | The rusqlite developers | MIT | Ergonomic wrapper for SQLite |
 | [rustls-platform-verifier](https://github.com/rustls/rustls-platform-verifier) 0.7.1 | rustls | MIT OR Apache-2.0 | rustls-platform-verifier supports verifying TLS certificates in rustls with the operating system verifier |
 | [rustybuzz](https://github.com/harfbuzz/rustybuzz) 0.20.1 | Caleb Maclennan, Laurenz Stampfl, Yevhenii Reizner, خالد حسني (Khaled Hosny) | MIT | A complete harfbuzz shaping algorithm port to Rust. |
 | [serde](https://github.com/serde-rs/serde) 1.0.229 | David Tolnay, Erick Tryzelaar | MIT OR Apache-2.0 | A generic serialization/deserialization framework |
@@ -81,7 +81,7 @@ bring in 853 more of their own. Each keeps its own license.
 | [tantivy-fst](https://github.com/quickwit-inc/fst) 0.5.0 | Andrew Gallant | Unlicense/MIT | This is a tantivy-specific fork from the fst crate from Burntsushi. (Please use the fst crate instead.) |
 | [tempfile](https://github.com/Stebalien/tempfile) 3.27.0 | Ashley Mannix, Jason White, Steven Allen, The Rust Project Developers | MIT OR Apache-2.0 | A library for managing temporary files and directories. |
 | [thiserror](https://github.com/dtolnay/thiserror) 2.0.21 | David Tolnay | MIT OR Apache-2.0 | derive(Error) |
-| [tokio](https://github.com/tokio-rs/tokio) 1.53.1 | Tokio Contributors | MIT | An event-driven, non-blocking I/O platform for writing asynchronous I/O backed applications. |
+| [tokio](https://github.com/tokio-rs/tokio) 1.54.1 | Tokio Contributors | MIT | An event-driven, non-blocking I/O platform for writing asynchronous I/O backed applications. |
 | [tokio-postgres](https://github.com/rust-postgres/rust-postgres) 0.7.18 | Steven Fackler | MIT OR Apache-2.0 | A native, asynchronous PostgreSQL client |
 | [tokio-rustls](https://github.com/rustls/tokio-rustls) 0.26.5 | rustls | MIT OR Apache-2.0 | Asynchronous TLS/SSL streams for Tokio using Rustls. |
 | [toml](https://github.com/toml-rs/toml) 1.1.6+spec-1.1.0 | toml-rs | MIT OR Apache-2.0 | A native Rust encoder and decoder of TOML-formatted files and streams. Provides implementations of the standard Serialize/Deserialize traits for TOML data to facilitate deserializing and serializing Rust structures. |
@@ -91,10 +91,10 @@ bring in 853 more of their own. Each keeps its own license.
 | [unicode-bidi](https://github.com/servo/unicode-bidi) 0.3.18 | The Servo Project Developers | MIT OR Apache-2.0 | Implementation of the Unicode Bidirectional Algorithm |
 | [unicode-segmentation](https://github.com/unicode-rs/unicode-segmentation) 1.13.3 | Manish Goregaokar, kwantam | MIT OR Apache-2.0 | This crate provides Grapheme Cluster, Word and Sentence boundaries according to Unicode Standard Annex #29 rules. |
 | [url](https://github.com/servo/rust-url) 2.5.8 | The rust-url developers | MIT OR Apache-2.0 | URL library for Rust, based on the WHATWG URL Standard |
-| [webpki-roots](https://github.com/rustls/webpki-roots) 1.0.9 | rustls | CDLA-Permissive-2.0 | Mozilla's CA root certificates for use with webpki |
+| [webpki-roots](https://github.com/rustls/webpki-roots) 1.0.12 | rustls | CDLA-Permissive-2.0 | Mozilla's CA root certificates for use with webpki |
 | [whatlang](https://github.com/greyblake/whatlang-rs) 0.18.0 | Serhii Potapov | MIT | Fast and lightweight language identification library for Rust. |
 | [winresource](https://github.com/BenjaminRi/winresource) 0.1.31 | Max Resch | MIT | Create and set windows icons and metadata for executables |
 | [writeable](https://github.com/unicode-org/icu4x) 0.6.4 | The ICU4X Project Developers | Unicode-3.0 | A more efficient alternative to fmt::Display |
 | [zbus](https://github.com/z-galaxy/zbus) 5.19.0 | Zeeshan Ali Khan | MIT | API for D-Bus communication |
-| [zip](https://github.com/zip-rs/zip2) 8.6.0 | Chris Hennick, Marli Frost, Mathijs van de Nes, Ryan Levick | MIT | Library to support the reading and writing of zip files. |
-| [zstd](https://github.com/gyscos/zstd-rs) 0.14.0 | Alexandre Bury | BSD-3-Clause | Binding for the zstd compression library. |
+| [zip](https://github.com/zip-rs/zip2) 9.7.3 | Chris Hennick, Marli Frost, Mathijs van de Nes, Ryan Levick | MIT | Library to support the reading and writing of zip files. |
+| [zstd](https://github.com/gyscos/zstd-rs) 0.14.4 | Alexandre Bury | BSD-3-Clause | Binding for the zstd compression library. |
