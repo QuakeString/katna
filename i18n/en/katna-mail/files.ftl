@@ -172,6 +172,25 @@ files-drive-upload-files = Upload files
 files-drive-upload-folder = Upload folder
 files-drive-upload-failed = Couldn’t upload { $name }: { $error }
 files-drive-upload-needs = To upload, Katna needs your permission once: press Allow in Settings › Default apps › Files page.
+# The same menu's new items, also on a right-click on the drive's empty
+# space. Google Drive shows the Google names, OneDrive the Office ones.
+files-drive-new-folder = New folder
+files-drive-new-google-doc = Google Doc
+files-drive-new-google-sheet = Google Sheet
+files-drive-new-google-slides = Google Slides
+files-drive-new-word = Word document
+files-drive-new-excel = Excel workbook
+files-drive-new-powerpoint = PowerPoint presentation
+# The name a new item starts with, selected to type over.
+files-drive-untitled-folder = Untitled folder
+files-drive-untitled-document = Untitled document
+files-drive-untitled-spreadsheet = Untitled spreadsheet
+files-drive-untitled-presentation = Untitled presentation
+# $drive: Google Drive or OneDrive.
+# Under a new item's name while the drive makes it.
+files-drive-making = Making…
+files-drive-made = Made “{ $name }” in { $drive }
+files-drive-make-failed = Couldn’t make { $name }: { $error }
 
 
 ## The Share dialog of a drive file or folder

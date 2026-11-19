@@ -3299,8 +3299,18 @@ desktop's own app stays one click away.
   **Allow** (signs in again with its provider). OneDrive shows only once
   Microsoft sign-in is offered (it waits for Katna's Microsoft app ID). While a drive of the account's
   own is on show, the side column's Compose button becomes **Upload**,
-  with an arrow for Upload files or Upload folder (on a phone the button
-  opens that menu); files and folders go into the open folder through
+  with an arrow for the **New menu** (on a phone the button opens it; a
+  right-click on the drive's empty space opens it where clicked): New
+  folder (also Ctrl+Shift+N), Upload files, Upload folder, then a blank
+  Google Doc, Sheet or Slides (on OneDrive a Word, Excel or PowerPoint
+  file). A new item's card comes first with its name selected to type
+  over, like Rename; Enter makes it with `CloudCreate` (Drive's
+  `files.create` with the folder or Google type; on OneDrive a folder
+  through `children`, an Office file by uploading a blank LibreOffice
+  file from `crates/katna-sync/assets/blank/`, since Graph makes none),
+  Escape drops it, and the snackbar's Undo moves it to the bin. A new
+  document opens in the drive's own editor in the browser. Files and
+  folders go into the open folder through
   `CloudUpload`, which makes the folders and uploads each file
   resumably, reporting as `DriveChanged` like a large attachment. The
   folder is read again when done.
@@ -3318,7 +3328,8 @@ desktop's own app stays one click away.
   `replace`; name, folder, sharing and history kept) for Katna PDF to save
   back a PDF it opened from a drive, and keeps fetched files in `cache/drives/` for 24 hours (gone
   on Reset cache). `CloudTrash` and `CloudRename` change an item of the
-  account's own drive (not Shared with me): the item menu's **Rename**
+  account's own drive (not Shared with me), and `CloudCreate` adds one:
+  the item menu's **Rename**
   types over the name in place (the part before the extension selected;
   F2), **Move to bin** (Del) sends it to the drive's bin with Undo
   (Google untrashes; OneDrive restores only on personal drives).

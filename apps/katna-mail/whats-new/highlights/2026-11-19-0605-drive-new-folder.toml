@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "New folders and documents in your drive"
+text = """
+In Files, open Google Drive or OneDrive and right-click empty space, or
+use the Upload button's arrow, to make a new folder or a blank Doc, Sheet
+or Slides (Word, Excel or PowerPoint on OneDrive). Ctrl+Shift+N makes a
+folder, and Undo takes it back.
+"""
+apps = ["files"]

@@ -21,7 +21,7 @@ use gpui::{
     MouseDownEvent, Pixels, Point, SharedString, Task, Window, div, list, prelude::*, rgba,
 };
 use katna_core::{AccountId, OAuthProvider};
-use katna_dbus::{CloudEntry, cloud_place, cloud_state};
+use katna_dbus::{CloudEntry, cloud_kind, cloud_place, cloud_state};
 use katna_i18n::tr;
 use katna_preview::image::{RgbaImage, imageops};
 use katna_preview::{Kind, Picture};
@@ -376,14 +376,21 @@ enum Act {
     Save,
 }
 
+/// Menu glyphs drawn as the file kind's coloured badge, for the New
+/// menu's documents.
+pub(super) const NEW_DOCUMENT: &str = "kind:document";
+pub(super) const NEW_SHEET: &str = "kind:sheet";
+pub(super) const NEW_SLIDES: &str = "kind:slides";
+
 /// The drive's own menus.
 pub(super) enum DriveMenu {
     /// An item's menu: its place in `order`.
     Item { place: usize, at: Point<Pixels> },
     /// The type chip's menu.
     Kind(Point<Pixels>),
-    /// The Upload button's arrow: files or a folder.
-    Upload(Point<Pixels>),
+    /// The New menu, from the Upload button's arrow or a right-click on
+    /// the page's empty space: a new folder, uploads, new documents.
+    New(Point<Pixels>),
 }
 
 impl MailWindow {
@@ -711,14 +718,14 @@ impl MailWindow {
             && self.library.cloud.view.as_ref().is_some_and(|v| !v.shared)
     }
 
-    /// The Upload button's arrow, or a phone's button: the menu of what to
-    /// upload, at `at`.
+    /// The Upload button's arrow, a phone's button or a right-click on
+    /// empty space: the New menu, at `at`.
     pub(in crate::window) fn open_upload_menu(
         &mut self,
         at: Point<Pixels>,
         cx: &mut Context<Self>,
     ) {
-        self.library.menu = Some(Menu::Drive(DriveMenu::Upload(at)));
+        self.library.menu = Some(Menu::Drive(DriveMenu::New(at)));
         cx.notify();
     }
 
@@ -1437,6 +1444,16 @@ impl MailWindow {
             .id("files-drive")
             .track_focus(&focus)
             .on_key_down(cx.listener(Self::on_files_key))
+            // Empty space: the New menu where it was clicked. Items
+            // open their own menu instead.
+            .on_mouse_down(
+                MouseButton::Right,
+                cx.listener(|this, e: &MouseDownEvent, _, cx| {
+                    if this.drive_owned() {
+                        this.open_upload_menu(e.position, cx);
+                    }
+                }),
+            )
             .size_full()
             .flex()
             .flex_col()
@@ -1724,6 +1741,11 @@ impl MailWindow {
         cx: &mut Context<Self>,
     ) -> gpui::Stateful<gpui::Div> {
         let open = entry.clone();
+        // A new item's card does nothing until the drive has made it, but
+        // keeps a right-click from opening the New menu under it.
+        if entry.id == manage::NEW_ID {
+            return el.on_mouse_down(MouseButton::Right, |_, _, cx| cx.stop_propagation());
+        }
         // In the attach picker a click ticks a file and opens a folder.
         if let Some(account) = self.picker.as_ref().and(self.library.cloud.view.as_ref()) {
             let account = account.account;
@@ -1854,6 +1876,20 @@ impl MailWindow {
         if self.library.cloud.fetching.contains(&entry.id) {
             return tr!("files-drive-fetching");
         }
+        // A new item's card says what it will be, then that it is being
+        // made once its name is in.
+        if entry.id == manage::NEW_ID {
+            if self.library.cloud.renaming.is_none() {
+                return tr!("files-drive-making");
+            }
+            if !entry.native {
+                return match entry_kind(entry) {
+                    Kind::Sheet { .. } => tr!("files-drive-new-excel"),
+                    Kind::Slides => tr!("files-drive-new-powerpoint"),
+                    _ => tr!("files-drive-new-word"),
+                };
+            }
+        }
         let what = if entry.native {
             match entry_kind(entry) {
                 Kind::Sheet { .. } => tr!("files-drive-google-sheet"),
@@ -1953,6 +1989,10 @@ impl MailWindow {
                 },
             ))
         });
+        // A new item's card has nothing to act on yet.
+        if entry.id == manage::NEW_ID {
+            buttons.clear();
+        }
         let ticked = picking && self.drive_picked(account, &entry.id);
         let head = div()
             .relative()
@@ -2121,25 +2161,82 @@ impl MailWindow {
         let view = self.library.cloud.view.as_ref()?;
         let drive_name = self.drive_name(view.account);
         match *menu {
-            DriveMenu::Upload(at) => {
-                let items = [
-                    (false, "upload", tr!("files-drive-upload-files")),
-                    (true, "folder", tr!("files-drive-upload-folder")),
-                ]
-                .into_iter()
-                .map(|(folders, glyph, label)| {
+            DriveMenu::New(at) => {
+                let mut items = Vec::new();
+                items.push(
                     item(
-                        format!("files-drive-upload-{folders}").into(),
-                        glyph,
-                        label,
+                        "files-drive-new-folder".into(),
+                        "folder-add",
+                        tr!("files-drive-new-folder"),
                         false,
                     )
-                    .on_click(cx.listener(move |this, _, _, cx| {
-                        this.upload_into_drive(folders, cx);
+                    .on_click(cx.listener(|this, _, window, cx| {
+                        this.start_drive_new(cloud_kind::FOLDER, window, cx);
                     }))
-                    .into_any_element()
-                })
-                .collect();
+                    .into_any_element(),
+                );
+                items.push(separator());
+                for (folders, glyph, label) in [
+                    (false, "upload", tr!("files-drive-upload-files")),
+                    (true, "folder", tr!("files-drive-upload-folder")),
+                ] {
+                    items.push(
+                        item(
+                            format!("files-drive-upload-{folders}").into(),
+                            glyph,
+                            label,
+                            false,
+                        )
+                        .on_click(cx.listener(move |this, _, _, cx| {
+                            this.upload_into_drive(folders, cx);
+                        }))
+                        .into_any_element(),
+                    );
+                }
+                items.push(separator());
+                let onedrive = self.drive_is_onedrive(view.account);
+                for (kind, badge, label) in [
+                    (
+                        cloud_kind::DOCUMENT,
+                        NEW_DOCUMENT,
+                        if onedrive {
+                            tr!("files-drive-new-word")
+                        } else {
+                            tr!("files-drive-new-google-doc")
+                        },
+                    ),
+                    (
+                        cloud_kind::SPREADSHEET,
+                        NEW_SHEET,
+                        if onedrive {
+                            tr!("files-drive-new-excel")
+                        } else {
+                            tr!("files-drive-new-google-sheet")
+                        },
+                    ),
+                    (
+                        cloud_kind::PRESENTATION,
+                        NEW_SLIDES,
+                        if onedrive {
+                            tr!("files-drive-new-powerpoint")
+                        } else {
+                            tr!("files-drive-new-google-slides")
+                        },
+                    ),
+                ] {
+                    items.push(
+                        item(
+                            format!("files-drive-new-{kind}").into(),
+                            badge,
+                            label,
+                            false,
+                        )
+                        .on_click(cx.listener(move |this, _, window, cx| {
+                            this.start_drive_new(kind, window, cx);
+                        }))
+                        .into_any_element(),
+                    );
+                }
                 Some((at, items))
             }
             DriveMenu::Kind(at) => {

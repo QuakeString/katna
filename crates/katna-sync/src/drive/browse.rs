@@ -15,7 +15,7 @@ use super::{Drive, check, failure};
 use crate::{
     Error, Result,
     autoconfig::http,
-    cloud::{CloudItem, CloudPage, Fetched, MAX_FETCH, MAX_THUMBNAIL, Place},
+    cloud::{CloudItem, CloudPage, Fetched, MAX_FETCH, MAX_THUMBNAIL, NewKind, Place},
     oauth::{GOOGLE_DRIVE, GOOGLE_DRIVE_READ},
 };
 
@@ -183,6 +183,41 @@ impl Drive {
             .await?;
         check(&reply, "making a folder")?;
         Ok(super::parse(&reply.body)?.id)
+    }
+
+    /// Makes a folder, or a blank Google Doc, Sheet or Slides, called
+    /// `name` in folder `parent` (empty for the top of My Drive).
+    pub async fn create(&self, name: &str, parent: &str, kind: NewKind) -> Result<CloudItem> {
+        let mime = match kind {
+            NewKind::Folder => FOLDER,
+            NewKind::Document => NATIVE[0],
+            NewKind::Spreadsheet => NATIVE[1],
+            NewKind::Presentation => NATIVE[2],
+        };
+        let mut metadata = serde_json::json!({ "name": name, "mimeType": mime });
+        if !parent.is_empty() {
+            metadata["parents"] = serde_json::json!([parent]);
+        }
+        let body = metadata.to_string();
+        let url = format!(
+            "{}/drive/v3/files?fields={}",
+            self.api,
+            http::escape("id,name,mimeType,modifiedTime,webViewLink")
+        );
+        let reply = self
+            .call(
+                "POST",
+                &url,
+                &[],
+                Some(("application/json; charset=UTF-8", body.as_bytes())),
+                None,
+            )
+            .await?;
+        check(&reply, "making a new item")?;
+        let file: File = serde_json::from_slice(&reply.body)
+            .map_err(|err| Error::Protocol(format!("Drive answer: {err}")))?;
+        file.item()
+            .ok_or_else(|| Error::Protocol("Drive made something Files can't show".into()))
     }
 
     /// One page of `place`; `page` is the last page's `next`, or empty
@@ -517,5 +552,26 @@ mod tests {
         assert_eq!(body["name"], "Site photos");
         assert_eq!(body["mimeType"], FOLDER);
         assert_eq!(body["parents"], serde_json::json!(["parent-1"]));
+    }
+
+    #[test]
+    fn makes_a_blank_google_doc() {
+        let (api, seen) = serve(|_, _| {
+            (
+                200,
+                Vec::new(),
+                r#"{"id": "d1", "name": "Quotes", "mimeType": "application/vnd.google-apps.document",
+                    "modifiedTime": "2026-11-19T06:00:00Z", "webViewLink": "https://docs.test/d1"}"#
+                    .into(),
+            )
+        });
+        let drive = drive(&api, GOOGLE_DRIVE);
+        let item = smol::block_on(drive.create("Quotes", "", NewKind::Document)).unwrap();
+        assert!(item.native && !item.folder);
+        assert_eq!(item.link, "https://docs.test/d1");
+        let seen = seen.lock().unwrap();
+        let body: serde_json::Value = serde_json::from_slice(&seen[0].body).unwrap();
+        assert_eq!(body["mimeType"], "application/vnd.google-apps.document");
+        assert!(body.get("parents").is_none(), "{body}");
     }
 }

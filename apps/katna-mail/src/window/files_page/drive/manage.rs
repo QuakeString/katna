@@ -1,32 +1,69 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! Changing a drive's files from Files: Move to bin and Rename, each with
-//! Undo (`docs/ARCHITECTURE.md` §13.8).
+//! Changing a drive's files from Files: New folder and new documents,
+//! Move to bin and Rename, each with Undo (`docs/ARCHITECTURE.md` §13.8).
 
 use std::rc::Rc;
 
 use gpui::{AppContext, Context, Entity, Focusable, Subscription, Window, rgba};
 use katna_core::AccountId;
-use katna_dbus::CloudEntry;
+use katna_dbus::{CloudEntry, cloud_kind};
 use katna_i18n::tr;
 use katna_ui::{InputEvent, TextInput};
 
 use super::super::super::MailWindow;
 use crate::daemon::Command;
 
-/// A drive item's name being typed over in place.
+/// A drive item's name being typed over in place, or a new one's being
+/// typed.
 pub(in crate::window) struct Renaming {
     pub(super) account: AccountId,
     pub(super) id: String,
     old: String,
     pub(super) input: Entity<TextInput>,
+    /// A new item, not made yet: what it is (one of `cloud_kind`) and the
+    /// folder it goes in.
+    new: Option<(&'static str, String)>,
     _subscription: Subscription,
+}
+
+/// The id of a new item's card while its name is typed.
+pub(super) const NEW_ID: &str = "katna:new";
+
+/// The type a new item's card wears while its name is typed, on Google
+/// Drive (`onedrive` false) or OneDrive.
+fn new_mime(kind: &str, onedrive: bool) -> &'static str {
+    match (kind, onedrive) {
+        (cloud_kind::DOCUMENT, false) => "application/vnd.google-apps.document",
+        (cloud_kind::SPREADSHEET, false) => "application/vnd.google-apps.spreadsheet",
+        (cloud_kind::PRESENTATION, false) => "application/vnd.google-apps.presentation",
+        (cloud_kind::DOCUMENT, true) => {
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        }
+        (cloud_kind::SPREADSHEET, true) => {
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        }
+        (cloud_kind::PRESENTATION, true) => {
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+        }
+        _ => "",
+    }
+}
+
+/// The name a new item starts with.
+fn new_name(kind: &str) -> String {
+    match kind {
+        cloud_kind::DOCUMENT => tr!("files-drive-untitled-document"),
+        cloud_kind::SPREADSHEET => tr!("files-drive-untitled-spreadsheet"),
+        cloud_kind::PRESENTATION => tr!("files-drive-untitled-presentation"),
+        _ => tr!("files-drive-untitled-folder"),
+    }
 }
 
 impl MailWindow {
     /// Whether the drive on show is the account's own, whose items Katna
     /// may bin and rename (not what others shared with it).
-    pub(super) fn drive_owned(&self) -> bool {
+    pub(in crate::window) fn drive_owned(&self) -> bool {
         self.picker.is_none() && self.library.cloud.view.as_ref().is_some_and(|v| !v.shared)
     }
 
@@ -68,6 +105,184 @@ impl MailWindow {
             cx,
         );
         cx.notify();
+    }
+
+    /// Puts a card for a new folder or document (`kind`, one of
+    /// `cloud_kind`) first on the page, its name selected to type over;
+    /// Enter makes it in the folder on show, Escape drops it.
+    pub(in crate::window) fn start_drive_new(
+        &mut self,
+        kind: &'static str,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        self.library.menu = None;
+        if !self.drive_owned() {
+            return;
+        }
+        if self.library.cloud.renaming.is_some() {
+            self.finish_drive_rename(true, window, cx);
+        }
+        let Some(view) = self.library.cloud.view.as_ref() else {
+            return;
+        };
+        let account = view.account;
+        let folder = view
+            .crumbs
+            .last()
+            .map(|(id, _)| id.clone())
+            .unwrap_or_default();
+        let onedrive = self.drive_is_onedrive(account);
+        let name = new_name(kind);
+        let card = CloudEntry {
+            id: NEW_ID.into(),
+            name: name.clone(),
+            mime: new_mime(kind, onedrive).into(),
+            folder: kind == cloud_kind::FOLDER,
+            native: !onedrive && kind != cloud_kind::FOLDER,
+            modified: jiff::Timestamp::now().as_second(),
+            ..CloudEntry::default()
+        };
+        if let Some(view) = self.library.cloud.view.as_mut() {
+            let mut entries: Vec<CloudEntry> = view
+                .entries
+                .iter()
+                .filter(|e| e.id != NEW_ID)
+                .cloned()
+                .collect();
+            entries.insert(0, card);
+            view.entries = Rc::new(entries);
+            // The new card shows whatever the filters, at the top.
+            view.types = super::Types::All;
+            view.cursor = None;
+            view.stale = true;
+            view.state.scroll_to_reveal_item(0);
+        }
+        let accent = rgba(self.theme(window).accent).into();
+        let input = cx.new(|cx| {
+            let mut input = TextInput::new(name.clone(), cx);
+            input.set_accent(accent);
+            input.set_text(name.clone(), cx);
+            input.select_range(0..name.len(), cx);
+            input
+        });
+        let subscription = cx.subscribe_in(
+            &input,
+            window,
+            |this, _, event: &InputEvent, window, cx| match event {
+                InputEvent::Submit => this.finish_drive_rename(true, window, cx),
+                InputEvent::Cancel => this.finish_drive_rename(false, window, cx),
+                InputEvent::Changed => {}
+            },
+        );
+        window.focus(&input.focus_handle(cx), cx);
+        self.library.cloud.renaming = Some(Renaming {
+            account,
+            id: NEW_ID.into(),
+            old: String::new(),
+            input,
+            new: Some((kind, folder)),
+            _subscription: subscription,
+        });
+        cx.notify();
+    }
+
+    /// Makes the new item with the typed name (`save`), or takes its card
+    /// away.
+    fn finish_drive_new(
+        &mut self,
+        account: AccountId,
+        kind: &'static str,
+        folder: String,
+        name: Option<String>,
+        cx: &mut Context<Self>,
+    ) {
+        let drop_card = |this: &mut Self| {
+            if let Some(view) = this.library.cloud.view.as_mut() {
+                let entries: Vec<CloudEntry> = view
+                    .entries
+                    .iter()
+                    .filter(|e| e.id != NEW_ID)
+                    .cloned()
+                    .collect();
+                view.entries = Rc::new(entries);
+                view.stale = true;
+            }
+        };
+        let (Some(name), Some(connection)) = (name, self.daemon.clone()) else {
+            drop_card(self);
+            return;
+        };
+        // The card keeps the typed name while the drive makes it.
+        if let Some(view) = self.library.cloud.view.as_mut() {
+            let entries: Vec<CloudEntry> = view
+                .entries
+                .iter()
+                .map(|e| {
+                    let mut e = e.clone();
+                    if e.id == NEW_ID {
+                        e.name = name.clone();
+                    }
+                    e
+                })
+                .collect();
+            view.entries = Rc::new(entries);
+            view.stale = true;
+        }
+        let drive = self.drive_name(account);
+        cx.spawn(async move |this, cx| {
+            let made =
+                crate::daemon::cloud_create(&connection, account.0, &folder, &name, kind).await;
+            this.update(cx, |this, cx| {
+                match made {
+                    Ok(entry) => {
+                        if let Some(view) = this
+                            .library
+                            .cloud
+                            .view
+                            .as_mut()
+                            .filter(|v| v.account == account)
+                        {
+                            let entries: Vec<CloudEntry> = view
+                                .entries
+                                .iter()
+                                .map(|e| {
+                                    if e.id == NEW_ID {
+                                        entry.clone()
+                                    } else {
+                                        e.clone()
+                                    }
+                                })
+                                .collect();
+                            view.entries = Rc::new(entries);
+                            view.stale = true;
+                        }
+                        let text = tr!(
+                            "files-drive-made",
+                            name = entry.name.as_str(),
+                            drive = drive.as_str()
+                        );
+                        let undo = Command::CloudTrash(account, vec![entry.id.clone()], true);
+                        this.show_snackbar(text, Some(undo), cx);
+                        // Katna can't edit documents: the drive's own
+                        // editor opens in the browser.
+                        if !entry.folder && !entry.link.is_empty() {
+                            cx.open_url(&entry.link);
+                        }
+                    }
+                    Err(err) => {
+                        drop_card(this);
+                        let text =
+                            tr!("files-drive-make-failed", name = name.as_str(), error = err);
+                        this.show_snackbar(text, None, cx);
+                    }
+                }
+                this.drive_listing_changed(account, cx);
+                cx.notify();
+            })
+            .ok();
+        })
+        .detach();
     }
 
     /// Puts drive item `entry`'s name in a box to type over, its name
@@ -113,6 +328,7 @@ impl MailWindow {
             id: entry.id.clone(),
             old: name,
             input,
+            new: None,
             _subscription: subscription,
         });
         cx.notify();
@@ -133,6 +349,11 @@ impl MailWindow {
         }
         cx.notify();
         let name = renaming.input.read(cx).text().trim().to_owned();
+        if let Some((kind, folder)) = renaming.new {
+            let name = (save && !name.is_empty() && !name.contains('/')).then_some(name);
+            self.finish_drive_new(renaming.account, kind, folder, name, cx);
+            return;
+        }
         if !save || name.is_empty() || name == renaming.old || name.contains('/') {
             return;
         }
@@ -196,5 +417,20 @@ impl MailWindow {
             })
             .ok();
         }));
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_new_cards_type_fits_the_drive() {
+        assert_eq!(new_mime(cloud_kind::FOLDER, false), "");
+        assert_eq!(
+            new_mime(cloud_kind::SPREADSHEET, false),
+            "application/vnd.google-apps.spreadsheet"
+        );
+        assert!(new_mime(cloud_kind::PRESENTATION, true).ends_with("presentationml.presentation"));
     }
 }

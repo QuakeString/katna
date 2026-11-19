@@ -42,6 +42,39 @@ pub struct CloudItem {
     pub thumbnail: String,
 }
 
+/// What New in Files makes in a drive: a folder, or a blank document of
+/// the drive's own kind (a Google Doc, Sheet or Slides; a Word, Excel or
+/// PowerPoint file on OneDrive).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum NewKind {
+    Folder,
+    Document,
+    Spreadsheet,
+    Presentation,
+}
+
+impl NewKind {
+    /// Its name over D-Bus.
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Folder => "folder",
+            Self::Document => "document",
+            Self::Spreadsheet => "spreadsheet",
+            Self::Presentation => "presentation",
+        }
+    }
+
+    pub fn parse(text: &str) -> Option<Self> {
+        Some(match text {
+            "folder" => Self::Folder,
+            "document" => Self::Document,
+            "spreadsheet" => Self::Spreadsheet,
+            "presentation" => Self::Presentation,
+            _ => return None,
+        })
+    }
+}
+
 /// One page of a listing; `next` asks for the page after it and is empty
 /// on the last.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
