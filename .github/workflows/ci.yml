@@ -152,10 +152,18 @@ jobs:
         run: ci/windows-dbus.ps1
       - name: Katna's session bus starts katna-daemon
         shell: pwsh
+        # The test looks for both programs in its own folder. Cargo says
+        # where that is: since Rust 1.100 it is no longer target\debug\deps.
         run: |
           cargo build --locked -p katna-daemon
-          Copy-Item target\dbus\* target\debug\deps
-          Copy-Item target\debug\katna-daemon.exe target\debug\deps
+          $test = cargo test --locked -p katna-dbus --test windows_bus --no-run --message-format=json |
+            ForEach-Object { $_ | ConvertFrom-Json } |
+            Where-Object { $_.reason -eq 'compiler-artifact' -and $_.executable -and $_.target.name -eq 'windows_bus' } |
+            Select-Object -Last 1 -ExpandProperty executable
+          if (-not $test) { throw "cargo did not report the windows_bus test program" }
+          $dir = Split-Path $test
+          Copy-Item target\dbus\* $dir
+          Copy-Item target\debug\katna-daemon.exe $dir
           $env:APPDATA = New-Item -ItemType Directory -Force "$env:RUNNER_TEMP\katna\Roaming"
           $env:LOCALAPPDATA = New-Item -ItemType Directory -Force "$env:RUNNER_TEMP\katna\Local"
           cargo test --locked -p katna-dbus --test windows_bus -- --ignored
