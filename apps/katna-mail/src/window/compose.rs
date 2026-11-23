@@ -1180,6 +1180,15 @@ impl MailWindow {
         Some(now)
     }
 
+    /// The `Message-ID` the message being written is saved as a draft
+    /// under, while it is open.
+    pub(in crate::window) fn writing_draft(&self) -> Option<&str> {
+        self.compose
+            .as_ref()
+            .filter(|c| !c.closing)
+            .map(|c| c.message_id.as_str())
+    }
+
     /// Scrolls the conversation smoothly to the reply that just opened at
     /// its end, as Gmail does: to the end when the whole card fits, else
     /// just far enough that its first line, with the cursor, sits near the
