@@ -252,9 +252,15 @@ impl Clipboard {
     }
 }
 
-/// An item's content as `mime_type`: its HTML when asked for HTML and it
-/// has some, else its text.
+/// An item's content as `mime_type`: its picture when asked for the
+/// picture's type, its HTML when asked for HTML and it has some, else its
+/// text.
 fn bytes_as(item: &ClipboardItem, mime_type: &str) -> Option<Vec<u8>> {
+    if let Some(image) = transfer::clipboard_image(item)
+        && image.format.mime_type() == mime_type
+    {
+        return Some(image.bytes.clone());
+    }
     if mime_type == HTML_MIME
         && let Some(html) = transfer::clipboard_html(item)
     {

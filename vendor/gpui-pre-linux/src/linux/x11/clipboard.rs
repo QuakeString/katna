@@ -1025,7 +1025,13 @@ impl Clipboard {
         selection: ClipboardKind,
         wait: WaitConfig,
     ) -> Result<()> {
-        let text = item.text().unwrap_or_default().into_bytes();
+        let image = transfer::clipboard_image(item);
+        let text = item.text();
+        // A picture alone offers no text, or apps would paste nothing.
+        let text = match (text, image) {
+            (None, Some(_)) => None,
+            (text, _) => Some(text.unwrap_or_default().into_bytes()),
+        };
         let atoms = &self.inner.atoms;
         // TARGETS lists the MIME names of UTF8_STRING too, so they must be
         // there to read.
@@ -1035,11 +1041,19 @@ impl Clipboard {
             atoms.TEXT_MIME_UNKNOWN,
         ]
         .into_iter()
-        .map(|format| ClipboardData {
-            bytes: text.clone(),
-            format,
+        .filter_map(|format| {
+            Some(ClipboardData {
+                bytes: text.clone()?,
+                format,
+            })
         })
         .collect::<Vec<_>>();
+        if let Some(image) = image {
+            data.push(ClipboardData {
+                bytes: image.bytes.clone(),
+                format: self.image_format_atom(image.format),
+            });
+        }
         if let Some(html) = transfer::clipboard_html(item) {
             data.push(ClipboardData {
                 bytes: html.as_bytes().to_owned(),

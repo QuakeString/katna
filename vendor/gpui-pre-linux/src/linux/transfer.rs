@@ -82,6 +82,14 @@ pub fn clipboard_html(item: &ClipboardItem) -> Option<&str> {
     })
 }
 
+/// The picture an item holds, if any, for other apps to paste.
+pub fn clipboard_image(item: &ClipboardItem) -> Option<&Image> {
+    item.entries().iter().find_map(|entry| match entry {
+        ClipboardEntry::Image(image) => Some(image),
+        _ => None,
+    })
+}
+
 /// Content dropped from another app.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct DroppedContent {
