@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A steady reply box"
+text = """
+While you write a reply under a conversation, the conversation no longer
+moves by itself as your draft is saved, so the reply box stays where it is.
+The saved draft shows again in the conversation once you close the reply.
+"""

@@ -103,6 +103,17 @@ pub(super) struct Conversation {
     /// the subject, and the inbox tab of its newest message.
     folders: Vec<FolderId>,
     category: Option<MailCategory>,
+    /// The `Message-ID` (bare) of the draft being written in this window,
+    /// if any. Its saved copy is left out while it is open: the reply
+    /// card shows it, and each save (here, then the server's copy the
+    /// sync brings) swaps that copy for a new message, which would grow
+    /// and shrink the conversation above the card as the user types.
+    writing: Option<String>,
+}
+
+/// A `Message-ID` without its angle brackets or spaces.
+fn bare_id(id: &str) -> &str {
+    id.trim().trim_start_matches('<').trim_end_matches('>')
 }
 
 /// A chip under the subject: a folder, label, tab or mark.
@@ -450,6 +461,7 @@ impl Conversation {
             jump: None,
             folders: Vec::new(),
             category: None,
+            writing: None,
         };
         conversation.read_tracking(mail);
         conversation.read_labels(mail);
@@ -467,6 +479,11 @@ impl Conversation {
     /// Whether message `ix` is a read receipt for one of the user's
     /// messages here: not shown, as it shows as ticks on that message.
     pub(super) fn hidden(&self, ix: usize) -> bool {
+        if self.parts.get(ix).is_some_and(|p| self.is_writing(p))
+            && self.parts.iter().any(|p| !self.is_writing(p))
+        {
+            return true;
+        }
         let Some(Some(Some(receipt))) = self.parts.get(ix).map(|p| p.receipt.as_ref()) else {
             return false;
         };
@@ -508,6 +525,28 @@ impl Conversation {
     fn read_drafts(&mut self, mail: &Mail) {
         let ids: Vec<MessageId> = self.parts.iter().map(|p| p.id).collect();
         self.drafts = mail.drafts(&ids).into_iter().collect();
+        for part in &mut self.parts {
+            if part.message_id.is_none() && self.drafts.contains(&part.id) {
+                part.message_id = mail.message_id_header(part.id);
+            }
+        }
+    }
+
+    /// Notes the draft being written in this window (its `Message-ID`),
+    /// which the conversation then leaves out; see [`Self::writing`].
+    pub(super) fn set_writing(&mut self, message_id: Option<&str>) {
+        let message_id = message_id.map(bare_id).filter(|id| !id.is_empty());
+        if self.writing.as_deref() != message_id {
+            self.writing = message_id.map(str::to_owned);
+        }
+    }
+
+    /// Whether `part` is a saved copy of the draft being written.
+    fn is_writing(&self, part: &Part) -> bool {
+        let (Some(writing), Some(id)) = (&self.writing, &part.message_id) else {
+            return false;
+        };
+        self.drafts.contains(&part.id) && bare_id(id) == writing
     }
 
     /// Reads what the recipients of the user's tracked messages did, and
@@ -1360,6 +1399,10 @@ impl MailWindow {
     }
 
     pub(super) fn render_reader(&mut self, th: &Theme, cx: &mut Context<Self>) -> AnyElement {
+        let writing = self.writing_draft().map(str::to_owned);
+        if let Some(reader) = &mut self.reader {
+            reader.set_writing(writing.as_deref());
+        }
         self.open_sealed(cx);
         self.learn_keys(cx);
         self.fetch_remote(cx);
@@ -2773,6 +2816,63 @@ pub(super) fn body_blocks(body: &str, max_lines: usize) -> (Vec<(bool, SharedStr
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// A conversation of `parts`, each with its `Message-ID`; `drafts`
+    /// are the drafts among them.
+    fn conversation(parts: &[(i64, &str)], drafts: &[i64]) -> Conversation {
+        Conversation {
+            key: EntryKey::Message(MessageId(parts[0].0)),
+            subject: String::new(),
+            parts: parts
+                .iter()
+                .map(|(id, header)| Part {
+                    message_id: Some((*header).to_owned()),
+                    ..Part::new(MessageId(*id), None, true)
+                })
+                .collect(),
+            show_all: false,
+            original_colors: false,
+            colors_chat: None,
+            colors_flips: 0,
+            seen: None,
+            drafts: drafts.iter().map(|id| MessageId(*id)).collect(),
+            headers: Vec::new(),
+            chat: chat::ChatState::default(),
+            came_unread: HashSet::new(),
+            tops: Rc::default(),
+            jump: None,
+            folders: Vec::new(),
+            category: None,
+            writing: None,
+        }
+    }
+
+    #[test]
+    fn draft_being_written_is_left_out() {
+        let mut c = conversation(&[(1, "a@x"), (2, "<d@katna.invalid>")], &[2]);
+        assert!(!c.hidden(1));
+        c.set_writing(Some("d@katna.invalid"));
+        assert!(!c.hidden(0));
+        assert!(c.hidden(1));
+        assert_eq!(c.shown_count(), 1);
+        assert_eq!(c.last_shown(), Some(0));
+        // Closed again: the saved draft shows.
+        c.set_writing(None);
+        assert!(!c.hidden(1));
+        // Another draft, or a sent message with that ID, still shows.
+        c.set_writing(Some("other@katna.invalid"));
+        assert!(!c.hidden(1));
+        let mut sent = conversation(&[(1, "a@x"), (2, "d@katna.invalid")], &[]);
+        sent.set_writing(Some("d@katna.invalid"));
+        assert!(!sent.hidden(1));
+    }
+
+    #[test]
+    fn lone_draft_being_written_still_shows() {
+        let mut c = conversation(&[(2, "d@katna.invalid")], &[2]);
+        c.set_writing(Some("<d@katna.invalid>"));
+        assert!(!c.hidden(0));
+    }
 
     #[test]
     fn first_names() {
