@@ -849,7 +849,7 @@
     },
     {
       "name": "url",
-      "version": "2.5.8",
+      "version": "2.5.9",
       "description": "URL library for Rust, based on the WHATWG URL Standard",
       "license": "MIT OR Apache-2.0",
       "authors": [

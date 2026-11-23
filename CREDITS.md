@@ -91,7 +91,7 @@ bring in 856 more of their own. Each keeps its own license.
 | [unic-langid](https://github.com/zbraniecki/unic-locale) 0.9.6 | Zibi Braniecki | MIT OR Apache-2.0 | API for managing Unicode Language Identifiers |
 | [unicode-bidi](https://github.com/servo/unicode-bidi) 0.3.18 | The Servo Project Developers | MIT OR Apache-2.0 | Implementation of the Unicode Bidirectional Algorithm |
 | [unicode-segmentation](https://github.com/unicode-rs/unicode-segmentation) 1.13.3 | Manish Goregaokar, kwantam | MIT OR Apache-2.0 | This crate provides Grapheme Cluster, Word and Sentence boundaries according to Unicode Standard Annex #29 rules. |
-| [url](https://github.com/servo/rust-url) 2.5.8 | The rust-url developers | MIT OR Apache-2.0 | URL library for Rust, based on the WHATWG URL Standard |
+| [url](https://github.com/servo/rust-url) 2.5.9 | The rust-url developers | MIT OR Apache-2.0 | URL library for Rust, based on the WHATWG URL Standard |
 | [webpki-roots](https://github.com/rustls/webpki-roots) 1.0.12 | rustls | CDLA-Permissive-2.0 | Mozilla's CA root certificates for use with webpki |
 | [whatlang](https://github.com/greyblake/whatlang-rs) 0.18.0 | Serhii Potapov | MIT | Fast and lightweight language identification library for Rust. |
 | [winresource](https://github.com/BenjaminRi/winresource) 0.1.31 | Max Resch | MIT | Create and set windows icons and metadata for executables |
