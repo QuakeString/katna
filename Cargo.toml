@@ -39,6 +39,8 @@ katna-ai = { path = "crates/katna-ai" }
 async-channel = "2.5"
 async-io = "2.6"
 async-net = "2.0"
+# TCP keep-alive on mail connections (`katna-sync` net.rs).
+socket2 = { version = "0.6", features = ["all"] }
 async-signal = "0.2"
 blocking = "1.7"
 blake3 = "1.8"

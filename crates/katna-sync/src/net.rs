@@ -37,6 +37,20 @@ pub const CONNECT_TIMEOUT: Duration = Duration::from_secs(30);
 /// changes (IDLE) uses its own, longer limit.
 pub const READ_TIMEOUT: Duration = Duration::from_secs(120);
 
+/// Silence after which a connection sends a TCP keep-alive probe. Home
+/// routers and carrier NAT forget a quiet connection after a few minutes,
+/// and a server that is gone sends nothing: without probes an IDLE that
+/// waits for new mail would not notice until it is renewed.
+pub const KEEPALIVE_IDLE: Duration = Duration::from_secs(60);
+
+/// Time between unanswered keep-alive probes.
+pub const KEEPALIVE_INTERVAL: Duration = Duration::from_secs(15);
+
+/// Unanswered probes after which the connection counts as dead (Windows
+/// always uses 10).
+#[cfg(not(windows))]
+pub const KEEPALIVE_RETRIES: u32 = 4;
+
 /// Most bytes a server may send without ending a line, and the most one
 /// POP3 answer may hold. IMAP literals stop at 64 MiB (io-imap), so this
 /// only stops a server that never ends its line from using up the memory.
@@ -217,6 +231,18 @@ async fn connect_to(host: &str, port: u16, reach: Reach) -> Result<TcpStream> {
     })))
 }
 
+/// Turns on TCP keep-alive probes ([`KEEPALIVE_IDLE`]), so a quiet
+/// connection stays known to routers on the way and a dead one fails
+/// within about two minutes instead of hanging until the next command.
+fn keep_alive(tcp: &TcpStream) -> io::Result<()> {
+    let probes = socket2::TcpKeepalive::new()
+        .with_time(KEEPALIVE_IDLE)
+        .with_interval(KEEPALIVE_INTERVAL);
+    #[cfg(not(windows))]
+    let probes = probes.with_retries(KEEPALIVE_RETRIES);
+    socket2::SockRef::from(tcp).set_tcp_keepalive(&probes)
+}
+
 enum Stream {
     Plain(TcpStream),
     Tls(Box<TlsStream<TcpStream>>),
@@ -269,6 +295,7 @@ impl Conn {
                 err => err,
             })?;
         tcp.set_nodelay(true)?;
+        keep_alive(&tcp)?;
         tracing::debug!(host, port, "connected");
         self.host = host.to_owned();
         self.stream = Some(Stream::Plain(tcp));
@@ -662,6 +689,27 @@ mod tests {
             assert!(err.to_string().contains("local network"), "{err}");
             // The default reaches it, as tests and local servers need.
             Conn::new(tls).connect_tcp("127.0.0.1", port).await.unwrap();
+        });
+    }
+
+    #[test]
+    fn connections_send_keep_alive_probes() {
+        smol::block_on(async {
+            let listener = async_net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+            let port = listener.local_addr().unwrap().port();
+            let mut conn = Conn::new(Tls::system().unwrap());
+            conn.connect_tcp("127.0.0.1", port).await.unwrap();
+            let Some(Stream::Plain(tcp)) = &conn.stream else {
+                panic!("not connected");
+            };
+            let socket = socket2::SockRef::from(tcp);
+            assert!(socket.keepalive().unwrap());
+            #[cfg(not(windows))]
+            {
+                assert_eq!(socket.tcp_keepalive_time().unwrap(), KEEPALIVE_IDLE);
+                assert_eq!(socket.tcp_keepalive_interval().unwrap(), KEEPALIVE_INTERVAL);
+                assert_eq!(socket.tcp_keepalive_retries().unwrap(), KEEPALIVE_RETRIES);
+            }
         });
     }
 

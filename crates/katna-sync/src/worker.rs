@@ -114,7 +114,9 @@ impl Pop3Connect for Pop3Connector {
 /// Timing of a worker, and what it keeps offline.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct WorkerConfig {
-    /// How long one IDLE may last before it is renewed.
+    /// How long one IDLE may last before it is renewed. Renewing also asks
+    /// the server something, so a connection that died quietly is found
+    /// even where keep-alive probes are not answered.
     pub idle_timeout: Duration,
     /// How often every folder is synced, not only the inbox.
     pub full_sync_interval: Duration,
@@ -135,7 +137,7 @@ pub struct WorkerConfig {
 impl Default for WorkerConfig {
     fn default() -> Self {
         Self {
-            idle_timeout: Duration::from_secs(25 * 60),
+            idle_timeout: Duration::from_secs(5 * 60),
             full_sync_interval: Duration::from_secs(15 * 60),
             retry_min: Duration::from_secs(2),
             retry_max: Duration::from_secs(5 * 60),

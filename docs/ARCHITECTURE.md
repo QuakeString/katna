@@ -305,7 +305,13 @@ One worker per account inside the daemon:
   with retries and conflict handling.
 - Incremental sync uses **CONDSTORE / QRESYNC** when available.
   Gmail uses `X-GM-EXT-1` (labels, thread IDs, `X-GM-RAW` search).
-- **IDLE hygiene:** re-issue IDLE before the 29-minute limit; watching several
+- **IDLE hygiene:** re-issue IDLE every 5 minutes (`WorkerConfig::idle_timeout`),
+  well before the 29-minute limit, and turn on TCP keep-alive (probe after
+  60 s of silence, every 15 s; `net::KEEPALIVE_*`) on every connection.
+  Home routers and carrier NAT drop a quiet connection after a few minutes
+  without telling either end; the probes keep it known to them and make a
+  dead one fail in about two minutes, so new mail is not stuck behind a
+  connection that only looks open. Watching several
   folders needs several connections (or the NOTIFY extension); respect
   per-server connection limits (Gmail: about 15).
   Built so far (`katna_sync::worker`): the worker's connection IDLEs on the

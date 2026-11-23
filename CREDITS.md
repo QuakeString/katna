@@ -5,7 +5,7 @@
 
 Katna stands on the work of these open-source libraries and the people
 who make them. Thank you. This is every crate Katna uses directly; they
-bring in 857 more of their own. Each keeps its own license.
+bring in 856 more of their own. Each keeps its own license.
 
 | Library | By | License | What it does |
 |---|---|---|---|
@@ -76,6 +76,7 @@ bring in 857 more of their own. Each keeps its own license.
 | [serde_json](https://github.com/serde-rs/json) 1.0.151 | David Tolnay, Erick Tryzelaar | MIT OR Apache-2.0 | A JSON serialization file format |
 | [sha2](https://github.com/RustCrypto/hashes) 0.10.9 | RustCrypto Developers | MIT OR Apache-2.0 | Pure Rust implementation of the SHA-2 hash function family including SHA-224, SHA-256, SHA-384, and SHA-512. |
 | [smol](https://github.com/smol-rs/smol) 2.0.2 | Stjepan Glavina | Apache-2.0 OR MIT | A small and fast async runtime |
+| [socket2](https://github.com/rust-lang/socket2) 0.6.5 | Alex Crichton, Thomas de Zeeuw | MIT OR Apache-2.0 | Utilities for handling networking sockets with a maximal amount of configuration possible intended. |
 | [spellbook](https://github.com/helix-editor/spellbook) 0.4.2 | Michael Davis | MPL-2.0 | A spellchecking library compatible with Hunspell dictionaries |
 | [tantivy](https://github.com/quickwit-oss/tantivy) 0.26.2 | Paul Masurel | MIT | Search engine library |
 | [tantivy-fst](https://github.com/quickwit-inc/fst) 0.5.0 | Andrew Gallant | Unlicense/MIT | This is a tantivy-specific fork from the fst crate from Burntsushi. (Please use the fst crate instead.) |

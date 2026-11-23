@@ -690,6 +690,17 @@
       "repository": "https://github.com/smol-rs/smol"
     },
     {
+      "name": "socket2",
+      "version": "0.6.5",
+      "description": "Utilities for handling networking sockets with a maximal amount of configuration possible intended.",
+      "license": "MIT OR Apache-2.0",
+      "authors": [
+        "Alex Crichton",
+        "Thomas de Zeeuw"
+      ],
+      "repository": "https://github.com/rust-lang/socket2"
+    },
+    {
       "name": "spellbook",
       "version": "0.4.2",
       "description": "A spellchecking library compatible with Hunspell dictionaries",
