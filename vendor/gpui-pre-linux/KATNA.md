@@ -114,6 +114,16 @@ binding on `j` works there (`guess_ascii` in `src/linux/platform.rs`).
 Katna adds the shifted digit row to it: Russian's Shift+3 types "№", and
 a binding on `#` now works there too.
 
+## Pictures on the clipboard
+
+Upstream writes only an item's text (and Katna its HTML) to the
+clipboard, so a picture copied with `ClipboardItem::new_image` reached no
+other app. Now the X11 owner offers the picture under its MIME type
+(`set_item` in `x11/clipboard.rs`) and the Wayland data source offers and
+sends it (`write_to_clipboard` in `wayland/client.rs`, `bytes_as` in
+`wayland/clipboard.rs`). An item that is only a picture offers no text, so
+an app that prefers text still pastes the picture.
+
 The first commit that added this directory holds the crate unchanged, so
 `git diff` against it shows the whole patch. When GPUI is upgraded, copy the
 new version here and apply the same change, or drop the patch once upstream

@@ -1375,6 +1375,9 @@ impl LinuxClient for WaylandClient {
         };
         if state.mouse_focused_window.is_some() || state.keyboard_focused_window.is_some() {
             let html = crate::linux::transfer::clipboard_html(&item).is_some();
+            let image = crate::linux::transfer::clipboard_image(&item).map(|i| i.format);
+            // A picture alone offers no text, or apps would paste nothing.
+            let text = item.text().is_some() || image.is_none();
             state.clipboard.set(item);
             let Some(serial) = state.serial_tracker.selection_serial() else {
                 log::warn!(
@@ -1384,11 +1387,16 @@ impl LinuxClient for WaylandClient {
             };
             let data_source = data_device_manager
                 .create_data_source(&state.globals.qh, DataSourceKind::Clipboard);
-            for mime_type in TEXT_MIME_TYPES {
-                data_source.offer(mime_type.to_string());
+            if text {
+                for mime_type in TEXT_MIME_TYPES {
+                    data_source.offer(mime_type.to_string());
+                }
             }
             if html {
                 data_source.offer(crate::linux::transfer::HTML_MIME.to_string());
+            }
+            if let Some(format) = image {
+                data_source.offer(format.mime_type().to_string());
             }
             data_source.offer(state.clipboard.self_mime());
             data_device.set_selection(Some(&data_source), serial.as_raw());
