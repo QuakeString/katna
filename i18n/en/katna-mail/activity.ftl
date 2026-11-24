@@ -59,6 +59,24 @@ activity-opens = Opens: { $count }
 activity-clicks = Clicks: { $count }
 # Long periods have one bar a week.
 activity-by-week = One bar per week
+# The card shown while the pointer rests on a bar. $weekday: short
+# weekday name ("Mon"); $day: day and month ("23 Nov").
+activity-bar-day = { $weekday }, { $day }
+activity-bar-opens = { $count ->
+    [one] { $count } open
+   *[other] { $count } opens
+}
+activity-bar-clicks = { $count ->
+    [one] { $count } click
+   *[other] { $count } clicks
+}
+# A bar with nothing in it.
+activity-bar-none = No opens or clicks
+# Messages opened that day beyond the ones listed.
+activity-bar-more = { $count ->
+    [one] { $count } more message
+   *[other] { $count } more messages
+}
 
 ## The messages
 
