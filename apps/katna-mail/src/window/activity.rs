@@ -8,18 +8,22 @@
 //! and the subject lines by open rate.
 
 use crate::widgets::Tip as _;
-use std::time::Duration;
+use std::cell::Cell;
+use std::rc::Rc;
+use std::time::{Duration, Instant};
 
 use gpui::{
-    Animation, AnimationExt, AnyElement, App, Context, Entity, Focusable, FontWeight, MouseButton,
-    MouseDownEvent, Task, Window, canvas, deferred, div, point, prelude::*, rgba,
+    Animation, AnimationExt, AnyElement, App, Bounds, Context, Entity, Focusable, FontWeight,
+    MouseButton, MouseDownEvent, Pixels, Task, Window, canvas, deferred, div, point, prelude::*,
+    rgba,
 };
 use jiff::civil::Date;
 use katna_core::{Account, AccountId};
 use katna_i18n::tr;
 use katna_store::{ActivityItem, Insights, MessageActivity};
 use katna_ui::anchored;
-use katna_ui::tokens::{elevation, radius, space, text};
+use katna_ui::motion::{self, Spring};
+use katna_ui::tokens::{duration, elevation, radius, space, text};
 use katna_ui::{TextInput, px, unpx};
 
 use super::MailWindow;
@@ -202,6 +206,11 @@ fn bar_messages(
         .collect()
 }
 
+/// Fast at first, gentle at the end.
+fn ease_out(t: f32) -> f32 {
+    1.0 - (1.0 - t).powi(3)
+}
+
 /// A day as the report names it: "Sep 28", with the year when it is not
 /// this year's.
 fn day_label(day: Date) -> String {
@@ -300,8 +309,8 @@ pub(super) struct Report {
     bar_messages: Vec<Vec<BarMessage>>,
     /// The bar under the pointer, which shows its hover card.
     hover_bar: Option<usize>,
-    /// Where the pointer is over the chart, in window coordinates.
-    pointer: gpui::Point<gpui::Pixels>,
+    /// The hover card, which glides from bar to bar.
+    card: BarCard,
     /// Days per bar.
     step: i64,
     first: Date,
@@ -318,6 +327,61 @@ pub(super) struct Report {
     /// The account menu is open.
     accounts_open: bool,
     accounts_arrow: crate::widgets::Fold,
+}
+
+/// The hover card of the chart: it fades in over a bar, glides to the
+/// next bar as the pointer moves along (its text crossfading), and fades
+/// out when the pointer leaves the chart.
+struct BarCard {
+    /// The bar it is about; kept while it fades out.
+    bar: Option<usize>,
+    /// The chart's bars, in window coordinates, as last drawn.
+    chart: Rc<Cell<Option<Bounds<Pixels>>>>,
+    /// Where its bottom-left corner is, in window coordinates.
+    x: Cell<Spring>,
+    y: Cell<Spring>,
+    /// 0 hidden to 1 shown.
+    shown: Cell<Spring>,
+    /// When it last turned to another bar, for the text's crossfade.
+    turned: Instant,
+    /// It is in place; else it jumps there rather than gliding.
+    placed: Cell<bool>,
+}
+
+impl Default for BarCard {
+    fn default() -> Self {
+        Self {
+            bar: None,
+            chart: Rc::default(),
+            x: Cell::new(Spring::new(motion::SLIDE, 0.0)),
+            y: Cell::new(Spring::new(motion::SLIDE, 0.0)),
+            shown: Cell::new(Spring::new(motion::SMOOTH, 0.0)),
+            turned: Instant::now(),
+            placed: Cell::new(false),
+        }
+    }
+}
+
+impl BarCard {
+    /// Shows it over bar `ix`: fading in where it was hidden, else
+    /// gliding there with its text crossfading.
+    fn show(&mut self, ix: usize) {
+        let mut shown = self.shown.get();
+        if shown.value() < 0.01 {
+            self.placed.set(false);
+        } else if self.bar != Some(ix) {
+            self.turned = Instant::now();
+        }
+        self.bar = Some(ix);
+        shown.set(1.0);
+        self.shown.set(shown);
+    }
+
+    fn hide(&mut self) {
+        let mut shown = self.shown.get();
+        shown.set(0.0);
+        self.shown.set(shown);
+    }
 }
 
 impl MailWindow {
@@ -450,7 +514,7 @@ impl MailWindow {
             bars: Vec::new(),
             bar_messages: Vec::new(),
             hover_bar: None,
-            pointer: gpui::Point::default(),
+            card: BarCard::default(),
             step: 1,
             first: today,
             last: today,
@@ -526,6 +590,7 @@ impl MailWindow {
             report.bars = bars;
             report.bar_messages = messages;
             report.hover_bar = None;
+            report.card.hide();
             report.step = step;
             report.first = first;
             report.last = last;
@@ -1790,13 +1855,16 @@ impl MailWindow {
                     // bar, and shows which bar the card is about.
                     .rounded_t(px(radius::XS))
                     .when(report.hover_bar == Some(ix), |d| d.bg(rgba(th.hover)))
+                    // Leaving a bar keeps its card until the pointer is
+                    // over the next one or leaves the chart, so the gaps
+                    // between bars never blink it out.
                     .on_hover(cx.listener(move |this, &over: &bool, _, cx| {
-                        if let Some(report) = &mut this.activity_report {
-                            if over {
-                                report.hover_bar = Some(ix);
-                            } else if report.hover_bar == Some(ix) {
-                                report.hover_bar = None;
-                            }
+                        if let Some(report) = &mut this.activity_report
+                            && over
+                            && report.hover_bar != Some(ix)
+                        {
+                            report.hover_bar = Some(ix);
+                            report.card.show(ix);
                             cx.notify();
                         }
                     }))
@@ -1850,15 +1918,26 @@ impl MailWindow {
                     .gap(px(space::S1))
                     .border_b_1()
                     .border_color(rgba(th.divider))
-                    .on_mouse_move(cx.listener(|this, event: &gpui::MouseMoveEvent, _, cx| {
-                        if let Some(report) = &mut this.activity_report {
-                            report.pointer = event.position;
-                            if report.hover_bar.is_some() {
-                                cx.notify();
-                            }
+                    .id("activity-chart")
+                    .relative()
+                    .on_hover(cx.listener(|this, &over: &bool, _, cx| {
+                        if let Some(report) = &mut this.activity_report
+                            && !over
+                        {
+                            report.hover_bar = None;
+                            report.card.hide();
+                            cx.notify();
                         }
                     }))
                     .children(bars)
+                    .child({
+                        let chart = report.card.chart.clone();
+                        canvas(move |bounds, _, _| chart.set(Some(bounds)), |_, _, _, _| {})
+                            .absolute()
+                            .top_0()
+                            .left_0()
+                            .size_full()
+                    })
                     .children(self.render_bar_card(report, th, window, cx)),
             )
             .child(
@@ -1904,7 +1983,16 @@ impl MailWindow {
         /// At most this many messages are named; the rest are counted.
         const NAMED: usize = 3;
         const WIDTH: f32 = 272.0;
-        let ix = report.hover_bar?;
+        let card_state = &report.card;
+        let ix = card_state.bar?;
+        let reduce = cx.reduce_motion();
+        let mut shown = card_state.shown.get();
+        let opacity = shown.tick(window, reduce);
+        card_state.shown.set(shown);
+        if report.hover_bar.is_none() && shown.settled() && opacity < 0.01 {
+            return None;
+        }
+        let chart = card_state.chart.get()?;
         let &(opens, clicks) = report.bars.get(ix)?;
         let start = report
             .first
@@ -1976,13 +2064,21 @@ impl MailWindow {
                 )
         });
         let more = messages.len().saturating_sub(NAMED);
-        let card = raised(div(), th, radius::SM, elevation::POPOVER)
-            .w(px(WIDTH))
-            .p(px(space::S4))
+        // The new bar's text fades in over the card's glide.
+        let fresh = if reduce {
+            1.0
+        } else {
+            let t = card_state.turned.elapsed().as_secs_f32()
+                / motion::time(duration::FAST).as_secs_f32().max(0.001);
+            if t < 1.0 {
+                window.request_animation_frame();
+            }
+            ease_out(t.clamp(0.0, 1.0))
+        };
+        let content = div()
             .flex()
             .flex_col()
-            .text_size(px(text::SMALL))
-            .text_color(rgba(th.text))
+            .opacity(0.5 + 0.5 * fresh)
             .child(
                 div()
                     .mb(px(space::S3))
@@ -2004,23 +2100,52 @@ impl MailWindow {
                         .child(tr!("activity-bar-more", count = more as i64)),
                 )
             });
-        // Beside the pointer, its bottom just below it, so the bar under
-        // the pointer stays in sight: on the left, or on the right where
-        // the window has no room on the left.
+        let card = raised(div(), th, radius::SM, elevation::POPOVER)
+            .w(px(WIDTH))
+            .p(px(space::S4))
+            .text_size(px(text::SMALL))
+            .text_color(rgba(th.text))
+            .opacity(opacity)
+            .child(content);
+        // Beside its bar, on the side with room (before it where it fits),
+        // its bottom a little above the axis, so the bar stays in sight.
         let room = katna_ui::anchored::content_bounds(window, cx);
-        let left = unpx(report.pointer.x - room.origin.x) >= WIDTH + 2.0 * space::S4;
-        let (corner, dx) = if left {
-            (gpui::Anchor::BottomRight, -space::S3)
+        let rtl = katna_ui::direction::is_rtl(window);
+        let count = report.bars.len().max(1) as f32;
+        let gap = space::S1;
+        let width = unpx(chart.size.width);
+        let column = ((width - gap * (count - 1.0)) / count).max(0.0);
+        let from_start = ix as f32 * (column + gap);
+        let left_edge = if rtl {
+            unpx(chart.origin.x) + width - from_start - column
         } else {
-            (gpui::Anchor::BottomLeft, space::S5)
+            unpx(chart.origin.x) + from_start
         };
+        let before = left_edge - unpx(room.origin.x) >= WIDTH + 2.0 * space::S4;
+        let to_x = if before {
+            left_edge - space::S2 - WIDTH
+        } else {
+            left_edge + column + space::S2
+        };
+        let to_y = unpx(chart.origin.y + chart.size.height) - space::S6;
+        let (mut x, mut y) = (card_state.x.get(), card_state.y.get());
+        if card_state.placed.get() {
+            x.set(to_x);
+            y.set(to_y);
+        } else {
+            x.snap(to_x);
+            y.snap(to_y);
+            card_state.placed.set(true);
+        }
+        let at = point(px(x.tick(window, reduce)), px(y.tick(window, reduce)));
+        card_state.x.set(x);
+        card_state.y.set(y);
         Some(
             deferred(
                 anchored()
-                    .position(report.pointer)
-                    .anchor(corner)
+                    .position(at)
+                    .anchor(gpui::Anchor::BottomLeft)
                     .screen_corner()
-                    .offset(point(px(dx), px(space::S3)))
                     .snap_to_window_with_margin(px(space::S3))
                     .child(card),
             )
