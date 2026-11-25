@@ -1470,8 +1470,12 @@ impl MailWindow {
                     .flex_col()
                     .items_start()
                     .gap(px(8.0))
-                    .child(
-                        div()
+                    .child({
+                        // The subject can be selected and copied as the
+                        // mail's text can.
+                        let mut pieces = self.text.pieces(super::select::HEADER_PART, th);
+                        let subject = pieces
+                            .words(reader.subject.clone())
                             .w_full()
                             .map(|d| {
                                 // A very narrow pane takes a smaller title so
@@ -1482,9 +1486,13 @@ impl MailWindow {
                                     d.text_size(px(22.0)).line_height(px(28.0))
                                 }
                             })
-                            .text_color(rgba(th.text))
-                            .child(reader.subject.clone()),
-                    )
+                            .text_color(rgba(th.text));
+                        self.selectable_body(
+                            super::select::HEADER_PART,
+                            div().w_full().child(subject),
+                            cx,
+                        )
+                    })
                     .when(!chips.is_empty(), |d| {
                         d.child(
                             div()
@@ -1841,6 +1849,52 @@ impl MailWindow {
         // A muted sender's crossed bell takes its room from the date.
         let name_room =
             lerp(120.0, 48.0, self.reader_compact()) + if mark.is_some() { 22.0 } else { 0.0 };
+        // The sender's name, address and date can be selected and copied
+        // as the mail's text can; a click that selects nothing still folds
+        // an earlier message.
+        let header_part = super::select::HEADER_PART + 1 + ix;
+        let fold = move |this: &mut Self,
+                         _: &gpui::ClickEvent,
+                         _: &mut gpui::Window,
+                         cx: &mut Context<Self>| {
+            // A drag that selected text is not a click.
+            if !this.text.is_empty() {
+                return;
+            }
+            cx.stop_propagation();
+            if let (Some(reader), Ok(mail)) = (&mut this.reader, &this.mail) {
+                reader.toggle(ix, mail);
+            }
+            cx.notify();
+        };
+        let mut pieces = self.text.pieces(header_part, th);
+        let name_text = pieces
+            .words(name.clone())
+            .min_w_0()
+            .truncate()
+            .text_size(px(14.0))
+            .font_weight(FontWeight::BOLD)
+            .text_color(rgba(th.text));
+        let email_text = (!email.is_empty() && email != name).then(|| {
+            // Takes only the room the name leaves.
+            pieces
+                .words(format!("<{email}>"))
+                .flex_1()
+                .min_w_0()
+                .truncate()
+                .text_size(px(12.0))
+                .text_color(rgba(th.text_faint))
+        });
+        let date_text = roomy.then(|| {
+            // Gives way to the sender's name in a narrow pane.
+            pieces
+                .words(long_date.clone())
+                .min_w_0()
+                .truncate()
+                .pt(px(2.0))
+                .text_size(px(12.0))
+                .text_color(rgba(th.text_faint))
+        });
         let header = div()
             .id(("part-header", ix))
             .flex()
@@ -1855,33 +1909,22 @@ impl MailWindow {
                     .flex()
                     .flex_col()
                     .child(
-                        div()
-                            .flex()
-                            .flex_row()
-                            .items_baseline()
-                            .gap(px(6.0))
-                            .child(
+                        self.selectable_body(
+                            header_part,
+                            div().child(
                                 div()
-                                    .min_w_0()
-                                    .truncate()
-                                    .text_size(px(14.0))
-                                    .font_weight(FontWeight::BOLD)
-                                    .text_color(rgba(th.text))
-                                    .child(name.clone()),
-                            )
-                            .children(mark)
-                            .when(!email.is_empty() && email != name, |d| {
-                                // Takes only the room the name leaves.
-                                d.child(
-                                    div()
-                                        .flex_1()
-                                        .min_w_0()
-                                        .truncate()
-                                        .text_size(px(12.0))
-                                        .text_color(rgba(th.text_faint))
-                                        .child(format!("<{email}>")),
-                                )
-                            }),
+                                    .id(("part-from", ix))
+                                    .flex()
+                                    .flex_row()
+                                    .items_baseline()
+                                    .gap(px(6.0))
+                                    .when(!last, |d| d.on_click(cx.listener(fold)))
+                                    .child(name_text)
+                                    .children(mark)
+                                    .children(email_text),
+                            ),
+                            cx,
+                        ),
                     )
                     .when_some(recipients, |d, recipients| {
                         d.child(
@@ -1907,18 +1950,12 @@ impl MailWindow {
                         )
                     }),
             )
-            .when(roomy, |d| {
-                // Gives way to the sender's name in a narrow pane.
-                d.child(
-                    div()
-                        .min_w_0()
-                        .truncate()
-                        .pt(px(2.0))
-                        .text_size(px(12.0))
-                        .text_color(rgba(th.text_faint))
-                        .child(long_date.clone()),
-                )
-            })
+            .children(date_text.map(|date| {
+                let date = date
+                    .id(("part-date", ix))
+                    .when(!last, |d| d.on_click(cx.listener(fold)));
+                self.selectable_body(header_part, div().min_w_0().child(date), cx)
+            }))
             .when(!pending, |d| {
                 d.children(self.seen_eye(ix, part, th, cx))
                     .children(self.seen_popover(ix, part, th, cx))
