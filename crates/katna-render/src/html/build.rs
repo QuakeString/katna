@@ -1275,11 +1275,17 @@ fn border_value(value: &str) -> Option<(f32, u32)> {
 }
 
 /// A link target that is safe to open: `http`, `https` or `mailto`.
+/// Tabs and line breaks inside it are dropped, as browsers do: senders'
+/// tools wrap long addresses.
 fn safe_link(href: &str) -> Option<String> {
-    let href = href.trim();
+    let href: String = href
+        .trim()
+        .chars()
+        .filter(|c| !matches!(c, '\t' | '\n' | '\r'))
+        .collect();
     let lower = href.to_ascii_lowercase();
     (lower.starts_with("https://") || lower.starts_with("http://") || lower.starts_with("mailto:"))
-        .then(|| href.to_owned())
+        .then_some(href)
 }
 
 /// A remote image URL, upgraded to `https`.
@@ -1501,6 +1507,13 @@ mod tests {
                 ("file".to_owned(), None),
             ]
         );
+    }
+
+    #[test]
+    fn line_breaks_inside_a_link_are_dropped() {
+        let d = doc("<a href=\" https://e.test/u\n?id=1\t&amp;k=2 \">Unsubscribe</a>");
+        let link = runs(&d.blocks[0]).iter().find_map(|r| r.style.link.clone());
+        assert_eq!(link.as_deref(), Some("https://e.test/u?id=1&k=2"));
     }
 
     #[test]

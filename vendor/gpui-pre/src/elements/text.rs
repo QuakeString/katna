@@ -1,7 +1,7 @@
 use crate::{
     ActiveTooltip, AnyView, App, Bounds, DispatchPhase, Element, ElementId, GlobalElementId,
     HighlightStyle, Hitbox, HitboxBehavior, InspectorElementId, IntoElement, LayoutId,
-    MouseDownEvent, MouseMoveEvent, MouseUpEvent, Pixels, Point, SharedString, Size, TextOverflow,
+    MouseDownEvent, MouseMoveEvent, MouseUpEvent, Pixels, Point, SharedString, Size, TextAlign, TextOverflow,
     TextRun, TextStyle, TooltipId, TruncateFrom, WhiteSpace, Window, WrappedLine,
     WrappedLineLayout, register_tooltip_mouse_handlers, set_tooltip_on_window,
 };
@@ -621,6 +621,9 @@ struct TextLayoutInner {
     truncate_width: Option<Pixels>,
     size: Option<Size<Pixels>>,
     bounds: Option<Bounds<Pixels>>,
+    /// Katna: how the lines are aligned when painted, so positions and
+    /// indices match the text where it shows.
+    align: TextAlign,
 }
 
 impl TextLayout {
@@ -632,6 +635,11 @@ impl TextLayout {
         _: &mut App,
     ) -> LayoutId {
         let text_style = window.text_style();
+        // Katna: left and right swap in a right-to-left layout.
+        let align = text_style.text_align.resolve(window.layout_direction());
+        if let Some(inner) = self.0.borrow_mut().as_mut() {
+            inner.align = align;
+        }
         let font_size = text_style.font_size.to_pixels(window.rem_size());
         let line_height = window.pixel_snap(
             text_style
@@ -754,6 +762,7 @@ impl TextLayout {
                         truncate_width,
                         size: Some(Size::default()),
                         bounds: None,
+                        align,
                     });
                     return Size::default();
                 };
@@ -773,6 +782,7 @@ impl TextLayout {
                     truncate_width,
                     size: Some(size),
                     bounds: None,
+                    align,
                 });
 
                 size
@@ -851,7 +861,11 @@ impl TextLayout {
                 line_origin.y = line_bottom;
                 line_start_ix += line.len() + 1;
             } else {
-                let position_within_line = position - line_origin;
+                let mut position_within_line = position - line_origin;
+                // Katna: centred and right-aligned lines start further in.
+                let row = (position_within_line.y / line_height).max(0.0) as usize;
+                position_within_line.x -=
+                    line.align_offset(row, element_state.align, bounds.size.width);
                 match line.index_for_position(position_within_line, line_height) {
                     Ok(index_within_line) => return Ok(line_start_ix + index_within_line),
                     Err(index_within_line) => return Err(line_start_ix + index_within_line),
@@ -886,7 +900,11 @@ impl TextLayout {
                 continue;
             } else {
                 let ix_within_line = index - line_start_ix;
-                return Some(line_origin + line.position_for_index(ix_within_line, line_height)?);
+                let mut position = line.position_for_index(ix_within_line, line_height)?;
+                // Katna: centred and right-aligned lines start further in.
+                let row = (position.y / line_height).max(0.0) as usize;
+                position.x += line.align_offset(row, element_state.align, bounds.size.width);
+                return Some(line_origin + position);
             }
         }
 
