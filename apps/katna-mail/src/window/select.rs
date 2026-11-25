@@ -41,6 +41,12 @@ actions!(katna_mail, [CopyText, SelectAllText]);
 /// The key context of the conversation's text once it was clicked.
 pub(super) const TEXT_CONTEXT: &str = "MessageText";
 
+/// The open mail's heading: its subject is part `HEADER_PART`, and the
+/// sender's name, address and date of message `n` part `HEADER_PART + 1 +
+/// n`. A drag that starts in one of them stays in it, so it never runs on
+/// into the messages under it.
+pub(super) const HEADER_PART: usize = usize::MAX / 8;
+
 /// The first part of the open mail's header details: the details of the
 /// message shown `n`th are part `DETAILS_PART + n`.
 pub(super) const DETAILS_PART: usize = usize::MAX / 4;
@@ -287,10 +293,15 @@ impl TextSelection {
 
     /// The part a drag stays in: text outside the conversation is many
     /// small surfaces drawn in no set order, so a drag selects within the
-    /// one it started in.
+    /// one it started in; so does one in the open mail's heading
+    /// ([`HEADER_PART`]).
     fn drag_part(&self) -> Option<usize> {
+        let part = self.anchor.map(|a| a.key.part).or(self.menu_part);
+        if part.is_some_and(|p| (HEADER_PART..DETAILS_PART).contains(&p)) {
+            return part;
+        }
         self.windows.as_ref()?;
-        self.anchor.map(|a| a.key.part).or(self.menu_part)
+        part
     }
 
     /// Whether `piece` is on screen.

@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Copy a mail's subject and sender"
+text = """
+In an open mail, drag over the subject, the sender's name and address, or
+the date to select them, then press Ctrl+C or right-click and choose Copy.
+"""
