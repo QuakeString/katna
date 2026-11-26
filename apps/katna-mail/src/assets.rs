@@ -223,6 +223,7 @@ icons!(
     "tune",
     "undo",
     "unread",
+    "unsubscribe",
     "upload",
     "video",
     "volume",

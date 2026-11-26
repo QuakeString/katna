@@ -17,6 +17,7 @@ pub mod print;
 mod rich;
 pub mod signature;
 pub mod trim;
+mod unsubscribe;
 
 pub use auth::{Check, Outcome, SenderChecks, Verdict, sender_authenticated, sender_checks};
 pub use plain::{
@@ -24,3 +25,4 @@ pub use plain::{
     calendar_part, message_view,
 };
 pub use rich::message_document;
+pub use unsubscribe::unsubscribe_ways;

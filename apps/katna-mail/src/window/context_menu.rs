@@ -986,6 +986,23 @@ impl MailWindow {
                     this.make_rule_from(name.clone(), sender.clone(), account, window, cx)
                 })),
             );
+            // In the background, from every ticked line's sender.
+            if !drafts && role != Role::Sent {
+                main.item(
+                    plain(
+                        "context-unsubscribe",
+                        "unsubscribe",
+                        &tr!("unsubscribe-menu"),
+                    )
+                    .on_click(cx.listener(|this, _, _, cx| {
+                        let Some((_, key)) = this.take_context_line() else {
+                            return;
+                        };
+                        let keys = this.context_targets(key);
+                        this.unsubscribe_lines(keys, cx);
+                    })),
+                );
+            }
         }
         main.item(
             plain(

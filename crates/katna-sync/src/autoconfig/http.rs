@@ -247,8 +247,35 @@ pub async fn post(
     tls: &Tls,
     timeout: Duration,
 ) -> Result<u16> {
+    post_to(url, headers, body, tls, timeout, Reach::Any).await
+}
+
+/// Like [`post`], for a URL that mail named (a list's one-click
+/// unsubscribe address): only port 443 of a public address
+/// ([`Reach::Public`]).
+pub async fn post_public(
+    url: &str,
+    headers: &[(&str, &str)],
+    body: &[u8],
+    tls: &Tls,
+    timeout: Duration,
+) -> Result<u16> {
+    post_to(url, headers, body, tls, timeout, Reach::Public).await
+}
+
+async fn post_to(
+    url: &str,
+    headers: &[(&str, &str)],
+    body: &[u8],
+    tls: &Tls,
+    timeout: Duration,
+    reach: Reach,
+) -> Result<u16> {
     let post = async {
         let parts = parse_url(url)?;
+        if reach == Reach::Public && parts.port != 443 {
+            return Err(Error::Protocol(format!("{url}: only port 443 is used")));
+        }
         let mut request = format!(
             "POST {} HTTP/1.1\r\nHost: {}\r\nUser-Agent: Katna\r\nContent-Length: {}\r\n\
              Connection: close\r\n",
@@ -263,7 +290,7 @@ pub async fn post(
             request.push_str(&format!("{name}: {value}\r\n"));
         }
         request.push_str("\r\n");
-        let mut conn = Conn::new(tls.clone());
+        let mut conn = Conn::with_reach(tls.clone(), reach);
         conn.connect_tls(parts.host, parts.port).await?;
         conn.write_all(request.as_bytes()).await?;
         conn.write_all(body).await?;

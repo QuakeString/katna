@@ -239,6 +239,8 @@ struct Body {
     invite: Option<Arc<invite::Invite>>,
     /// The video call links in it, for Join buttons.
     calls: Vec<(katna_core::meeting::Service, String)>,
+    /// How to unsubscribe from its sender's list, if it says.
+    unsubscribe: katna_core::unsubscribe::Ways,
 }
 
 impl Body {
@@ -1867,6 +1869,20 @@ impl MailWindow {
             }
             cx.notify();
         };
+        // Unsubscribe, after the address, for mail from a list.
+        let unsubscribe = part
+            .body
+            .as_ref()
+            .filter(|b| !pending && b.unsubscribe.any() && !self.is_me(&email))
+            .and_then(|b| {
+                let found = crate::data::Unsubscribable {
+                    id,
+                    address: email.to_lowercase(),
+                    name: name.to_string(),
+                    ways: b.unsubscribe.clone(),
+                };
+                self.unsubscribe_chip(ix, &found, th, cx)
+            });
         let mut pieces = self.text.pieces(header_part, th);
         let name_text = pieces
             .words(name.clone())
@@ -1926,27 +1942,40 @@ impl MailWindow {
                             cx,
                         ),
                     )
-                    .when_some(recipients, |d, recipients| {
+                    .when(recipients.is_some() || unsubscribe.is_some(), |d| {
                         d.child(
                             div()
-                                .id(("part-to", ix))
+                                .min_w_0()
                                 .flex()
                                 .flex_row()
                                 .items_center()
-                                .cursor_pointer()
-                                .text_size(px(12.0))
-                                .text_color(rgba(th.text_faint))
-                                .on_click(cx.listener(move |this, _, _, cx| {
-                                    cx.stop_propagation();
-                                    if let Some(part) =
-                                        this.reader.as_mut().and_then(|r| r.parts.get_mut(ix))
-                                    {
-                                        part.details = !part.details;
-                                    }
-                                    cx.notify();
+                                .gap(px(space::S3))
+                                .children(recipients.map(|recipients| {
+                                    div()
+                                        .id(("part-to", ix))
+                                        .flex()
+                                        .flex_row()
+                                        .items_center()
+                                        .cursor_pointer()
+                                        .text_size(px(12.0))
+                                        .text_color(rgba(th.text_faint))
+                                        .on_click(cx.listener(move |this, _, _, cx| {
+                                            cx.stop_propagation();
+                                            if let Some(part) = this
+                                                .reader
+                                                .as_mut()
+                                                .and_then(|r| r.parts.get_mut(ix))
+                                            {
+                                                part.details = !part.details;
+                                            }
+                                            cx.notify();
+                                        }))
+                                        .child(recipients)
+                                        .child(icon("drop-down", th.text_faint, 18.0))
                                 }))
-                                .child(recipients)
-                                .child(icon("drop-down", th.text_faint, 18.0)),
+                                // Unsubscribe, after who it went to, for
+                                // mail from a list.
+                                .children(unsubscribe),
                         )
                     }),
             )
@@ -2753,6 +2782,7 @@ fn read(mail: &Mail, id: MessageId) -> Body {
             opened: None,
             invite: None,
             calls: Vec::new(),
+            unsubscribe: Default::default(),
         };
     };
     match katna_crypto::protection(&raw) {
@@ -2792,6 +2822,7 @@ fn shown(raw: &[u8], security: Option<Secured>) -> Body {
         let links = doc.as_ref().map(rich::links).unwrap_or_default();
         katna_core::meeting::find(links, [view.body.as_str()], None)
     };
+    let unsubscribe = katna_render::unsubscribe_ways(raw, doc.as_ref(), &view.body);
     Body {
         view: Some(view),
         blocks,
@@ -2805,6 +2836,7 @@ fn shown(raw: &[u8], security: Option<Secured>) -> Body {
         opened: None,
         invite,
         calls,
+        unsubscribe,
     }
 }
 

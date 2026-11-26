@@ -1704,6 +1704,32 @@ impl Mail {
             .collect()
     }
 
+    /// Who sent message `id` (address, name) and how to unsubscribe from
+    /// it; `None` when its body is not stored or it is the user's own.
+    pub fn unsubscribe_ways(&self, id: MessageId) -> Option<Unsubscribable> {
+        let message = self.store.messages_by_id(&[id]).ok()?.pop()?;
+        let from = message.first(katna_store::ParticipantRole::From)?;
+        if self.is_me(&from.email_norm) {
+            return None;
+        }
+        let raw = self.store.blobs().get(&message.blob_hash?).ok()??;
+        let doc = katna_render::message_document(&raw);
+        let text = match doc {
+            Some(_) => String::new(),
+            None => katna_render::message_view(&raw).body,
+        };
+        Some(Unsubscribable {
+            id,
+            address: from.email_norm.clone(),
+            name: from
+                .display_name
+                .clone()
+                .filter(|n| !n.trim().is_empty())
+                .unwrap_or_else(|| from.email_norm.clone()),
+            ways: katna_render::unsubscribe_ways(&raw, doc.as_ref(), &text),
+        })
+    }
+
     /// The raw message `id`, if its body is stored.
     pub fn raw(&self, id: MessageId) -> Option<Vec<u8>> {
         let message = self.store.messages_by_id(&[id]).ok()?.pop()?;
@@ -1715,6 +1741,17 @@ impl Mail {
             }
         }
     }
+}
+
+/// A message that can be unsubscribed from, and its sender.
+#[derive(Debug, Clone)]
+pub struct Unsubscribable {
+    pub id: MessageId,
+    /// The sender's address, normalized.
+    pub address: String,
+    /// Their name, else the address.
+    pub name: String,
+    pub ways: katna_core::unsubscribe::Ways,
 }
 
 fn open_index(dir: &std::path::Path) -> (Option<Arc<SearchIndex>>, Option<String>) {

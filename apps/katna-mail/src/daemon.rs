@@ -81,6 +81,9 @@ pub enum Command {
     /// Shows a server's own words in the note: the button of a note that
     /// said what went wrong in plain ones. The app does this itself.
     ShowDetails(String),
+    /// Opens these web pages in the browser (a list's own unsubscribe
+    /// page).
+    OpenLinks(Vec<String>),
     /// Gives saved cards these labels, by name: an undo on the Contacts
     /// page.
     ContactLabels(Vec<(i64, Vec<String>)>),
@@ -268,6 +271,7 @@ impl Command {
             | Self::OpenOutbox
             | Self::RemoveKeys(_)
             | Self::RevealPath(_)
+            | Self::OpenLinks(_)
             | Self::ShowDetails(_)
             | Self::ContactLabels(_)
             | Self::RenameContactLabel(..)
@@ -493,7 +497,8 @@ async fn send_one(connection: &Connection, command: &Command) -> Result<(), Stri
         | Command::OpenOutbox
         | Command::RemoveKeys(_)
         | Command::RevealPath(_)
-        | Command::ShowDetails(_) => {
+        | Command::ShowDetails(_)
+        | Command::OpenLinks(_) => {
             return Ok(());
         }
         Command::Event(change) => return edit_event(connection, change).await.map(|_| ()),
@@ -1434,6 +1439,20 @@ pub async fn fetch_body(connection: &Connection, id: i64) -> Result<(), String> 
         .await
         .map_err(|err| describe(&err))?;
     pim.fetch_body(id).await.map_err(|err| describe(&err))
+}
+
+/// Unsubscribes from the lists of `messages` in the background; see
+/// `Pim1.Unsubscribe`. Returns each message with what happened.
+pub async fn unsubscribe(
+    connection: &Connection,
+    messages: &[i64],
+) -> Result<Vec<(i64, String)>, String> {
+    let pim = PimProxy::new(connection)
+        .await
+        .map_err(|err| describe(&err))?;
+    pim.unsubscribe(messages)
+        .await
+        .map_err(|err| describe(&err))
 }
 
 /// Creates a folder (a label, on Gmail) on the account's server, inside

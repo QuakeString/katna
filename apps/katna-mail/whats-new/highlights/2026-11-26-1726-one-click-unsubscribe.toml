@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Unsubscribe in one click"
+text = """
+Newsletters get an Unsubscribe button beside "to …" in the open mail, and
+Unsubscribe is on the right-click menu for any number of selected mails.
+Katna unsubscribes in the background the sender's own way, with no web
+page, and a short note says when it's done.
+"""

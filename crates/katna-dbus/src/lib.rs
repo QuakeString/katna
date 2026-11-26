@@ -102,6 +102,18 @@ pub mod state {
     pub const PAUSED: &str = "paused";
 }
 
+/// What `Unsubscribe` did for a message.
+pub mod unsubscribed {
+    /// The list took the one-click request.
+    pub const DONE: &str = "done";
+    /// The unsubscribe mail is on its way.
+    pub const SENT: &str = "sent";
+    /// There is no way without a web page.
+    pub const NONE: &str = "none";
+    /// The list's address refused or did not answer.
+    pub const FAILED: &str = "failed";
+}
+
 /// A mail template for `SaveTemplate`; `id` 0 saves a new one.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
 pub struct TemplateItem {
@@ -841,6 +853,14 @@ macro_rules! pim_proxy {
             /// Downloads the full message `message` if it is not stored yet.
             /// Returns once it is in the store (`MailChanged` follows).
             fn fetch_body(&self, message: i64) -> zbus::Result<()>;
+
+            /// Unsubscribes from the lists of `messages` the sender's own
+            /// way, without a web page: a one-click POST to the
+            /// `List-Unsubscribe` address (RFC 8058), else its `mailto:`
+            /// sent from the account the mail came to. Each sender once.
+            /// Returns each message with what happened, from
+            /// [`unsubscribed`].
+            fn unsubscribe(&self, messages: &[i64]) -> zbus::Result<Vec<(i64, String)>>;
 
             /// Searches the mail servers of `account` (every account when
             /// 0) for `query`, a search box query, for mail that is not

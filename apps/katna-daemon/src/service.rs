@@ -204,6 +204,11 @@ macro_rules! pim_interface {
                 Ok(self.daemon.fetch_body(MessageId(message)).await?)
             }
 
+            async fn unsubscribe(&self, messages: Vec<i64>) -> fdo::Result<Vec<(i64, String)>> {
+                let messages: Vec<MessageId> = messages.into_iter().map(MessageId).collect();
+                Ok(self.daemon.unsubscribe(&messages).await?)
+            }
+
             async fn search_server(&self, query: &str, account: i64) -> fdo::Result<Vec<i64>> {
                 let account = (account != 0).then_some(AccountId(account));
                 let found = self.daemon.search_server(query, account).await?;
