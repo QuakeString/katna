@@ -109,3 +109,13 @@ be laid out right to left, as Arabic, Hebrew, Persian and Urdu need:
 
 Tests: `taffy::direction_tests`, `elements::anchored::tests` for menus and
 `elements::svg::mirror_tests`.
+
+## Hit testing aligned text
+
+Upstream painted centred and right-aligned text where it shows, but
+`TextLayout::index_for_position` and `position_for_index` measured it as if
+it were left-aligned, so a click on a centred link (a mail's
+"Unsubscribe" footer) missed it, and selections in centred text were off.
+`TextLayout` now keeps the paragraph's alignment (resolved for the layout
+direction) and both shift each wrapped row by `WrappedLine::align_offset`,
+the same offset `paint` uses.

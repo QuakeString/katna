@@ -450,6 +450,35 @@ pub struct WrappedLine {
 }
 
 impl WrappedLine {
+    /// Katna: how far right of the left edge wrapped row `row` is painted
+    /// when the lines are aligned `align` in `align_width`, as
+    /// [`WrappedLine::paint`] places it.
+    pub fn align_offset(&self, row: usize, align: TextAlign, align_width: Pixels) -> Pixels {
+        let x_at = |boundary: &WrapBoundary| {
+            self.layout.unwrapped_layout.runs[boundary.run_ix].glyphs[boundary.glyph_ix]
+                .position
+                .x
+        };
+        let start = match row {
+            0 => Pixels::ZERO,
+            _ => match self.layout.wrap_boundaries.get(row - 1) {
+                Some(boundary) => x_at(boundary),
+                None => return Pixels::ZERO,
+            },
+        };
+        let end = self
+            .layout
+            .wrap_boundaries
+            .get(row)
+            .map_or(self.layout.unwrapped_layout.width, x_at);
+        let line_width = end - start;
+        match align {
+            TextAlign::Left => Pixels::ZERO,
+            TextAlign::Center => (align_width - line_width) / 2.0,
+            TextAlign::Right => align_width - line_width,
+        }
+    }
+
     /// The length of the underlying, unwrapped layout, in utf-8 bytes.
     #[allow(clippy::len_without_is_empty)]
     pub fn len(&self) -> usize {
@@ -1001,6 +1030,51 @@ mod tests {
             text: SharedString::new(text),
             decoration_runs: SmallVec::from(decorations.to_vec()),
         }
+    }
+
+    /// Katna: a centred or right-aligned row is measured from where it is
+    /// painted, so clicks on a centred link land on it.
+    #[test]
+    fn align_offset_follows_each_wrapped_row() {
+        // "aaaa bb": "aaaa " is 50 px wide, "bb" 20 px, wrapped before "bb".
+        let glyphs: Vec<ShapedGlyph> = [0.0, 10.0, 20.0, 30.0, 40.0, 50.0, 60.0]
+            .iter()
+            .enumerate()
+            .map(|(index, &x)| ShapedGlyph {
+                id: GlyphId(0),
+                position: point(px(x), px(0.0)),
+                index,
+                is_emoji: false,
+            })
+            .collect();
+        let line = WrappedLine {
+            layout: Arc::new(WrappedLineLayout {
+                unwrapped_layout: Arc::new(LineLayout {
+                    font_size: px(16.0),
+                    width: px(70.0),
+                    ascent: px(12.0),
+                    descent: px(4.0),
+                    runs: vec![ShapedRun {
+                        font_id: FontId(0),
+                        glyphs,
+                    }],
+                    len: 7,
+                }),
+                wrap_boundaries: SmallVec::from_vec(vec![WrapBoundary {
+                    run_ix: 0,
+                    glyph_ix: 5,
+                }]),
+                wrap_width: Some(px(100.0)),
+            }),
+            text: SharedString::new("aaaa bb"),
+            decoration_runs: Vec::new(),
+        };
+        let width = px(100.0);
+        assert_eq!(line.align_offset(0, TextAlign::Left, width), px(0.0));
+        assert_eq!(line.align_offset(0, TextAlign::Center, width), px(25.0));
+        assert_eq!(line.align_offset(1, TextAlign::Center, width), px(40.0));
+        assert_eq!(line.align_offset(1, TextAlign::Right, width), px(80.0));
+        assert_eq!(line.align_offset(2, TextAlign::Right, width), px(0.0));
     }
 
     #[gpui::test]
