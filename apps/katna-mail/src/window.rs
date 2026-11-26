@@ -115,6 +115,7 @@ mod tasks_page;
 mod tour;
 mod translate;
 mod unified;
+mod unsubscribe;
 mod updates;
 mod view_state;
 mod viewer;
@@ -751,6 +752,9 @@ pub struct MailWindow {
     /// Each inbox tab's unread chip as it shows, fades and folds away.
     tab_chips: Vec<list::TabChip>,
     snackbar: Option<Snackbar>,
+    /// Senders being unsubscribed from, or unsubscribed from, this run:
+    /// by address.
+    unsubscribed: HashMap<String, unsubscribe::Unsub>,
     /// What Ctrl+Z takes back, newest last: this window's actions since
     /// it opened.
     undo_history: Vec<UndoStep>,
@@ -1144,6 +1148,7 @@ impl MailWindow {
             tab_sizes: Vec::new(),
             tab_chips: Vec::new(),
             snackbar: None,
+            unsubscribed: HashMap::new(),
             undo_history: Vec::new(),
             crash_notice: None,
             problems: problems::Problems::default(),
@@ -3356,6 +3361,12 @@ impl MailWindow {
         }
         if let Command::ShowDetails(details) = undo {
             self.show_snackbar_for(details, None, FAILURE_TIME, cx);
+            return;
+        }
+        if let Command::OpenLinks(links) = &undo {
+            for link in links {
+                cx.open_url(link);
+            }
             return;
         }
         if let Command::RevealPath(path) = &undo {
