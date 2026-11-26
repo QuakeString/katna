@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! Unsubscribe in one click (`docs/ARCHITECTURE.md` §15.9): from an open
+//! Unsubscribe in one click (`docs/ARCHITECTURE.md` §9.5): from an open
 //! mail's header or the right-click menu of one or more mail lines. The
 //! daemon does it in the background the sender's own way (a one-click
 //! POST, else the list's unsubscribe mail); a short note says how it

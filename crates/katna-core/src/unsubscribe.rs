@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! Unsubscribing from mailing lists and newsletters
-//! (`docs/ARCHITECTURE.md` §15.9). The sender's own way comes first: the
+//! (`docs/ARCHITECTURE.md` §9.5). The sender's own way comes first: the
 //! `List-Unsubscribe` header (RFC 2369), with `List-Unsubscribe-Post`
 //! (RFC 8058) saying its web address takes a one-click POST. The daemon
 //! posts there, or else sends the header's `mailto:` from the account the

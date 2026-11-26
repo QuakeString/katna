@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! Unsubscribing in the background (`docs/ARCHITECTURE.md` §15.9): the
+//! Unsubscribing in the background (`docs/ARCHITECTURE.md` §9.5): the
 //! sender's own way, from this computer. A one-click POST to the
 //! `List-Unsubscribe` address when `List-Unsubscribe-Post` offers it
 //! (RFC 8058), else the list's unsubscribe mail, sent from the account
