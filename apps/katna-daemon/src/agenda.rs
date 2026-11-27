@@ -16,7 +16,7 @@ use std::sync::Arc;
 use jiff::tz::TimeZone;
 use katna_core::config::AppKind;
 use katna_core::{Paths, ids};
-use katna_dbus::agenda::{Item, edit, event, task};
+use katna_dbus::agenda::{Item, LOCAL_LIST, edit, event, task};
 use katna_dbus::app_action;
 use katna_store::tasks::{Task, TaskFields};
 use zbus::fdo;
@@ -445,10 +445,10 @@ macro_rules! agenda_interface {
                 };
                 let id = {
                     let mut store = self.daemon.store();
-                    let list = if list == 0 {
-                        store.default_task_list().map_err(CommandError::from)?
-                    } else {
-                        list
+                    let list = match list {
+                        0 => store.default_task_list().map_err(CommandError::from)?,
+                        LOCAL_LIST => store.local_task_list().map_err(CommandError::from)?,
+                        list => list,
                     };
                     store
                         .add_task_to(list, parent, &fields)

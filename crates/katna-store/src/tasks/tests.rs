@@ -91,6 +91,24 @@ fn local_tasks_are_never_pending() {
 }
 
 #[test]
+fn the_list_on_this_computer_comes_back_once_moved_out() {
+    let (_dir, mut store) = store();
+    let work = account(&mut store, "work@example.test");
+    gmail_list(&mut store, work);
+    store.move_out_local_tasks().unwrap();
+    // The clock's list went to the account; a mail of an account without
+    // tasks still gets a list here, the same one each time.
+    let local = store.local_task_list().unwrap();
+    assert_eq!(store.local_task_list().unwrap(), local);
+    let lists = store.task_lists().unwrap();
+    let list = lists.iter().find(|l| l.id == local).unwrap();
+    assert_eq!(list.account, None);
+    store.add_task("from a mail", "").unwrap();
+    assert_eq!(store.move_out_local_tasks().unwrap(), 0);
+    assert!(store.task_lists().unwrap().iter().any(|l| l.id == local));
+}
+
+#[test]
 fn new_tasks_go_to_the_first_synced_default_list() {
     let (_dir, mut store) = store();
     let early = store.add_task("from the clock", "2026-10-01").unwrap();
