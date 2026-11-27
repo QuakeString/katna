@@ -308,7 +308,16 @@ impl MailWindow {
             self.render_sliding(th, cx)
         } else {
             let (toolbar, body) = if two_pane_reading {
-                (None, self.render_reader_with_toolbar(th, cx))
+                // `fade_in` holds the body in a plain box, not a column, so
+                // the open mail fills it as the list does; flex alone would
+                // leave the conversation no height under its toolbar.
+                let reader = div()
+                    .size_full()
+                    .flex()
+                    .flex_col()
+                    .child(self.render_reader_with_toolbar(th, cx))
+                    .into_any_element();
+                (None, reader)
             } else {
                 let (toolbar, body) = self.render_list_parts(th, cx);
                 (Some(toolbar), body)
