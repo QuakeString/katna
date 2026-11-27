@@ -395,11 +395,17 @@ impl Store {
         if let Some(id) = synced {
             return Ok(id);
         }
+        self.local_task_list()
+    }
+
+    /// The list on this computer new tasks go to: its default one, else
+    /// its first, else a new "My Tasks".
+    pub fn local_task_list(&mut self) -> Result<i64> {
         let local = self
             .pim
             .query_row(
                 "SELECT id FROM task_list WHERE account_id IS NULL AND deleted = 0
-                 ORDER BY is_default DESC, id LIMIT 1",
+                 ORDER BY move_out, is_default DESC, id LIMIT 1",
                 [],
                 |row| row.get(0),
             )

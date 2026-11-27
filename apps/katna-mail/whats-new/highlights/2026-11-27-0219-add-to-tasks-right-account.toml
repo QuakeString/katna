@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Add to Tasks uses the mail's own account"
+text = """
+Add to Tasks now puts the task in the tasks of the account the mail came
+to, such as Google Tasks for a Gmail account. Mail of an account without
+tasks goes to the Tasks list on this computer.
+"""
+apps = ["tasks"]
