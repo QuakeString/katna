@@ -2904,6 +2904,10 @@ impl MailWindow {
                 .top_0()
                 .left_0()
                 .size_full()
+                // On the Notes page the veil lies on the page's card, so it
+                // takes the card's corners rather than spilling square past
+                // them.
+                .rounded(px(self.page_scrim_radius()))
                 .flex()
                 .flex_col()
                 .items_center()
@@ -2942,6 +2946,21 @@ impl MailWindow {
                         .into_any_element(),
                 }),
         )
+    }
+}
+
+impl MailWindow {
+    /// The corners of a veil laid over the whole Notes page: the page
+    /// card's, so the veil follows the card's rounded shape instead of
+    /// filling its corners square (GPUI clips children to rectangles
+    /// only). Over Mail or Calendar the veil covers the window's body, not
+    /// a card, and stays square.
+    pub(super) fn page_scrim_radius(&self) -> f32 {
+        if self.app == super::RailApp::Notes {
+            self.layout.shape.card_radius()
+        } else {
+            0.0
+        }
     }
 }
 

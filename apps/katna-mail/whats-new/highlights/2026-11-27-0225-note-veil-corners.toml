@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Cleaner corners behind an open note"
+text = """
+When you open a note, the faded page behind it now keeps the rounded
+corners of the Notes page instead of showing square ones.
+"""
