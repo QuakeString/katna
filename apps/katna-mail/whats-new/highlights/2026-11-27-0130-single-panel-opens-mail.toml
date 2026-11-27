@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Mail shows in single-panel view"
+text = """
+With the reading pane off, an opened mail showed only its toolbar and the
+Reply buttons. It now shows its subject, sender and text as it should.
+"""
