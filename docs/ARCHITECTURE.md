@@ -1334,7 +1334,8 @@ Unsubscribing happens on the user's computer, the sender's own way, and
 never through Katna's servers or by clicking through web pages.
 
 - **Where:** an Unsubscribe chip on the open mail's "to …" line (shared
-  `line_chip`; it reads "Unsubscribing…" while it runs, then a faint
+  `line_chip` in the accent's words and outline so it is easy to spot;
+  it reads "Unsubscribing…" while it runs, then a faint
   "Unsubscribed" that stays) and Unsubscribe on the right-click menu of one
   or more mail lines, below "Make a rule…". The menu takes each sender's
   newest message (at most 200 messages) and asks once per sender; one
