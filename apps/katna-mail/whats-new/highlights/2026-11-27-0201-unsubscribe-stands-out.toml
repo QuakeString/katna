@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Unsubscribe is easier to spot"
+text = """
+The Unsubscribe button on newsletters is now blue until you use it, then
+turns quiet grey once you're unsubscribed.
+"""

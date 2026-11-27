@@ -18,6 +18,7 @@ use crate::daemon::{self, Command};
 use crate::data::Unsubscribable;
 use crate::theme::Theme;
 use crate::widgets::line_chip;
+use katna_ui::theme::fade;
 
 /// Where unsubscribing from a sender stands.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -46,7 +47,8 @@ impl MailWindow {
         let (name, label, color) = match state {
             Some(Unsub::Done) => ("check", tr!("unsubscribe-done-chip"), th.text_faint),
             Some(Unsub::Working) => ("unsubscribe", tr!("unsubscribe-working"), th.text_faint),
-            None => ("unsubscribe", tr!("unsubscribe-chip"), th.text_dim),
+            // Tint: the accent's words and outline until it is used.
+            None => ("unsubscribe", tr!("unsubscribe-chip"), th.accent),
         };
         let chip = line_chip(
             ("part-unsubscribe", ix),
@@ -58,6 +60,10 @@ impl MailWindow {
         )
         .flex_shrink_0()
         .self_center();
+        let chip = match state {
+            None => chip.border_color(gpui::rgba(fade(th.accent, 0.55))),
+            Some(_) => chip,
+        };
         Some(match state {
             Some(_) => chip.into_any_element(),
             None => {
