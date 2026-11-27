@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Calmer hover effects"
+text = """
+Moving the pointer across buttons, such as the tools of an open note, no
+longer makes the ones it already passed flash. Only the button under the
+pointer lights up, and the others fade out quietly from where they were.
+"""

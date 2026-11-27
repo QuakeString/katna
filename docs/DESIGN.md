@@ -72,7 +72,9 @@ the buttons on its corners are level 2 on frosted glass
 
 **Motion:** a hover never switches on at once: round and pill
 buttons carry `katna_ui::Glow`, and any other box that tints on hover
-puts `widgets::hover_fade` first among its children. Springs for movement (`SLIDE` is the one with a little
+puts `widgets::hover_fade` first among its children. A hover the
+pointer leaves before it is fully in fades out from where it got to,
+never from full, so buttons the pointer only crossed don't flash. Springs for movement (`SLIDE` is the one with a little
 overshoot). Timed fades: `FAST` 140 ms (hover), `BASE` 220 ms (fades,
 folds), `SLOW` 400 ms (page swaps), `LINGER` 900 ms (slow reveals).
 Every spring goes through `motion::scaled` and every timed animation
