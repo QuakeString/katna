@@ -629,6 +629,7 @@ impl MailWindow {
                 .top_0()
                 .left_0()
                 .size_full()
+                .rounded(px(self.page_scrim_radius()))
                 .flex()
                 .items_center()
                 .justify_center()
