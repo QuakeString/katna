@@ -335,7 +335,22 @@ print-preview-more = { $count ->
     [one] and { $count } more page
    *[other] and { $count } more pages
 }
+# Some pages chosen: "3 of 12 pages", the 3 shown before this.
+print-preview-of-pages = { $total ->
+    [one] of { $total } page
+   *[other] of { $total } pages
+}
 print-preview-failed = the pages could not be shown
+# Which pages print: all, or the ones typed in a box beside it.
+print-preview-page-choice = Pages
+print-preview-all-pages = All
+# Shown in the empty box for typing pages.
+print-preview-pages-hint = e.g. 1-3, 8
+print-preview-pages-beyond = { $count ->
+    [one] There is { $count } page
+   *[other] There are { $count } pages
+}
+print-preview-pages-unreadable = Type pages like 1-3, 8
 print-preview-paper = Paper
 print-preview-a4 = A4
 print-preview-letter = Letter
@@ -347,6 +362,10 @@ print-preview-simple = Simple text
 print-preview-backgrounds = Backgrounds
 print-preview-cancel = Cancel
 print-preview-print = Print
+print-preview-print-pages = { $count ->
+    [one] Print { $count } page
+   *[other] Print { $count } pages
+}
 # In the printed page, in place of a message's text.
 print-not-downloaded = (Not downloaded yet.)
 print-encrypted = (Encrypted. Open it in Katna Mail to print its text.)

@@ -19,7 +19,7 @@ use gpui::{Context, Window};
 use katna_i18n::tr;
 use katna_render::Address;
 use katna_render::print::{
-    Paper, PrintFont, PrintFonts, PrintMessage, PrintOptions, conversation_pdf,
+    Paper, PrintFont, PrintFonts, PrintMessage, PrintOptions, conversation_pdf_pages,
 };
 
 use super::MailWindow;
@@ -58,9 +58,19 @@ impl PrintJob {
 
     /// The conversation laid out on `paper`, as a PDF.
     pub(super) fn layout(&self, paper: Paper, options: PrintOptions) -> Result<Vec<u8>, String> {
+        self.layout_pages(paper, options, None)
+    }
+
+    /// Like [`Self::layout`], with only `pages` (from 1) in the PDF.
+    pub(super) fn layout_pages(
+        &self,
+        paper: Paper,
+        options: PrintOptions,
+        pages: Option<&[usize]>,
+    ) -> Result<Vec<u8>, String> {
         let fonts = fonts(self.family.as_deref(), self.mono.as_deref())
             .ok_or_else(|| tr!("print-no-font"))?;
-        conversation_pdf(&self.subject, &self.messages, paper, &fonts, options)
+        conversation_pdf_pages(&self.subject, &self.messages, paper, &fonts, options, pages)
             .map_err(|err| err.to_string())
     }
 
@@ -94,13 +104,14 @@ impl MailWindow {
     }
 
     /// Hands `pdf`, `job` laid out on `paper`, to the desktop's print
-    /// dialog.
+    /// dialog; with `pages`, only those pages of it (from 1).
     pub(super) fn print_pdf(
         &mut self,
         job: Arc<PrintJob>,
         pdf: Arc<Vec<u8>>,
         paper: Paper,
         options: PrintOptions,
+        pages: Option<Arc<[usize]>>,
         cx: &mut Context<Self>,
     ) {
         let dir = print_dir();
@@ -118,11 +129,12 @@ impl MailWindow {
             let written = cx
                 .background_executor()
                 .spawn(async move {
-                    // Other paper than the preview's: lay it out again.
-                    let pdf = if same_paper(picked, paper) {
+                    // Other paper than the preview's, or only some
+                    // pages: lay it out again.
+                    let pdf = if same_paper(picked, paper) && pages.is_none() {
                         pdf
                     } else {
-                        Arc::new(job.layout(picked, options)?)
+                        Arc::new(job.layout_pages(picked, options, pages.as_deref())?)
                     };
                     save_pdf(&dir, &pdf)
                 })

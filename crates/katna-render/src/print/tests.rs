@@ -109,6 +109,36 @@ fn prints_a_conversation_over_pages() {
     .unwrap();
     assert!(pdf.starts_with(b"%PDF-"));
     assert!(pages(&pdf) >= 3, "{} pages", pages(&pdf));
+
+    // Only some of its pages.
+    let some = conversation_pdf_pages(
+        "Notes",
+        &messages,
+        Paper::A4,
+        &fonts,
+        PrintOptions::default(),
+        Some(&[2, 3]),
+    )
+    .unwrap();
+    assert_eq!(pages(&some), 2);
+}
+
+#[test]
+fn typed_pages_are_read() {
+    assert_eq!(parse_pages("", 4), Ok(vec![1, 2, 3, 4]));
+    assert_eq!(parse_pages("  ", 4), Ok(vec![1, 2, 3, 4]));
+    assert_eq!(parse_pages("3-5", 12), Ok(vec![3, 4, 5]));
+    assert_eq!(parse_pages("1-3, 8", 12), Ok(vec![1, 2, 3, 8]));
+    assert_eq!(parse_pages("8, 2-3, 3", 12), Ok(vec![2, 3, 8]));
+    assert_eq!(parse_pages("5-3", 12), Ok(vec![3, 4, 5]));
+    assert_eq!(parse_pages("10-", 12), Ok(vec![10, 11, 12]));
+    assert_eq!(parse_pages("-2", 12), Ok(vec![1, 2]));
+    assert_eq!(parse_pages("2 \u{2013} 3", 12), Ok(vec![2, 3]));
+    assert_eq!(parse_pages("9-14", 12), Err(PagesError::Beyond));
+    assert_eq!(parse_pages("0", 12), Err(PagesError::Beyond));
+    assert_eq!(parse_pages("two", 12), Err(PagesError::Unreadable));
+    assert_eq!(parse_pages("1-2-3", 12), Err(PagesError::Unreadable));
+    assert_eq!(parse_pages("-", 12), Err(PagesError::Unreadable));
 }
 
 #[test]

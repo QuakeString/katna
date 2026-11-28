@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Print only the pages you want"
+text = """
+Print preview has a new Pages row. Leave it on All, or type the pages to
+print, like 3-5 or 1-3, 8. Each page shows its number, the pages left out
+fade back, and the button says how many will print.
+"""

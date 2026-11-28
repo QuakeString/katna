@@ -2248,8 +2248,12 @@ window keeps the desktop's frame (§13.1) and changes what is inside it:
   Layout switch picks As shown (the default) or Simple text (a line per
   paragraph, a row's cells on one line); its Backgrounds switch leaves out
   page, box and text backgrounds (light text is darkened) while the
-  formatting stays. There is no font fallback for scripts the UI font
-  lacks. Without a print
+  formatting stays. Its Pages row prints All (the default) or the pages
+  typed, like `3-5` or `1-3, 8` (`katna_render::print::parse_pages`):
+  each preview page shows its number, the ones left out fade, a page past
+  the last turns the box red and holds Print, and only the chosen pages go
+  into the PDF handed to the print dialog. There is no font fallback for
+  scripts the UI font lacks. Without a print
   portal the PDF opens in the default app. PDFs are written to
   `$XDG_RUNTIME_DIR/katna/print` and removed after an hour. Print and In
   new window sit right of the actions and move to the More menu when the
