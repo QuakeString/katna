@@ -1,27 +1,31 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! The print preview: the conversation's pages as they will print, on A4
-//! or Letter, before the desktop's print dialog. Print hands the pages to
-//! that dialog (`print`); Cancel, Escape or a click beside the dialog
-//! closes it.
+//! or Letter, before the desktop's print dialog. Pages picks all of them
+//! or the ones typed (`3-5`, `1-3, 8`); the others fade in the preview and
+//! are left out. Print hands the pages to that dialog (`print`); Cancel,
+//! Escape or a click beside the dialog closes it.
 
 use std::sync::Arc;
 
 use gpui::{
-    AnyElement, Context, FocusHandle, FontWeight, ImageSource, KeyDownEvent, MouseButton,
-    ObjectFit, RenderImage, Task, Window, div, img, prelude::*, rgba,
+    AnyElement, Context, Entity, FocusHandle, FontWeight, ImageSource, KeyDownEvent, MouseButton,
+    ObjectFit, RenderImage, Subscription, Task, Window, div, img, prelude::*, rgba,
 };
 use katna_i18n::tr;
 use katna_preview::pdf::Document;
-use katna_render::print::{Paper, PrintOptions};
+use katna_render::print::{PagesError, Paper, PrintOptions, parse_pages};
 use katna_ui::motion::{self, Spring, lerp};
-use katna_ui::px;
+use katna_ui::tokens::{space, state, text};
+use katna_ui::{InputEvent, TextInput, px};
 
 use super::attachments::bitmap;
 use super::print::{PrintJob, local_paper};
 use super::{MailWindow, PANEL_RADIUS};
 use crate::theme::{Theme, fade};
-use crate::widgets::{FocusRing, elevation, filled_button, outlined_button, switch};
+use crate::widgets::{
+    CHIP_HEIGHT, FocusRing, elevation, field, filled_button, outlined_button, switch,
+};
 
 const WIDTH: f32 = 720.0;
 
@@ -32,6 +36,9 @@ const PAGE_WIDTH: f32 = 560.0;
 /// it prints.
 const MAX_PAGES: usize = 30;
 
+/// How wide the box for typing pages is.
+const PAGES_FIELD_WIDTH: f32 = 150.0;
+
 pub(super) struct PrintPreview {
     focus: FocusHandle,
     shown: Spring,
@@ -40,6 +47,9 @@ pub(super) struct PrintPreview {
     paper: Paper,
     options: PrintOptions,
     pages: Pages,
+    /// The pages typed to print; blank prints them all.
+    range: Entity<TextInput>,
+    _range_events: Subscription,
     /// Page bitmaps no longer shown, for the window to free.
     released: Vec<Arc<RenderImage>>,
     _layout: Task<()>,
@@ -78,6 +88,21 @@ impl MailWindow {
             .take()
             .map(|old| old.images())
             .unwrap_or_default();
+        let accent = rgba(self.theme(window).accent).into();
+        let range = cx.new(|cx| {
+            let mut input = TextInput::new(tr!("print-preview-pages-hint"), cx);
+            input.set_accent(accent);
+            input
+        });
+        let range_events = cx.subscribe_in(
+            &range,
+            window,
+            |this, _, event: &InputEvent, window, cx| match event {
+                InputEvent::Changed => cx.notify(),
+                InputEvent::Submit => this.print_previewed(window, cx),
+                InputEvent::Cancel => this.close_print_preview(window, cx),
+            },
+        );
         self.print_preview = Some(PrintPreview {
             focus,
             shown,
@@ -86,6 +111,8 @@ impl MailWindow {
             paper,
             options,
             pages: Pages::Laying,
+            range,
+            _range_events: range_events,
             released,
             _layout: task,
         });
@@ -190,9 +217,14 @@ impl MailWindow {
         let Some(preview) = &self.print_preview else {
             return;
         };
-        let Pages::Ready { pdf, .. } = &preview.pages else {
+        let Pages::Ready { pdf, total, .. } = &preview.pages else {
             return;
         };
+        let Ok(chosen) = preview.chosen(*total, cx) else {
+            return;
+        };
+        // Every page: the PDF as it is.
+        let pages = (chosen.len() < *total).then(|| Arc::from(chosen));
         let (job, pdf, paper, options) = (
             preview.job.clone(),
             pdf.clone(),
@@ -200,7 +232,15 @@ impl MailWindow {
             preview.options,
         );
         self.close_print_preview(window, cx);
-        self.print_pdf(job, pdf, paper, options, cx);
+        self.print_pdf(job, pdf, paper, options, pages, cx);
+    }
+
+    /// All: the typed pages are cleared.
+    fn print_all_pages(&mut self, cx: &mut Context<Self>) {
+        if let Some(preview) = &self.print_preview {
+            preview.range.update(cx, |input, cx| input.set_text("", cx));
+        }
+        cx.notify();
     }
 
     fn print_preview_focused(&self, window: &Window) -> bool {
@@ -256,7 +296,17 @@ impl MailWindow {
         let width = if phone { vw } else { WIDTH.min(vw - 48.0) };
         let page_width = PAGE_WIDTH.min(width - 48.0).max(120.0);
         let page_height = page_width * paper.height / paper.width;
-        let ready = matches!(preview.pages, Pages::Ready { .. });
+        // The pages to print, once it is known how many there are.
+        let chosen = match &preview.pages {
+            Pages::Ready { total, .. } => Some((preview.chosen(*total, cx), *total)),
+            _ => None,
+        };
+        let all = preview.range.read(cx).text().trim().is_empty();
+        let printed = |n: usize| match &chosen {
+            Some((Ok(pages), _)) => pages.contains(&n),
+            _ => true,
+        };
+        let ready = matches!(chosen, Some((Ok(_), _)));
         let page = |child: Option<AnyElement>| {
             div()
                 .flex_none()
@@ -287,14 +337,33 @@ impl MailWindow {
             Pages::Ready { images, total, .. } => {
                 let mut pages: Vec<AnyElement> = images
                     .iter()
-                    .map(|image| {
-                        page(Some(
-                            img(ImageSource::Render(image.clone()))
-                                .size_full()
-                                .object_fit(ObjectFit::Fill)
-                                .into_any_element(),
-                        ))
-                        .into_any_element()
+                    .enumerate()
+                    .map(|(ix, image)| {
+                        let n = ix + 1;
+                        let on = printed(n);
+                        // Its number under it, to type in Pages; one left
+                        // out fades back.
+                        div()
+                            .flex()
+                            .flex_col()
+                            .items_center()
+                            .gap(px(space::S3))
+                            .child(
+                                page(Some(
+                                    img(ImageSource::Render(image.clone()))
+                                        .size_full()
+                                        .object_fit(ObjectFit::Fill)
+                                        .into_any_element(),
+                                ))
+                                .when(!on, |d| d.opacity(LEFT_OUT)),
+                            )
+                            .child(
+                                div()
+                                    .text_size(px(text::CAPTION))
+                                    .text_color(rgba(if on { th.text_dim } else { th.text_faint }))
+                                    .child(crate::format::thousands(n as u64)),
+                            )
+                            .into_any_element()
                     })
                     .collect();
                 if *total > images.len() {
@@ -308,6 +377,21 @@ impl MailWindow {
                 }
                 (tr!("print-preview-pages", count = *total), pages)
             }
+        };
+        // Some pages: "3 of 12 pages", the 3 in the accent.
+        let count = match &chosen {
+            Some((Ok(pages), total)) if pages.len() < *total => div()
+                .flex()
+                .flex_row()
+                .gap(px(space::S2))
+                .child(
+                    div()
+                        .text_color(rgba(th.accent))
+                        .font_weight(FontWeight::MEDIUM)
+                        .child(crate::format::thousands(pages.len() as u64)),
+                )
+                .child(tr!("print-preview-of-pages", total = *total)),
+            _ => div().child(count),
         };
         let header = div()
             .flex_none()
@@ -397,6 +481,9 @@ impl MailWindow {
                 .pr(px(4.0))
                 .child(text)
         };
+        // The first caption of each row, as wide in both, so the chips after
+        // them line up.
+        let lead = |text: String| caption(text).min_w(px(space::S8));
         let paper_choice = |id: &'static str, label: String, choice: Paper| {
             chip(id, label, paper == choice).on_click(cx.listener(move |this, _, window, cx| {
                 this.set_print_setup(choice, options, window, cx)
@@ -436,13 +523,57 @@ impl MailWindow {
             })
             .child(switch(if backgrounds_on { 1.0 } else { 0.0 }, th))
             .child(tr!("print-preview-backgrounds"));
+        let wrong = match &chosen {
+            Some((Err(err), total)) => Some(match err {
+                PagesError::Beyond => tr!("print-preview-pages-beyond", count = *total),
+                PagesError::Unreadable => tr!("print-preview-pages-unreadable"),
+            }),
+            _ => None,
+        };
+        // Red while it names pages that can't print.
+        let field_th = Theme {
+            accent: if wrong.is_some() { th.error } else { th.accent },
+            outline: if wrong.is_some() {
+                th.error
+            } else {
+                th.outline
+            },
+            ..*th
+        };
+        let range_focus = gpui::Focusable::focus_handle(preview.range.read(cx), cx);
+        let pages_row = div()
+            .flex()
+            .flex_row()
+            .flex_wrap()
+            .items_center()
+            .gap(px(space::S3))
+            .child(lead(tr!("print-preview-page-choice")))
+            .child(
+                chip("print-all-pages", tr!("print-preview-all-pages"), all)
+                    .on_click(cx.listener(|this, _, _, cx| this.print_all_pages(cx))),
+            )
+            .child(
+                field("print-pages-field", &range_focus, &field_th)
+                    .w(px(PAGES_FIELD_WIDTH))
+                    .h(px(CHIP_HEIGHT))
+                    .text_size(px(text::SMALL))
+                    .flex()
+                    .items_center()
+                    .child(div().flex_1().min_w_0().child(preview.range.clone())),
+            )
+            .children(wrong.map(|wrong| {
+                div()
+                    .text_size(px(text::CAPTION))
+                    .text_color(rgba(th.error))
+                    .child(wrong)
+            }));
         let settings = div()
             .flex()
             .flex_row()
             .flex_wrap()
             .items_center()
             .gap(px(8.0))
-            .child(caption(tr!("print-preview-paper")))
+            .child(lead(tr!("print-preview-paper")))
             .child(paper_choice("print-a4", tr!("print-preview-a4"), Paper::A4))
             .child(paper_choice(
                 "print-letter",
@@ -472,6 +603,7 @@ impl MailWindow {
             .flex()
             .flex_col()
             .gap(px(12.0))
+            .child(pages_row)
             .child(settings)
             .child(
                 div()
@@ -488,12 +620,21 @@ impl MailWindow {
                             })),
                     )
                     .child(
-                        filled_button("print-go", tr!("print-preview-print"), th)
-                            .focus_ring_filled(th)
-                            .when(!ready, |d| d.opacity(0.5).cursor_default())
-                            .on_click(
-                                cx.listener(|this, _, window, cx| this.print_previewed(window, cx)),
-                            ),
+                        filled_button(
+                            "print-go",
+                            match &chosen {
+                                Some((Ok(pages), total)) if pages.len() < *total => {
+                                    tr!("print-preview-print-pages", count = pages.len())
+                                }
+                                _ => tr!("print-preview-print"),
+                            },
+                            th,
+                        )
+                        .focus_ring_filled(th)
+                        .when(!ready, |d| d.opacity(0.5).cursor_default())
+                        .on_click(
+                            cx.listener(|this, _, window, cx| this.print_previewed(window, cx)),
+                        ),
                     ),
             );
         let card = div()
@@ -557,7 +698,15 @@ impl MailWindow {
     }
 }
 
+/// How much a page left out shows.
+const LEFT_OUT: f32 = state::DISABLED;
+
 impl PrintPreview {
+    /// The pages to print of `total`, from what is typed.
+    fn chosen(&self, total: usize, cx: &gpui::App) -> Result<Vec<usize>, PagesError> {
+        parse_pages(self.range.read(cx).text(), total)
+    }
+
     /// Every page bitmap it holds.
     fn images(self) -> Vec<Arc<RenderImage>> {
         let mut images = self.released;

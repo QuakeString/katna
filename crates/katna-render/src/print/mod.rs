@@ -158,18 +158,86 @@ pub fn conversation_pdf(
     fonts: &PrintFonts,
     options: PrintOptions,
 ) -> Result<Vec<u8>, PrintError> {
+    conversation_pdf_pages(subject, messages, paper, fonts, options, None)
+}
+
+/// Like [`conversation_pdf`], with only `pages` (numbered from 1, as
+/// [`parse_pages`] gives them) in the PDF; `None` keeps every page.
+pub fn conversation_pdf_pages(
+    subject: &str,
+    messages: &[PrintMessage],
+    paper: Paper,
+    fonts: &PrintFonts,
+    options: PrintOptions,
+    pages: Option<&[usize]>,
+) -> Result<Vec<u8>, PrintError> {
     let faces = Faces::new(fonts)?;
     let width = paper.width - 2.0 * MARGIN;
     let height = paper.height - 2.0 * MARGIN;
     let strip = flow::lay_out(subject, messages, width, height, &faces, options, true);
-    match render(&strip, paper, &faces) {
+    match render(&strip, paper, &faces, pages) {
         // A picture krilla could not read after all: print without them.
         Err(_) if strip.pictures => {
             let strip = flow::lay_out(subject, messages, width, height, &faces, options, false);
-            render(&strip, paper, &faces)
+            render(&strip, paper, &faces, pages)
         }
         done => done,
     }
+}
+
+/// Why typed pages can't be printed.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum PagesError {
+    /// Not pages and ranges, like `1-3, 8`.
+    Unreadable,
+    /// A page after the last one (or page 0).
+    Beyond,
+}
+
+/// The pages `text` names, like `3-5` or `1-3, 8`, of `total`: numbered
+/// from 1, in order, each once. `5-` runs to the last page and `-3` from
+/// the first; a backwards range is read forwards. Blank text is every
+/// page.
+pub fn parse_pages(text: &str, total: usize) -> Result<Vec<usize>, PagesError> {
+    let mut keep = vec![false; total];
+    let mut any = false;
+    for part in text.split([',', ';']) {
+        let part = part.trim();
+        if part.is_empty() {
+            continue;
+        }
+        let number = |s: &str, missing: usize| -> Result<usize, PagesError> {
+            let s = s.trim();
+            if s.is_empty() {
+                return Ok(missing);
+            }
+            s.parse::<usize>().map_err(|_| PagesError::Unreadable)
+        };
+        let (first, last) = match part.split_once(['-', '\u{2013}', '\u{2014}']) {
+            Some((a, b)) => {
+                if a.trim().is_empty() && b.trim().is_empty() {
+                    return Err(PagesError::Unreadable);
+                }
+                (number(a, 1)?, number(b, total)?)
+            }
+            None => {
+                let n = number(part, 0)?;
+                (n, n)
+            }
+        };
+        let (first, last) = (first.min(last), first.max(last));
+        if first == 0 || last > total {
+            return Err(PagesError::Beyond);
+        }
+        for page in first..=last {
+            keep[page - 1] = true;
+        }
+        any = true;
+    }
+    if !any {
+        return Ok((1..=total).collect());
+    }
+    Ok((1..=total).filter(|p| keep[p - 1]).collect())
 }
 
 /// A face with what it takes to both measure and draw text.
@@ -301,14 +369,28 @@ fn page_end(keep: &[(f32, f32)], top: f32, room: f32) -> f32 {
 }
 
 /// Cuts the strip into pages.
-fn render(strip: &Strip, paper: Paper, faces: &Faces) -> Result<Vec<u8>, PrintError> {
+fn render(
+    strip: &Strip,
+    paper: Paper,
+    faces: &Faces,
+    pages: Option<&[usize]>,
+) -> Result<Vec<u8>, PrintError> {
     let mut document = Pdf::new();
     let settings = PageSettings::from_wh(paper.width, paper.height)
         .ok_or_else(|| PrintError::Pdf(format!("no paper of {paper:?}")))?;
     let room = paper.height - 2.0 * MARGIN;
     let mut top = 0.0;
+    let mut number = 0;
     loop {
         let end = page_end(&strip.keep, top, room).min(strip.height.max(top + 1.0));
+        number += 1;
+        if pages.is_some_and(|pages| !pages.contains(&number)) {
+            if end >= strip.height - 0.01 {
+                break;
+            }
+            top = end;
+            continue;
+        }
         let mut page = document.start_page_with(settings.clone());
         let mut surface = page.surface();
         let clip =
