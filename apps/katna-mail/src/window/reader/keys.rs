@@ -121,6 +121,8 @@ pub(in crate::window) fn key_card_top(badge: f32, th: &Theme) -> Div {
         .flex()
         .items_center()
         .justify_center()
+        // Rounded like the card: the card clips to its rectangle only.
+        .rounded_t(px(crate::window::attachments::CARD_RADIUS))
         .bg(rgba(th.read_row))
         .child(key_badge(badge))
 }
