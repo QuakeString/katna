@@ -943,6 +943,24 @@ impl Db {
         })
     }
 
+    /// The account's time with Katna AI, if it ever used it; unlike
+    /// [`Db::ai_plan`] this never starts the free month.
+    pub async fn ai_plan_read(&self, account: &str) -> Result<Option<AiPlan>, DbError> {
+        let row = self
+            .pool
+            .get()
+            .await?
+            .query_opt(
+                "SELECT first_use, paid_until FROM ai_plans WHERE account_id = $1",
+                &[&account],
+            )
+            .await?;
+        Ok(row.map(|row| AiPlan {
+            first_use: row.get(0),
+            paid_until: row.get(1),
+        }))
+    }
+
     /// Marks the account's Katna AI paid for until `until`.
     pub async fn set_ai_paid_until(
         &self,

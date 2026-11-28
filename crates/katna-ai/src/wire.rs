@@ -49,6 +49,32 @@ pub mod plan {
     pub const TRIAL: &str = "trial";
     /// Paid for this month.
     pub const PAID: &str = "paid";
+    /// Never used: the free month starts with the first use
+    /// ([`super::PlanStatus`] only).
+    pub const NEW: &str = "new";
+    /// The free month is over and no time is paid for
+    /// ([`super::PlanStatus`] only).
+    pub const OVER: &str = "over";
+}
+
+/// Katna Server's answer to `GET /api/v1/ai/plan`: where the account
+/// stands with Katna AI, read without starting the free month. For Katna
+/// Mail's Settings > Subscription.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub struct PlanStatus {
+    /// [`plan::NEW`], [`plan::TRIAL`], [`plan::PAID`] or [`plan::OVER`].
+    #[serde(default)]
+    pub kind: String,
+    /// Whole days of the free month left, while it runs.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub days_left: Option<u32>,
+    /// How long the free month is, in days.
+    #[serde(default)]
+    pub trial_days: u32,
+    /// When the free month ends (while it runs) or the paid time ends
+    /// (while paid), in Unix milliseconds.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub until: Option<i64>,
 }
 
 /// Why the daemon gave no text: the second field of its `AiRephrase` and
