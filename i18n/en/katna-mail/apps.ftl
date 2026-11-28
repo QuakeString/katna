@@ -25,7 +25,7 @@ rail-files = Files
 # $app: the app's name from the rail, such as "Notes".
 rail-menu-open = Open { $app }
 rail-menu-settings = { $app } settings
-rail-menu-turn-off = Turn off { $app }…
+rail-menu-turn-off = Turn off { $app }
 
 ## Turning an app off (Settings > Apps)
 
