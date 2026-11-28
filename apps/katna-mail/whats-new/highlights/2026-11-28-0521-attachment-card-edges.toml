@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Neater attachment cards"
+text = """
+The attachment cards under the last mail of a conversation show their
+whole shadow again, no longer cut off along the bottom. Their top corners
+now round as much as the bottom ones, on spreadsheet previews and file
+icons alike.
+"""

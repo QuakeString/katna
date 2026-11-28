@@ -2381,10 +2381,12 @@ impl MailWindow {
         let target = part.height.clone();
         let from = part.from;
         let (tops, id, scroll) = (reader.tops.clone(), part.id, self.reader_scroll.clone());
+        // It clips only while its height eases (below): clipping at rest
+        // would cut the shadows of cards at its foot, such as the
+        // attachments of the last message.
         let content = div()
             .flex()
             .flex_col()
-            .overflow_hidden()
             .on_children_prepainted(move |bounds, _, _| {
                 if let Some(bounds) = bounds.first() {
                     measured.set(unpx(bounds.size.height));
@@ -2407,7 +2409,7 @@ impl MailWindow {
                         if t >= 1.0 {
                             el
                         } else {
-                            el.h(px(from + (target.get() - from) * t))
+                            el.overflow_hidden().h(px(from + (target.get() - from) * t))
                         }
                     },
                 )

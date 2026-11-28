@@ -287,6 +287,8 @@ pub(super) fn card_top(thumb: Option<Thumb>, kind: Kind, badge: f32, th: &Theme)
             .flex()
             .items_center()
             .justify_center()
+            // Rounded like the card: the card clips to its rectangle only.
+            .rounded_t(inner)
             .bg(rgba(th.read_row))
             .child(kind_badge(kind, badge)),
     }
@@ -558,42 +560,55 @@ pub(super) fn glance_page(glance: &Glance, radius: gpui::Pixels) -> AnyElement {
             };
             let row = |number: SharedString, header: bool| {
                 div()
-                    .h(px(11.0))
+                    // The header fills the page's rounded corners, so
+                    // nothing square of the rows below shows there.
+                    .when(header, |r| r.h(radius))
+                    .when(!header, |r| r.h(px(11.0)))
                     .flex_none()
                     .flex()
                     .flex_row()
                     .border_b_1()
                     .border_color(rgba(GRID_LINE))
-                    // The header's corners follow the page's, else they
-                    // poke out past the card's rounded ones.
-                    .when(header, |r| r.rounded_t(radius).bg(rgba(GRID_HEADER)))
+                    // The header shows the page's own tint, rounded with
+                    // it (see below); the rows below are white.
+                    .when(!header, |r| r.bg(rgba(0xffffffff)))
                     .child(
                         div()
-                            .when(header, |c| c.rounded_tl(radius))
                             .w(px(numbers))
                             .flex_none()
                             .h_full()
                             .flex()
                             .items_center()
                             .justify_center()
-                            .bg(rgba(GRID_HEADER))
+                            .when(!header, |c| c.bg(rgba(GRID_HEADER)))
                             .text_color(rgba(GRID_HEADER_INK))
                             .border_r_1()
                             .border_color(rgba(GRID_LINE))
                             .child(number),
                     )
             };
-            let header = row(SharedString::default(), true).children(
-                (0..columns)
-                    .map(|ix| cell(katna_preview::sheet::column_name(ix as u32).into(), true)),
-            );
-            page.flex()
+            // A header line in the page's rounded top right corner would
+            // poke out of it: the page clips to its rectangle only.
+            let corner = CARD_WIDTH - katna_ui::unpx(radius);
+            let header = row(SharedString::default(), true).children((0..columns).map(|ix| {
+                cell(katna_preview::sheet::column_name(ix as u32).into(), true)
+                    .when(numbers + width * (ix + 1) as f32 > corner, |c| {
+                        c.border_r_0()
+                    })
+            }));
+            // The page itself is the header's tint, so the header's top
+            // corners are the page's: rounding the 11 px header row would
+            // shrink its corners to half its height, tighter than the
+            // card's. The rows and what is left below them are white.
+            page.bg(rgba(GRID_HEADER))
+                .flex()
                 .flex_col()
                 .child(header)
                 .children(rows.iter().enumerate().map(|(n, cells)| {
                     row((n + 1).to_string().into(), false)
                         .children(cells.iter().map(|c| cell(c.clone().into(), false)))
                 }))
+                .child(div().flex_1().bg(rgba(0xffffffff)))
                 .into_any_element()
         }
         Glance::Lines(lines) => page
