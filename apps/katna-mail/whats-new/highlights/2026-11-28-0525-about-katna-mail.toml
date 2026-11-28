@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "About Katna Mail"
+text = """
+The About window now names the app Katna Mail, and so do the Help menu
+and the About button that open it.
+"""

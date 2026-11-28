@@ -5,8 +5,10 @@
 
 ## About Katna (the dialog from the "i" button on the top bar)
 
-# The top bar button's tooltip. Katna is the app's name; keep it as is.
-about-tooltip = About Katna
+# The top bar button's tooltip. Katna Mail is the app's name; keep it as is.
+about-tooltip = About Katna Mail
+# The big name under the logo. The app's name; keep it as is.
+about-title = Katna Mail
 # Under the app's name.
 about-tagline = Mail and calendar for the Linux desktop
 # The version chip under it, and beside the About button in Settings.

@@ -13,7 +13,7 @@ quiet-tip-muted-until = Muted until { $when }. Click to notify again
 
 ## The right-click menu of a folder or an account
 
-quiet-mute = Mute…
+quiet-mute = Mute
 quiet-unmute = Unmute
 # For a folder that does not notify, such as Spam.
 quiet-notify = Notify for new mail

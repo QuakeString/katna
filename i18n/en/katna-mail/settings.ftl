@@ -147,7 +147,7 @@ sound-set-morning-detail = Kalimba, marimba
 # has for it, changing with the set.
 sounds-set-sound = The set's sound
 # Last in that menu: opens a file chooser for a sound file of the user's own.
-sounds-choose-file = Choose a file…
+sounds-choose-file = Choose a file
 # The file chooser's title.
 sounds-choose-file-title = Choose a sound
 # When the chosen file is not a sound Katna can play.
@@ -361,10 +361,10 @@ settings-appearance-colors-dark-only = Dark only
 # Heading over the color schemes people made or imported.
 settings-appearance-colors-yours = Yours
 # A card at the end of Yours: copies the selected scheme into the editor.
-scheme-customize-card = Customize…
+scheme-customize-card = Customize
 scheme-customize-card-detail = From the picked one
 # A card at the end of Yours: reads a scheme from a file.
-scheme-import-card = Import…
+scheme-import-card = Import
 scheme-import-card-detail = Katna or KDE file
 settings-appearance-accent = Accent
 settings-appearance-accent-detail = The color of Compose, the app on show in the rail, counts and highlights
@@ -424,7 +424,7 @@ scheme-editor-hard-to-read = Hard to read: { $colors }
 scheme-picker-dropper = Pick from screen
 scheme-picker-in-scheme = In this scheme
 scheme-picker-recent = Recent
-scheme-picker-system = System picker…
+scheme-picker-system = System picker
 # The eight colors of a side.
 scheme-seed-page = Page
 scheme-seed-cards = Cards

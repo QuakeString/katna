@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Calmer menu labels"
+text = """
+Menus and buttons drop the trailing dots: Check for Updates, Command
+Palette, Send Feedback, Move to, Make a rule, Open with and the rest now
+read as plain words.
+"""

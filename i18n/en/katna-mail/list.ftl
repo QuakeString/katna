@@ -493,12 +493,12 @@ menu-more = More
 # Heading over the list of folders to move the ticked mail to.
 menu-move-to-heading = Move to:
 # Placeholder of the search box on top of Move to's folders.
-menu-move-to-search = Move to…
+menu-move-to-search = Move to
 # Gmail: opens a submenu of the user's labels to tick or untick on the
 # mail, which stays where it is.
 menu-label-as = Label as
 # Placeholder of the search box on top of Label as's labels.
-menu-label-as-search = Label as…
+menu-label-as-search = Label as
 # Under the search box when no folder matches what was typed. $name: the
 # typed text.
 menu-no-folder = No folder called “{ $name }”
@@ -528,7 +528,7 @@ drag-mail = { $kind ->
 # Searches for mail from the sender. $name: the sender's name or address.
 menu-find-from = Find emails from { $name }
 # Opens the rule editor filled in with the mail's sender.
-menu-make-rule = Make a rule…
+menu-make-rule = Make a rule
 
 ## Snackbar after an action on mail in the list
 # $kind: "conversation" or "message", as the list groups mail.

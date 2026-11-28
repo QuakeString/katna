@@ -70,4 +70,4 @@ quick-tour = Take the tour
 quick-whats-new = What’s new
 quick-check-updates = Check for updates
 quick-send-feedback = Send feedback
-quick-about = About Katna
+quick-about = About Katna Mail
