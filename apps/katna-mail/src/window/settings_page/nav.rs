@@ -5,10 +5,17 @@
 //! app's own pages, Mail's folding open under it. On a phone the list fills
 //! the page until a page is picked.
 
-use gpui::{AnyElement, Context, FontWeight, Stateful, Window, div, prelude::*, rgba};
+use std::cell::Cell;
+use std::rc::Rc;
+
+use gpui::{
+    AnyElement, Bounds, Context, FontWeight, Pixels, ScrollHandle, Stateful, Window, canvas, div,
+    point, prelude::*, rgba,
+};
 use katna_i18n::tr;
-use katna_ui::px;
+use katna_ui::motion::{self, Spring};
 use katna_ui::tokens::{space, text};
+use katna_ui::{px, unpx};
 
 use super::{Scope, Section};
 use crate::theme::Theme;
@@ -22,6 +29,70 @@ const NAV_ICON: f32 = 18.0;
 /// How far a page of an app (Mail's Reading) sits in from its app: past
 /// the app's icon, so the names line up.
 const SUB_INDENT: f32 = NAV_ICON + space::S4;
+
+/// The list's scroll, which brings the open page's row into view: after
+/// a page is picked from a search result, a link or the menu bar, the row
+/// may sit below the list's end. It glides there rather than jumping.
+#[derive(Clone, Default)]
+pub(in crate::window) struct NavReveal(Rc<Reveal>);
+
+#[derive(Default)]
+struct Reveal {
+    scroll: ScrollHandle,
+    /// A page was opened: the next frame shows its row.
+    pending: Cell<bool>,
+    glide: Cell<Option<Spring>>,
+}
+
+impl NavReveal {
+    pub(in crate::window) fn scroll(&self) -> &ScrollHandle {
+        &self.0.scroll
+    }
+
+    /// Shows the open page's row once the list is next drawn.
+    pub(in crate::window) fn ask(&self) {
+        self.0.pending.set(true);
+    }
+
+    /// The open page's row was laid out at `bounds`: when it was asked
+    /// for and lies outside the list's view, the list glides to it.
+    fn measured(&self, bounds: Bounds<Pixels>, window: &mut Window) {
+        if !self.0.pending.replace(false) {
+            return;
+        }
+        let scroll = &self.0.scroll;
+        let view = scroll.bounds();
+        let margin = px(space::S4);
+        let offset = scroll.offset();
+        let y = if bounds.bottom() + margin > view.bottom() {
+            offset.y - (bounds.bottom() + margin - view.bottom())
+        } else if bounds.top() - margin < view.top() {
+            offset.y + (view.top() - (bounds.top() - margin))
+        } else {
+            return;
+        };
+        let y = y.clamp(-scroll.max_offset().y, px(0.0));
+        let mut spring = self
+            .0
+            .glide
+            .get()
+            .unwrap_or_else(|| Spring::new(motion::SMOOTH, unpx(offset.y)));
+        spring.set(unpx(y));
+        self.0.glide.set(Some(spring));
+        window.request_animation_frame();
+    }
+
+    /// Moves a glide on by this frame's step.
+    pub(in crate::window) fn tick(&self, window: &Window, reduce: bool) {
+        let Some(mut spring) = self.0.glide.get() else {
+            return;
+        };
+        let y = spring.tick(window, reduce);
+        let scroll = &self.0.scroll;
+        scroll.set_offset(point(scroll.offset().x, px(y)));
+        self.0.glide.set((!spring.settled()).then_some(spring));
+    }
+}
 
 impl MailWindow {
     /// Mail's row: folds its pages open or closed. Opening it on another
@@ -69,6 +140,7 @@ impl MailWindow {
             return div().into_any_element();
         };
         let focus = page.focus.clone();
+        let reveal = page.nav_reveal.clone();
         let mail_open = page.mail_open;
         let row = |s: Section, sub: bool, cx: &mut Context<Self>| -> Stateful<gpui::Div> {
             let on = !phone && s == section;
@@ -98,6 +170,19 @@ impl MailWindow {
                 .child(div().flex_1().min_w_0().truncate().child(s.label()))
                 .when(phone, |d| {
                     d.child(icon("chevron-right", th.text_faint, NAV_ICON))
+                })
+                // The open page's row tells the list where it is, so the
+                // list can bring it into view.
+                .when(on, |d| {
+                    let reveal = reveal.clone();
+                    d.relative().child(
+                        canvas(
+                            move |bounds, window, _| reveal.measured(bounds, window),
+                            |_, _, _, _| {},
+                        )
+                        .absolute()
+                        .size_full(),
+                    )
                 })
         };
         let heading = |text: String| {

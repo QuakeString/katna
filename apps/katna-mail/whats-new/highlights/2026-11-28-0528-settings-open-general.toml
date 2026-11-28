@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "Settings opens on General"
+text = """
+Configure Katna Mail, its shortcut, the tray menu and the Settings buttons
+now open Settings on General, instead of on Mail's Reading page.
+"""

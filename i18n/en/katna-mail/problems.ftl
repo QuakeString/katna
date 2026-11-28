@@ -131,5 +131,5 @@ safe-restore-blobs = Attachments
 # Details: the debug report.
 safe-report-title = Debug report
 safe-report-body = Copy this and attach it to your bug report. It has no mail, addresses or passwords in it.
-safe-report-restore = Restore…
+safe-report-restore = Restore
 safe-report-copied = Debug report copied

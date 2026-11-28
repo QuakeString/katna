@@ -562,7 +562,7 @@ impl MailWindow {
         let fix = about
             .and_then(|a| self.account_problem(a))
             .filter(|p| p.needs_you());
-        // Mute… (or Unmute) the folder, or the account on its heading.
+        // Mute (or Unmute) the folder, or the account on its heading.
         let at = menu.at;
         let quiet = match (menu.folder, about) {
             (Some(folder), _) => Some(super::quiet::Quiet::Folder {
