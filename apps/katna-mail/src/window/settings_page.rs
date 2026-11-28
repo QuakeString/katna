@@ -34,7 +34,6 @@ use katna_ui::rich::RichEvent;
 use katna_ui::tokens::{space, text};
 use katna_ui::{InputEvent, RichEditor, TextInput};
 
-use super::apps::App as RailApp;
 use super::keymap::{self, Group, SHORTCUTS};
 use super::settings::{Change, heading};
 use super::{FocusNext, FocusPrevious, MailWindow, OpenSettings};
@@ -319,6 +318,8 @@ pub(super) struct SettingsPage {
     /// Mail's pages show under it in the list, folding open and closed.
     pub(super) mail_open: bool,
     pub(super) mail_fold: crate::widgets::Fold,
+    /// The list of pages' scroll, which shows the open page's row.
+    pub(super) nav_reveal: nav::NavReveal,
     /// What the top bar's search box has, which shows matching settings
     /// in place of the open tab.
     pub(super) query: SharedString,
@@ -511,6 +512,7 @@ impl MailWindow {
                 list: false,
                 mail_open: false,
                 mail_fold: Default::default(),
+                nav_reveal: Default::default(),
                 query: SharedString::default(),
                 flash: None,
                 info: Rc::default(),
@@ -543,6 +545,7 @@ impl MailWindow {
         }
         page.section = section;
         page.list = false;
+        page.nav_reveal.ask();
         // Mail's pages unfold to show the one opened.
         if section.scope() == Scope::Mail && !page.mail_open {
             page.mail_open = true;
@@ -642,19 +645,12 @@ impl MailWindow {
         self.open_settings_here(window, cx);
     }
 
-    /// Opens Settings on the page of the app on show, or General for an
-    /// app without settings of its own. On a phone it opens on the list of
-    /// that app's pages.
+    /// Opens Settings on General, wherever it is opened from: the menu
+    /// bar, the shortcut, the tray, the rail, the account card or quick
+    /// settings. Links that name a page open that page instead. On a phone
+    /// it opens on the list of pages.
     pub(super) fn open_settings_here(&mut self, window: &mut Window, cx: &mut Context<Self>) {
-        let scope = match self.app {
-            RailApp::Mail => Scope::Mail,
-            RailApp::Calendar => Scope::Calendar,
-            RailApp::Files => Scope::Files,
-            RailApp::Contacts => Scope::Contacts,
-            RailApp::Tasks => Scope::Tasks,
-            RailApp::Notes => Scope::Notes,
-        };
-        self.open_settings_page(scope.first(), window, cx);
+        self.open_settings_page(Section::General, window, cx);
         if self.layout.shape.is_phone()
             && let Some(page) = &mut self.settings_page
         {
@@ -699,6 +695,8 @@ impl MailWindow {
         let scroll = page.scroll.clone();
         let bar = page.bar.clone();
         bar.tick(&scroll, window, cx);
+        page.nav_reveal.tick(window, cx.reduce_motion());
+        let nav_scroll = page.nav_reveal.scroll().clone();
         let list = page.list;
         let query = page.query.clone();
         let body = match section {
@@ -833,6 +831,7 @@ impl MailWindow {
                                 .flex_1()
                                 .min_h_0()
                                 .overflow_y_scroll()
+                                .track_scroll(&nav_scroll)
                                 .pl(px(space::S4))
                                 .pr(px(space::S3))
                                 .pt(px(space::S3))
