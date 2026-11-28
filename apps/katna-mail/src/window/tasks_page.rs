@@ -362,6 +362,27 @@ impl TasksPage {
         self.board.as_ref().and_then(|b| b.as_ref().ok())
     }
 
+    /// Where Add to Tasks puts a mail of `account`: that account's own
+    /// default list (Google Tasks' "My Tasks"), else its first list, else
+    /// the list on this computer, as for an account without tasks or one
+    /// left out of Tasks. The daemon's default list while none are read.
+    pub(super) fn list_for_mail(&self, account: Option<AccountId>) -> i64 {
+        let Some(board) = self.board() else {
+            return 0;
+        };
+        let lists = || {
+            board
+                .columns
+                .iter()
+                .map(|c| &c.list)
+                .filter(|l| account.is_some() && l.account == account)
+        };
+        lists()
+            .find(|l| l.is_default)
+            .or_else(|| lists().next())
+            .map_or(katna_dbus::agenda::LOCAL_LIST, |l| l.id)
+    }
+
     fn board_mut(&mut self) -> Option<&mut Board> {
         self.board.as_mut().and_then(|b| b.as_mut().ok())
     }
@@ -1645,11 +1666,15 @@ impl MailWindow {
         let Ok(mail) = self.mail.as_ref() else {
             return;
         };
-        let sources: Vec<(String, String, Vec<katna_store::MessageId>)> = keys
+        // Each mail's task goes to its own account's tasks, or to the
+        // list on this computer when the account has none.
+        let sources: Vec<(i64, String, String, Vec<katna_store::MessageId>)> = keys
             .iter()
             .filter_map(|k| {
                 let (subject, header) = mail.task_source(*k)?;
-                Some((subject, header, mail.entry_messages(*k)))
+                let ids = mail.entry_messages(*k);
+                let account = ids.first().and_then(|id| mail.message_account(*id));
+                Some((self.tasks.list_for_mail(account), subject, header, ids))
             })
             .collect();
         // The attachments are read away from the window: a few mails'.
@@ -1657,10 +1682,10 @@ impl MailWindow {
         let read = cx.background_executor().spawn(async move {
             sources
                 .into_iter()
-                .map(|(subject, header, ids)| {
+                .map(|(list, subject, header, ids)| {
                     let mut raws = crate::data::raw_messages(&paths, &ids);
                     let raws: Vec<Vec<u8>> = ids.iter().filter_map(|id| raws.remove(id)).collect();
-                    (subject, header, files::mail_files(&raws))
+                    (list, subject, header, files::mail_files(&raws))
                 })
                 .collect::<Vec<_>>()
         });
@@ -1674,12 +1699,12 @@ impl MailWindow {
 
     fn add_tasks_from_mails(
         &mut self,
-        sources: Vec<(String, String, Vec<crate::tasks::NewFile>)>,
+        sources: Vec<(i64, String, String, Vec<crate::tasks::NewFile>)>,
         cx: &mut Context<Self>,
     ) {
         let count = sources.len();
-        let mails: Vec<String> = sources.iter().map(|(_, m, _)| m.clone()).collect();
-        for (ix, (subject, header, files)) in sources.into_iter().enumerate() {
+        let mails: Vec<String> = sources.iter().map(|(_, _, m, _)| m.clone()).collect();
+        for (ix, (list, subject, header, files)) in sources.into_iter().enumerate() {
             let title = if subject.is_empty() {
                 tr!("tasks-no-subject")
             } else {
@@ -1688,7 +1713,7 @@ impl MailWindow {
             // One note and one Undo for them all, with the last.
             let last = ix + 1 == count;
             let add = TaskCommand::Add {
-                list: 0,
+                list,
                 parent: None,
                 title,
                 due: String::new(),

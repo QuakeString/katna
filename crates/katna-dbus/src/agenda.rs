@@ -22,7 +22,8 @@
 //! For Katna's Tasks page (lists are row IDs; `0` means none):
 //!
 //! - `AddTaskTo(x list, s parent, s title) -> s id`: a task on top of
-//!   `list` (`0`: the default list), as a step of task `parent` if not
+//!   `list` (`0`: the default list; [`LOCAL_LIST`]: the one on this
+//!   computer, made if there is none), as a step of task `parent` if not
 //!   empty.
 //! - `EditTask(s id, a{sv} fields)`: sets the keys of [`edit`] present.
 //! - `MoveTask(s id, x list)`: to another list, on top, with its steps.
@@ -42,6 +43,10 @@ use zbus::zvariant::OwnedValue;
 
 /// One event or task on the wire.
 pub type Item = HashMap<String, OwnedValue>;
+
+/// `AddTaskTo`'s list for the one on this computer: where a task made
+/// from the mail of an account without a task service goes.
+pub const LOCAL_LIST: i64 = -1;
 
 /// The largest file `AddTaskFile` takes, in bytes.
 pub const MAX_TASK_FILE: usize = 25 * 1024 * 1024;
@@ -132,8 +137,9 @@ macro_rules! agenda_proxy {
             /// Deletes a task.
             fn delete_task(&self, id: &str) -> zbus::Result<()>;
 
-            /// Adds a task on top of `list` (`0`: the default list), as a
-            /// step of `parent` if not empty. Returns its ID.
+            /// Adds a task on top of `list` (`0`: the default list;
+            /// `LOCAL_LIST`: the one on this computer), as a step of
+            /// `parent` if not empty. Returns its ID.
             fn add_task_to(&self, list: i64, parent: &str, title: &str) -> zbus::Result<String>;
 
             /// Sets the fields of task `id` given ([`edit`]).

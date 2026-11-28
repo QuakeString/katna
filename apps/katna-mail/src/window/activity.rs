@@ -8,17 +8,22 @@
 //! and the subject lines by open rate.
 
 use crate::widgets::Tip as _;
-use std::time::Duration;
+use std::cell::Cell;
+use std::rc::Rc;
+use std::time::{Duration, Instant};
 
 use gpui::{
-    Animation, AnimationExt, AnyElement, Context, Entity, Focusable, FontWeight, MouseButton,
-    MouseDownEvent, Task, Window, canvas, deferred, div, point, prelude::*, rgba,
+    Animation, AnimationExt, AnyElement, App, Bounds, Context, Entity, Focusable, FontWeight,
+    MouseButton, MouseDownEvent, Pixels, Task, Window, canvas, deferred, div, point, prelude::*,
+    rgba,
 };
 use jiff::civil::Date;
 use katna_core::{Account, AccountId};
 use katna_i18n::tr;
 use katna_store::{ActivityItem, Insights, MessageActivity};
 use katna_ui::anchored;
+use katna_ui::motion::{self, Spring};
+use katna_ui::tokens::{duration, elevation, radius, space, text};
 use katna_ui::{TextInput, px, unpx};
 
 use super::MailWindow;
@@ -136,17 +141,7 @@ fn bars(items: &[(Date, bool)], first: Date, last: Date) -> (Vec<(u32, u32)>, i6
         .max(1);
     let mut bars = vec![(0u32, 0u32); count];
     for &(day, click) in items {
-        let Ok(since) = day.since(first) else {
-            continue;
-        };
-        let at = i64::from(since.get_days());
-        if at < 0 || at >= days {
-            continue;
-        }
-        if let Some(bar) = usize::try_from(at / step)
-            .ok()
-            .and_then(|ix| bars.get_mut(ix))
-        {
+        if let Some(bar) = bar_of(day, first, last, step).and_then(|ix| bars.get_mut(ix)) {
             if click {
                 bar.1 += 1;
             } else {
@@ -155,6 +150,65 @@ fn bars(items: &[(Date, bool)], first: Date, last: Date) -> (Vec<(u32, u32)>, i6
         }
     }
     (bars, step)
+}
+
+/// Which bar of a chart from `first` to `last`, `step` days a bar, counts
+/// `day`.
+fn bar_of(day: Date, first: Date, last: Date, step: i64) -> Option<usize> {
+    let days = last.since(first).map_or(0, |s| i64::from(s.get_days())) + 1;
+    let at = i64::from(day.since(first).ok()?.get_days());
+    if at < 0 || at >= days {
+        return None;
+    }
+    usize::try_from(at / step.max(1)).ok()
+}
+
+/// A message opened or clicked in one bar, for its hover card.
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct BarMessage {
+    subject: String,
+    /// Its opens and clicks in the bar.
+    count: u32,
+}
+
+/// The messages opened or clicked in each of `count` bars, most first.
+/// `items` are each event's day, message ID and subject.
+fn bar_messages(
+    items: &[(Date, &str, &str)],
+    first: Date,
+    last: Date,
+    step: i64,
+    count: usize,
+) -> Vec<Vec<BarMessage>> {
+    let mut bars: Vec<Vec<(&str, BarMessage)>> = vec![Vec::new(); count];
+    for &(day, id, subject) in items {
+        let Some(bar) = bar_of(day, first, last, step).and_then(|ix| bars.get_mut(ix)) else {
+            continue;
+        };
+        match bar.iter_mut().find(|(seen, _)| *seen == id) {
+            Some((_, message)) => message.count += 1,
+            None => bar.push((
+                id,
+                BarMessage {
+                    subject: subject.to_owned(),
+                    count: 1,
+                },
+            )),
+        }
+    }
+    bars.into_iter()
+        .map(|bar| {
+            let mut list: Vec<BarMessage> = bar.into_iter().map(|(_, m)| m).collect();
+            // Stable: equal counts keep the order they were first seen.
+            list.sort_by_key(|m| std::cmp::Reverse(m.count));
+            list
+        })
+        .collect()
+}
+
+/// Fast at first, gentle at the end.
+fn ease_out(t: f32) -> f32 {
+    1.0 - (1.0 - t).powi(3)
 }
 
 /// A day as the report names it: "Sep 28", with the year when it is not
@@ -251,6 +305,12 @@ pub(super) struct Report {
     list: Vec<MessageActivity>,
     /// Opens and clicks in the period, by day.
     bars: Vec<(u32, u32)>,
+    /// The messages opened or clicked in each bar, most first.
+    bar_messages: Vec<Vec<BarMessage>>,
+    /// The bar under the pointer, which shows its hover card.
+    hover_bar: Option<usize>,
+    /// The hover card, which glides from bar to bar.
+    card: BarCard,
     /// Days per bar.
     step: i64,
     first: Date,
@@ -267,6 +327,61 @@ pub(super) struct Report {
     /// The account menu is open.
     accounts_open: bool,
     accounts_arrow: crate::widgets::Fold,
+}
+
+/// The hover card of the chart: it fades in over a bar, glides to the
+/// next bar as the pointer moves along (its text crossfading), and fades
+/// out when the pointer leaves the chart.
+struct BarCard {
+    /// The bar it is about; kept while it fades out.
+    bar: Option<usize>,
+    /// The chart's bars, in window coordinates, as last drawn.
+    chart: Rc<Cell<Option<Bounds<Pixels>>>>,
+    /// Where its bottom-left corner is, in window coordinates.
+    x: Cell<Spring>,
+    y: Cell<Spring>,
+    /// 0 hidden to 1 shown.
+    shown: Cell<Spring>,
+    /// When it last turned to another bar, for the text's crossfade.
+    turned: Instant,
+    /// It is in place; else it jumps there rather than gliding.
+    placed: Cell<bool>,
+}
+
+impl Default for BarCard {
+    fn default() -> Self {
+        Self {
+            bar: None,
+            chart: Rc::default(),
+            x: Cell::new(Spring::new(motion::SLIDE, 0.0)),
+            y: Cell::new(Spring::new(motion::SLIDE, 0.0)),
+            shown: Cell::new(Spring::new(motion::SMOOTH, 0.0)),
+            turned: Instant::now(),
+            placed: Cell::new(false),
+        }
+    }
+}
+
+impl BarCard {
+    /// Shows it over bar `ix`: fading in where it was hidden, else
+    /// gliding there with its text crossfading.
+    fn show(&mut self, ix: usize) {
+        let mut shown = self.shown.get();
+        if shown.value() < 0.01 {
+            self.placed.set(false);
+        } else if self.bar != Some(ix) {
+            self.turned = Instant::now();
+        }
+        self.bar = Some(ix);
+        shown.set(1.0);
+        self.shown.set(shown);
+    }
+
+    fn hide(&mut self) {
+        let mut shown = self.shown.get();
+        shown.set(0.0);
+        self.shown.set(shown);
+    }
 }
 
 impl MailWindow {
@@ -397,6 +512,9 @@ impl MailWindow {
             period: Period::Month,
             list: Vec::new(),
             bars: Vec::new(),
+            bar_messages: Vec::new(),
+            hover_bar: None,
+            card: BarCard::default(),
             step: 1,
             first: today,
             last: today,
@@ -453,17 +571,26 @@ impl MailWindow {
         let since = first
             .to_zoned(tz.clone())
             .map_or(0, |z| z.timestamp().as_millisecond());
-        let events: Vec<(Date, bool)> = mail
+        let feed: Vec<(Date, ActivityItem)> = mail
             .activity_feed(since, 0, EVENTS)
             .into_iter()
             .filter(|item| !item.maybe && ours(item.account))
-            .filter_map(|item| Some((day_of(item.at.div_euclid(1000))?, item.click)))
+            .filter_map(|item| Some((day_of(item.at.div_euclid(1000))?, item)))
             .collect();
+        let events: Vec<(Date, bool)> = feed.iter().map(|(day, item)| (*day, item.click)).collect();
         let (bars, step) = bars(&events, first, last);
+        let named: Vec<(Date, &str, &str)> = feed
+            .iter()
+            .map(|(day, item)| (*day, item.message_id.as_str(), item.subject.as_str()))
+            .collect();
+        let messages = bar_messages(&named, first, last, step, bars.len());
         if let Some(report) = &mut self.activity_report {
             report.period = period;
             report.list = by_open_rate(list);
             report.bars = bars;
+            report.bar_messages = messages;
+            report.hover_bar = None;
+            report.card.hide();
             report.step = step;
             report.first = first;
             report.last = last;
@@ -1115,7 +1242,7 @@ impl MailWindow {
                 rate(rates.clicked, rates.recipients),
                 tr!("activity-click-rate"),
             ));
-        let chart = self.render_chart(report, th);
+        let chart = self.render_chart(report, th, window, cx);
         let bar = |part: usize, whole: usize, color: u32| {
             let share = percent(part, whole) as f32 / 100.0;
             div()
@@ -1700,7 +1827,13 @@ impl MailWindow {
     }
 
     /// Opens and clicks as bars, one a day (or a week), with a key.
-    fn render_chart(&self, report: &Report, th: &Theme) -> AnyElement {
+    fn render_chart(
+        &self,
+        report: &Report,
+        th: &Theme,
+        window: &Window,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
         const HEIGHT: f32 = 120.0;
         let top = report
             .bars
@@ -1710,34 +1843,56 @@ impl MailWindow {
             .unwrap_or(0)
             .max(1) as f32;
         let click_color = th.text;
-        let bars = report.bars.iter().map(|&(opens, clicks)| {
-            let tall = |n: u32| (n as f32 / top * HEIGHT).max(if n > 0 { 2.0 } else { 0.0 });
-            div()
-                .flex_1()
-                .min_w_0()
-                .h_full()
-                .flex()
-                .flex_row()
-                .items_end()
-                .justify_center()
-                .gap(px(1.0))
-                .child(
-                    div()
-                        .flex_1()
-                        .max_w(px(10.0))
-                        .h(px(tall(opens)))
-                        .rounded_t(px(2.0))
-                        .bg(rgba(th.accent)),
-                )
-                .child(
-                    div()
-                        .flex_1()
-                        .max_w(px(10.0))
-                        .h(px(tall(clicks)))
-                        .rounded_t(px(2.0))
-                        .bg(rgba(fade(click_color, 0.55))),
-                )
-        });
+        let bars = report
+            .bars
+            .iter()
+            .enumerate()
+            .map(|(ix, &(opens, clicks))| {
+                let tall = |n: u32| (n as f32 / top * HEIGHT).max(if n > 0 { 2.0 } else { 0.0 });
+                div()
+                    .id(("activity-bar", ix))
+                    // The whole column answers the pointer, not only the thin
+                    // bar, and shows which bar the card is about.
+                    .rounded_t(px(radius::XS))
+                    .when(report.hover_bar == Some(ix), |d| d.bg(rgba(th.hover)))
+                    // Leaving a bar keeps its card until the pointer is
+                    // over the next one or leaves the chart, so the gaps
+                    // between bars never blink it out.
+                    .on_hover(cx.listener(move |this, &over: &bool, _, cx| {
+                        if let Some(report) = &mut this.activity_report
+                            && over
+                            && report.hover_bar != Some(ix)
+                        {
+                            report.hover_bar = Some(ix);
+                            report.card.show(ix);
+                            cx.notify();
+                        }
+                    }))
+                    .flex_1()
+                    .min_w_0()
+                    .h_full()
+                    .flex()
+                    .flex_row()
+                    .items_end()
+                    .justify_center()
+                    .gap(px(1.0))
+                    .child(
+                        div()
+                            .flex_1()
+                            .max_w(px(10.0))
+                            .h(px(tall(opens)))
+                            .rounded_t(px(2.0))
+                            .bg(rgba(th.accent)),
+                    )
+                    .child(
+                        div()
+                            .flex_1()
+                            .max_w(px(10.0))
+                            .h(px(tall(clicks)))
+                            .rounded_t(px(2.0))
+                            .bg(rgba(fade(click_color, 0.55))),
+                    )
+            });
         let (opens, clicks) = report.bars.iter().fold((0u64, 0u64), |(o, c), &(bo, bc)| {
             (o + u64::from(bo), c + u64::from(bc))
         });
@@ -1760,10 +1915,30 @@ impl MailWindow {
                     .flex()
                     .flex_row()
                     .items_end()
-                    .gap(px(2.0))
+                    .gap(px(space::S1))
                     .border_b_1()
                     .border_color(rgba(th.divider))
-                    .children(bars),
+                    .id("activity-chart")
+                    .relative()
+                    .on_hover(cx.listener(|this, &over: &bool, _, cx| {
+                        if let Some(report) = &mut this.activity_report
+                            && !over
+                        {
+                            report.hover_bar = None;
+                            report.card.hide();
+                            cx.notify();
+                        }
+                    }))
+                    .children(bars)
+                    .child({
+                        let chart = report.card.chart.clone();
+                        canvas(move |bounds, _, _| chart.set(Some(bounds)), |_, _, _, _| {})
+                            .absolute()
+                            .top_0()
+                            .left_0()
+                            .size_full()
+                    })
+                    .children(self.render_bar_card(report, th, window, cx)),
             )
             .child(
                 div()
@@ -1794,6 +1969,189 @@ impl MailWindow {
                     }),
             )
             .into_any_element()
+    }
+
+    /// The card beside the pointer over a bar: its day (or week), its
+    /// opens and clicks, and the messages opened or clicked in it.
+    fn render_bar_card(
+        &self,
+        report: &Report,
+        th: &Theme,
+        window: &Window,
+        cx: &App,
+    ) -> Option<AnyElement> {
+        /// At most this many messages are named; the rest are counted.
+        const NAMED: usize = 3;
+        const WIDTH: f32 = 272.0;
+        let card_state = &report.card;
+        let ix = card_state.bar?;
+        let reduce = cx.reduce_motion();
+        let mut shown = card_state.shown.get();
+        let opacity = shown.tick(window, reduce);
+        card_state.shown.set(shown);
+        if report.hover_bar.is_none() && shown.settled() && opacity < 0.01 {
+            return None;
+        }
+        let chart = card_state.chart.get()?;
+        let &(opens, clicks) = report.bars.get(ix)?;
+        let start = report
+            .first
+            .checked_add(jiff::Span::new().days(i64::try_from(ix).ok()? * report.step))
+            .ok()?;
+        let when = if report.step > 1 {
+            let end = start
+                .checked_add(jiff::Span::new().days(report.step - 1))
+                .map_or(report.last, |end| end.min(report.last));
+            format!("{} – {}", day_label(start), day_label(end))
+        } else {
+            tr!(
+                "activity-bar-day",
+                weekday =
+                    katna_i18n::format::weekday(start.to_datetime(jiff::civil::Time::midnight())),
+                day = day_label(start)
+            )
+        };
+        let messages = report.bar_messages.get(ix).map_or(&[][..], Vec::as_slice);
+        let key = |color: u32, text: String| {
+            div()
+                .flex()
+                .flex_row()
+                .items_center()
+                .gap(px(space::S3))
+                .child(
+                    div()
+                        .size(px(10.0))
+                        .rounded(px(radius::XS / 2.0))
+                        .bg(rgba(color)),
+                )
+                .child(text)
+        };
+        let counts = if opens == 0 && clicks == 0 {
+            div()
+                .text_color(rgba(th.text_dim))
+                .child(tr!("activity-bar-none"))
+        } else {
+            div()
+                .flex()
+                .flex_row()
+                .gap(px(space::S5))
+                .text_size(px(text::BODY))
+                .child(key(
+                    th.accent,
+                    tr!("activity-bar-opens", count = i64::from(opens)),
+                ))
+                .child(key(
+                    fade(th.text, 0.55),
+                    tr!("activity-bar-clicks", count = i64::from(clicks)),
+                ))
+        };
+        let rows = messages.iter().take(NAMED).map(|m| {
+            let subject = if m.subject.trim().is_empty() {
+                tr!("activity-no-subject")
+            } else {
+                m.subject.trim().to_owned()
+            };
+            div()
+                .flex()
+                .flex_row()
+                .gap(px(space::S3))
+                .child(div().flex_1().min_w_0().truncate().child(subject))
+                .child(
+                    div()
+                        .flex_none()
+                        .text_color(rgba(th.text_dim))
+                        .child(katna_i18n::format::number(u64::from(m.count))),
+                )
+        });
+        let more = messages.len().saturating_sub(NAMED);
+        // The new bar's text fades in over the card's glide.
+        let fresh = if reduce {
+            1.0
+        } else {
+            let t = card_state.turned.elapsed().as_secs_f32()
+                / motion::time(duration::FAST).as_secs_f32().max(0.001);
+            if t < 1.0 {
+                window.request_animation_frame();
+            }
+            ease_out(t.clamp(0.0, 1.0))
+        };
+        let content = div()
+            .flex()
+            .flex_col()
+            .opacity(0.5 + 0.5 * fresh)
+            .child(
+                div()
+                    .mb(px(space::S3))
+                    .text_size(px(text::CAPTION))
+                    .text_color(rgba(th.text_dim))
+                    .child(when),
+            )
+            .child(counts)
+            .when(!messages.is_empty(), |d| {
+                d.child(div().my(px(space::S3)).h(px(1.0)).bg(rgba(th.divider)))
+                    .child(div().flex().flex_col().gap(px(space::S1)).children(rows))
+            })
+            .when(more > 0, |d| {
+                d.child(
+                    div()
+                        .mt(px(space::S2))
+                        .text_size(px(text::CAPTION))
+                        .text_color(rgba(th.text_dim))
+                        .child(tr!("activity-bar-more", count = more as i64)),
+                )
+            });
+        let card = raised(div(), th, radius::SM, elevation::POPOVER)
+            .w(px(WIDTH))
+            .p(px(space::S4))
+            .text_size(px(text::SMALL))
+            .text_color(rgba(th.text))
+            .opacity(opacity)
+            .child(content);
+        // Beside its bar, on the side with room (before it where it fits),
+        // its bottom a little above the axis, so the bar stays in sight.
+        let room = katna_ui::anchored::content_bounds(window, cx);
+        let rtl = katna_ui::direction::is_rtl(window);
+        let count = report.bars.len().max(1) as f32;
+        let gap = space::S1;
+        let width = unpx(chart.size.width);
+        let column = ((width - gap * (count - 1.0)) / count).max(0.0);
+        let from_start = ix as f32 * (column + gap);
+        let left_edge = if rtl {
+            unpx(chart.origin.x) + width - from_start - column
+        } else {
+            unpx(chart.origin.x) + from_start
+        };
+        let before = left_edge - unpx(room.origin.x) >= WIDTH + 2.0 * space::S4;
+        let to_x = if before {
+            left_edge - space::S2 - WIDTH
+        } else {
+            left_edge + column + space::S2
+        };
+        let to_y = unpx(chart.origin.y + chart.size.height) - space::S6;
+        let (mut x, mut y) = (card_state.x.get(), card_state.y.get());
+        if card_state.placed.get() {
+            x.set(to_x);
+            y.set(to_y);
+        } else {
+            x.snap(to_x);
+            y.snap(to_y);
+            card_state.placed.set(true);
+        }
+        let at = point(px(x.tick(window, reduce)), px(y.tick(window, reduce)));
+        card_state.x.set(x);
+        card_state.y.set(y);
+        Some(
+            deferred(
+                anchored()
+                    .position(at)
+                    .anchor(gpui::Anchor::BottomLeft)
+                    .screen_corner()
+                    .snap_to_window_with_margin(px(space::S3))
+                    .child(card),
+            )
+            .with_priority(3)
+            .into_any_element(),
+        )
     }
 }
 
@@ -1893,5 +2251,25 @@ mod tests {
         assert_eq!(step, 7);
         assert_eq!(weeks.len(), 18);
         assert_eq!(weeks[1], (1, 0));
+    }
+
+    #[test]
+    fn names_the_messages_in_each_bar() {
+        let first = Date::new(2026, 9, 1).unwrap();
+        let day = |d: i8| Date::new(2026, 9, d).unwrap();
+        let items = [
+            (day(1), "a", "Lunch"),
+            (day(1), "b", "Budget"),
+            (day(1), "b", "Budget"),
+            (day(2), "a", "Lunch"),
+            (day(9), "a", "Lunch"),
+        ];
+        let bars = bar_messages(&items, first, day(3), 1, 3);
+        fn names(bar: &[BarMessage]) -> Vec<(&str, u32)> {
+            bar.iter().map(|m| (m.subject.as_str(), m.count)).collect()
+        }
+        assert_eq!(names(&bars[0]), [("Budget", 2), ("Lunch", 1)]);
+        assert_eq!(names(&bars[1]), [("Lunch", 1)]);
+        assert!(bars[2].is_empty());
     }
 }

@@ -17,7 +17,7 @@ mod folder_zip;
 mod format;
 mod grammar;
 mod instance;
-mod mailto;
+use katna_core::mailto;
 mod outgoing;
 mod placement;
 mod profile;

@@ -76,6 +76,7 @@ pub(crate) use sign_in::open_in_browser;
 mod sign_in;
 mod summaries;
 mod tasks;
+mod unsubscribe;
 
 /// The longest account name taken.
 const MAX_ACCOUNT_NAME: usize = 200;

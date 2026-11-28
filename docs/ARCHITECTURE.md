@@ -1328,6 +1328,37 @@ account kind. `runs_on` (`katna`, `gmail`, `sieve`) says which.
   reads rules from the store; `runs_on` and the reason are the daemon's,
   and saving keeps them.
 
+### 9.5 Unsubscribe in one click
+
+Unsubscribing happens on the user's computer, the sender's own way, and
+never through Katna's servers or by clicking through web pages.
+
+- **Where:** an Unsubscribe chip on the open mail's "to …" line (shared
+  `line_chip` in the accent's words and outline so it is easy to spot;
+  it reads "Unsubscribing…" while it runs, then a faint
+  "Unsubscribed" that stays) and Unsubscribe on the right-click menu of one
+  or more mail lines, below "Make a rule…". The menu takes each sender's
+  newest message (at most 200 messages) and asks once per sender; one
+  snackbar reports them all. Not offered on drafts, Sent or mail from the
+  user's own addresses. Old mail from the sender is left where it is.
+- **How** (`katna_core::unsubscribe`, `katna_render::unsubscribe_ways`):
+  the `List-Unsubscribe` header (RFC 2369). With `List-Unsubscribe-Post:
+  List-Unsubscribe=One-Click` (RFC 8058) its `https` address takes a POST
+  of `List-Unsubscribe=One-Click`; else its `mailto:` is sent (subject and
+  body from the address, "unsubscribe" when empty) from the account the
+  mail came to, through the outbox. A header `http(s)` address without the
+  POST header, or an unsubscribe link in the body (link text in the
+  common languages, at most 60 characters), is only a page: the snackbar
+  offers Open page, and Katna never follows it itself, since such pages
+  ask for choices or a captcha.
+- **Daemon:** `Pim1.Unsubscribe(ids) → [(id, outcome)]`, outcome `done`
+  (the POST was taken: status below 400), `sent` (the mail is queued),
+  `none` (no header way) or `failed`; a failed POST falls back to the
+  mail. Each `List-Unsubscribe` value is asked once per call. The POST goes
+  through `autoconfig::http::post_public`: port 443 to public addresses
+  only, 20 s timeout, so a header can't make the daemon reach the local
+  network.
+
 ## 10. Metadata with expiration (`katna-meta`)
 
 Inspired by Mailspring's plugin metadata. Any object (message, thread,
@@ -3943,7 +3974,7 @@ account also takes after its first sync), `RemoveAccount(id) → b`,
 `DeleteAllData()` (stops every account, deletes every saved password,
 the data directory, the cache and `config.toml`, then the daemon exits;
 the next call starts a new one), `ResetCache() → (tt)` (messages that lost
-their body, bytes deleted; see Settings above), `SyncNow(id)` (0 for every account), `FetchBody(message)`,
+their body, bytes deleted; see Settings above), `SyncNow(id)` (0 for every account), `FetchBody(message)`, `Unsubscribe(ax messages) → a(xs)` (§9.5),
 `SetFlags(ax messages, as add, as remove)` (flag names `seen`, `answered`,
 `flagged`, `draft`, `forwarded`, `important`), `SetPinned(ax messages, b
 on)` (local only; more than ten pinned conversations is an error),

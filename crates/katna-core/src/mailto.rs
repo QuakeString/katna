@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! `mailto:` links (RFC 6068), which Katna Mail opens as a new message when
-//! it is the desktop's mail app. No GPUI here.
+//! it is the desktop's mail app, and the daemon sends to unsubscribe.
 
 /// What a `mailto:` link fills in.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]

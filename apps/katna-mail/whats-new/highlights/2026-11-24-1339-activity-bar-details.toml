@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "See each day in the Activity chart"
+text = """
+In the Activity report, rest the pointer on a bar of the opens and clicks
+chart to see its day, how many opens and clicks it had, and which messages
+were opened.
+"""
