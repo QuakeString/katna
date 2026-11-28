@@ -395,6 +395,22 @@ pub struct KatnaDevice {
     pub this: bool,
 }
 
+/// Where the Katna account stands with Katna AI, from `KatnaAiPlan`.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+pub struct KatnaPlan {
+    /// `new` (never used), `trial`, `paid` or `over`
+    /// (`katna_ai::wire::plan`); empty when Katna Server could not say,
+    /// such as a server from before this was asked.
+    pub kind: String,
+    /// Whole days of the free month left, while it runs.
+    pub days_left: u32,
+    /// How long the free month is, in days.
+    pub trial_days: u32,
+    /// When the free month or the paid time ends (Unix seconds); 0 when
+    /// neither runs.
+    pub until: i64,
+}
+
 /// Why a Katna account command failed: the message of its D-Bus error,
 /// so the app can say it in the user's language.
 pub mod katna_error {
@@ -1526,6 +1542,10 @@ macro_rules! pim_proxy {
 
             /// Signs another computer out.
             fn katna_sign_out_device(&self, id: &str) -> zbus::Result<()>;
+
+            /// Where the Katna account stands with Katna AI, for Settings >
+            /// Subscription; reading it never starts the free month.
+            fn katna_ai_plan(&self) -> zbus::Result<KatnaPlan>;
 
             /// Changes the password; other computers are signed out.
             fn katna_change_password(&self, current: &str, new: &str) -> zbus::Result<()>;

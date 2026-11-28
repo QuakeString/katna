@@ -4695,9 +4695,22 @@ own on Katna Server; mail logins never go to the server.
   from `Session::token`. D-Bus: `KatnaAccount`, `KatnaSignUp`,
   `KatnaSignIn`, `KatnaVerify`, `KatnaResendCode`, `KatnaSignOut`,
   `KatnaDevices`, `KatnaSignOutDevice`, `KatnaChangePassword`,
-  `KatnaResetPassword`, `KatnaConfirmReset`, `KatnaDeleteAccount`, signal
-  `KatnaAccountChanged`; errors carry `katna_dbus::katna_error` names.
-- **App:** Settings > Subscription. Features check
+  `KatnaResetPassword`, `KatnaConfirmReset`, `KatnaDeleteAccount`,
+  `KatnaAiPlan`, signal `KatnaAccountChanged`; errors carry
+  `katna_dbus::katna_error` names. `KatnaAiPlan` reads
+  `GET /api/v1/ai/plan` (`katna_ai::wire::PlanStatus`: `new`, `trial` with
+  days left and end, `paid` with its end, or `over`), which never starts
+  the free month; a server without the route gives an empty kind.
+- **App:** Settings > Subscription (decided 28 November 2026, option A of
+  the account page study): one scroll of cards. The account (picture,
+  address, Sign out); Plan, the free Katna account beside Katna AI with
+  its standing from `KatnaAiPlan` and the AI settings (own key, off, never
+  used, free month with days left and a bar, paid, or over with an amber
+  note); what the account turns on, with Translation and Katna AI opening
+  their settings; the computers, this one first, each other with Sign
+  out, and "Sign out the others"; then the password and deleting the
+  account, each opening its form in place. Subscribe, card changes,
+  cancelling and invoices come with Razorpay payments. Features check
   `MailWindow::katna_signed_in` and show `katna_sign_in_needed` ("Sign in
   to use this") when not.
 

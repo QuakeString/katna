@@ -15,7 +15,7 @@
 use std::time::Duration;
 
 use katna_core::ids;
-use katna_dbus::{KatnaAccount, KatnaDevice, katna_error};
+use katna_dbus::{KatnaAccount, KatnaDevice, KatnaPlan, katna_error};
 use katna_sync::autoconfig::http;
 use katna_sync::net::Tls;
 use serde::{Deserialize, Serialize};
@@ -335,6 +335,22 @@ impl<'a> Session<'a> {
         Ok(())
     }
 
+    /// Where the account stands with Katna AI. A server that cannot say
+    /// (one from before this was asked, or out of reach) gives an empty
+    /// kind rather than an error, so the page still shows the rest.
+    pub async fn ai_plan(&self) -> Result<KatnaPlan, CommandError> {
+        match self.member("GET", "/api/v1/ai/plan", None).await {
+            Ok((answer, _)) => Ok(plan(&answer.body)),
+            Err(CommandError::Failed(code)) if code == katna_error::SIGN_IN => {
+                Err(CommandError::Failed(code))
+            }
+            Err(err) => {
+                tracing::info!(%err, "Katna Server did not say the Katna AI plan");
+                Ok(KatnaPlan::default())
+            }
+        }
+    }
+
     pub async fn change_password(&self, current: &str, new: &str) -> Result<(), CommandError> {
         self.member(
             "POST",
@@ -410,6 +426,17 @@ fn device(value: &Value) -> Option<KatnaDevice> {
     })
 }
 
+fn plan(value: &Value) -> KatnaPlan {
+    let status: katna_ai::wire::PlanStatus =
+        serde_json::from_value(value.clone()).unwrap_or_default();
+    KatnaPlan {
+        kind: status.kind,
+        days_left: status.days_left.unwrap_or(0),
+        trial_days: status.trial_days,
+        until: status.until.map_or(0, |ms| ms / 1000),
+    }
+}
+
 /// This computer's name for the device list.
 fn device_name() -> String {
     std::fs::read_to_string("/proc/sys/kernel/hostname")
@@ -454,6 +481,18 @@ mod tests {
         assert_eq!(device.signed_in_at, 1_700_000_000);
         assert!(device.this);
         assert!(super::device(&json!({ "name": "x" })).is_none());
+    }
+
+    #[test]
+    fn reads_the_plan() {
+        let trial = plan(&json!({ "kind": "trial", "days_left": 23, "trial_days": 30,
+                                  "until": 1_700_000_000_000i64 }));
+        assert_eq!(trial.kind, "trial");
+        assert_eq!(trial.days_left, 23);
+        assert_eq!(trial.until, 1_700_000_000);
+        let new = plan(&json!({ "kind": "new", "trial_days": 30 }));
+        assert_eq!((new.days_left, new.until), (0, 0));
+        assert_eq!(plan(&json!("nonsense")), KatnaPlan::default());
     }
 
     #[test]

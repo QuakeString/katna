@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+title = "A clearer Katna account page"
+text = """
+Settings › Subscription now shows your plan: the free Katna account beside
+Katna AI, with the days left in its free month. It also lists what your
+account turns on, and every computer signed in to it, each with its own
+Sign out.
+"""

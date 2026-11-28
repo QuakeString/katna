@@ -8,8 +8,8 @@ use async_channel::Receiver;
 use katna_core::{AccountId, Pop3Keep, ids};
 use katna_dbus::{
     AccountStatus, CloudAccess, CloudEntry, CloudListing, DriveUpload, KatnaAccount, KatnaDevice,
-    NewImapAccount, NewPop3Account, NoteItem, OutboxItem, ServerSpec, TemplateItem, UpdateStatus,
-    flag, mute,
+    KatnaPlan, NewImapAccount, NewPop3Account, NoteItem, OutboxItem, ServerSpec, TemplateItem,
+    UpdateStatus, flag, mute,
 };
 use katna_store::{Bell, FolderId, MailCategory, MessageFlags, MessageId, Pinned};
 use zbus::{fdo, object_server::SignalEmitter};
@@ -992,6 +992,10 @@ macro_rules! pim_interface {
 
             async fn katna_sign_out_device(&self, id: &str) -> fdo::Result<()> {
                 Ok(self.daemon.katna()?.sign_out_device(id).await?)
+            }
+
+            async fn katna_ai_plan(&self) -> fdo::Result<KatnaPlan> {
+                Ok(self.daemon.katna()?.ai_plan().await?)
             }
 
             async fn katna_change_password(&self, current: &str, new: &str) -> fdo::Result<()> {

@@ -34,7 +34,7 @@ use std::time::Duration;
 
 use axum::body::Bytes;
 use axum::extract::State;
-use axum::routing::post;
+use axum::routing::{get, post};
 use axum::{Json, Router};
 use http_body_util::{BodyExt, Full};
 use hyper::Uri;
@@ -42,7 +42,7 @@ use hyper::header;
 use hyper_util::rt::TokioIo;
 use katna_ai::draft::{self, DraftRequest};
 use katna_ai::summary::{self, SummarizeRequest};
-use katna_ai::wire::{AiAnswer, CompleteRequest, Plan, RephraseRequest, plan};
+use katna_ai::wire::{AiAnswer, CompleteRequest, Plan, PlanStatus, RephraseRequest, plan};
 use katna_ai::{Prompt, ProviderError, Tone, prompt, provider};
 use serde::{Deserialize, Serialize};
 use tokio::io::{AsyncRead, AsyncWrite};
@@ -51,7 +51,8 @@ use tokio_rustls::rustls::{self, ClientConfig, RootCertStore};
 
 use crate::auth::SignedIn;
 use crate::config::{AiConfig, AiService};
-use crate::db::{month_of, now_ms};
+
+use crate::db::{AiPlan, month_of, now_ms};
 use crate::routes::{ApiError, AppState};
 
 /// Longest request body taken. The prompts cut the text much shorter.
@@ -83,6 +84,48 @@ pub fn routes() -> Router<AppState> {
         .route("/api/v1/ai/complete", post(complete))
         .route("/api/v1/ai/summarize", post(summarize))
         .route("/api/v1/ai/draft", post(draft))
+        .route("/api/v1/ai/plan", get(plan_status))
+}
+
+/// Where the account stands with Katna AI, for Settings > Subscription.
+/// Reading it never starts the free month.
+async fn plan_status(
+    State(state): State<AppState>,
+    SignedIn { account, .. }: SignedIn,
+) -> Result<Json<PlanStatus>, ApiError> {
+    let stored = state.db().ai_plan_read(&account).await?;
+    Ok(Json(status_of(&state.ai(), stored, now_ms())))
+}
+
+/// [`plan_status`] for an account with `stored` time at `now`.
+fn status_of(ai: &AiConfig, stored: Option<AiPlan>, now: i64) -> PlanStatus {
+    let trial_days = ai.trial_days;
+    let Some(stored) = stored else {
+        return PlanStatus {
+            kind: plan::NEW.into(),
+            trial_days,
+            ..PlanStatus::default()
+        };
+    };
+    match standing(ai, stored.first_use, stored.paid_until, now) {
+        Some(standing) if standing.kind == plan::PAID => PlanStatus {
+            kind: plan::PAID.into(),
+            trial_days,
+            until: stored.paid_until,
+            ..PlanStatus::default()
+        },
+        Some(standing) => PlanStatus {
+            kind: plan::TRIAL.into(),
+            days_left: standing.days_left,
+            trial_days,
+            until: Some(stored.first_use + i64::from(trial_days) * DAY_MS),
+        },
+        None => PlanStatus {
+            kind: plan::OVER.into(),
+            trial_days,
+            ..PlanStatus::default()
+        },
+    }
 }
 
 async fn rephrase(
@@ -483,6 +526,34 @@ mod tests {
         let paid = standing(&ai, start, Some(later + 1), later).unwrap();
         assert_eq!(paid.kind, plan::PAID);
         assert_eq!(standing(&ai, start, Some(later), later), None);
+    }
+
+    #[test]
+    fn plan_status_reads_without_starting() {
+        let ai = AiConfig::default();
+        let start = 1_790_812_800_000;
+        let new = status_of(&ai, None, start);
+        assert_eq!(new.kind, plan::NEW);
+        assert_eq!(new.trial_days, 30);
+        let used = AiPlan {
+            first_use: start,
+            paid_until: None,
+        };
+        let trial = status_of(&ai, Some(used), start + DAY_MS);
+        assert_eq!(trial.kind, plan::TRIAL);
+        assert_eq!(trial.days_left, Some(29));
+        assert_eq!(trial.until, Some(start + 30 * DAY_MS));
+        assert_eq!(
+            status_of(&ai, Some(used), start + 30 * DAY_MS).kind,
+            plan::OVER
+        );
+        let paid = AiPlan {
+            paid_until: Some(start + 60 * DAY_MS),
+            ..used
+        };
+        let status = status_of(&ai, Some(paid), start + 40 * DAY_MS);
+        assert_eq!(status.kind, plan::PAID);
+        assert_eq!(status.until, Some(start + 60 * DAY_MS));
     }
 
     #[test]

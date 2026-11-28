@@ -140,6 +140,7 @@ log could reset any account.
 | `POST /api/v1/ai/complete` `{"before", "answered"}` | The rest of the sentence, the same way; `""` when there is too little to go on. |
 | `POST /api/v1/ai/summarize` `{"subject", "mails": [{"from", "when", "text", "new"}], "catch_up"}` | A conversation summed up, the same way: `text` is the service's JSON summary, which the daemon reads. One request however long; the newest 30 mails are sent. |
 | `POST /api/v1/ai/draft` `{"kind", "subject", "mails", "me", "to", "ideas", "idea", "length", "manner"}` | Three ideas for a reply or a forward's note (`ideas: true`; `text` is a JSON array), or its first draft. One request each; the newest 30 mails are sent. |
+| `GET /api/v1/ai/plan` | Where the account stands with Katna AI, for Katna Mail's Settings › Subscription: `{"kind": "new"\|"trial"\|"paid"\|"over", "days_left", "trial_days", "until"}` (`until` in Unix ms: the free month's end, or the paid time's). Reading it never starts the free month. |
 | `GET /healthz` | `ok` when the database answers. |
 
 All but the first need `Authorization: Bearer <token>`. The tracking
