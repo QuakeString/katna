@@ -2,7 +2,7 @@
 
 //! The rule editor: one mail rule in a dialog over the window, opened from
 //! Settings > Folders & rules (New rule, or a rule's pencil) and from a
-//! mail's right-click menu (Make a rule…, filled in with its sender). A
+//! mail's right-click menu (Make a rule, filled in with its sender). A
 //! name; "When a new mail matches all/any of these" with condition rows;
 //! "Then" with action rows; Stop here; the accounts; and a light panel
 //! counting the inbox mail of the last 30 days it matches, with "Also
@@ -677,7 +677,7 @@ impl MailWindow {
         self.open_rule_editor(Vec::new(), rule, window, cx);
     }
 
-    /// Make a rule… on a mail: the editor filled in with its sender. (Move
+    /// Make a rule on a mail: the editor filled in with its sender. (Move
     /// to's "Always move mail from … here" makes such a rule in one click:
     /// `folder_pick`.)
     pub(super) fn make_rule_from(

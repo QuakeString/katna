@@ -391,7 +391,7 @@ impl MailWindow {
         }
     }
 
-    /// What a menu row about `target` says: Mute… while it rings, else
+    /// What a menu row about `target` says: Mute while it rings, else
     /// Unmute or Notify for new mail.
     pub(super) fn quiet_menu_label(&self, target: &Quiet) -> (&'static str, SharedString) {
         let state = self.quiet_state(target);

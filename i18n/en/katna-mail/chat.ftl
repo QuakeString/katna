@@ -106,7 +106,7 @@ picker-search-drive = Search this drive
 # The picker's side column: where the files come from.
 picker-mail-files = Mail files
 picker-this-chat = This conversation
-picker-this-computer = This computer…
+picker-this-computer = This computer
 picker-in-chat = IN THIS CONVERSATION
 picker-recent = RECENT
 picker-preview = Preview

@@ -1337,7 +1337,7 @@ never through Katna's servers or by clicking through web pages.
   `line_chip` in the accent's words and outline so it is easy to spot;
   it reads "Unsubscribing…" while it runs, then a faint
   "Unsubscribed" that stays) and Unsubscribe on the right-click menu of one
-  or more mail lines, below "Make a rule…". The menu takes each sender's
+  or more mail lines, below "Make a rule". The menu takes each sender's
   newest message (at most 200 messages) and asks once per sender; one
   snackbar reports them all. Not offered on drafts, Sent or mail from the
   user's own addresses. Old mail from the sender is left where it is.
@@ -2431,7 +2431,7 @@ Gemini or confidential mode):
   (`state/mcp-activity.jsonl`, last 50 lines) with Clear; `katnactl mcp`
   reads `[mcp]` on every call. The rule editor
   (`window/rule_editor.rs`), a dialog, also opens from a mail's
-  right-click menu (Make a rule…, filled in with its sender). It counts
+  right-click menu (Make a rule, filled in with its sender). It counts
   the inbox mail of the last 30 days the rule matches as it changes
   (`Store::rule_preview` on the read-only store, with each message's
   stored text), offers a search for them when the search language can say
@@ -3260,7 +3260,7 @@ desktop's own app stays one click away.
     encrypted, Word 6/95; the viewer closes and hands it over, or asks
     which app when Default apps says Ask). Files that could run a program
     never do: they show "No preview available" with Save only. Paging to
-    such a file with the viewer's arrows shows that page with "Open with…"
+    such a file with the viewer's arrows shows that page with "Open with"
     rather than launching an app.
 - **Default apps** (Settings → Default apps, `[mail.open]` in
   `config.toml`): for PDFs, pictures, text, spreadsheets and documents
