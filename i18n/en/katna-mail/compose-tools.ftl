@@ -169,7 +169,7 @@ compose-signature-taken-out = Signature taken out
 
 compose-tool-templates = Templates
 compose-tool-templates-none = No templates yet
-compose-tool-template-save = Save as template…
+compose-tool-template-save = Save as template
 # Opens Settings at the templates.
 compose-tool-templates-manage = Manage templates
 compose-tool-template-save-title = Save as template

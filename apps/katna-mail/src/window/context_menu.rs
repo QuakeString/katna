@@ -4,7 +4,7 @@
 //! forward, archive, delete, read, snooze and star, then submenus: "Move
 //! to" with the folders, "Follow up" (tasks, notes, meetings, calls) and
 //! "More" (spam, importance, pin), "Find emails from" the sender and
-//! "Make a rule…" (the rule editor, filled in with the sender). It
+//! "Make a rule" (the rule editor, filled in with the sender). It
 //! opens where the pointer is and always fits the window. It acts on the
 //! ticked lines when the clicked line is one of them, else on the clicked
 //! line.

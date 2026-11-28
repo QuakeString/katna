@@ -89,8 +89,8 @@ files-load-failed = Reading the files failed: { $error }
 ## A file's menu and buttons
 
 files-open = Open
-files-open-with = Open with…
-files-save = Save…
+files-open-with = Open with
+files-save = Save
 # Opens the mail the file came with. Also a button on the file's card and
 # in the viewer.
 files-show-mail = Show the mail
@@ -150,11 +150,11 @@ files-drive-allow = Allow
 files-drive-allow-failed = The sign-in didn’t finish, so the drive stays closed.
 files-drive-attach = Attach
 files-drive-more = More
-files-drive-download = Download…
+files-drive-download = Download
 files-drive-open-web = Open in { $drive }
 files-drive-copy-link = Copy link
 files-drive-link-copied = Link copied
-files-drive-share = Share…
+files-drive-share = Share
 files-drive-rename = Rename
 files-drive-trash = Move to bin
 # $drive: Google Drive or OneDrive.
