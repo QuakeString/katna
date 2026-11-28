@@ -1088,7 +1088,7 @@ fn header(
                 .flex_col()
                 .child(line(
                     pieces
-                        .words("Katna")
+                        .words(tr!("about-title"))
                         .text_size(px(name))
                         .line_height(px(name_line)),
                 ))
