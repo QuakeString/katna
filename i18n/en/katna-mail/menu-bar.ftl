@@ -14,7 +14,7 @@ desktop-menu-edit = _Edit
 desktop-menu-undo = _Undo
 desktop-menu-select-all = Select _All
 desktop-menu-select-none = Select _None
-desktop-menu-find = _Find…
+desktop-menu-find = _Find
 desktop-menu-view = _View
 # Shows or hides the folders pane.
 desktop-menu-folder-list = Show _Folder List
@@ -44,7 +44,7 @@ desktop-menu-forward = _Forward
 desktop-menu-archive = Arc_hive
 desktop-menu-delete = _Delete
 desktop-menu-spam = Report _Spam
-desktop-menu-move-to = _Move To…
+desktop-menu-move-to = _Move To
 desktop-menu-mark-read = Mark as R_ead
 desktop-menu-mark-unread = Mark as _Unread
 desktop-menu-star = S_tar
@@ -54,14 +54,14 @@ desktop-menu-settings = _Settings
 # Opens the Quick settings panel.
 desktop-menu-quick-settings = _Quick Settings
 # Opens the full Settings page.
-desktop-menu-configure = _Configure Katna Mail…
+desktop-menu-configure = _Configure Katna Mail
 desktop-menu-help = _Help
 # Opens the command palette: one box to find any action or setting.
-desktop-menu-palette = _Command Palette…
+desktop-menu-palette = _Command Palette
 desktop-menu-shortcuts = _Keyboard Shortcuts
 desktop-menu-whats-new = _What's New
 # Opens the Send feedback form.
-desktop-menu-send-feedback = Send _Feedback…
+desktop-menu-send-feedback = Send _Feedback
 # Opens the Update dialog and looks for a newer version.
-desktop-menu-check-updates = Check for _Updates…
+desktop-menu-check-updates = Check for _Updates
 desktop-menu-about = _About Katna

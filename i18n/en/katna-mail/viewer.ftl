@@ -97,7 +97,7 @@ viewer-reply-marked-tip = Reply with the marked copy
 # the PDF has marks).
 viewer-forward-tip = Forward the file
 viewer-forward = Forward
-viewer-open-with = Open with…
+viewer-open-with = Open with
 viewer-save = Save
 # Typing a sticky note or a text box on the page.
 viewer-note-placeholder = Write a note

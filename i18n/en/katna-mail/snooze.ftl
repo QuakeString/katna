@@ -58,7 +58,7 @@ snooze-in-the-past = Pick a time later than now.
 ## beside Send
 
 # The send menu's item that opens the popover.
-follow-up-menu = Follow up if no reply…
+follow-up-menu = Follow up if no reply
 # The popover's title. If nobody answers in time, the daemon brings the
 # conversation back to the Inbox, or sends a follow-up for the user.
 follow-up-title = Follow up if no reply
@@ -73,7 +73,7 @@ follow-up-weeks = { $weeks ->
    *[other] { $weeks } weeks
 }
 # Opens the date and time picker.
-follow-up-pick = Pick…
+follow-up-pick = Pick
 # The picker's title when it chooses when to follow up.
 follow-up-pick-title = Follow up if no reply by
 # The two ways, each with a line under it.

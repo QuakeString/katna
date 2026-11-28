@@ -863,7 +863,7 @@ pub struct MailWindow {
     /// again.
     delete_confirmed: bool,
     new_label: Option<labels::NewLabel>,
-    /// The rule editor (Settings > Folders & rules, Make a rule…).
+    /// The rule editor (Settings > Folders & rules, Make a rule).
     rule_editor: Option<rule_editor::RuleEditor>,
     /// The search over the folders in Move to or Label as.
     folder_pick: Option<folder_pick::FolderPick>,
